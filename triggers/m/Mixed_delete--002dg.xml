@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="triggers">
+  <record id="trigger.name=&quot;Mixed-delete&quot;" recordid="Mixed-delete">
+    <trigger.name type="string">Mixed-delete</trigger.name>
+    <trigger.type type="decimal">6</trigger.type>
+    <table.name type="string">svcCatalog</table.name>
+    <application.name NullValue="1" type="string"/>
+    <sysmodcount type="decimal">1</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">09/07/11 20:14:32</sysmodtime>
+    <javascript type="string">lib.svcCatalogMixTrigger.afterDelete(record);</javascript>
+  </record>
+</recordset>

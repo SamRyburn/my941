@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;DeltaMigration_Export&quot;" recordid="DeltaMigration_Export">
+    <name type="string">DeltaMigration_Export</name>
+    <script type="string">	var rteReturnValue = new SCDatum();
+	var argNames = new SCDatum();
+	var argVals = new SCDatum();
+	
+	argVals.setType(8);     //type array
+	argNames.setType(8);    //type array
+	
+	var argVal;
+	argVal=new SCDatum();
+	      argVal.setType(2); //string                           
+	      argVal="name";
+	      argNames.push(argVal);
+	
+	argVal=new SCDatum();
+	      argVal.setType(2); //string                           
+	      argVal="Delta Migration General (Intro)"
+	      argVals.push(argVal);      
+	      
+	var ret = system.functions.rtecall("callrad", 
+	                               rteReturnValue, 
+	                               "wizard.run", 
+	                               argNames, 
+	                               argVals,
+	                               true);
+</script>
+    <package NullValue="1" type="string"/>
+    <sysmodtime type="dateTime">05/29/14 04:06:03</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">4</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

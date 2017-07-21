@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="Process">
+  <record id="process=&quot;smis.registry.fieldmapping.validate.prompt&quot;" recordid="smis.registry.fieldmapping.validate.prompt">
+    <process type="string">smis.registry.fieldmapping.validate.prompt</process>
+    <pre.expressions NullValue="1" sctype="array">
+      <pre.expressions NullValue="1" type="expression"/>
+    </pre.expressions>
+    <post.expressions NullValue="1" sctype="array">
+      <post.expressions NullValue="1" type="expression"/>
+    </post.expressions>
+    <rad sctype="array">
+      <rad sctype="structure">
+        <application type="string">mb.ok</application>
+        <names sctype="array">
+          <names sctype="string">text</names>
+        </names>
+        <values sctype="array">
+          <values sctype="string">$L.validateRFMMsg</values>
+        </values>
+        <rad.condition type="operator">not  (null($L.validateRFMMsg)) and option()=5</rad.condition>
+        <pre.rad.expressions sctype="string"/>
+        <post.rad.expressions sctype="string"/>
+      </rad>
+    </rad>
+    <next.process NullValue="1" sctype="array">
+      <next.process NullValue="1" type="string"/>
+    </next.process>
+    <process.condition NullValue="1" sctype="array">
+      <process.condition NullValue="1" type="boolean"/>
+    </process.condition>
+    <run.standard NullValue="1" type="boolean"/>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">tiansha</sysmoduser>
+    <sysmodtime type="dateTime">11/16/09 17:00:46</sysmodtime>
+    <save.cursor.position NullValue="1" type="boolean"/>
+    <run.in.window NullValue="1" type="boolean"/>
+    <window.name NullValue="1" type="string"/>
+    <javascript.pre type="string">//Populate a Field Mapping instance
+
+var fm = new SCFile("SMISFieldMapping");
+
+
+for(var i in vars.$L_file.fieldMapping) {
+		
+		fm.fieldMapping[i].SMField = vars.$L_file.fieldMapping[i].SMField;
+		fm.fieldMapping[i].EPField = vars.$L_file.fieldMapping[i].EPField;
+		fm.fieldMapping[i].SMDefValue = vars.$L_file.fieldMapping[i].SMDefValue;
+		fm.fieldMapping[i].EPDefValue = vars.$L_file.fieldMapping[i].EPDefValue;
+		fm.fieldMapping[i].SMjscallback = vars.$L_file.fieldMapping[i].SMjscallback;
+		fm.fieldMapping[i].EPjscallback = vars.$L_file.fieldMapping[i].EPjscallback;
+		fm.fieldMapping[i].direction = vars.$L_file.fieldMapping[i].direction;
+		fm.fieldMapping[i].FMDescription = vars.$L_file.fieldMapping[i].FMDescription;
+		fm.fieldMapping[i].valueMappingGroup = vars.$L_file.fieldMapping[i].valueMappingGroup;
+}
+	
+for(var j in vars.$L_file.valueMapping) {
+
+	fm.valueMapping[j].SMValue = vars.$L_file.valueMapping[j].SMValue;
+	fm.valueMapping[j].EPValue = vars.$L_file.valueMapping[j].EPValue;
+	fm.valueMapping[j].valueMappingGroupID = vars.$L_file.valueMapping[j].valueMappingGroupID;
+	fm.valueMapping[j].VMDescription = vars.$L_file.valueMapping[j].VMDescription;
+}
+
+//this vars.$mockSMISConfig is from the wizard named "SMIS Registry Field Mapping"
+
+vars.$L_validateRFMMsg= lib.smis_FieldMappingManager.validateMapping(fm,vars.$L_mockSMISConfig);
+
+</javascript.pre>
+    <javascript.post NullValue="1" type="string"/>
+    <baseMethod NullValue="1" type="string"/>
+  </record>
+</recordset>

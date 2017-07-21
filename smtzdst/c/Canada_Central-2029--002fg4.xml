@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="smtzdst">
+  <record id="tzname=&quot;Canada/Central&quot; and dstyear=2029" recordid="">
+    <tzname type="string">Canada/Central</tzname>
+    <dstyear type="decimal">2029</dstyear>
+    <dstbegin type="dateTime">03/10/29 19:00:00</dstbegin>
+    <dstend type="dateTime">11/03/29 20:00:00</dstend>
+    <isdst type="decimal">1</isdst>
+  </record>
+</recordset>

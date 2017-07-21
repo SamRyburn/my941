@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;send.fax.g&quot;" recordid="en - send.fax.g">
+    <name mandatory="true" type="string">send.fax.g</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">80</length>
+        <window type="decimal">26</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">BevelFrame;X=0	Y=0	Height=51	Width=160	OuterBevelWidth=1	InnerBevelWidth=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">2</column>
+        <length type="decimal">78</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Send A Fax Message</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Send A Fax Message	X=2	Y=1	Height=3	Width=156	ForeColor=0	Bold=1	FontIncrease=5	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">2</column>
+        <length type="decimal">5</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">To:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=To:	X=2	Y=5	Height=2	Width=10	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">7</column>
+        <length type="decimal">24</length>
+        <window type="decimal">3</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">user.array</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Fill;Input=user.array	X=12	Y=5	Height=2	Width=48	ArrayLength=3	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">34</column>
+        <length type="decimal">9</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Subject:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Subject:	X=66	Y=5	Height=2	Width=18	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">43</column>
+        <length type="decimal">35</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">subject</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=subject	X=84	Y=5	Height=2	Width=70	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">34</column>
+        <length type="decimal">9</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Group:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Group:	X=66	Y=7	Height=2	Width=18	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">43</column>
+        <length type="decimal">30</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">user.group</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Fill;Input=user.group	X=84	Y=7	Height=2	Width=60	ArrayLength=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">34</column>
+        <length type="decimal">9</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Date:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Date:	X=66	Y=9	Height=2	Width=18	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">43</column>
+        <length type="decimal">15</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">date.to.send</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=date.to.send	X=84	Y=9	Height=2	Width=30	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">2</column>
+        <length type="decimal">78</length>
+        <window type="decimal">16</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Message</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Caption=Message	X=2	Y=12	Height=32	Width=156	ForeColor=0	ArrayLength=16	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">512</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">3</column>
+        <length type="decimal">76</length>
+        <window type="decimal">14</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">text</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">MultiText;Input=text	X=4	Y=14	Height=28	Width=152	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">23</line>
+        <column type="decimal">3</column>
+        <length type="decimal">10</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Cancel</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Cancel	X=4	Y=45	Height=4	Width=20	ButtonID=3	Bitmaps=Cancel	BalloonHelp= Cancel 	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">23</line>
+        <column type="decimal">15</column>
+        <length type="decimal">10</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Send</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Send	X=28	Y=45	Height=4	Width=20	ButtonID=995	Bitmaps=Print	BalloonHelp= Send Fax	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">lisa</editor>
+    <last.update type="dateTime">12/03/01 05:52:45</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">10</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">12/05/01 09:14:50</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

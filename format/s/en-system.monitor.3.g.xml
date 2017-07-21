@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;system.monitor.3.g&quot;" recordid="en - system.monitor.3.g">
+    <name mandatory="true" type="string">system.monitor.3.g</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">2</column>
+        <length type="decimal">44</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">System Monitor - IO Info</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=System Monitor - IO Info	X=2	Y=0	Height=2	Width=88	ForeColor=0	FontIncrease=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">48</column>
+        <length type="decimal">22</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">System Totals:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=System Totals:	X=94	Y=0	Height=2	Width=44	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">48</column>
+        <length type="decimal">22</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">CPU Time (seconds):</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=CPU Time (seconds):	X=94	Y=2	Height=2	Width=44	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">70</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">$L.cpu.time.system</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=	Input=$L.cpu.time.system	X=138	Y=2	Height=2	Width=26	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">48</column>
+        <length type="decimal">22</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Size of file3 (bytes):</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Size of file3 (bytes):	X=94	Y=4	Height=2	Width=44	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">70</column>
+        <length type="decimal">12</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">$L.filesize</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=	Input=$L.filesize	X=138	Y=4	Height=2	Width=24	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">48</column>
+        <length type="decimal">22</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Memory (bytes):</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Memory (bytes):	X=94	Y=6	Height=2	Width=44	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">70</column>
+        <length type="decimal">12</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">$L.memory.system</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=	Input=$L.memory.system	X=138	Y=6	Height=2	Width=24	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">48</column>
+        <length type="decimal">22</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Time:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Time:	X=94	Y=8	Height=2	Width=44	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">70</column>
+        <length type="decimal">8</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">$L.time</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=	Input=$L.time	X=138	Y=8	Height=2	Width=16	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4100</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">22</column>
+        <length type="decimal">140</length>
+        <window type="decimal">155</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Table;X=43	Y=11	Height=309	Width=280	Elastic=3	Columns=Name;Statements Evaluated;String Copies;Physical Reads;Physical Writes;Non-Keyed Queries;Screen IO	ReadOnly=1	InvertReadOnlyColors=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">name</input>
+        <output type="string">Name</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Column;Caption=Name	Input=name	X=0	Y=0	Column Width%=4	ButtonID=1000	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">eval</input>
+        <output type="string">Statements Evaluated</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Column;Caption=Statements Evaluated	Input=eval	X=0	Y=1	Column Width%=14.17	ButtonID=1000	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">stcopy</input>
+        <output type="string">String Copies</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Column;Caption=String Copies	Input=stcopy	X=0	Y=2	Column Width%=12.44	ButtonID=1000	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">read</input>
+        <output type="string">Physical Reads</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Column;Caption=Physical Reads	Input=read	X=0	Y=3	Column Width%=10.17	ButtonID=1000	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">write</input>
+        <output type="string">Physical Writes</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Column;Caption=Physical Writes	Input=write	X=0	Y=4	Column Width%=16	ButtonID=1000	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">non.keyed</input>
+        <output type="string">Non-Keyed Queries</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Column;Caption=Non-Keyed Queries	Input=non.keyed	X=0	Y=5	Column Width%=14	ButtonID=1000	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">screen.io</input>
+        <output type="string">Screen IO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Column;Caption=Screen IO	Input=screen.io	X=0	Y=7	Column Width%=4.63	ButtonID=1000	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">2</column>
+        <length type="decimal">19</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Main Info</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Main Info	X=2	Y=12	Height=3	Width=38	ButtonID=404	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">2</column>
+        <length type="decimal">19</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Grand Totals</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Grand Totals	X=2	Y=15	Height=3	Width=38	ButtonID=401	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">10</line>
+        <column type="decimal">2</column>
+        <length type="decimal">19</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">CPU Info</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=CPU Info	X=2	Y=18	Height=3	Width=38	ButtonID=402	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">11</line>
+        <column type="decimal">2</column>
+        <length type="decimal">19</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Shared Memory Info</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Shared Memory Info	X=2	Y=21	Height=3	Width=38	ButtonID=409	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">13</line>
+        <column type="decimal">2</column>
+        <length type="decimal">19</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Capture</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Capture	X=2	Y=24	Height=3	Width=38	ButtonID=406	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">14</line>
+        <column type="decimal">2</column>
+        <length type="decimal">19</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">View Capture</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=View Capture	X=2	Y=27	Height=3	Width=38	ButtonID=405	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">pbudic</editor>
+    <last.update type="dateTime">06/04/01 08:08:42</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">14</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">10/24/01 08:17:37</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

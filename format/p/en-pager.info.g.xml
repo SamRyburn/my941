@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;pager.info.g&quot;" recordid="en - pager.info.g">
+    <name mandatory="true" type="string">pager.info.g</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">80</length>
+        <window type="decimal">26</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">BevelFrame;X=0	Y=0	Height=51	Width=159	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">2</column>
+        <length type="decimal">77</length>
+        <window type="decimal">24</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Send A Page</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Caption= Send A Page 	X=3	Y=1	Height=48	Width=153	ForeColor=0	Bold=1	FontIncrease=2	ArrayLength=24	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">5</column>
+        <length type="decimal">33</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Contact/Operator Name</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Contact/Operator Name	X=8	Y=5	Height=2	Width=66	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">43</column>
+        <length type="decimal">31</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">HP Service Manager Group</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=HP Service Manager Group	X=85	Y=5	Height=2	Width=61	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">5</column>
+        <length type="decimal">33</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">contact.name</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;Input=contact.name	X=8	Y=7	Height=2	Width=66	TabStop=1	ValueList=$ax.page.contacts	BoxLines=6	ArrayLength=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">43</column>
+        <length type="decimal">33</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">sc.group</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;Input=sc.group	X=85	Y=7	Height=2	Width=66	ValueList=$ax.page.groups	BoxLines=6	ArrayLength=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">5</column>
+        <length type="decimal">38</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Pager Group (Overrides Contact/Operator Name)</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Pager Group (Overrides Contact/Operator Name)	X=8	Y=9	Height=2	Width=75	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">43</column>
+        <length type="decimal">34</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Destination (Overrides Pager Group)</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Destination (Overrides Pager Group)	X=85	Y=9	Height=2	Width=68	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">5</column>
+        <length type="decimal">33</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">pager.group</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=pager.group	X=8	Y=11	Height=2	Width=66	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">43</column>
+        <length type="decimal">33</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">pager.name</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=pager.name	X=85	Y=11	Height=2	Width=66	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">5</column>
+        <length type="decimal">72</length>
+        <window type="decimal">9</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Page by Number</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Caption= Page by Number	X=8	Y=14	Height=17	Width=143	ForeColor=0	ArrayLength=9	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">7</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Configuration/Type</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Configuration/Type	X=13	Y=17	Height=2	Width=36	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">10</line>
+        <column type="decimal">7</column>
+        <length type="decimal">66</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">pager.type</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=pager.type	X=13	Y=19	Height=2	Width=132	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">11</line>
+        <column type="decimal">7</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Vendor</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Vendor	X=13	Y=21	Height=2	Width=33	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">11</line>
+        <column type="decimal">43</column>
+        <length type="decimal">15</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Pin Number</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Pin Number	X=85	Y=21	Height=2	Width=29	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">12</line>
+        <column type="decimal">7</column>
+        <length type="decimal">26</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">pager.vendor</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=pager.vendor	X=13	Y=23	Height=2	Width=51	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">12</line>
+        <column type="decimal">43</column>
+        <length type="decimal">19</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">pager.pin</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=pager.pin	X=85	Y=23	Height=2	Width=37	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">13</line>
+        <column type="decimal">7</column>
+        <length type="decimal">15</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Phone Number</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Phone Number	X=13	Y=25	Height=2	Width=30	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">14</line>
+        <column type="decimal">7</column>
+        <length type="decimal">31</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">beeper.phone</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=beeper.phone	X=13	Y=27	Height=2	Width=61	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">17</line>
+        <column type="decimal">5</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Numeric Message</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Numeric Message	X=8	Y=32	Height=2	Width=36	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">17</line>
+        <column type="decimal">41</column>
+        <length type="decimal">36</length>
+        <window type="decimal">7</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Page Response</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Caption= Page Response	X=80	Y=32	Height=13	Width=71	ForeColor=0	ArrayLength=7	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">18</line>
+        <column type="decimal">5</column>
+        <length type="decimal">33</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">numeric.message</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=numeric.message	X=8	Y=34	Height=2	Width=66	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">18</line>
+        <column type="decimal">43</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Code</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Code	X=85	Y=35	Height=2	Width=39	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">19</line>
+        <column type="decimal">5</column>
+        <length type="decimal">21</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Alphanumeric Message</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Alphanumeric Message	X=8	Y=36	Height=2	Width=42	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">19</line>
+        <column type="decimal">43</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">pageresp.code</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=pageresp.code	X=85	Y=37	Height=2	Width=36	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">20</line>
+        <column type="decimal">5</column>
+        <length type="decimal">33</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">text.message</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=text.message	X=8	Y=38	Height=2	Width=66	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">20</line>
+        <column type="decimal">43</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Message</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Message	X=85	Y=39	Height=2	Width=25	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">21</line>
+        <column type="decimal">43</column>
+        <length type="decimal">31</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">pageresp.message</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=pageresp.message	X=85	Y=41	Height=2	Width=61	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">22</line>
+        <column type="decimal">5</column>
+        <length type="decimal">10</length>
+        <window type="decimal">3</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Send a Page Message</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Send a Page Message	X=8	Y=42	Height=5	Width=20	ButtonID=991	Bitmaps=pager	BalloonHelp=Send a Page Message	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">22</line>
+        <column type="decimal">18</column>
+        <length type="decimal">10</length>
+        <window type="decimal">3</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Cancel</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Cancel	X=35	Y=42	Height=5	Width=20	ButtonID=3	Bitmaps=cancel	BalloonHelp=Cancel	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">joeh</editor>
+    <last.update type="dateTime">10/08/03 07:45:14</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">14</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">10/16/03 08:26:19</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

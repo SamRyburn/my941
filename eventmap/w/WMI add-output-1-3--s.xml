@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="eventmap">
+  <record id="evmap=&quot;WMI add&quot; and evtype=&quot;output&quot; and evseq=1 and evindex=3" recordid="WMI add - output - 1 - 3">
+    <evmap type="string">WMI add</evmap>
+    <evindex type="decimal">3</evindex>
+    <evnullsub NullValue="1" type="string"/>
+    <evmaptyp NullValue="1" type="string"/>
+    <evfile type="string">device</evfile>
+    <evfield type="string">wmi.scandate</evfield>
+    <evcalc sctype="array">
+      <evcalc sctype="operator">wmi.scandate in $axces.target=nullsub(val(wmi.scandate in $axces.target, 3), wmi.scandate in $axces.target)</evcalc>
+    </evcalc>
+    <evtype type="string">output</evtype>
+    <evsepchar NullValue="1" type="string"/>
+    <evdtype type="decimal">3</evdtype>
+    <evquery NullValue="1" type="boolean"/>
+    <evxlate NullValue="1" type="string"/>
+    <evinit sctype="array">
+      <evinit sctype="operator">$L.temp=3 in $axces.fields;$L.date.fmt=get.dateformat()</evinit>
+      <evinit sctype="operator">$L.month=substr($L.temp, 1, 3);$L.day=substr($L.temp, 4, 6);$L.year=substr($L.temp, 7, 11);$L.time=substr($L.temp, 12, 20)</evinit>
+      <evinit sctype="operator">if ($L.date.fmt~=3) then (3 in $axces.fields=$L.day+"/"+$L.month+"/"+$L.year+" "+$L.time)</evinit>
+      <evinit sctype="operator">if ($L.date.fmt=3) then (3 in $axces.fields=$L.year+"/"+$L.month+"/"+$L.day+" "+$L.time)</evinit>
+    </evinit>
+    <evseq type="decimal">1</evseq>
+    <evlength NullValue="1" type="decimal"/>
+    <evitmlng NullValue="1" type="decimal"/>
+    <evmapcond type="boolean">true</evmapcond>
+    <eveltype NullValue="1" type="decimal"/>
+    <sysmodcount type="decimal">3</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">02/25/03 07:00:56</sysmodtime>
+    <evsepchar.struc NullValue="1" type="string"/>
+  </record>
+</recordset>

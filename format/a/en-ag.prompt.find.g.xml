@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;ag.prompt.find.g&quot;" recordid="en - ag.prompt.find.g">
+    <name mandatory="true" type="string">ag.prompt.find.g</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">80</length>
+        <window type="decimal">10</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">BevelFrame;X=0	Y=0	Height=20	Width=160	OuterBevelWidth=3	InnerBevelWidth=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">3</column>
+        <length type="decimal">76</length>
+        <window type="decimal">9</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Caption=	X=4	Y=1	Height=18	Width=152	ShadowStyle=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">4</column>
+        <length type="decimal">74</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">RAD String Search</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=RAD String Search	X=6	Y=3	Height=2	Width=148	ForeColor=0	Bold=1	Justification=2	FontIncrease=3	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">10</column>
+        <length type="decimal">16</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Search string:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Search string:	X=18	Y=7	Height=2	Width=32	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">26</column>
+        <length type="decimal">35</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">$fl.find.string</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=$fl.find.string	X=50	Y=7	Height=2	Width=70	MaxChars=41	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">10</column>
+        <length type="decimal">16</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">RAD Application:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=RAD Application:	X=18	Y=9	Height=2	Width=32	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">26</column>
+        <length type="decimal">35</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">$fl.appl.find.name</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=$fl.appl.find.name	X=50	Y=9	Height=2	Width=70	MaxChars=30	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">13</column>
+        <length type="decimal">13</length>
+        <window type="decimal">3</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Cancel</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Cancel	X=24	Y=13	Height=5	Width=25	ButtonID=3	Bitmaps=cancel	Push Bitmap=canceld	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">28</column>
+        <length type="decimal">8</length>
+        <window type="decimal">3</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Search</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Search	X=54	Y=13	Height=5	Width=15	ButtonID=1	Animated=1	Bitmaps=search;searchr	Push Bitmap=searchd	Speed=500	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">lisa</editor>
+    <last.update type="dateTime">04/20/99 08:40:25</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">12</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">10/24/01 08:16:31</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

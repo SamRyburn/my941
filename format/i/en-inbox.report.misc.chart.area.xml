@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;inbox.report.misc.chart.area&quot;" recordid="en - inbox.report.misc.chart.area">
+    <name mandatory="true" type="string">inbox.report.misc.chart.area</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">15</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Decimal Places:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Decimal Places:	?Caption=	?Visible=	ForeColor=0	Height=2	Name=	Visible=1	Width=30	X=1	Y=1		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">17</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$report.misc.decimalPlaces</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;Name=select1395141605561	AccessibleDescription=	AccessibleName=	?ReadOnly=[$L.is.inbox.manager]=false	?Visible=	Height=2	Name=select1395141605561	SelectOnly=1	Width=35	X=33	Y=1		Input=$report.misc.decimalPlaces	ValueList=0;1;2;3;4;5	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">39</column>
+        <length type="decimal">16</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Show Legend:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Show Legend:	?Caption=	?Visible=[stack.field]&lt;&gt;""	ForeColor=0	Height=2	Name=	Width=32	X=76	Y=1		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">56</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$chart.misc.legendPosition</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;AccessibleName=	ArrayLength=0	?Mandatory=	?ReadOnly=[$L.is.inbox.manager]=false	?Visible=[stack.field]&lt;&gt;""	Height=2	Name=	ReadOnly=0	SelectOnly=1	Width=35	X=110	Y=1		Input=$chart.misc.legendPosition	DisplayList=None;Top;Bottom;Left;Right	ValueList=none;top;bottom;left;right	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">1</column>
+        <length type="decimal">15</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Show Records:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Show Records:	?Caption=	?Visible=	ForeColor=0	Height=2	Name=	Visible=1	Width=30	X=1	Y=3		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">17</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$chart.misc.maxRow</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;%arse=0	AccessibleName=	ArrayLength=0	?Mandatory=	?ReadOnly=[$L.is.inbox.manager]=false	?Visible=	Height=2	Name=	MaxChars=0	ReadOnly=0	SelectOnly=1	Width=35	X=33	Y=3		Input=$chart.misc.maxRow	DisplayList=All;1;2;3;4;5;6;7;8;9;10;11;12;15;20;25;50	ValueList=0;1;2;3;4;5;6;7;8;9;10;11;12;15;20;25;50	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">1</column>
+        <length type="decimal">15</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Show Group By Records:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Show Group By Records:	?Caption=	?Visible=[stack.field]&lt;&gt;""	Height=2	Name=	Visible=1	Width=30	X=1	Y=5		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">17</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$chart.misc.maxStackedRow</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;%arse=0	AccessibleName=	ArrayLength=0	?Caption=	?Mandatory=	?ReadOnly=[$L.is.inbox.manager]=false	?Visible=[stack.field]&lt;&gt;""	Height=2	Name=	MaxChars=0	ReadOnly=0	SelectOnly=1	Visible=1	Width=35	X=33	Y=5		Input=$chart.misc.maxStackedRow	DisplayList=All;1;2;3;4;5;6;7;8;9;10;11;12;15;20;25;50	ValueList=0;1;2;3;4;5;6;7;8;9;10;11;12;15;20;25;50	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">17</column>
+        <length type="decimal">18</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$chart.misc.supportTopN</input>
+        <output type="string">Support Top N</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;AccessibleName=	ArrayLength=1	?Caption=	?ReadOnly=[$L.is.inbox.manager]=false	?Visible=[stack.field]="" &amp; [chart.type]&lt;&gt;"stackedhbar" &amp; [chart.type]&lt;&gt;"stackedvbar" &amp; [chart.type]&lt;&gt;"line" &amp; [chart.type]&lt;&gt;"area" &amp; [chart.model]&lt;&gt;"calc"	ForeColor=0	Height=2	Name=	Visible=0	Width=35	X=33	Y=7	Caption=Support Top N		Input=$chart.misc.supportTopN	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">falcon</editor>
+    <last.update type="dateTime">06/03/15 21:42:21</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:00:35</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

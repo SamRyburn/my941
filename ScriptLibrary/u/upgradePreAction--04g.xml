@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;upgradePreAction&quot;" recordid="upgradePreAction">
+    <name type="string">upgradePreAction</name>
+    <script type="string">function executePreActionUpdate() {
+	// stop inactivity timer
+	stopInactivityTimer();
+	
+	lib.upgradeLanguage.fixLanguages();
+
+    updateWorkflowPhase();
+    updateWorkflowHistory();
+    updateCm3rCatPhase();
+    updateAllScmessages();
+    
+    if (lib.upgradeVersionUtil.getPdVersion()=="") {
+        updateSecRights();
+        updateSecRole();
+    }
+    
+    lib.upgradeCommonHelper.fixSystemData();
+    
+    updateSqldbinfo();
+    
+	// update "cm3t" dbdict because some OOB version is incorrect
+	lib.upgradeDbdictMerge.sortDbdictFieldIndex("cm3t", 1);
+	
+	// delete "kmquery" dbdict because the structure is incorrect if customer added new kmknowledgebase record
+  	lib.upgradeLog.detail("Delete dbdict kmquery.");
+	var fDbdict = new SCFile("dbdict");
+	var rc = fDbdict.doSelect("name=\"kmquery\"");
+	if (rc == RC_SUCCESS) {
+		fDbdict.doDelete();
+	}    
+}
+
+
+/**
+ * Stop inactivity timer
+ */
+function stopInactivityTimer()
+{
+	if (lib.upgradeCommonHelper.isValidScriptLibrary("InactiveTimerSetup"))
+	{
+		var info = lib.InactiveTimerSetup.getInfo();
+		var process = info.process_start_infos;
+		var status = process[0][1][0];
+	
+		if (status == "active")
+		{
+			lib.upgradeLog.detail("Stop Inactivity Timer.");
+			lib.InactiveTimerSetup.stopInactiveTimer();
+		}
+	}
+}
+
+
+function updateWorkflowPhase(){
+  lib.upgradeLog.upgrade("Update WorkflowPhase.");
+  lib.upgradeLog.detail("Update WorkflowPhase.");
+  
+  var dbdict=lib.upgradeUtility.getRecord("dbdict", "name=\"WorkflowPhase\"");
+  if (dbdict==null) {
+      return;
+  }
+  
+  var record = new SCFile("WorkflowPhase");
+  var rc = record.doSelect("tableName#\"cm3\"");
+  
+  while ( rc == RC_SUCCESS ){
+
+	  var i;
+	  
+      if(record['phaseName'] ==="closed"){
+   
+          record['phaseName'] = "Closed";
+      
+          record.doUpdate();
+      
+          lib.upgradeLog.detail("Workflow Phase " + record['phaseName'] + " of " + "Workflow " + record['workflowName'] + " is updated from \"closed\" to \"Closed\""); 
+      
+      }
+  
+	  if(record['manualTransition'] !=null &amp;&amp; system.functions.lng(record['manualTransition'])&gt;0){
+		
+			for(i=0 ;i&lt; system.functions.lng(record['manualTransition']); i++){
+			   if(record['manualTransition'][i]['mtToPhase']!=null &amp;&amp; record['manualTransition'][i]['mtToPhase']==="closed" ){
+			
+			  	 record['manualTransition'][i]['mtToPhase']="Closed";
+			  	 
+			  	 record.doUpdate();
+			  	 
+			     lib.upgradeLog.detail("toPhase field in Manual transition in Workflow Phase " + record['phaseName'] + " of " + "Workflow " + record['workflowName'] + " is updated from \"closed\" to \"Closed\""); 
+			   }
+			
+			}
+		
+		}
+		
+	    if(record['autoTransition'] !=null &amp;&amp; system.functions.lng(record['autoTransition'])&gt;0){
+		
+			for(i=0 ;i&lt; system.functions.lng(record['autoTransition']) ; i++){
+			   if(record['autoTransition'][i]['atToPhase']!=null &amp;&amp; record['autoTransition'][i]['atToPhase']==="closed" ){
+			
+			  	  record['autoTransition'][i]['atToPhase']="Closed";
+			  	  
+			  	  record.doUpdate();
+			   
+			      lib.upgradeLog.detail("toPhase field in Auto transition in Workflow Phase " + record['phaseName'] + " of " + "Workflow " + record['workflowName'] + " is updated from \"closed\" to \"Closed\""); 
+			   }
+			
+		     }
+	
+	      }
+  
+     rc = record.getNext();
+   }
+
+}
+
+function updateWorkflowHistory(){
+  lib.upgradeLog.upgrade("Update WorkflowHistory.");
+  lib.upgradeLog.detail("Update WorkflowHistory.");
+  
+  var dbdict=lib.upgradeUtility.getRecord("dbdict", "name=\"WorkflowHistory\"");
+  if (dbdict==null) {
+      return;
+  }
+  
+  var record = new SCFile("WorkflowHistory");
+  var rc = record.doSelect("linkedTableName#\"cm3\"");
+  
+  while ( rc == RC_SUCCESS ){
+	if(record['fromPhase'] == "closed"){
+		record['fromPhase']="Closed";
+		record.doUpdate();
+		lib.upgradeLog.detail("fromPhase field in WorkflowHistory " +  record['id'] + " is updated from \"closed\" to \"Closed\""); 
+	}
+	
+	if(record['toPhase'] == "closed"){
+		record['toPhase']="Closed"; 
+		record.doUpdate();
+		lib.upgradeLog.detail("toPhase field in WorkflowHistory " +  record['id'] + " is updated from \"closed\" to \"Closed\""); 
+	}
+	
+	
+	rc = record.getNext();
+  }
+
+}
+
+function updateCm3rCatPhase(){
+  lib.upgradeLog.upgrade("Update cm3rcatphase.");
+  lib.upgradeLog.detail("Update cm3rcatphase.");
+  
+  var record = new SCFile("cm3rcatphase");
+  var rc = record.doSelect("name=\"closed\"");
+  
+  if ( rc == RC_SUCCESS ){
+        var findRecord = lib.c.$("cm3rcatphase", SCFILE_READONLY).setFields(["name"]).select("name=\"Closed\"").uniqueResult();
+         if (findRecord == null) {	
+		    record["name"] = "Closed";
+			record.doUpdate();
+			lib.upgradeLog.detail("cm3rcatphase is updated from \"closed\" to \"Closed\"");
+	    }
+  }
+		
+}
+
+function updateAllScmessages() {
+    lib.upgradeLog.upgrade("Update scmessage.");
+    lib.upgradeLog.detail("Update scmessage.");
+    var activedSupportedLanguages = lib.upgradeLanguage.getActivedSupportedLanguages();
+    for (var i=0; i&lt;activedSupportedLanguages.length; i++) {
+        updateScmessage(activedSupportedLanguages[i]);
+    }
+}
+
+function updateScmessage(language){
+  lib.upgradeLog.detail("Update scmessage for "+language);
+  
+  var record = new SCFile("scmessage");
+  var rc = record.doSelect("class=\"local:WorkflowPhase\" and message.id#\"closed\" and syslanguage=\""+language+"\"");
+  
+  while ( rc == RC_SUCCESS ){
+	if(record['message.id'].indexOf("cm3t")!==-1 ||  record['message.id'].indexOf("cm3r")!==-1){
+		record['message.id']=record['message.id'].replace("closed","Closed");
+		if(record['message'] ==="closed"){
+		   record['message'] ="Closed";
+		}
+		record.doUpdate();
+		lib.upgradeLog.detail("update from \"closed\" to \"Closed\" in scmessage \"" + record['message.id']  + "\"");
+	}
+	
+	rc = record.getNext();
+
+   }
+}
+
+function updateSecRights() {
+    if (lib.upgradeCommonHelper.isValidTable("secRights")) {
+        lib.upgradeLog.upgrade("Update secRights.");
+        lib.upgradeLog.detail("Update secRights.");
+        
+        var right = new SCFile("secRights");
+        var rc = right.doSelect("role=\"default\"");
+        while (rc == RC_SUCCESS) {
+            if (right["role"] == "default") {
+                right["role"] = "DEFAULT";
+                right.doUpdate();
+            }
+            rc = right.getNext();
+        }
+    }
+}
+
+function updateSecRole() {
+    if (lib.upgradeCommonHelper.isValidTable("secRole")) {
+        lib.upgradeLog.upgrade("Update secRole.");
+        lib.upgradeLog.detail("Update secRole.");
+        
+        var role = new SCFile("secRole");
+        var rc = role.doSelect("name=\"default\"");
+        while (rc == RC_SUCCESS) {
+            if (role["name"] == "default") {
+                role["name"] = "DEFAULT";
+                role.doUpdate();
+            }
+            rc = role.getNext();
+        }
+    }
+}
+
+function updateSqldbinfo() {
+    if (lib.upgradeDatabaseFieldTypeUpdate.getDbType() != 0) {
+        return;
+    }
+    
+    var sqldbinfo = lib.upgradeUtility.getRecord("sqldbinfo", "sql.db.type=\"sqlserver\"");
+    if (sqldbinfo != null) {
+        if (sqldbinfo["max.row.size"] == null || sqldbinfo["max.row.size"] != 0) {
+            sqldbinfo["max.row.size"] = 0;
+            var rc = sqldbinfo.doUpdate();
+            if (rc == RC_SUCCESS) {
+                lib.upgradeLog.detail("The field max.row.size of sqldbinfo sqlserver is updated to 0.");
+            }
+        }
+    }
+}</script>
+    <package type="string">Upgrade</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:45</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

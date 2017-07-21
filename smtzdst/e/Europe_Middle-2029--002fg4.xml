@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="smtzdst">
+  <record id="tzname=&quot;Europe/Middle&quot; and dstyear=2029" recordid="">
+    <tzname type="string">Europe/Middle</tzname>
+    <dstyear type="decimal">2029</dstyear>
+    <dstbegin type="dateTime">03/24/29 20:00:00</dstbegin>
+    <dstend type="dateTime">10/27/29 21:00:00</dstend>
+    <isdst type="decimal">1</isdst>
+  </record>
+</recordset>

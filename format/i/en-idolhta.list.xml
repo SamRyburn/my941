@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;idolhta.list&quot;" recordid="en - idolhta.list">
+    <name mandatory="true" type="string">idolhta.list</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">70</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Hot Topic Analytics</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Hot Topic Analytics	BackColor=12	Bold=1	?Caption=	FontIncrease=4	ForeColor=10	Height=2	Name=	Width=140	X=0	Y=0		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">1</column>
+        <length type="decimal">70</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Edit configuration and run index action using this form.</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Edit configuration and run index action using this form.	?Caption=	?Visible=	ForeColor=4	Height=2	Name=	labelfor=	Width=140	X=0	Y=2		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">2</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Add Configuration</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Add Configuration	Name=label1401870186098	Bold=1	Font=6	Height=2	Name=label1401870186098	Width=40	X=3	Y=5		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">2</column>
+        <length type="decimal">25</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$idol.hta.table.name</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;Name=select1401780345919	AccessibleDescription=	AccessibleName=	Height=2	Name=select1401780345919	Data Changed Event=83	SelectOnly=1	Width=50	X=3	Y=7		Input=$idol.hta.table.name	DisplayList=	ValueList=$G.files	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">28</column>
+        <length type="decimal">10</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Add</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Add	Name=button1401764751716	ButtonID=11	Height=2	Name=button1401764751716	Width=20	X=54	Y=7		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">2</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Current Configuration List</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Current Configuration List	Bold=1	Font=6	Height=2	Name=	Width=40	X=3	Y=14		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">39</column>
+        <length type="decimal">10</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Start Index</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Start Index	Name=button1402042389750	ButtonID=81	Height=2	Name=button1402042389750	Width=20	X=76	Y=14		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">50</column>
+        <length type="decimal">10</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Stop Index</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Stop Index	Name=button1402042449650	ButtonID=82	?Caption=	Height=2	Name=button1402042449650	Width=20	X=98	Y=14		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">61</column>
+        <length type="decimal">11</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Refresh Status</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Refresh Status	Name=button1402042492380	ButtonID=12	Height=2	Name=button1402042492380	Width=22	X=120	Y=14		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4100</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">2</column>
+        <length type="decimal">70</length>
+        <window type="decimal">8</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Table;Columns=Module Name;Index Status;Last Index Time	Name=table1401762877718	?Bold=	?Italic=	Font=6	Height=15	Name=table1401762877718	ReadOnly=1	DoubleClickButtonID=80	DoubleClickField=$htalist.tablenames	Width=140	X=3	Y=16		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">6</column>
+        <length type="decimal">1</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$htalist.tablenames</input>
+        <output type="string">Module Name</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Column;		Caption=Module Name		Column Width%=28.2			ValueList=$G.scm.files	DisplayList=$G.scm.files.display	Input=$htalist.tablenames	Y=10	X=10	ButtonID=1000	Name=input1430732998945	scType=ComboBox		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">6</column>
+        <length type="decimal">1</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$htalist.indexstatus</input>
+        <output type="string">Index Status</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Column;		Caption=Index Status		Column Width%=23.4			Input=$htalist.indexstatus	Y=10	X=10	ButtonID=1000	Name=input1430732998947	scType=Text		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">6</column>
+        <length type="decimal">1</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$htalist.lastindextimes</input>
+        <output type="string">Last Index Time</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Column;	=		Caption=Last Index Time		Column Width%=48.4			Input=$htalist.lastindextimes	Y=10	X=10	ButtonID=1000	AccessibleName=	Name=input1430733164619	scType=Text		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">falcon</editor>
+    <last.update type="dateTime">07/22/15 17:04:48</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:00:34</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

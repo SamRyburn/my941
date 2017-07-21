@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="settings">
+  <record id="name=&quot;Condition Editor&quot;" recordid="Condition Editor">
+    <name type="string">Condition Editor</name>
+    <module type="string">Administration</module>
+    <area type="string">Tailoring</area>
+    <settingId sctype="array">
+      <settingId sctype="string">display.systemfields</settingId>
+      <settingId sctype="string">display.deprecatedfields</settingId>
+      <settingId sctype="string">suggested.max.task.number</settingId>
+    </settingId>
+    <settingValue sctype="array">
+      <settingValue sctype="string">true</settingValue>
+      <settingValue sctype="string">true</settingValue>
+      <settingValue sctype="string">10</settingValue>
+    </settingValue>
+    <temp NullValue="1" type="string"/>
+    <link NullValue="1" type="string"/>
+  </record>
+</recordset>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;Test_ScAPI_WSInterface_Catalog&quot;" recordid="Test_ScAPI_WSInterface_Catalog">
+    <name type="string">Test_ScAPI_WSInterface_Catalog</name>
+    <script type="string">/*
+ * Unit test for Test_ScAPI_WebService_Interface
+ */
+
+function Test_ScAPI_WSInterface_Catalog() {}
+
+Test_ScAPI_WSInterface_Catalog.prototype = {
+	
+    setup: function () {
+    	
+    	
+    },
+
+    teardown:function () {
+    	vars.$L_file = null;
+    },
+
+   	testGetCatalogList: function () {
+	   	//Story 1  Retrieve the top level catalog categories of the specified user
+	   	//xingjia  only can retrieve item with 'svcCatEmployeeRequester' permission.
+	   	
+		//get the first level catalog list by falcon;
+		vars.$L_file = new SCFile("svcCatalogAPI");
+   		this._story1("falcon",4);   		
+   		
+   		//by another user 
+   		vars.$L_file = new SCFile("svcCatalogAPI");
+   		this._story1("xingjia",2);
+   		
+   		
+   		//Story 2 Retrieve the categories and items by a parent category
+   		
+   		//By falcon
+   		vars.$L_file = new SCFile("svcCatalogAPI");
+   		vars.$L_file.requestFor = "falcon";
+   		vars.$L_file.parentCategory = "Application Support";
+   		lib.ScAPI_WSInterface_Catalog.getCatalogList();   
+   		
+   		var find = false;
+   		for (var i in vars.$L_file.catalogList) {
+   			if (vars.$L_file.catalogList[i].name == "License Management") {
+   				find = true;
+   				lib.SMTFCore.assertEquals(vars.$L_file.catalogList[i].cost,"$ 1.00"); 
+   				lib.SMTFCore.assertEquals(vars.$L_file.catalogList[i].type,"item"); 
+   			}
+   		}
+   		
+   		lib.SMTFCore.assertEquals(true,find);
+   		
+	   	vars.$L_file = new SCFile("svcCatalogAPI");
+   		vars.$L_file.requestFor = "xingjia";
+   		vars.$L_file.parentCategory = "Application Support";
+   		lib.ScAPI_WSInterface_Catalog.getCatalogList();   
+   		
+   		var find = false;
+   		for (var i in vars.$L_file.catalogList) {
+   			if (vars.$L_file.catalogList[i].name == "License Management") {
+   				find = true;
+   				lib.SMTFCore.assertEquals(vars.$L_file.catalogList[i].cost,"$ 1.00"); 
+   				lib.SMTFCore.assertEquals(vars.$L_file.catalogList[i].type,"item"); 
+   			}
+   		}
+   		
+   		lib.SMTFCore.assertEquals(false,find);
+   		
+   	},
+   	
+   	_story1: function(requestFor,expectedValue) {
+   		vars.$L_file.requestFor = requestFor;
+   		vars.$L_file.parentCategory = null;   		
+   		lib.ScAPI_WebService_Interface.getCatalogList();   		
+   		lib.SMTFCore.assertEquals(vars.$L_file.totalItems,expectedValue); 
+   		
+   	} 
+   	
+   	
+
+}</script>
+    <package type="string">ScAPI</package>
+    <sysmodtime type="dateTime">11/15/09 15:19:45</sysmodtime>
+    <sysmoduser type="string">xingjia</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

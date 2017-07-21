@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;problemManagement&quot;" recordid="problemManagement">
+    <name type="string">problemManagement</name>
+    <script type="string">function checkOpenChanges( problemNumber )
+{
+  /**
+    * Returns a boolean value that represents whether or not the specified
+    * Problem record has any open related Changes (RFC's).
+    * &lt;p&gt;
+    *
+    * @param  problemNumber  a string representing the ID of the Problem in quesiton
+    * @return      Returns true if there are open related changes, otherwise returns false
+    */
+
+  var relation = new SCFile("screlation");
+
+  if ( relation.doSelect("source=\"" + problemNumber + "\" and " +
+                      "source.filename=\"knownerror\" and "+
+                      "depend.filename=\"cm3r\" and "+
+                      "depend.active = true" ) == RC_SUCCESS )
+  {
+    
+    return true;
+  };
+
+  return false;
+}
+
+function getNextPhase( phaseName, category, categoryFile )
+{
+  // Give the current phase and category of the Problem, this function will return the name of the next phase.
+  // If there is no next phase, or the current phase is not valid, it will return the current phase name.
+
+  var phaseList = new SCFile(categoryFile);
+  if ( phaseList.doSelect("name=\"" + category + "\"" ) == RC_SUCCESS )
+  {
+    phaseList.phases= system.functions.denull(phaseList.phases);
+    for (var i=0; i&lt;phaseList.phases.length(); i++)
+    {
+      if (phaseList.phases[i] == phaseName &amp;&amp; phaseList.phases[i + 1] != null &amp;&amp;
+                                              phaseList.phases[i + 1] != undefined )
+        return phaseList.phases[i + 1];
+    }
+  }
+
+  return phaseName;
+}
+
+
+function getPreviousPhase( phaseName, category, categoryFile )
+{
+  // Give the current phase and category of the Problem, this function will return the name of the previous phase.
+  // If there is no previous phase, or the current phase is not valid, it will return the current phase name.
+
+  var phaseList = new SCFile(categoryFile);
+  if ( phaseList.doSelect("name=\"" + category + "\"" ) == RC_SUCCESS )
+  {
+    phaseList.phases= system.functions.denull(phaseList.phases);
+    for (var i=phaseList.phases.length()-1; i&gt;=0; i--)
+    {
+      if (phaseList.phases[i] == phaseName &amp;&amp; phaseList.phases[i - 1] != null &amp;&amp;
+                                              phaseList.phases[i - 1] != undefined )
+        return phaseList.phases[i - 1];
+    }
+  }
+
+  return phaseName;
+}
+
+function getLastPhase( category, categoryFile )
+{
+ //This function will get the last phase of any given category
+ var phaseList = new SCFile(categoryFile);
+ if ( phaseList.doSelect("name=\"" + category + "\"" ) == RC_SUCCESS )
+ {
+  phaseList.phases= system.functions.denull(phaseList.phases);
+  var phaseLength=phaseList.phases.length();
+  return phaseList.phases[phaseLength-1];
+    }
+ return null;
+}
+
+function getFirstPhase( category, categoryFile  )
+{
+  //This function will get the first phase of any given category
+  var phaseList = new SCFile( categoryFile );
+  if ( phaseList.doSelect("name=\"" + category + "\"" ) == RC_SUCCESS )
+    {
+      phaseList.phases= system.functions.denull(phaseList.phases);
+      return phaseList.phases[0];
+    }
+      return null;
+}
+
+function getParentDueDate( parentID )
+{
+  //This function gets the expected.resolution.time of the parent problem of task
+  var parentProblem = new SCFile( "rootcause" );
+  if ( parentProblem.doSelect("id=\"" + parentID +"\"" ) == RC_SUCCESS )
+     {
+       return parentProblem.expected_resolution_time;
+     }
+       return null;
+}
+
+function getKnownErrorDueDate( parentID )
+{
+  //This function gets the expected.resolution.time of the parent known error of task
+  var parentError = new SCFile( "knownerror" );
+  if ( parentError.doSelect("id=\"" + parentID +"\"" ) == RC_SUCCESS )
+     {
+       return parentError.expected_resolution_time;
+     }
+       return null;
+}
+
+/*
+	This function checks to see if there are any open Known Error Tasks open on a
+	specified Known Error. The output is either 'false', if there are no (more) open
+	tasks, or 'true', if there are still tasks outstanding. The input is the
+	 KnownError ID.
+	
+	This function is called from the rca.close Process.
+*/
+
+function checkOpenTasks( ErrorID )
+{
+	var fket = new SCFile( "knownerrortask" );
+	var sql = "parent.error=\"" + ErrorID + "\" and status~=\"Closed\"";
+	
+	if (fket.doSelect( sql ) == RC_SUCCESS)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+
+/**
+ * This function is called by RAD us.save.relation, while determine the message strings.
+ * @param  {String} type the type of screlationtype record
+ */
+function getTypeString(type){
+
+	if(!type) type="pbm";
+	if(type===" " || type==="rootcause") type="pbm";
+	if(type==="pbm") return system.functions.scmsg(50,"rc");
+	if(type==="ke") return system.functions.scmsg(51,"rc");
+
+}
+
+/**
+ * This function is called by RAD AdvFind.setup:setup.advFind, while building the advFind list variables.
+ * When it is on PD, replace the table display name with "Problem/Known Error".
+ */
+function replaceAdvFindName(){
+
+	var i = lib.ArrayUtil.indexOf(vars.$L_advFind_tables,"rootcause");
+	if(i != -1) vars.$L_advFind_names[i] = system.functions.scmsg("rootcause_pd_queue","tablename");
+
+}</script>
+    <package type="string">ProblemManagement</package>
+    <sysmodtime type="dateTime">07/16/14 17:21:49</sysmodtime>
+    <sysmoduser type="string">huanghao</sysmoduser>
+    <sysmodcount type="decimal">28</sysmodcount>
+    <prgnsystem type="boolean">true</prgnsystem>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

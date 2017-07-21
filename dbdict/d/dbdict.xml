@@ -1,0 +1,1180 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="dbdict">
+  <record id="name=&quot;dbdict&quot;" recordid="dbdict">
+    <unl>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</unl>
+    <name type="string">dbdict</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <name type="string">descriptor</name>
+        <level type="decimal">0</level>
+        <index type="decimal">1</index>
+        <type type="decimal">9</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias type="string">m1</sql.table.alias>
+          <sql.column.name type="string">DESCRIPTOR</sql.column.name>
+          <sql.data.type type="string">IMAGE</sql.data.type>
+          <sql.rcformat type="boolean">true</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">name</name>
+        <level type="decimal">1</level>
+        <index type="decimal">3</index>
+        <type type="decimal">2</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias type="string">m1</sql.table.alias>
+          <sql.column.name type="string">NAME</sql.column.name>
+          <sql.data.type type="string">VARCHAR(100)</sql.data.type>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">field</name>
+        <level type="decimal">1</level>
+        <index type="decimal">1</index>
+        <type type="decimal">8</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">field</name>
+        <level type="decimal">2</level>
+        <index type="decimal">1</index>
+        <type type="decimal">9</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">name</name>
+        <level type="decimal">3</level>
+        <index type="decimal">1</index>
+        <type type="decimal">2</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">level</name>
+        <level type="decimal">3</level>
+        <index type="decimal">2</index>
+        <type type="decimal">1</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">index</name>
+        <level type="decimal">3</level>
+        <index type="decimal">3</index>
+        <type type="decimal">1</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">type</name>
+        <level type="decimal">3</level>
+        <index type="decimal">4</index>
+        <type type="decimal">1</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">structure</name>
+        <level type="decimal">3</level>
+        <index type="decimal">5</index>
+        <type type="decimal">2</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">db2.field.name</name>
+        <level type="decimal">3</level>
+        <index type="decimal">6</index>
+        <type type="decimal">2</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">db2.length</name>
+        <level type="decimal">3</level>
+        <index type="decimal">7</index>
+        <type type="decimal">1</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">sql.field.options</name>
+        <level type="decimal">3</level>
+        <index type="decimal">8</index>
+        <type type="decimal">9</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">sql.table.alias</name>
+        <level type="decimal">4</level>
+        <index type="decimal">1</index>
+        <type type="decimal">2</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">sql.column.name</name>
+        <level type="decimal">4</level>
+        <index type="decimal">2</index>
+        <type type="decimal">2</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">sql.data.type</name>
+        <level type="decimal">4</level>
+        <index type="decimal">3</index>
+        <type type="decimal">2</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">sql.rcformat</name>
+        <level type="decimal">4</level>
+        <index type="decimal">4</index>
+        <type type="decimal">4</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">structure.array.options</name>
+        <level type="decimal">3</level>
+        <index type="decimal">9</index>
+        <type type="decimal">9</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">sa.unique.key</name>
+        <level type="decimal">4</level>
+        <index type="decimal">1</index>
+        <type type="decimal">4</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">sa.unique.filename</name>
+        <level type="decimal">4</level>
+        <index type="decimal">2</index>
+        <type type="decimal">2</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">sa.attribute.file</name>
+        <level type="decimal">4</level>
+        <index type="decimal">3</index>
+        <type type="decimal">2</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">temporal</name>
+        <level type="decimal">4</level>
+        <index type="decimal">4</index>
+        <type type="decimal">4</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">key</name>
+        <level type="decimal">1</level>
+        <index type="decimal">2</index>
+        <type type="decimal">8</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">key</name>
+        <level type="decimal">2</level>
+        <index type="decimal">1</index>
+        <type type="decimal">9</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">flags</name>
+        <level type="decimal">3</level>
+        <index type="decimal">1</index>
+        <type type="decimal">1</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">name</name>
+        <level type="decimal">3</level>
+        <index type="decimal">2</index>
+        <type type="decimal">8</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">name</name>
+        <level type="decimal">4</level>
+        <index type="decimal">1</index>
+        <type type="decimal">2</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">reference</name>
+        <level type="decimal">3</level>
+        <index type="decimal">3</index>
+        <type type="decimal">2</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">index.file</name>
+        <level type="decimal">1</level>
+        <index type="decimal">4</index>
+        <type type="decimal">1</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">index.rec.len</name>
+        <level type="decimal">1</level>
+        <index type="decimal">5</index>
+        <type type="decimal">1</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">index.pools</name>
+        <level type="decimal">1</level>
+        <index type="decimal">6</index>
+        <type type="decimal">8</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">index.pools</name>
+        <level type="decimal">2</level>
+        <index type="decimal">1</index>
+        <type type="decimal">1</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">data.file</name>
+        <level type="decimal">1</level>
+        <index type="decimal">7</index>
+        <type type="decimal">1</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">data.rec.len</name>
+        <level type="decimal">1</level>
+        <index type="decimal">8</index>
+        <type type="decimal">1</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">data.pools</name>
+        <level type="decimal">1</level>
+        <index type="decimal">9</index>
+        <type type="decimal">8</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">data.pools</name>
+        <level type="decimal">2</level>
+        <index type="decimal">1</index>
+        <type type="decimal">1</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">root.record</name>
+        <level type="decimal">1</level>
+        <index type="decimal">10</index>
+        <type type="decimal">1</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">sql.tables</name>
+        <level type="decimal">1</level>
+        <index type="decimal">11</index>
+        <type type="decimal">8</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">sql.tables</name>
+        <level type="decimal">2</level>
+        <index type="decimal">1</index>
+        <type type="decimal">9</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">sql.db.type</name>
+        <level type="decimal">3</level>
+        <index type="decimal">1</index>
+        <type type="decimal">2</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">sql.table.name</name>
+        <level type="decimal">3</level>
+        <index type="decimal">2</index>
+        <type type="decimal">2</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">sql.table.alias</name>
+        <level type="decimal">3</level>
+        <index type="decimal">3</index>
+        <type type="decimal">2</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">sql.lookup.table.keys</name>
+        <level type="decimal">3</level>
+        <index type="decimal">4</index>
+        <type type="decimal">8</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">sql.lookup.table.keys</name>
+        <level type="decimal">4</level>
+        <index type="decimal">1</index>
+        <type type="decimal">9</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">sql.lookup.field</name>
+        <level type="decimal">5</level>
+        <index type="decimal">1</index>
+        <type type="decimal">2</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">sql.lookup.column</name>
+        <level type="decimal">5</level>
+        <index type="decimal">2</index>
+        <type type="decimal">2</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">sql.table.options</name>
+        <level type="decimal">3</level>
+        <index type="decimal">5</index>
+        <type type="decimal">8</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">sql.table.options</name>
+        <level type="decimal">4</level>
+        <index type="decimal">1</index>
+        <type type="decimal">2</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">file.options</name>
+        <level type="decimal">1</level>
+        <index type="decimal">12</index>
+        <type type="decimal">9</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">shadow</name>
+        <level type="decimal">2</level>
+        <index type="decimal">1</index>
+        <type type="decimal">4</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">reselect</name>
+        <level type="decimal">2</level>
+        <index type="decimal">2</index>
+        <type type="decimal">4</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">case.insensitive</name>
+        <level type="decimal">1</level>
+        <index type="decimal">13</index>
+        <type type="decimal">4</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">sysmodtime</name>
+        <level type="decimal">1</level>
+        <index type="decimal">14</index>
+        <type type="decimal">3</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">sysmoduser</name>
+        <level type="decimal">1</level>
+        <index type="decimal">15</index>
+        <type type="decimal">2</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+      <field sctype="structure">
+        <name type="string">sysmodcount</name>
+        <level type="decimal">1</level>
+        <index type="decimal">16</index>
+        <type type="decimal">1</type>
+        <structure NullValue="1" type="string"/>
+        <db2.field.name NullValue="1" type="string"/>
+        <db2.length NullValue="1" type="decimal"/>
+        <sql.field.options sctype="structure">
+          <sql.table.alias NullValue="1" type="string"/>
+          <sql.column.name NullValue="1" type="string"/>
+          <sql.data.type NullValue="1" type="string"/>
+          <sql.rcformat type="boolean">false</sql.rcformat>
+        </sql.field.options>
+        <structure.array.options sctype="structure">
+          <sa.unique.key NullValue="1" type="boolean"/>
+          <sa.unique.filename NullValue="1" type="string"/>
+          <sa.attribute.file NullValue="1" type="string"/>
+          <temporal NullValue="1" type="boolean"/>
+        </structure.array.options>
+      </field>
+    </field>
+    <key sctype="array">
+      <key sctype="structure">
+        <flags type="decimal">12</flags>
+        <name sctype="array">
+          <name sctype="string">name</name>
+        </name>
+        <reference NullValue="1" type="string"/>
+      </key>
+    </key>
+    <index.file NullValue="1" type="decimal"/>
+    <index.rec.len NullValue="1" type="decimal"/>
+    <index.pools NullValue="1" sctype="array">
+      <index.pools NullValue="1" type="decimal"/>
+    </index.pools>
+    <data.file NullValue="1" type="decimal"/>
+    <data.rec.len NullValue="1" type="decimal"/>
+    <data.pools NullValue="1" sctype="array">
+      <data.pools NullValue="1" type="decimal"/>
+    </data.pools>
+    <root.record type="decimal">-1</root.record>
+    <sql.tables sctype="array">
+      <sql.tables sctype="structure">
+        <sql.db.type type="string">sqlserver</sql.db.type>
+        <sql.table.name type="string">DBDICTM1</sql.table.name>
+        <sql.table.alias type="string">m1</sql.table.alias>
+        <sql.lookup.table.keys sctype="string"/>
+        <sql.table.options sctype="string"/>
+      </sql.tables>
+    </sql.tables>
+    <file.options sctype="structure">
+      <shadow type="boolean">false</shadow>
+      <reselect type="boolean">false</reselect>
+    </file.options>
+    <case.insensitive type="boolean">true</case.insensitive>
+    <sysmodtime type="dateTime">07/16/17 16:45:01</sysmodtime>
+    <sysmoduser type="string"/>
+    <sysmodcount type="decimal">1</sysmodcount>
+  </record>
+</recordset>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ModuleStatus">
+  <record id="module=&quot;request&quot; and status=&quot;In Progress&quot;" recordid="request - In Progress">
+    <status type="string">In Progress</status>
+    <sysmodtime type="dateTime">01/16/14 16:39:59</sysmodtime>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">leo.wang</sysmoduser>
+    <module type="string">request</module>
+    <tablename type="string">request</tablename>
+    <sort.order NullValue="1" type="decimal"/>
+  </record>
+</recordset>

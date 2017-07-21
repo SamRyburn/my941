@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="Process">
+  <record id="process=&quot;getans.retrieve.solution&quot;" recordid="getans.retrieve.solution">
+    <process type="string">getans.retrieve.solution</process>
+    <pre.expressions sctype="array">
+      <pre.expressions sctype="operator">$L.retrieveSolutionURL=""</pre.expressions>
+      <pre.expressions sctype="operator">$gamapname=nullsub($gamapname, filename($L.file))</pre.expressions>
+    </pre.expressions>
+    <post.expressions sctype="array">
+      <post.expressions sctype="operator">cleanup($gamapname)</post.expressions>
+    </post.expressions>
+    <rad sctype="array">
+      <rad sctype="structure">
+        <application type="string">us.launch.external</application>
+        <names sctype="array">
+          <names sctype="string">name</names>
+        </names>
+        <values sctype="array">
+          <values sctype="string">$L.retrieveSolutionURL</values>
+        </values>
+        <rad.condition type="boolean">true</rad.condition>
+        <pre.rad.expressions sctype="array">
+          <pre.rad.expressions sctype="operator">$L.retrieveSolutionURL=jscall("GetAnswers.getRetrieveSolutionURL", $gamapname)</pre.rad.expressions>
+        </pre.rad.expressions>
+        <post.rad.expressions sctype="array">
+          <post.rad.expressions sctype="operator">$L.retrieved=jscall("GetAnswers.retrieveSolution")</post.rad.expressions>
+          <post.rad.expressions sctype="operator">if ($L.retrieved=true) then ($L.void=jscall("GetAnswers.statusMessage", scmsg(20, "ga")))</post.rad.expressions>
+        </post.rad.expressions>
+      </rad>
+      <rad sctype="structure">
+        <application type="string">object.yes.no</application>
+        <names sctype="array">
+          <names sctype="string">text</names>
+          <names sctype="string">prompt</names>
+        </names>
+        <values sctype="array">
+          <values sctype="string">scmsg(19, "ga")</values>
+          <values sctype="string">$L.return.action</values>
+        </values>
+        <rad.condition type="operator">false=$L.retrieved</rad.condition>
+        <pre.rad.expressions sctype="array"/>
+        <post.rad.expressions sctype="array">
+          <post.rad.expressions sctype="operator">if ("yes"=$L.return.action) then ($L.retrieved=jscall("GetAnswers.retrieveSolution"))</post.rad.expressions>
+          <post.rad.expressions sctype="operator">if ("yes"=$L.return.action and $L.retrieved=true) then ($L.void=jscall("GetAnswers.statusMessage", scmsg(20, "ga")))</post.rad.expressions>
+        </post.rad.expressions>
+      </rad>
+    </rad>
+    <next.process NullValue="1" sctype="array">
+      <next.process NullValue="1" type="string"/>
+    </next.process>
+    <process.condition NullValue="1" sctype="array">
+      <process.condition NullValue="1" type="boolean"/>
+    </process.condition>
+    <run.standard NullValue="1" type="boolean"/>
+    <sysmodcount type="decimal">5</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">05/03/05 08:08:05</sysmodtime>
+    <save.cursor.position NullValue="1" type="boolean"/>
+    <run.in.window NullValue="1" type="boolean"/>
+    <window.name NullValue="1" type="string"/>
+    <javascript.pre NullValue="1" type="string"/>
+    <javascript.post type="string">//this code was moved into the post RAD expressions to support upgraded 5.1 systems
+//it will be left in and commented out for historical purposes.
+//if(vars.$L_retrieveSolutionURL != "" &amp;&amp; vars.$L_retrieveSolutionURL != null)
+//{
+	//system.library.GetAnswers.retrieveSolution();
+//}</javascript.post>
+    <baseMethod NullValue="1" type="string"/>
+  </record>
+</recordset>

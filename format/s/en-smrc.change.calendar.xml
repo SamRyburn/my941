@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;smrc.change.calendar&quot;" recordid="en - smrc.change.calendar">
+    <name mandatory="true" type="string">smrc.change.calendar</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">200</length>
+        <window type="decimal">38</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$L.calendar.url</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">embeddedViewer;Name=embeddedViewer1263381825582	?Visible=	frameborder=0	Height=75	Name=embeddedViewer1263381825582	Width=400	X=0	Y=0		Input=$L.calendar.url	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">tiansha</editor>
+    <last.update type="dateTime">03/12/13 22:40:54</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">2</sysmodcount>
+    <sysmoduser type="string">tiansha</sysmoduser>
+    <sysmodtime type="dateTime">03/12/13 22:40:54</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

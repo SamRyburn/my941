@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;ddmEventUtil&quot;" recordid="ddmEventUtil">
+    <name type="string">ddmEventUtil</name>
+    <script type="string">/** This function is create a updated CI file that apply the implemented array of structure fields values in dataModEvent and then sort it 
+* So it can be compared with the sorted array of structure fields passed from ucmdb. 
+*     @param {String} tableName - the table name that CI belong to
+*     @param {String} ciRecordId - the logical name of the CI
+*     @returns
+*   @type Void
+*/
+
+var util = lib.ArrayUtil;
+var filename=system.functions.filename;
+var evaluate=system.functions.evaluate;
+function getUpdatedCIFile(tableName, ciRecordId){
+	
+   //get the original CI record
+   var ciRecord = new SCFile(tableName);
+   ciRecord.doSelect( "logical.name=\"" + ciRecordId + "\"" );
+   
+   vars.$ciFile = ciRecord;
+        
+   //get the structured fields list
+   var ddmRule = new SCFile("ddmRule");
+   ddmRule.doSelect( "tableName=\"" + tableName + "\"" );
+   var strucFields = [];
+   strucFields = getStructureFields(ddmRule) ;
+  
+   //iterate the datamodevent , if belong to structrued fields list , apply the change
+   var dmeSql =  "tableName=\""+tableName+"\" and recordId=\""+ciRecordId+"\" and active=true and status isin {\"implemented\",\"planned\",\"failedValidation\"}";
+   
+   var dmeReord = new SCFile("dataModEvent");
+   
+   var rc = dmeReord.doSelect(dmeSql);
+   
+   while ( rc == RC_SUCCESS ){
+   
+     var structName = lib.expectedStateHelper.getStructName(tableName,dmeReord.fieldName);
+     
+   	 if( structName!=null){
+   	 
+   	 	var arrayValue = system.functions.val(dmeReord.newValue, 8);
+   	 	
+   	 	var innertype=lib.tableFunctions.getFieldType(dmeReord.fieldName,tableName);
+   	 	
+   	 	var subFieldName = dmeReord.fieldName;
+   	 	   	 	
+   	 	for(var i=0; i&lt; system.functions.max(system.functions.lng(arrayValue),system.functions.lng(vars.$original_file[structName])); i++){
+   	 	  	 	   
+    	 	if(i&gt;=system.functions.lng(arrayValue)){
+   	 	   	     
+   	 	      ciRecord[structName][i][subFieldName] = null;
+   	 	      
+   	 	   }else{
+
+   	 	      //RTE side have some issue if we assign the array of structure field value like above sentence
+   	 	      //as a workaround ,we do the assignment use rad expression and use parse_evaluate to achieve it 
+   	 	      var subIndex = lib.tableFunctions.getFieldIndex(subFieldName,tableName);    
+   	 	      var arrayIndex = i+1;
+   	 	      vars.$L_tmpValue = arrayValue[i]; 
+   	 	    
+   	 	      if (innertype == 3){
+   	 	      
+   	 	        vars.$L_tmpValue = system.functions.val(lib.dmeTimeConvert.formatFromISODate(arrayValue[i]),3);
+   	 	      }
+   	 	      
+   	 	      var statement = subIndex + " in " + arrayIndex + " in " + structName +" in $ciFile"+"=" + "val($L.tmpValue," + innertype + ")";
+   	 	      system.functions.parse_evaluate( statement, 11 );
+   	 	      
+   	 	   }
+   	 	   
+   	 	 	 	
+   	 	}   		
+   
+    }
+    
+     rc = dmeReord.getNext();
+   }
+   ciRecord = vars.$ciFile;
+   //sort the array of structure fields same as new record passed from ucmdb.
+   sortStructureFieldInFile(ddmRule , ciRecord);  
+   
+   return ciRecord;
+
+
+
+}
+
+/** This function is used to sort the array field for $L.file passed in
+*
+*     @param {String} arrayField - The array field need to be sorted.
+*     @returns the sorted array values and convert it to String
+*   @type Void
+*/
+
+function sortArrayField(arrayField){
+   if(arrayField !=null){
+   	var array = system.functions.val(arrayField,8);
+   	var errcode;
+   	var rtn = system.functions.rtecall("sort", errcode, array, 0, 0)
+   return system.functions.str(array);
+   
+   }
+   return null;
+}
+
+
+/** This function is used to sort the array of structure defiend in ddmRule for $L.file passed in
+*
+*     @param {Record} ddmRule - the $L.rule (ddmRule record) passed in
+*     @param {Record} file - the $L.file (device record) passed in
+*     @returns
+*   @type Void
+*/
+
+function sortStructureFieldInFile(ddmRule , file){
+   var structFields = getStructureFields(ddmRule);
+   if(structFields.length &gt; 0 ){
+   
+   	  for(var i=0 ; i&lt; structFields.length; i++){	
+   	  
+      if(file[structFields[i]] !=null){
+      
+         sortArrayOfStructureFields(file[structFields[i]]);
+       	
+      }
+      
+   
+      }
+   }
+}
+
+/** This function is used to get the top level array of structure fields list
+*
+*     @param {Record} ddmRule - the $L.rule (ddmRule record) passed in
+*     
+*     @returns array of structure fields
+
+*   @type array
+*/  
+ function getStructureFields(ddmRule){
+ 	var strucFields = [];
+  	var rules = ddmRule.rules;
+ 	for(var i=0 ; i&lt;system.functions.lng(rules) ; i++){
+	  if(rules[i]["structure"] != null){
+	 	 
+	 	 strucFields.push(rules[i]["structure"]); 	
+	 	 	
+	   }
+ 	}
+ 	 return lib.ArrayUtil.removeDuplicateEmptyElement(strucFields);
+ 
+ }
+ 
+/** This function is used to sort the array of structures fields in $L.file . The sort algrithm is by 1st, 2nd, 3rd clomns in order. 
+*  for exmaple , we have A,B,C,D property in this array of structure field, it will sort with A property firstly , if there are same values in 
+*  property A , we will then sort by B , and then C.
+*     @param {Record} ddmRule - the $L.rule (ddmRule record) passed in
+*     
+*     @returns array of structure fields
+
+*   @type array
+*/   
+function sortArrayOfStructureFields(asfield){
+
+  var temArray = [];
+ 
+  var propArray =[];
+  
+  for (var i=0 ; i&lt;system.functions.lng(asfield) ; i++ ){
+ 
+ 	var tmpObj = {};
+    
+    for (var j=0 ; j&lt;system.functions.lng(asfield[0]) ; j++ ){
+       tmpObj[String.fromCharCode(65 + j) ]=asfield[i][j];
+       propArray.push(String.fromCharCode(65 + j));
+    
+    } 
+    temArray.push(tmpObj);
+ 
+  }
+ 
+  sortObjects(temArray, propArray.join(",") + " desc");
+ 
+  for (var i=0 ; i&lt;system.functions.lng(asfield) ; i++ ){
+ 
+    for (var j=0 ; j&lt;system.functions.lng(asfield[0]) ; j++ ){
+
+       asfield[i][j]  = temArray[i][String.fromCharCode(65 + j)];    
+    
+    } 
+ 
+  }
+
+}
+
+/** This function is used to merge the data from the new delta data from ucmdb to the original CI file 
+*   
+*     
+*     @returns 
+*   @type void
+*/   
+
+function mergeData(){
+
+  var subIndex = lib.tableFunctions.getFieldIndex(vars.$L_field_name,system.functions.filename(vars.$L_file));
+	  
+  var subtype = lib.tableFunctions.getFieldType(vars.$L_field_name,system.functions.filename(vars.$L_file));
+
+  for(var i=1; i&lt;=vars.$L_length; i++) {
+  
+
+	  if(subtype == 3){
+	    
+	    vars.$L_tmpVal = system.functions.val(lib.dmeTimeConvert.formatFromISODate(vars.$L_file[vars.$L_struct_name][i-1][vars.$L_field_name]),3);
+	    
+	 
+	  }else{
+	  
+	    vars.$L_tmpVal = vars.$L_file[vars.$L_struct_name][i-1][vars.$L_field_name];
+	  }
+	  
+	  var statement =  subIndex + " in " + i + " in " + vars.$L_struct_name +" in $L.file.update"+"=$L.tmpVal";
+	  	  
+	  system.functions.parse_evaluate( statement, 11 );
+  
+  }
+  
+
+}
+
+/** This function is used to apply the array of structure fields value to the CI in  update.fields panel of dme.updateRecord.sub rad application
+*   
+*     
+*     @returns 
+*   @type void
+*/ 
+function applyStructureFieldsValues(){
+
+    var structName = lib.expectedStateHelper.getStructName(vars.$L_table,vars.$L_fname);
+	for(var i=0; i&lt; system.functions.max(system.functions.lng(vars.$L_array_value),system.functions.lng(vars.$L_file[structName])); i++){
+	 	   
+		if(i&gt;=system.functions.lng(vars.$L_array_value)){
+			 
+		  vars.$L_file[structName][i][vars.$L_fname] = null;
+		  
+	   }else{
+	
+		  var subIndex = lib.tableFunctions.getFieldIndex(vars.$L_fname,vars.$L_table);    
+		  var arrayIndex = i+1;
+		  vars.$L_tmpValue = vars.$L_array_value[i]; 
+		  var innertype = lib.tableFunctions.getFieldType(vars.$L_fname,vars.$L_table);
+		  
+		  if (innertype == 3){
+		  
+			vars.$L_tmpValue = lib.dmeTimeConvert.formatFromISODate(vars.$L_array_value[i]);
+		  }
+		  
+		  var statement = subIndex + " in " + arrayIndex + " in " + structName +" in $L.file"+"=" + "val($L.tmpValue," + innertype + ")";
+		  system.functions.parse_evaluate( statement, 11 );
+		  
+		   
+	   }
+	   
+	 	 	
+	}
+
+}
+
+/** This function is used to apply the fields value to the CI in  update.fields panel of dme.updateRecord.sub rad application. Including array of structure fields
+*   
+*     
+*     @returns 
+*   @type void
+*/ 
+function applyValidatedFieldValues(){
+	for (var j=0; j&lt;system.functions.lng(vars.$L_names); j++){
+	
+	    var fieldName = vars.$L_names[j];
+	    var begin=fieldName.indexOf('[');
+		var end  =fieldName.indexOf(']', begin+1);
+		if (begin&gt;0 &amp;&amp; end&gt;0){
+			fieldName = fieldName.substring(begin+1, end);
+		}
+		
+    	var structName = lib.expectedStateHelper.getStructName(vars.$L_table,fieldName);
+
+    	vars.$L_array_value=system.functions.val(vars.$L_values[j], 8);
+    	
+    	//apply value for array of structure fields
+    	if(structName !=null){
+			for(var i=0; i&lt; system.functions.max(system.functions.lng(vars.$L_array_value),system.functions.lng(vars.$L_file[structName])); i++){
+			 	   
+				if(i&gt;=system.functions.lng(vars.$L_array_value)){
+					 
+				  vars.$L_file[structName][i][fieldName] = null;
+				  
+			   }else{
+			
+				  var subIndex = lib.tableFunctions.getFieldIndex(fieldName,vars.$L_table);    
+				  var arrayIndex = i+1;
+				  vars.$L_tmpValue = vars.$L_array_value[i]; 
+				  var innertype = lib.tableFunctions.getFieldType(fieldName,vars.$L_table);
+				  
+				  if (innertype == 3){
+				  
+					vars.$L_tmpValue = lib.dmeTimeConvert.formatFromISODate(vars.$L_array_value[i]);
+				  }
+				  
+				  var statement = subIndex + " in " + arrayIndex + " in " + structName +" in $L.file"+"=" + "val($L.tmpValue," + innertype + ")";
+				  
+				  system.functions.parse_evaluate( statement, 11 );
+				  
+				   
+			   }
+			   
+ 	
+			}
+		 //apply value for fields other than array of structure type	
+		 }else {
+		 
+		      var absFieldType=lib.tableFunctions.getFieldType(fieldName, vars.$L_table,true);
+		      
+		      var fieldType=lib.tableFunctions.getFieldType(fieldName, vars.$L_table);
+		      		      
+		      if (fieldType == 3) 
+		        {
+		            vars.$L_values[j]=lib.dmeTimeConvert.formatFromISODate(vars.$L_values[j]);
+		            vars.$L_file[fieldName] = vars.$L_values[j];
+		        }else{
+		        
+		         vars.$L_file[fieldName]=system.functions.val(vars.$L_values[j], absFieldType);
+		         
+		       }
+		 
+		 }	
+	}
+}
+
+
+
+/** This function is sort the array according to the object elements in the array. Exmple : sortObjects(temArray, "propA,propB,propC desc");
+*
+*     @param {Array} objArray - the object array need to be sorted. 
+*     @param {Array} properties - the sort properties info and sort order paramter   
+*     @returns void
+
+*   @type 
+*/  
+function sortObjects(objArray, properties) {
+    var primers = arguments[2] || {};
+    properties = util.map(properties.split(/\s*,\s*/), function(prop){
+        prop = prop.match(/^([^\s]+)(\s*desc)?/i);
+        if( prop[2] &amp;&amp; prop[2].toLowerCase() === 'desc' ) {
+            return [prop[1] , -1];
+        } else {
+            return [prop[1] , 1];
+        }
+    },this);
+    
+    function valueCmp(x, y) {
+        if(x==null ) return 1;
+        return x &gt; y ? 1 : x &lt; y ? -1 : 0; 
+    }
+    
+    function arrayCmp(a, b) {
+        var arr1 = [], arr2 = [];
+        util.each(properties, function(prop) {
+            var aValue = a[prop[0]],
+                bValue = b[prop[0]];
+            if( typeof primers[prop[0]] != 'undefined' ) {
+                aValue = primers[prop[0]](aValue);
+                bValue = primers[prop[0]](bValue);
+            }
+            arr1.push( prop[1] * valueCmp(aValue, bValue) );
+            arr2.push( prop[1] * valueCmp(bValue, aValue) );
+        }, this);
+        return arr1 &lt; arr2 ? -1 : 1;
+    }
+    
+    objArray.sort(function(a, b) {
+        return arrayCmp(a, b);
+    });
+}
+
+/** This function is to get Discovered Event Manager Rule record based on current file from ucmdb
+*
+*     @param {record} CI record 
+*     @param {record} DEMRule record    
+*     @returns void
+*/ 
+function getDEMRule(record){
+	var dem=new SCFile("ddmRule",SCFILE_READONLY);
+	var sql="tableName=\""+filename(record)+"\"";
+	if(dem.doSelect(sql)===RC_SUCCESS){
+		vars["$L.file"] = record;
+		do{
+			if(evaluate(dem['condition']) || dem['condition']==="" || dem['condition']===null){
+				return dem;
+				break;
+			}
+		}while(dem.getNext()===RC_SUCCESS)
+	}
+	return null;
+}</script>
+    <package type="string">BaseUtilities</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:39</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

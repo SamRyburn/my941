@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="Process">
+  <record id="process=&quot;kmknowledgebase.newkb_idol_enable&quot;" recordid="kmknowledgebase.newkb_idol_enable">
+    <process type="string">kmknowledgebase.newkb_idol_enable</process>
+    <pre.expressions sctype="array">
+      <pre.expressions sctype="operator">$boolName=""</pre.expressions>
+      <pre.expressions sctype="operator">$writeField=true</pre.expressions>
+    </pre.expressions>
+    <post.expressions sctype="array">
+      <post.expressions sctype="operator">if (not  ($L.oktocontinue)) then ($L.action="display")</post.expressions>
+      <post.expressions sctype="operator">if $L.oktocontinue then ($L.action="add")</post.expressions>
+    </post.expressions>
+    <rad sctype="array">
+      <rad sctype="structure">
+        <application type="string">add.new.dbdict.field</application>
+        <names sctype="array">
+          <names sctype="string">string1</names>
+          <names sctype="string">number1</names>
+          <names sctype="string">text</names>
+        </names>
+        <values sctype="array">
+          <values sctype="string">$boolName</values>
+          <values sctype="string">4</values>
+          <values sctype="string">"kmquery"</values>
+        </values>
+        <rad.condition type="globalVar">$writeField</rad.condition>
+        <pre.rad.expressions sctype="string"/>
+        <post.rad.expressions sctype="string"/>
+      </rad>
+    </rad>
+    <next.process NullValue="1" sctype="array">
+      <next.process NullValue="1" type="string"/>
+    </next.process>
+    <process.condition NullValue="1" sctype="array">
+      <process.condition NullValue="1" type="boolean"/>
+    </process.condition>
+    <run.standard type="boolean">true</run.standard>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:01:04</sysmodtime>
+    <save.cursor.position NullValue="1" type="boolean"/>
+    <run.in.window NullValue="1" type="boolean"/>
+    <window.name NullValue="1" type="string"/>
+    <javascript.pre type="string">vars.$L_oktocontinue=true;
+vars.$L_file.indexstatus = lib.KMCollection_Status_Constant.INDEXSTATUS_OFFLINE();
+// Check for a valid kbtype.
+if (vars.$L_file.kbname == null || vars.$L_file.kbtype == null)
+{
+    print(system.functions.scmsg(174, "km")); 
+    // print "Error: you must spedify a name and a valid type for your knowledgebase."
+	vars.$L_oktocontinue=false;
+}
+/*else if (vars.$L_file.kbdescription == null)
+{
+	print(system.functions.scmsg(300, "km")); 
+    // print "Error: you must spedify a name and a valid type for your knowledgebase."
+	vars.$L_oktocontinue=false;
+}*/
+else if (vars.$L_file.kbname.indexOf(' ') &gt;= 0) // No blanks in kbname.
+{
+  	print(system.functions.scmsg(169, "km"));
+  	// print "Error: Valid characters in the name are A-Z, a-z, 0-9 and the underscore character _ only."
+  	vars.$L_oktocontinue=false;
+}
+else
+{
+	// No ScriptLibrary file can begin with a number 0-9 because the ScriptLibrary name 
+	//   must be a valid JavaScript identifier
+	var chr = vars.$L_file.kbname.charAt(0);
+	if (chr &gt;= '0' &amp;&amp; chr &lt;= '9')
+	{
+	  	print(system.functions.scmsg(175, "km"));
+	  	// print "Error: The knowledgebase name cannot begin with a number."
+	  	vars.$L_oktocontinue=false;
+	}
+	else
+	{	
+		// Validate to accept Alphabetic (A-Z, a-z), Numeric (0-9), and the underscore character only
+		// The logical field will be added using kbname stripped of underscore characters
+		var nameLength = vars.$L_file.kbname.length;
+		for(count=0; count&lt;nameLength; count++)
+		{
+			chr = vars.$L_file.kbname.charAt(count);
+			if ((chr &gt;= 'A' &amp;&amp; chr &lt;= 'Z') || (chr &gt;= 'a' &amp;&amp; chr &lt;= 'z') || (chr &gt;= '0' &amp;&amp; chr &lt;= '9') || chr == '_')
+			{
+				// For the logical name, remove any underscores.
+				if (chr != '_')
+				{
+					if (vars.$boolName.length == 0)
+						vars.$boolName = chr;
+					else
+						vars.$boolName = vars.$boolName + chr;
+				}
+			}
+			else  // invalid character in the name
+			{
+	  			print(system.functions.scmsg(169, "km"));
+			  	// print "Error: Valid characters in the name are A-Z, a-z, 0-9 and the underscore character _ only."
+			  	vars.$L_oktocontinue=false;
+			  	break;
+			}		
+		}
+	}
+}
+
+if (vars.$L_oktocontinue)
+{
+	// Error check if a knowledgebase with that name already exists
+	var kmqFile = new SCFile("kmknowledgebase");  
+	if(kmqFile.doSelect( "kbname=\""+vars.$L_file.kbname+"\"" ) == RC_SUCCESS) 
+	{
+	    print(system.functions.scmsg(173, "km")); 
+	    // print "Error: a knowledgebase with that name already exists."
+	    vars.$L_oktocontinue=false;
+	}
+	else
+	{
+		// add kbname as a boolean to the kmquery dbdict
+		// Read dbdict for kmquery file
+		
+		var dbFile = new SCFile("dbdict");  
+		if(dbFile.doSelect( "name=\"kmquery\"" ) != RC_SUCCESS) 
+		{
+		      print(system.functions.scmsg(170, "km")); 
+		      // print " Unrecoverable error: No dbdict file for kmquery table."
+		      vars.$L_oktocontinue=false;
+		}
+		else
+		{
+		      print(system.functions.scmsg(171, "km")); // It takes a few moments to check the dbdict.
+		      // vars.$boolName is vars.$L_file.kbname minus any underscore characters.
+		      var fieldArray = dbFile.field;
+		      var arrayLen = fieldArray.length();
+              for (i = 1; i &lt;= arrayLen &amp;&amp; vars.$L_oktocontinue; ++i) 
+              {
+                  if (fieldArray[i].name == vars.$boolName)
+                  {
+                  /*
+			  			var arrayArgs = new SCDatum();
+			  			arrayArgs.setType(8);  //type array
+			  			arrayArgs.push(vars.$boolName);
+			  			print(system.functions.scmsg(189, "km", arrayArgs));
+	    				// print "Error: Choose another name. The kmknowldgebase dbdict already contains the boolean field %S."   
+                        vars.$L_oktocontinue=false;
+                        break;
+                    */
+                   vars.$L_writeField = false;
+                        
+                  }
+              }
+
+		}
+	}
+}
+
+if (vars.$L_oktocontinue)
+{
+  	// Add the three scripts: kmaccess, kmcategoryidxscript, and kmsearchsecurity
+	system.library.KMCollection_Create.addScripts();
+	vars.$L_file.locale = vars.$G_my_language.slice(0,2);
+
+    //add weblib defaults here
+	if(vars.$L_file.kbtype == "weblib")
+	{
+	  vars.$L_file.webpathlen = 100;
+	  vars.$L_file.webjumps = 2;
+	  vars.$L_file.webhost = true;
+	  vars.$L_file.mimeproperty = "unlimited";
+	  vars.$L_file.mastermimelist = "";
+	}
+	//add fsyslib defaults here
+	if(vars.$L_file.kbtype == "fsyslib")
+	{
+	  vars.$L_file.webpathlen = 100;
+	  vars.$L_file.mimeproperty = "unlimited";
+	  vars.$L_file.mastermimelist = "";
+	}
+}</javascript.pre>
+    <javascript.post type="string">if (vars.$L_oktocontinue)
+{
+	print(system.functions.scmsg(172, "km")); 
+	// print "A Boolean for this knowledgebase name was added to the dbdict."
+}</javascript.post>
+    <baseMethod NullValue="1" type="string"/>
+  </record>
+</recordset>

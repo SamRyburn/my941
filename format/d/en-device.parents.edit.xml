@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;device.parents.edit&quot;" recordid="en - device.parents.edit">
+    <name mandatory="true" type="string">device.parents.edit</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">4</column>
+        <length type="decimal">6</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Device:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Device:	X=6	Y=3	Height=2	Width=12	ForeColor=0	FontIncrease=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">11</column>
+        <length type="decimal">22</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">logical.name</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=logical.name	X=21	Y=3	Height=2	Width=44	ReadOnly=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">4</column>
+        <length type="decimal">7</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Parent</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Parent	X=6	Y=9	Height=2	Width=14	ForeColor=0	FontIncrease=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">22</column>
+        <length type="decimal">7</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Type</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Type	X=43	Y=9	Height=2	Width=14	ForeColor=0	FontIncrease=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">32</column>
+        <length type="decimal">7</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Location</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Location	X=63	Y=9	Height=2	Width=14	ForeColor=0	FontIncrease=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">4</column>
+        <length type="decimal">16</length>
+        <window type="decimal">15</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">parents</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=parents	X=6	Y=12	Height=2	Width=31	TabStop=1	ArrayLength=15	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">22</column>
+        <length type="decimal">47</length>
+        <window type="decimal">15</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">parents.desc</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=parents.desc	X=42	Y=12	Height=2	Width=94	ReadOnly=1	ArrayLength=15	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">marks</editor>
+    <last.update type="dateTime">00:00:00</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">04/16/07 05:15:58</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

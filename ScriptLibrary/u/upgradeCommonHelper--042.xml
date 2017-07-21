@@ -1,0 +1,558 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;upgradeCommonHelper&quot;" recordid="upgradeCommonHelper">
+    <name type="string">upgradeCommonHelper</name>
+    <script type="string">var $ = lib.c.$;
+
+/**
+ * Compare globallists
+ *
+ * the globallists those set to "build.startup" will rebuild when server restarts.
+ * the purpose of this method is to reduce some rename results which are not real conflict.
+ */
+function compareStartupGloballists(gl, prefix)
+{
+	// compare build.startup only
+	if (gl["build.startup"] != true)
+	{
+		return false;
+	}
+		
+	// ignore user defined globallists
+	if (gl["user.defined"] == true)
+	{
+		return false;
+	}
+	
+	if (prefix==null)
+	{
+	    prefix="upgrade";
+	}
+
+	// query patch data record
+	var newgl = new SCFile(prefix + "globallists");
+	var rc = newgl.doSelect("name=\"" + gl["name"] + "\"");
+	
+	if (rc != RC_SUCCESS || newgl["build.startup"] != true)
+	{
+		return false;
+	}
+
+	var fields = ["guard.dups", "list.variable", "display.variable", "list.field", "display.field", "filename", "sql", 
+				"sort.field", "application", "server.application", "localize.values", "user.defined", "use.scmessage"];
+	
+	return compareGloballistsFields(gl, newgl, fields);
+}
+
+
+/**
+ * Compare globallists fields
+ */
+function compareGloballistsFields(g1, g2, fields)
+{
+	var i;
+	for (i = 0; i &lt; fields.length; i++)
+	{
+		var result = compareGloballistsFieldValue(g1[fields[i]], g2[fields[i]]);
+		
+		if (result == false)
+		{
+			lib.upgradeLog.detail("globallists \"" + g1["name"] + "\", field \"" + fields[i] + "\" not same.");
+			return false;
+		}
+	}
+	
+	return true;
+}
+
+
+/**
+ * Compare globallists field value
+ */
+function compareGloballistsFieldValue(v1, v2)
+{
+	if (v1 == v2)
+	{
+		return true;
+	}
+	
+	// treat false same as null
+	if ((v1 == null &amp;&amp; v2 == false) || (v2 == null &amp;&amp; v1 == false))
+	{
+		return true;
+	}
+	
+	return false;
+}
+
+
+function fixSystemData()
+{
+	// fix Counters
+	fixCounters();
+	
+	// fix numbers	
+	fixNumbers();
+	
+	fixInboxNumber();
+	
+	// synchronize unique key
+}
+
+
+function isValidTable(table)
+{
+	var fdbdict = new SCFile("dbdict", SCFILE_READONLY);
+  	fdbdict.setFields(["name"]);
+  	var rc = fdbdict.doSelect("name=\"" + table + "\"");
+  	return rc == RC_SUCCESS;
+}
+
+
+function isValidScriptLibrary(name)
+{
+	var script = $("ScriptLibrary", SCFILE_READONLY).setFields(["name"]).select("name=\"" + name + "\"").uniqueResult();
+	return script != null;
+}
+
+
+/**
+  * Fix dirty data of Counters
+  */
+function fixCounters(module)
+{
+	var isAPM = ("APM" == module);
+	
+	if (!isAPM)
+	{
+		lib.upgradeLog.upgrade("Updating counters ...");
+		lib.upgradeLog.detail("Updating counters ...");
+	}
+	
+	var fCounter = new SCFile("counters");
+	var rcCounter = fCounter.doSelect(true);
+	
+	while (rcCounter == RC_SUCCESS)
+	{
+		var updated = false;
+		
+		var table = fCounter.table_name;
+		
+		if(!isValidTable(table))
+		{
+			rcCounter = fCounter.getNext();
+			continue;
+		}
+		
+		var column = fCounter.column_name;	
+	
+		var fFile = new SCFile(table, SCFILE_READONLY);
+		var fields = [column];
+		fFile.setFields(fields);
+		var orders = new Array(1);
+		orders[0] = SCFILE_DSC;
+		fFile.setOrderBy(fields, orders);
+		
+		var rcFile = fFile.doSelect(true);
+
+		if (rcFile != RC_SUCCESS)
+		{
+			rcCounter = fCounter.getNext();
+			continue;
+		}
+		
+		var value = fFile[column];
+
+		// special for those which id type is varchar rather than number
+		if (typeof value == 'string')
+		{
+			// max number of records to check
+			var recordCheck = 0;
+			
+			do
+			{
+				recordCheck ++;
+				
+				value = Number(fFile[column]);
+				if (value &gt; fCounter.current_value)
+				{
+					fCounter.current_value = value.valueOf();	
+					updated = true;
+				}
+				
+				rcFile = fFile.getNext();
+			}
+			while (rcFile == RC_SUCCESS &amp;&amp; recordCheck &lt;= 1000);
+		}
+		// normal counters data error
+		else if (value &gt; fCounter.current_value)
+		{
+			fCounter.current_value = value;
+			updated = true;
+		}
+		
+		// update Counters record				
+		if (updated)
+		{			
+			var rc = fCounter.doUpdate();			
+
+			if (!isAPM)
+			{
+				lib.upgradeLog.detail("Updating counter of "+table);
+			}
+			else
+			{
+				if (rc == RC_SUCCESS)
+				{
+					lib.patchrelHelper.info(system.functions.scmsg(201, "object", ["Counters", table]));
+				}
+				else
+				{
+					lib.patchrelHelper.error(system.functions.scmsg(121, "patchrel", ["Counters", table]));
+				}
+			}
+		}
+	
+		rcCounter = fCounter.getNext();	
+	}		
+}
+
+
+/**
+  * Fix dirty data of Number
+  */
+function fixNumbers(module)
+{
+	var numbers = 
+	[
+		["calendarFilterEditForm", "id"],
+		["calendarFilterFieldMapping", "id"],
+		["calendarFilterPredefined", "id"],
+		["idolpbmhunter", "pbmhunter.id"],
+		["kmattachments", "id"],
+		["timeperiodCalendarMapping", "id"],
+		["timeperiodCategory", "id"],
+		["timeperiodDefinition", "id"],
+		["timeperiodOccurrence", "id"],
+		["timeperiodRule", "id"]		
+	];
+
+	var isAPM = ("APM" == module);
+	
+	if (!isAPM)
+	{
+		lib.upgradeLog.upgrade("Updating numbers ...");
+		lib.upgradeLog.detail("Updating numbers ...");
+	}
+	
+	var i;
+	for (i = 0; i &lt; numbers.length; i++)
+	{
+		fixNumber(numbers[i][0], numbers[i][1], null, module);
+	}	
+}
+
+function fixInboxNumber() {
+    fixNumber("inbox", "inbox.id", 999990);
+}
+
+/**
+  * Fix data of a number file
+  *
+  * @param	table
+  * @param	field	
+  */
+function fixNumber(table, field, maxValue, module)
+{
+	var fNumber = new SCFile("number");
+	var rcNumber = fNumber.doSelect("name=\"" + table + "\"");
+	
+	if (rcNumber != RC_SUCCESS)
+	{
+		return;
+	}
+
+	var isAPM = ("APM" == module);
+	
+	// select record	
+	var fFile = new SCFile(table, SCFILE_READONLY);
+	var fields = [field];
+	fFile.setFields(fields);
+	var orders = [SCFILE_DSC];
+	fFile.setOrderBy(fields, orders);
+	
+	var rcFile = fFile.doSelect(true);
+	
+	if (rcFile == RC_SUCCESS)
+	{	
+		var updated = false;
+		var value = fFile[field];
+
+		// special for those which id type is varchar rather than number
+		if (typeof value == 'string')
+		{
+			var prefix = (fNumber["prefix"] == null) ? "" : fNumber["prefix"];
+		    var suffix = (fNumber["suffix"] == null) ? "" : fNumber["suffix"];
+		    
+			do
+			{
+				value = fFile[field].substring(prefix.length, fFile[field].length - suffix.length);				
+				value = Number(value);
+				
+				if ((maxValue==null || value &lt; maxValue) &amp;&amp; value &gt; fNumber.number)
+				{
+					fNumber.number = value.valueOf();	
+					updated = true;
+				}
+				
+				rcFile = fFile.getNext();
+			}
+			while (rcFile == RC_SUCCESS);
+		}
+		// normal counters data error
+		else if ((maxValue==null || value &lt; maxValue) &amp;&amp; value &gt; fNumber.number)
+		{
+			fNumber.number = fFile[field];
+			updated = true;
+		}
+		
+		if (updated)
+		{		
+			// update Number record	
+			var rc = fNumber.doUpdate();
+			
+			if (!isAPM)
+			{
+				lib.upgradeLog.detail("Updating number of "+table);
+			}
+			else
+			{
+				if (rc == RC_SUCCESS)
+				{
+					lib.patchrelHelper.info(system.functions.scmsg(201, "object", ["Number", table]));
+				}
+				else
+				{
+					lib.patchrelHelper.error(system.functions.scmsg(121, "patchrel", ["Number", table]));
+				}		
+			}
+		}
+	}		
+}
+
+
+/**
+ * Create schedule records
+ *
+ * @param	scheduleObjs
+ */
+function createSchedules(scheduleObjs, module)
+{
+	var typeDateTime = lib.DataTypeConst.typeDateTime();
+	var theXMLDate = new XMLDate(new Date());	
+	var isAPM = ("APM" == module);
+	
+	var i, obj, name, fschedule, rc, message;
+	
+	// add schedule
+	for (i = 0; i &lt; scheduleObjs.adds.length; i++)
+	{
+		obj = scheduleObjs.adds[i];
+		name = obj.name;
+		
+		fschedule = $("schedule", SCFILE_READONLY).setFields(["name"]).select("name=\"" + name + "\"").uniqueResult();
+		// schedule exists already
+		if (fschedule) 
+		{
+			continue;
+		}
+		
+		fschedule = new SCFile("schedule");
+	
+		fschedule.name = name;
+		fschedule._class = obj._class;
+		fschedule.sched_class = obj.sched_class;
+		
+		if (obj.description)
+		{
+			fschedule.description = [obj.description];
+		}
+		
+		if (obj.repeat)
+		{
+			fschedule.repeat = system.functions.val(obj.repeat, typeDateTime);
+		}
+		
+		fschedule.expiration = theXMLDate.getDatum();
+		
+		fschedule.javascript = obj.javascript;
+		fschedule.application = obj.application;
+		fschedule.strings = obj.strings;
+
+		// set schedule.id in Upgrade
+		if (!isAPM)
+		{
+			fschedule.schedule_id = obj.schedule_id;
+		}
+		
+		
+		rc = fschedule.doInsert();
+		if (rc == RC_SUCCESS)
+		{
+			message = system.functions.scmsg(200, "object", ["schedule", name]);
+			if (isAPM)
+			{
+				lib.patchrelHelper.info(message);
+			}
+			else
+			{
+				lib.upgradeLog.detail(message);
+			}
+		}
+		else
+		{
+			if (isAPM)
+			{
+				lib.patchrelHelper.error(system.functions.scmsg(124, "patchrel", ["schedule", name]));
+			}
+		}
+	}	
+
+	// update schedule
+	for (i = 0; i &lt; scheduleObjs.updates.length; i++)
+	{
+		obj = scheduleObjs.updates[i];
+		name = obj.name;
+		
+		fschedule = $("schedule").select("name=\"" + name + "\"").uniqueResult();
+		if (!fschedule) 
+		{
+			continue;
+		}
+
+		if (obj.javascript)
+		{
+			fschedule.javascript = obj.javascript;
+		}
+
+		rc = fschedule.doUpdate();
+		if (rc == RC_SUCCESS)
+		{
+			message = system.functions.scmsg(201, "object", ["schedule", name]);
+			if (isAPM)
+			{
+				lib.patchrelHelper.info(message);
+			}
+			else
+			{
+				lib.upgradeLog.detail(message);
+			}
+		}
+		else
+		{
+			if (isAPM)
+			{
+				lib.patchrelHelper.error(system.functions.scmsg(121, "patchrel", ["schedule", name]));
+			}
+		}		
+	}	
+}
+
+	
+/**
+ * Get post upgrade prompt message
+ *
+ * @returns {String}
+ */
+function getPostUpgradePromptMessage()
+{
+	var message = getPostUpgradePromptMessageForLogicalName();
+	return message;
+}
+	
+	
+/**
+ * Get post upgrade prompt message for logical name feature
+ *
+ * @returns {String}
+ */
+function getPostUpgradePromptMessageForLogicalName()
+{	
+	var msg1 = system.functions.scmsg(450, "upg") + "\n";
+	var msg2 = "";
+	var msg3 = system.functions.scmsg(451, "upg");
+
+	// get field list
+	var mfields = lib.DisplayName.getAliasTableMapFields();
+	
+	var i, j;
+	for (i = 0; i &lt; mfields.length; i++) 
+	{
+		var mfield = mfields[i];
+		var table = mfield.table;
+		var fields = mfield.fields;
+	 
+		for (j = fields.length - 1; j &gt;= 0; j--) 
+		{
+			var result = checkAliasTable(table, fields[j]);
+			
+			// remove the field which mapped to alias table
+			if (result)
+			{
+				fields.pop();
+			}
+		} 
+		
+		if (fields.length &gt; 0)
+		{
+			msg2 += "  " + table + ": " + fields.toString() + "\n";
+		}		
+	}
+
+	// no field need to mapped
+	if (msg2.length == 0)
+	{
+		return "";
+	}
+	
+	return msg1 + msg2 + msg3;
+}
+
+
+/**
+ * Check whether field is mapped to alias table
+ *
+ * @param {String} table
+ * @param {String} field
+ * @returns {Boolean} true if field mapped to an alias table 
+ */
+function checkAliasTable(table, field)
+{
+	var dbdict = $(table, SCFILE_READONLY).dbdict();
+	var fields = dbdict.field;
+	
+	var i, length = fields.length();
+	for (i = 0; i &lt; length; i++)
+	{
+		var f = fields[i];
+
+		// check array type field
+		if (f.name == field &amp;&amp; f.type == lib.DataTypeConst.typeArray())
+		{
+			// alias table start with 'a'
+			var alias = f.sql_field_options.sql_table_alias;
+			return (alias != null &amp;&amp; alias.toLowerCase().indexOf("a") == 0);
+		}
+	}
+	
+	return false;	
+}
+</script>
+    <package type="string">Upgrade</package>
+    <sysmodtime type="dateTime">07/16/17 16:56:39</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">14</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

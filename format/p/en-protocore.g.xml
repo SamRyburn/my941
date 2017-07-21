@@ -1,0 +1,706 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;protocore.g&quot;" recordid="en - protocore.g">
+    <name mandatory="true" type="string">protocore.g</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">2</column>
+        <length type="decimal">75</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">PENDING KNOWLEDGE ITEMS</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=PENDING KNOWLEDGE ITEMS	X=2	Y=1	Height=2	Width=149	ForeColor=15	Bold=1	Justification=2	FontIncrease=3	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">2</column>
+        <length type="decimal">19</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Entry ID:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Entry ID:	X=2	Y=6	Height=2	Width=38	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">21</column>
+        <length type="decimal">12</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">entry.id</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=entry.id	X=40	Y=6	Height=2	Width=24	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">2</column>
+        <length type="decimal">19</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Title:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Title:	X=2	Y=8	Height=2	Width=38	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">21</column>
+        <length type="decimal">45</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">title</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=title	X=40	Y=8	Height=2	Width=90	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">2</column>
+        <length type="decimal">12</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">hot.news</input>
+        <output type="string">Hot News</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Caption=Hot News	Input=hot.news	X=2	Height=2	Width=24	ArrayLength=1	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">14</column>
+        <length type="decimal">15</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">common.problem</input>
+        <output type="string">Common Problem</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Caption=Common Problem	Input=common.problem	X=26	Height=2	Width=29	ArrayLength=1	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">33</column>
+        <length type="decimal">12</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">error.message</input>
+        <output type="string">Error Message</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Caption=Error Message	Input=error.message	X=65	Height=2	Width=23	ArrayLength=1	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">48</column>
+        <length type="decimal">12</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">private</input>
+        <output type="string">Private</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Caption=Private	Input=private	X=94	Height=2	Width=23	ArrayLength=1	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">2</column>
+        <length type="decimal">11</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Valid From:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Valid From:	X=3	Y=12	Height=2	Width=22	?Visible=[hot.news]?1:1,0	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">14</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">valid.from</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=valid.from	X=26	Y=12	Height=2	Width=36	?Visible=[hot.news]?1:1,0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">36</column>
+        <length type="decimal">11</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Valid To:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Valid To:	X=71	Y=12	Height=2	Width=22	?Visible=[hot.news]?1:1,0	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">48</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">valid.to</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=valid.to	X=94	Y=12	Height=2	Width=36	?Visible=[hot.news]?1:1,0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">2</column>
+        <length type="decimal">64</length>
+        <window type="decimal">13</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">NoteBook;X=2	Y=15	Height=26	Width=128	Elastic=3	Pages=Content;Categorization;Source/Key Info;Keywords	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">2</column>
+        <length type="decimal">73</length>
+        <window type="decimal">15</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Content</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">page;Caption=Content	X=3	Y=17	Height=30	Width=145	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">19</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">TOPIC or QUESTION</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=TOPIC or QUESTION	X=1	Y=0	Height=2	Width=37	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">512</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">1</column>
+        <length type="decimal">43</length>
+        <window type="decimal">5</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">description</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">MultiText;Input=description	X=1	Y=2	Height=9	Width=86	Elastic=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">1</column>
+        <length type="decimal">19</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">CONTENT or ANSWER</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=CONTENT or ANSWER	X=1	Y=12	Height=2	Width=37	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">512</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">1</column>
+        <length type="decimal">43</length>
+        <window type="decimal">5</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">resolution</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">MultiText;Input=resolution	X=1	Y=14	Height=9	Width=86	Elastic=3	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">2</column>
+        <length type="decimal">73</length>
+        <window type="decimal">15</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Categorization</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">page;Caption=Categorization	X=3	Y=17	Height=30	Width=145	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">2</column>
+        <length type="decimal">12</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Category:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Category:	X=2	Y=2	Height=2	Width=23	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4224</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">12</column>
+        <length type="decimal">21</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">category</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Fill;Input=category	X=23	Y=2	Height=2	Width=41	TabStop=2	CaseConversion=2	ArrayLength=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">2</column>
+        <length type="decimal">12</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Subcategory:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Subcategory:	X=2	Y=4	Height=2	Width=23	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4224</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">12</column>
+        <length type="decimal">21</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">subcategory</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Fill;Input=subcategory	X=23	Y=4	Height=2	Width=41	TabStop=2	CaseConversion=2	ArrayLength=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">2</column>
+        <length type="decimal">12</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Product Type:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Product Type:	X=2	Y=6	Height=2	Width=23	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4224</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">12</column>
+        <length type="decimal">21</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">product.type</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Fill;Input=product.type	X=23	Y=6	Height=2	Width=41	TabStop=2	CaseConversion=2	ArrayLength=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">2</column>
+        <length type="decimal">12</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Problem Type:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Problem Type:	X=2	Y=8	Height=2	Width=23	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4224</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">12</column>
+        <length type="decimal">21</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">problem.type</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Fill;Input=problem.type	X=23	Y=8	Height=2	Width=41	TabStop=2	CaseConversion=2	ArrayLength=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">2</column>
+        <length type="decimal">12</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Device:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Device:	X=2	Height=2	Width=23	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4224</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">12</column>
+        <length type="decimal">21</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">device</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Fill;Input=device	X=23	Height=2	Width=41	TabStop=2	CaseConversion=2	ArrayLength=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">2</column>
+        <length type="decimal">12</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Company:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Company:	X=2	Y=12	Height=2	Width=23	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4224</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">12</column>
+        <length type="decimal">21</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">company</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Fill;Input=company	X=23	Y=12	Height=2	Width=41	TabStop=2	CaseConversion=2	ArrayLength=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">2</column>
+        <length type="decimal">12</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Location:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Location:	X=2	Y=14	Height=2	Width=23	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4224</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">12</column>
+        <length type="decimal">21</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">location</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Fill;Input=location	X=23	Y=14	Height=2	Width=41	TabStop=2	CaseConversion=2	ArrayLength=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">2</column>
+        <length type="decimal">73</length>
+        <window type="decimal">15</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Source/Key Info</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">page;Caption=Source/Key Info	X=3	Y=17	Height=30	Width=145	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">2</column>
+        <length type="decimal">19</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Source Filename:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Source Filename:	X=2	Y=2	Height=2	Width=37	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">21</column>
+        <length type="decimal">24</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">source.filename</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=source.filename	X=41	Y=2	Height=2	Width=47	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">2</column>
+        <length type="decimal">19</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Source Key:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Source Key:	X=2	Y=4	Height=2	Width=37	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">21</column>
+        <length type="decimal">24</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">source.key</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=source.key	X=41	Y=4	Height=2	Width=47	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">2</column>
+        <length type="decimal">19</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Secondary Key:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Secondary Key:	X=2	Y=6	Height=2	Width=37	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">21</column>
+        <length type="decimal">24</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">secondary.key</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=secondary.key	X=41	Y=6	Height=2	Width=47	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">2</column>
+        <length type="decimal">19</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Tertiary Key:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Tertiary Key:	X=2	Y=8	Height=2	Width=37	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">21</column>
+        <length type="decimal">24</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">tertiary.key</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=tertiary.key	X=41	Y=8	Height=2	Width=47	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">2</column>
+        <length type="decimal">73</length>
+        <window type="decimal">15</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Keywords</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">page;Caption=Keywords	X=3	Y=17	Height=30	Width=145	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">30</length>
+        <window type="decimal">11</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Table;X=1	Y=1	Height=21	Width=60	Elastic=3	Columns=Keywords	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">keywords</input>
+        <output type="string">Keywords</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Column;Caption=Keywords	Input=keywords	X=0	Y=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">pbudic</editor>
+    <last.update type="dateTime">12/05/01 04:09:06</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">15</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">12/12/01 07:05:30</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

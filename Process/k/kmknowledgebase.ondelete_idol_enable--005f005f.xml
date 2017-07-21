@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="Process">
+  <record id="process=&quot;kmknowledgebase.ondelete_idol_enable&quot;" recordid="kmknowledgebase.ondelete_idol_enable">
+    <process type="string">kmknowledgebase.ondelete_idol_enable</process>
+    <pre.expressions NullValue="1" sctype="array">
+      <pre.expressions NullValue="1" type="expression"/>
+    </pre.expressions>
+    <post.expressions NullValue="1" sctype="array">
+      <post.expressions NullValue="1" type="expression"/>
+    </post.expressions>
+    <rad sctype="array">
+      <rad sctype="structure">
+        <application type="string">object.yes.no</application>
+        <names sctype="array">
+          <names sctype="string">text</names>
+          <names sctype="string">prompt</names>
+        </names>
+        <values sctype="array">
+          <values sctype="string">$L.message</values>
+          <values sctype="string">$L.response</values>
+        </values>
+        <rad.condition type="boolean">true</rad.condition>
+        <pre.rad.expressions sctype="array"/>
+        <post.rad.expressions sctype="array"/>
+      </rad>
+    </rad>
+    <next.process NullValue="1" sctype="array">
+      <next.process NullValue="1" type="string"/>
+    </next.process>
+    <process.condition NullValue="1" sctype="array">
+      <process.condition NullValue="1" type="boolean"/>
+    </process.condition>
+    <run.standard type="boolean">false</run.standard>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:01:04</sysmodtime>
+    <save.cursor.position NullValue="1" type="boolean"/>
+    <run.in.window NullValue="1" type="boolean"/>
+    <window.name NullValue="1" type="string"/>
+    <javascript.pre type="string">var arrayArgs = new SCDatum();
+arrayArgs.setType(8);  //type array
+arrayArgs.push(vars.$L_file.kbname);
+vars.$L_message = system.functions.scmsg(182, "km", arrayArgs);
+// Pop up yes-no box: "Are you sure that you want to irrevocably delete knowledgebase %S?  Click No if not. Click Yes if so and then after the delete, examine the Messages panel for important cleanup messages and suggestions."
+</javascript.pre>
+    <javascript.post type="string">if (vars.$L_response == "yes")
+{
+	if (vars.$L_file.kbtype == "sclib")
+	{
+	  system.library.KMCollection_Delete.removeTriggers();
+	}
+	if (vars.$L_file.kbtype == "weblib")
+	{
+	  system.library.KMCollection_WebCrawl.deleteJob(vars.$L_file);
+	}
+	system.library.KMCollection_Remove.removeCollection();
+	
+	//...then delete the doc
+	var delkb = new SCFile("kmknowledgebase");
+	rc = delkb.doSelect("kbname=\"" + vars.$L_file.kbname+"\"");
+	rc = delkb.doDelete();
+	
+	
+	print(system.functions.scmsg(121, "km")); // Document deleted.
+	var arrayArgs = new SCDatum();
+	arrayArgs.setType(8);  //type array
+	arrayArgs.push(vars.$L_file.kbname);
+	print(system.functions.scmsg(183, "km", arrayArgs));
+    // You can manually delete the boolean %S from the kmquery dbdict for this knowledgebase if you wish to."
+	arrayArgs.pop();
+	arrayArgs.push(vars.$L_file.kbname);
+
+	print(system.functions.scmsg(184, "km", arrayArgs));
+    // Print: Knowledgebase %S was deleted. Check the Messages panel for important log information."
+	
+}</javascript.post>
+    <baseMethod NullValue="1" type="string"/>
+  </record>
+</recordset>

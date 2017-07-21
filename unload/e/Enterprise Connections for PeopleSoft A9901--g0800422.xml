@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="unload">
+  <record id="name=&quot;Enterprise Connections for PeopleSoft A9901&quot;" recordid="Enterprise Connections for PeopleSoft A9901">
+    <name mandatory="true" type="string">Enterprise Connections for PeopleSoft A9901</name>
+    <unload type="boolean">true</unload>
+    <purge type="boolean">false</purge>
+    <record sctype="array">
+      <record sctype="structure">
+        <filename type="string">RAD</filename>
+        <query type="string">application.name="saphr.activate"</query>
+        <datamap type="boolean">true</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">RAD</filename>
+        <query type="string">application.name="trigger.contacts.sap"</query>
+        <datamap type="boolean">true</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">RAD</filename>
+        <query type="string">application.name="file.open"</query>
+        <datamap type="boolean">true</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">RAD</filename>
+        <query type="string">application.name#"saphr.import"</query>
+        <datamap type="boolean">true</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">RAD</filename>
+        <query type="string">application.name="trigger.sapconfig"</query>
+        <datamap type="boolean">true</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">RAD</filename>
+        <query type="string">application.name="file.import.new"</query>
+        <datamap type="boolean">true</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">dbdict</filename>
+        <query type="string">name="state"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">dbdict</filename>
+        <query type="string">name="contacts"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">dbdict</filename>
+        <query type="string">name="sapconfig"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">eventmap</filename>
+        <query type="string">evmap="contactserp"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">eventregister</filename>
+        <query type="string">evtype="ERPHR"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">format</filename>
+        <query type="string">name#"sapconfig"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">format</filename>
+        <query type="string">name="menu.gui.es"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">format</filename>
+        <query type="string">name="menu.gui.sap"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">format</filename>
+        <query type="string">name="menu.gui.hrsupport"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">format</filename>
+        <query type="string">name#"import.wizard.pshr"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">format</filename>
+        <query type="string">name="menu.gui.ps"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">format</filename>
+        <query type="string">name#"state"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">formatctrl</filename>
+        <query type="string">name="contacts.erp"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">import</filename>
+        <query type="string">dataset.name="state"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">import</filename>
+        <query type="string">dataset.name="contacts.erp.hr"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">menu</filename>
+        <query type="string">name="PEOPLESOFT MENU"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">menu</filename>
+        <query type="string">name="SAP"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">menu</filename>
+        <query type="string">name="EVENT SERVICES"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">menu</filename>
+        <query type="string">name="HR SUPPORT"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">menu</filename>
+        <query type="string">name="ES"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">menu</filename>
+        <query type="string">name="ERP MENU"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">menu</filename>
+        <query type="string">name="PS"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">menu</filename>
+        <query type="string">name="SAP MENU"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">menu</filename>
+        <query type="string">name="SAP HR SUPPORT"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">unload</filename>
+        <query type="string">name="Enterprise Connections for PeopleSoft A9901"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+    </record>
+    <protected.formats NullValue="1" sctype="array">
+      <protected.formats NullValue="1" type="string"/>
+    </protected.formats>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">10/18/99 05:38:01</sysmodtime>
+  </record>
+</recordset>

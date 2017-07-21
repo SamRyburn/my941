@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="RuleSet">
+  <record id="id=&quot;sd.idol.ocr&quot;" recordid="sd.idol.ocr">
+    <id type="string">sd.idol.ocr</id>
+    <name type="string">OCR by IDOL</name>
+    <tablename sctype="array">
+      <tablename sctype="string">incidents</tablename>
+    </tablename>
+    <rule sctype="array">
+      <rule sctype="structure">
+        <ruleId type="decimal">1</ruleId>
+        <isGroup type="boolean">false</isGroup>
+        <parentGroup type="decimal">0</parentGroup>
+        <ruleXML NullValue="1" type="string"/>
+        <ruleDesc type="string">OCR</ruleDesc>
+        <condition type="operator">$G.ess=true and nullsub(one.click in $L.file, false)=false</condition>
+        <conditionDesc type="string">( Expression: $G.ess=true and nullsub(one.click in $L.file,false)=false))</conditionDesc>
+        <conditionXML type="string">&lt;XmlCondition&gt;&lt;collection logical="" negate=""&gt;&lt;condition logical="" negate="false"&gt;&lt;operand type="expression"&gt;&lt;Expression caption=""&gt;"$G.ess=true and nullsub(one.click in $L.file,false)=false)"&lt;/Expression&gt;&lt;/operand&gt;&lt;/condition&gt;&lt;/collection&gt;&lt;/XmlCondition&gt;</conditionXML>
+        <fullDesc type="string">OCR (when ( Expression: $G.ess=true and nullsub(one.click in $L.file,false)=false)))</fullDesc>
+        <level type="decimal">0</level>
+        <type type="string">JSValidate</type>
+        <ruleJSON type="string">{"type":"JSValidate","script":"//if is src, add to smis task\u000d\u000aif (system.vars.$lo_idol_img_enabled || system.vars.$lo_idol_enabled) {\u000d\u000a  if (vars.$G_src) {\u000d\u000a\u0009if (vars['$G.multi']) {\u000d\u000a    \u0009company = vars['$lo.operator']['company'];\u000d\u000a    \u0009lib.IDOL_SMIS.addOCRTask(vars['$L.file'], 'OCR', company);\u000d\u000a    } else {\u000d\u000a    \u0009lib.IDOL_SMIS.addOCRTask(vars['$L.file'], 'OCR');\u000d\u000a    }\u000d\u000a  } else {\u000d\u000a\u0009var attachments = record.getAttachments();\u000d\u000a\u0009var attLen = 0;\u000d\u000a\u0009for (var i = 0; i &lt; attachments.length; i++) {\u000d\u000a\u0009\u0009if (lib.IDOL_Utilities.isImage(attachments[i])){\u000d\u000a\u0009\u0009\u0009attLen++;\u000d\u000a\u0009\u0009\u0009break;\u000d\u000a\u0009\u0009}\u000d\u000a\u0009}\u000d\u000a\u0009//call OCR interface\u000d\u000a\u0009if (vars.$G_ess &amp;&amp; (system.vars.$lo_idol_img_enabled || system.vars.$lo_idol_enabled) &amp;&amp; attLen &gt; 0)\u000d\u000a\u0009{\u000d\u000a    \u0009if (vars['$G.multi']) {\u000d\u000a    \u0009\u0009company = vars['$lo.operator']['company'];\u000d\u000a    \u0009\u0009lib.IDOL_SMIS.addOCRTask(record, 'OCR', company);\u000d\u000a    \u0009} else {\u000d\u000a    \u0009\u0009lib.IDOL_SMIS.addOCRTask(record, 'OCR');\u000d\u000a    \u0009}\u000d\u000a\u0009} else if ((vars.$G_ess &amp;&amp; (system.vars.$lo_idol_img_enabled || system.vars.$lo_idol_enabled) &amp;&amp; attLen === 0)) {\u000d\u000a\u0009\u0009if (vars['$G.multi']) {\u000d\u000a    \u0009\u0009company = vars['$lo.operator']['company'];\u000d\u000a    \u0009\u0009lib.IDOL_SMIS.addOCRTask(record, 'AutoFill', company);\u000d\u000a    \u0009} else {\u000d\u000a    \u0009\u0009lib.IDOL_SMIS.addOCRTask(record, 'AutoFill');\u000d\u000a    \u0009}\u000d\u000a\u0009}\u000d\u000a  }\u000d\u000a}"}</ruleJSON>
+      </rule>
+    </rule>
+    <lastRuleId type="decimal">2</lastRuleId>
+    <isAction type="boolean">false</isAction>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:01:18</sysmodtime>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

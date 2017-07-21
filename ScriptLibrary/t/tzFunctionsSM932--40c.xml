@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;tzFunctionsSM932&quot;" recordid="tzFunctionsSM932">
+    <name type="string">tzFunctionsSM932</name>
+    <script type="string">function getTZforCompany()
+// Get the time zone from the company record
+// Query the info table using type="company" and return
+// the value for time.zone. If there is no company record
+// or time.zone is null, then "-1" is returned.
+{
+  var f = new SCFile();
+  var q = new QueryCond("type", EQ, "company");
+  
+  if (f.doSelect("info", q) == RC_SUCCESS )
+    if (f.time_zone)
+      return f.time_zone;
+  
+	print( system.functions.scmsg( 143, "ScriptLibrary" ) );
+  return "-1";
+}
+
+ 
+function getTZforOperator(operatorName)
+// Get the time zone of the operator
+// Query the operator table using name=operatorName and return
+// the value for time.zone. If time.zone is null, then lookup
+// the value from the company record. If there is no operator record
+// found then "-1" is returned.
+{
+  var f = new SCFile();
+  var q = new QueryCond("name", EQ, operatorName);
+  
+  if (f.doSelect("operator",q) == RC_SUCCESS)
+    if (f.time_zone)
+    {
+      return f.time_zone;
+    }
+    else
+    {
+      return getTZforCompany();
+    }
+        
+  print( system.functions.scmsg( 144, "ScriptLibrary", [operatorName] ) );
+  return "-1";
+}
+
+function getTZforContact(contactName)
+// Get the time zone of the contact.
+// Query the contacts table using name=contactName and return
+// the value for time.zone. If time.zone is null, then lookup
+// the value from the company record. If there is no contacts record
+// found then "-1" is returned.
+{
+  var f = new SCFile();
+  var q = new QueryCond("contact_name", EQ, contactName);
+  
+  if (f.doSelect("contacts",q) == RC_SUCCESS)
+    if (f.time_zone)
+    {
+      return f.time_zone;
+    }
+    else
+    {
+      return getTZforCompany();
+    }
+        
+  print( system.functions.scmsg( 145, "ScriptLibrary", [contactName] ) );
+  return "-1";
+}
+
+function getTZforLocation(locationName)
+// Get the time zone of the location.
+// Query the location table using location=locationName and return
+// the value for time.zone. If time.zone is null, then lookup
+// the value from the company record. If there is no location record
+// found then "-1" is returned.
+{
+  var f = new SCFile();
+  var q = new QueryCond("location", EQ, locationName);
+
+  if (f.doSelect("location",q) == RC_SUCCESS )
+    if (f.time_zone)
+    {
+      return f.time_zone;
+    }
+    else
+    {
+      return getTZforCompany();
+    }
+        
+  print( system.functions.scmsg( 146, "ScriptLibrary", [locationName] ) );
+  return "-1";
+}
+
+
+function getTZforDevice(deviceName)
+// Get the time zone of the device.
+// Query the device table using logical.name=deviceName and return
+// the value for time.zone. If time.zone is null, then lookup
+// the value from the company record. If there is no device record
+// found then "-1" is returned.
+{
+  var f = new SCFile();
+  var q = new QueryCond("logical_name", EQ, deviceName);
+
+  if (f.doSelect("device",q) == RC_SUCCESS )
+    if (f.time_zone)
+    {
+      return f.time_zone;
+    }
+    else
+    {
+      return getTZforCompany();
+    }    
+    
+  print( system.functions.scmsg( 147, "ScriptLibrary", [deviceName] ) );
+  return -1;
+}
+
+
+/**
+*QCCR1E59316
+*@Description: get time zone offset of current operate system, because all date variable in javascript base on  time zone of OS . 
+*@Author: added by yuli 
+*@Date: since 9/25/10 
+**/
+function getOSOffset()
+{
+  return new Date().getTimezoneOffset();
+}
+/**
+*QCCR1E59316
+*@Description: convert date from string to datetime . 
+*@Author: added by yuli 
+*@Date: since 9/25/10 
+**/
+function convertStringtoDate(strdate)
+{
+
+  var dtdate=new Date(strdate);
+  
+  return dtdate;
+}
+
+/**
+*QCCR1E59316
+*@Description: convert date from datetime to string according to the dateorder. 
+*@Author: added by yuli 
+*@Date: since 10/28/10 
+**/
+function convertDatetoString(date,dateOrder)
+{
+
+
+	if ( date == null )
+		return null;
+	var  strMonth = system.functions.str( system.functions.month(date) );
+	var  strDay   = system.functions.str( system.functions.day(date) );
+	var  strYear  = system.functions.str( system.functions.year( date) );
+	var  strTime  = system.functions.str( system.functions.time( date ) );
+    var  strDate;
+
+	if (system.functions.lng(strMonth) == 1)
+	{
+        strMonth = "0" + strMonth;
+	}
+	if (system.functions.lng(strDay) == 1)
+	{
+        strDay = "0" + strDay;
+	}
+	
+	if (dateOrder == 1 )
+	{
+		strDate = strMonth + "/" + strDay + "/" + strYear.substr(2) +" " + strTime;
+	}
+	else if (dateOrder == 2 )
+	{
+		strDate = strDay + "/" + strMonth + "/" + strYear.substr(2) +" " + strTime;	
+	}
+	else if (dateOrder == 3 )
+	{
+		strDate = strYear.substr(2) + "/" + strMonth + "/" + strDay +" " + strTime;
+	}
+	else if (dateOrder == 4 )
+	{
+		strDate = strMonth + "/" + strDay + "/" + strYear +" " + strTime;
+	}
+	else if (dateOrder == 5 )
+	{
+		strDate = strDay + "/" + strMonth + "/" + strYear +" " + strTime;
+	}
+	else if (dateOrder == 6 )
+	{
+		strDate = strYear + "/" + strMonth + "/" + strDay +" " + strTime;	
+	}
+	return strDate;
+	
+}
+
+/**
+*
+*@Description: Get timezone file by time zone name. 
+*@Author: added by Kenny 
+*@Date: since 11/10/10 
+**/
+function getTZFileByTZName(tzName)
+{
+  var f = new SCFile();
+  var q = new QueryCond("name", EQ, tzName);
+
+  if (f.doSelect("tzfile",q) == RC_SUCCESS ){  
+        return f;
+  }else{        
+        return "-1";
+  }  
+}
+
+/**
+* QCCR1E57676-Have the time references in mail notifications be sent with receiver's TimeZone adjustment
+*
+* Get the time zone of the notifyName.
+* 1.Query the operator table using name=notifyName and return the value for time.zone. 
+* 2.If time.zone is null, then lookup the value from the contacts record. 
+* 3.If time.zone is null, then lookup the value from the company record. 
+* 4.If 3 tables can't found then "-1" is returned, no need print message.
+* 
+*@Description: Get timezone file by notify Name. 
+*@Author: added by Kenny 
+*@Date: since 2011/03/10 
+**/
+function getTZforNotify(notifyName)
+{	
+	var operatorFile = new SCFile();
+  	var operatorQ = new QueryCond("name", EQ, notifyName);  
+  	if (operatorFile.doSelect("operator",operatorQ) == RC_SUCCESS)
+  	{     		
+	  	if (operatorFile.time_zone)
+	    {	    	
+	    	return operatorFile.time_zone;
+	    }	         
+  	}  	
+  	
+  	var contactsFile = new SCFile();  	
+	var contactsQ = new QueryCond("contact_name", EQ, notifyName);
+	if (contactsFile.doSelect("contacts",contactsQ) == RC_SUCCESS)
+	{		
+		if (contactsFile.time_zone)
+		{			
+	  		return contactsFile.time_zone;
+		}		   	      
+	}
+	
+	var companyFile = new SCFile();   
+	var companyQ = new QueryCond("type", EQ, "company");
+	if (companyFile.doSelect("info",companyQ) == RC_SUCCESS )
+	{		
+		if (companyFile.time_zone)
+		{			
+			return companyFile.time_zone;
+		}		      
+	}  	
+  	return "-1";
+}</script>
+    <package type="string">BaseUtilities</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:45</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

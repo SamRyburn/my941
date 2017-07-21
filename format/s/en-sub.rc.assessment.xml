@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;sub.rc.assessment&quot;" recordid="en - sub.rc.assessment">
+    <name mandatory="true" type="string">sub.rc.assessment</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">112</length>
+        <window type="decimal">20</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$rc.assessment.url</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">embeddedViewer;Name=embeddedViewer1263877403287	Height=40	Name=embeddedViewer1263877403287	TabStop=0	Width=224	X=0	Y=0		Input=$rc.assessment.url	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">LiHuan</editor>
+    <last.update type="dateTime">05/19/11 18:06:29</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">9</sysmodcount>
+    <sysmoduser type="string">LiHuan</sysmoduser>
+    <sysmodtime type="dateTime">05/19/11 18:06:29</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

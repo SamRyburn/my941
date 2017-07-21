@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;nativeCalendar&quot;" recordid="nativeCalendar">
+    <name type="string">nativeCalendar</name>
+    <script type="string">//return calendar url record by displayscreen
+function getCalendar(file){
+	vars.$calendar_show=false;
+	vars.$rc_calendar_show = false;
+	vars.$rc_assessment_show = false;
+	vars.$change_calendar_show=false;
+	var tableName = system.functions.filename(file);
+    if (vars['$G.system.info']['nativeCCM']==true) {
+    	var enableCalendar = isEmbeddedCalendarActive(tableName);
+    	if (enableCalendar == true){
+			var ticketIsNotClosed = isTicketIsNotClosed(file,tableName);
+	    	if (ticketIsNotClosed==true){ 
+			vars.$calendar_show = true;
+			vars.$change_calendar_show=true;
+			var predefined_filter = lib.CalendarConfiguration.getPredefinedFilter(file);
+			//fix QCCR1E109933, the label contains single quote in French environment which needs to be escaped.
+			var filterStr = predefined_filter['query'];
+			if(filterStr != null &amp;&amp; system.functions.type(filterStr) == 2) {
+				filterStr = lib.StringUtil.escapeAllStr(filterStr);
+				filterStr = filterStr.replace(/'/g, "\\\'");
+			}
+			//end of fixing QCCR1E109933
+			vars.$predefined_query_string = filterStr;
+			vars.$start_date = predefined_filter['date'];
+			vars.$default_view = predefined_filter['view'];
+			}
+		}
+	} 
+	else if (vars['$G.system.info']['SMtoRC']==true) {
+		vars.$rc_calendar_show=lib.RCCondition.isCalendarShow(file);
+		if (vars.$rc_calendar_show) {
+			vars.$calendar_show = true;
+			vars.$rc_assessment_show=lib.RCCondition.isAssessShow(file);
+			if(tableName=="cm3r"){
+					vars.$rc_calendar_url=lib.RCCalendarUrl.getChangeUrl(false,file);
+				}else if (tableName=="incidents"){
+					vars.$rc_calendar_url=lib.RCCalendarUrl.getInteractionUrl(file);
+				}else if(tableName=="probsummary"){
+					vars.$rc_calendar_url=lib.RCCalendarUrl.getIncidentUrl(file);
+				}else if(tableName=="rootcause"){
+					vars.$rc_calendar_url=lib.RCCalendarUrl.getProblemUrl(file);
+				}else{
+					return null;
+				}
+			if(vars.$rc_assessment_show){
+				vars.$rc_assessment_url=lib.RCAssessmentUrl.getChangeUrl(file);
+				
+			}
+		}
+	}
+}
+
+/** if active is true, the embedded Calendar will be visible, otherwise, it will be invisible
+* @param {tableName} - the tableName of module
+*/
+function isEmbeddedCalendarActive(tableName){
+	var predefinedFilter = new SCFile("calendarFilterPredefined", SCFILE_READONLY);
+	predefinedFilter.setFields(["active"]);
+	var result = predefinedFilter.doSelect("module=\""+ tableName +"\" and active=true");
+	if (result == RC_SUCCESS){
+		return true;
+	}
+	return false;
+}
+
+/** judge the ticket of incidents,interaction,change,change task,problem is closed or not
+* @param {file} -  entry record
+* @param {tableName} - the table name of entry record
+*/
+function isTicketIsNotClosed(file,tableName){	
+	if (((tableName=="cm3r" || tableName=="cm3t" || tableName=="rootcause") &amp;&amp; file.open==true) 
+        || (tableName=="probsummary" &amp;&amp; file.flag==true) || (tableName=="incidents" &amp;&amp; file.open!="Closed")){
+			return true;
+			}
+	return false;
+}</script>
+    <package type="string">Calendar</package>
+    <sysmodtime type="dateTime">09/02/14 20:30:17</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">35</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

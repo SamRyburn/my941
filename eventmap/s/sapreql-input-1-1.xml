@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="eventmap">
+  <record id="evmap=&quot;sapreql&quot; and evtype=&quot;input&quot; and evseq=1 and evindex=1" recordid="sapreql - input - 1 - 1">
+    <evmap type="string">sapreql</evmap>
+    <evindex type="decimal">1</evindex>
+    <evnullsub NullValue="1" type="string"/>
+    <evmaptyp type="string">variable</evmaptyp>
+    <evfile type="string">ocml</evfile>
+    <evfield type="globalVar">$L.target.completion</evfield>
+    <evcalc sctype="array">
+      <evcalc sctype="operator">if (not  (null($cur.field))) then ($year=val(substr(str($cur.field), 1, 4));$month=val(substr(str($cur.field), 5, 2));$day=val(substr(str($cur.field), 7, 2));if ($year&gt;3999) then ($year=3999);$L.void=rtecall("datemake", $L.rc, target.completion in $axces.target, $year, $month, $day))</evcalc>
+    </evcalc>
+    <evtype type="string">input</evtype>
+    <evsepchar NullValue="1" type="string"/>
+    <evdtype type="decimal">2</evdtype>
+    <evquery NullValue="1" type="boolean"/>
+    <evxlate NullValue="1" type="string"/>
+    <evinit sctype="array">
+      <evinit sctype="operator">$cur.field=1 in evlist in $axces</evinit>
+    </evinit>
+    <evseq type="decimal">1</evseq>
+    <evlength NullValue="1" type="decimal"/>
+    <evitmlng NullValue="1" type="decimal"/>
+    <evmapcond NullValue="1" type="boolean"/>
+    <eveltype NullValue="1" type="decimal"/>
+    <sysmodcount type="decimal">3</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">02/25/03 07:33:30</sysmodtime>
+    <evsepchar.struc NullValue="1" type="string"/>
+  </record>
+</recordset>

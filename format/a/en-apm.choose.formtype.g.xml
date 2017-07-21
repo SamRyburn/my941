@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;apm.choose.formtype.g&quot;" recordid="en - apm.choose.formtype.g">
+    <name mandatory="true" type="string">apm.choose.formtype.g</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">52</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">BevelFrame;InnerBevelWidth=1	KEY=111040952450856	Name=BevelFrame0	OuterBevelWidth=1	ArrayLength=0	Height=18	Name=BevelFrame0	Width=104	X=0	Y=0		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">2</column>
+        <length type="decimal">50</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">What type of form do you want to create?</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=What type of form do you want to create?	KEY=111040952450852	Name=Label1	Justification=2	Bold=1	?Caption=	FontIncrease=1	ForeColor=0	Height=2	Name=Label1	Width=100			Caption=What type of form do you want to create?	X=2	Y=3		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">9</column>
+        <length type="decimal">35</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">$L.mode</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;BoxLines=2	KEY=111040952450853	Name=ComboBox2	Height=2	Name=ComboBox2	SelectOnly=1	Width=70			X=17	Y=6		Input=$L.mode	DisplayList=List of Records;Detail of a Single Record	ValueList=qbe;record	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">9</column>
+        <length type="decimal">12</length>
+        <window type="decimal">3</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">OK</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=OK	Bitmap and Caption=1	KEY=111040952450854	Name=Button3	ButtonID=0	Height=5	Name=Button3	Bitmaps=tok	Width=24			X=17	Y=10		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">32</column>
+        <length type="decimal">12</length>
+        <window type="decimal">3</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Cancel</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Cancel	Bitmap and Caption=1	KEY=111040952450855	Name=Button4	ButtonID=3	Height=5	Name=Button4	Bitmaps=tcancel	Width=24			X=63	Y=10		</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">lwalters</editor>
+    <last.update type="dateTime">03/09/05 07:55:55</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">13</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">03/15/05 04:35:02</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

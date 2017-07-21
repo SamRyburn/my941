@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;dynamic.field.validation.1.string&quot;" recordid="en - dynamic.field.validation.1.string">
+    <name mandatory="true" type="string">dynamic.field.validation.1.string</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">44</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Validation Rule</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;ArrayLength=0	Height=23	Name=	Visible=1	Width=88	X=0	Y=0	Caption=Validation Rule		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">2</column>
+        <length type="decimal">7</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$match.type</input>
+        <output type="string">None</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Radio;Value=none	Height=1	Name=	Width=13			Caption=None	X=2	Y=2		Input=$match.type	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">2</column>
+        <length type="decimal">12</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$match.type</input>
+        <output type="string">Record in Table</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Radio;Value=table	Height=1	Name=	Width=24			Caption=Record in Table	X=2	Y=4		Input=$match.type	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">2</column>
+        <length type="decimal">15</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Table Name:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Table Name:	ArrayLength=0	?Visible=[$match.type]="table"	Height=2	Name=	Width=30			X=2	Y=7		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">17</column>
+        <length type="decimal">16</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$match.table</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;ArrayLength=0	?ValueList=select("name","datadict","name","*")	?Visible=[$match.type]="table"	Height=2	Name=	Data Changed Event=100	SelectOnly=1	Width=32			X=33	Y=7		Input=$match.table	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">2</column>
+        <length type="decimal">15</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Field Name:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Field Name:	ArrayLength=0	?Visible=[$match.type]="table"	Height=2	Name=	Width=30			X=2	Y=10		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">17</column>
+        <length type="decimal">16</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$match.field</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;ArrayLength=0	?DisplayList=	?ValueList=	?Visible=[$match.type]="table"	Height=2	Name=	SelectOnly=1	Width=32			X=33	Y=10		Input=$match.field	DisplayList=$fieldDisplayList	ValueList=$fieldValueList	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">2</column>
+        <length type="decimal">15</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Query:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Query:	ArrayLength=0	?Visible=[$match.type]="table"	Height=2	Name=	Width=30			X=2	Y=13		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">17</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$query</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;?Visible=[$match.type]="table"	Height=2	Name=	Width=40			X=33	Y=13		Input=$query	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">38</column>
+        <length type="decimal">6</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Edit</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Edit	Name=button1354680208364	ButtonID=50	?Enabled=	?Visible=[$match.table]&lt;&gt;"" &amp; [$match.type]="table"	enabled=1	Height=2	Name=button1354680208364	Width=12			X=75	Y=13		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">2</column>
+        <length type="decimal">15</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Multiple Selections:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Multiple Selections:	ArrayLength=0	?Caption=	?Visible=[$match.type]="table"	Height=2	Name=	Width=30			X=2	Y=16		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">17</column>
+        <length type="decimal">16</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$multiSelections</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;AccessibleName=	?Visible=[$match.type]="table"	Height=2	Name=	Width=32			X=33	Y=16		Input=$multiSelections	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">10</line>
+        <column type="decimal">2</column>
+        <length type="decimal">15</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Group by Fields:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Group by Fields:	ArrayLength=0	?Visible=[$match.type]="table"	Height=2	Name=	Width=30			X=2	Y=19		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">10</line>
+        <column type="decimal">17</column>
+        <length type="decimal">16</length>
+        <window type="decimal">2</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$match.group</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;ArrayLength=2	?DisplayList=	?Mandatory=	?ValueList=	?Visible=[$match.type]="table"	Height=2	Name=	SelectOnly=1	Width=32			X=33	Y=19		Input=$match.group	DisplayList=$fieldDisplayList	ValueList=$fieldValueList	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">hanrui</editor>
+    <last.update type="dateTime">03/26/15 17:07:41</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:00:34</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

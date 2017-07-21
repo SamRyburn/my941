@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;BSGFunctions&quot;" recordid="BSGFunctions">
+    <name type="string">BSGFunctions</name>
+    <script type="string">/** @fileoverview BSGFunctions DO NOT MODIFY
+*   @author Hua Zhang
+*/
+
+/**
+*   @class BSGFunctions
+*   @constructor
+*/
+
+/** This function gets CIs related to a given CI through the relationship tree. 
+*
+*	@param {string} ciName    - name of the CI
+*	@param {boolean} firstLevelOnly - whether return the directly related CIs (First 
+*   Level) or CIs from all level
+*   @param {integer} maxLevel - maximun level to search for the relationship tree 
+*   
+*	@return Array to the RAD app
+*   @type Array
+*/
+
+var maxMembers=2000;
+
+function getMembers(ciName, firstLevelOnly, maxLevel) {	
+	var allMembers = new Array();
+	
+	var levelOne = getMemberOneNode(ciName);
+	
+	if (firstLevelOnly || maxLevel==1) {
+		return levelOne;
+	}
+		
+	// Do a breadth first search to navigate the entire tree
+	allMembers = levelOne;
+	
+	maxLevel = maxLevel &lt; 1 ? 10 : maxLevel--;
+
+	for (var count = 0; count &lt; maxLevel; count++) {
+		var members = getMemberOneLevel(levelOne, allMembers);
+		
+		if (members.length == 0) {
+			break;
+		}
+
+	  	levelOne = members;	
+	  	allMembers = allMembers.concat(members);
+	}
+	
+	return lib.ArrayUtil.removeA(allMembers,ciName);
+}	
+
+/*
+	Return all directly related CIs for one CI
+*/
+function getMemberOneNode(ciName) {	
+	var data = new SCFile("cirelationship", SCFILE_READONLY);
+	data.setFields(['logical.name', 'related.cis']);
+	
+	var members = new Array();   
+	var memberIndex = 0;
+
+	var status = data.doSelect("logical.name=\"" + ciName + "\"");
+	
+	while (status == RC_SUCCESS) {
+		if (data.related_cis != null) {
+		    members = members.concat(data.related_cis.toArray());
+		}
+		
+		status = data.getNext();
+	}
+	
+	return members;
+}
+
+/*
+	Return all directly related CIs for one level CIs
+*/
+function getMemberOneLevel(ciNames, allMembers) {	
+	var members = new Array();   
+
+	if (ciNames.length == 0)
+		return members;
+		
+	var data = new SCFile("cirelationship", SCFILE_READONLY); 
+	
+	// split to multiple arrays
+	var subCiNames = lib.ArrayUtil.split(ciNames, 1000);
+
+	for (var i = 0; i &lt; subCiNames.length; i++) 	{
+		var query = "logical.name isin {";
+		var sub = subCiNames[i];
+		
+		for (var j = 0; j &lt; sub.length; j++) {
+			if (j &gt; 0) {
+				query += ",";
+			}
+				
+			query += "\"" + sub[j] + "\"";
+		}
+		
+		query += "}";
+		
+		var result = data.doSelect(query);
+		
+		while (result == RC_SUCCESS) {
+	    	
+	    	// Get the related cis from a relation
+	    	if (data.related_cis != null) {
+		    	var relatedItemList = data.related_cis.toArray();
+		    	
+		    	for (var k = 0; k &lt; relatedItemList.length; k++) {
+		    		var item = relatedItemList[k];
+		    	
+		    		if (!lib.ArrayUtil.contains(allMembers, data.related_cis[k])) {
+			    		members.push(item);
+		    		}
+		    	}
+	    	}
+			
+			result = data.getNext();
+		}
+	}
+
+	return members;
+}	
+
+/**
+ * Filter CI name list by the query
+ */
+function filterCiList(ciNameList, appendQuery, ciName)
+{
+
+	// filter by ciName first, ignore ciName if it is '*' or multiple '***'
+	if (ciName != null &amp;&amp; ciName != "" &amp;&amp; new RegExp("[^*]").test(ciName))
+	{
+		for (var i = ciNameList.length-1; i&gt;= 0; i--)
+		{
+			// Case insensitive, since the db setting is unknown, there is no 'ciName' in ciNameList[i], remove ciNameList[i]
+			if (ciNameList[i].toUpperCase().indexOf(ciName.toUpperCase()) != 0)
+				ciNameList.splice(i,1);
+		}
+	}
+	
+	if (appendQuery == null || appendQuery == "" || appendQuery == "true")
+	{
+		return ciNameList;
+	}
+	
+	var returnlist = new Array();
+	
+	// split to multiple arrays
+	var subCiNames = lib.ArrayUtil.split(ciNameList, 1000);
+
+	for (var i = 0; i &lt; subCiNames.length; i++)
+	{
+		var query = "logical.name isin {";
+		
+		var sub = subCiNames[i];
+		for (var j = 0; j &lt; sub.length; j++)
+		{
+			if (j &gt; 0)
+				query += ",";
+			query += "\"" + sub[j] + "\"";					
+		}
+		query += "} and " + appendQuery;		
+		
+		var fFile = new SCFile( "device", SCFILE_READONLY);
+		fFile.setFields("logical.name");		
+
+		var rc = fFile.doSelect(query);
+		while (rc == RC_SUCCESS)
+		{
+			returnlist.push(fFile.logical_name);		
+			rc = fFile.getNext();
+		}
+	}
+
+	
+	return returnlist;
+}
+
+function getCiMembers(ciName, firstLevelOnly, maxLevel, ciDisplayName, appendQuery) {	
+	var allMembers = new Array();
+	//If only retrieve the first level members, need parse CI DisplayName and appendQuery into sql
+	if (firstLevelOnly || maxLevel==1) {
+		return getCiMemberOneNode(ciName,ciDisplayName,appendQuery);
+	}
+	maxLevel = maxLevel &lt; 1 ? 10 : maxLevel;
+	//get first level matched members
+	
+	allMembers=getCiMemberOneNode(ciName,ciDisplayName,appendQuery);
+	
+	if(allMembers.length&gt;maxMembers){
+		return allMembers;
+	}
+	//get first level all members prepare for the deeper query
+	
+	var levelOne = getCiMemberOneNode(ciName,"","");
+	
+	var members = new Array();
+	var avaiMembers=new Array();
+	//get matched members from the second level
+	var count;
+	for (count = 2; count &lt;= maxLevel; count++) {
+		avaiMembers = getCiMemberOneLevel(levelOne,ciDisplayName,appendQuery);
+		if(avaiMembers.length !== 0){
+		    if(avaiMembers.length&gt;maxMembers){
+				allMembers= avaiMembers;
+				break;
+			}
+		 	allMembers = allMembers.concat(avaiMembers);
+		}
+		members = getCiMemberOneLevel(levelOne,"","");
+		if (members.length == 0) {
+			break;
+		}
+		levelOne = members;		  	
+	}
+	
+	return allMembers;
+}
+
+function getCiMemberOneNode(ciName,ciDisplayName,appendQuery) {
+	var sql="logical.name=\"" + ciName + "\"";
+	var status;
+	var item;
+	var k;
+	var relatedItemList;
+	if(ciDisplayName!==null &amp;&amp; ciDisplayName!==""){
+		sql="SELECT ta02.logical.name as logicalName FROM device ta02 LEFT OUTER JOIN cirelationship ta01 ON  ( ta02.logical.name = ta01.related.cis )  WHERE (ta01.logical.name=\""+ciName+"\")";	
+	    sql=sql.substr(0,sql.lastIndexOf(")"))+" and ta02.display.name#\""+ciDisplayName+"\")";
+	}
+	if(appendQuery!==null &amp;&amp; appendQuery!=="" &amp;&amp; appendQuery!==undefined){
+	    if(sql.indexOf("SELECT ")!==0){//Is not adhoc sql
+	    	sql="SELECT ta02.logical.name as logicalName FROM device ta02 LEFT OUTER JOIN cirelationship ta01 ON  ( ta02.logical.name = ta01.related.cis )  WHERE (ta01.logical.name=\""+ciName+"\")";	
+	    }
+		sql=sql.substr(0,sql.lastIndexOf(")"))+" and ta02."+appendQuery+")";
+	}
+	var adhocSql=sql.indexOf("SELECT ")==0?true:false;
+	var data = new SCFile("cirelationship", SCFILE_READONLY);
+	
+	var members = new Array();   
+	
+	status = data.doSelect(sql);
+	while (status == RC_SUCCESS) {
+		if (adhocSql &amp;&amp; data[0] != null &amp;&amp; data[0] != "") {
+		    members.push(data[0]);
+		}
+		else if (!adhocSql &amp;&amp; data.related_cis != null) {
+		    
+		    relatedItemList = data.related_cis.toArray();
+		    for (k = 0; k &lt; relatedItemList.length; k++) {
+		    	item = relatedItemList[k];
+		    	//if (!lib.ArrayUtil.contains(members, item)) {
+			    	members.push(item);
+		    	//}
+		    }
+		}
+		if (members.length&gt;maxMembers &amp;&amp; ciDisplayName!==null &amp;&amp; ciDisplayName!==""){
+		    break;
+		}
+		status = data.getNext();
+	}
+	
+	return members;
+}
+function getCiMemberOneLevel(ciNames,ciDisplayName,appendQuery) {	
+	var members = new Array();   
+	var sql;
+	var query;
+	var adhocSql;
+	var result;
+	var item;
+	var k;
+	var relatedItemList;
+	if (ciNames.length == 0)
+		return members;
+		
+	var data = new SCFile("cirelationship", SCFILE_READONLY); 
+	
+	// split to multiple arrays
+	var subCiNames = lib.ArrayUtil.split(ciNames, 1000);
+
+	for (var i = 0; i &lt; subCiNames.length; i++) 	{
+		query = "ta01.logical.name isin {";
+		var sub = subCiNames[i];
+		for (var j = 0; j &lt; sub.length; j++) {
+			if (j &gt; 0) {
+				query += ",";
+			}
+				
+			query += "\"" + sub[j] + "\"";
+		}
+		query += "}";
+		
+		//var sql="SELECT ta02.logical.name as logicalName FROM device ta02 LEFT OUTER JOIN cirelationship ta01 ON  ( ta01.related.cis = ta02.logical.name )  WHERE ("+query+")";	
+		sql=query.substr(query.indexOf("logical.name"));
+		if(ciDisplayName!==null &amp;&amp; ciDisplayName!==""){
+			sql="SELECT ta02.logical.name as logicalName FROM device ta02 LEFT OUTER JOIN cirelationship ta01 ON  ( ta01.related.cis = ta02.logical.name )  WHERE ("+query+")";	
+			sql=sql.substr(0,sql.lastIndexOf(")"))+" and ta02.display.name#\""+ciDisplayName+"\")";
+		}
+		if(appendQuery!==null &amp;&amp; appendQuery!=="" &amp;&amp; appendQuery!==undefined){
+			if(sql.indexOf("SELECT ")!==0){//Is not adhoc sql
+				sql="SELECT ta02.logical.name as logicalName FROM device ta02 LEFT OUTER JOIN cirelationship ta01 ON  ( ta01.related.cis = ta02.logical.name )  WHERE ("+query+")";	
+			}
+			sql=sql.substr(0,sql.lastIndexOf(")"))+" and ta02."+appendQuery+")";
+		}
+		adhocSql=sql.indexOf("SELECT ")==0?true:false;
+		result = data.doSelect(sql);
+		while (result == RC_SUCCESS) {
+	    	// Get the related cis from a relation
+	    	if (adhocSql &amp;&amp; data[0] != null &amp;&amp; data[0] != "" &amp;&amp; !lib.ArrayUtil.contains(ciNames, data[0])) {
+		    	members.push(data[0]);
+			}
+			// Get the related cis from a relation
+	    	else if (!adhocSql &amp;&amp; data.related_cis != null) {
+		    	relatedItemList = data.related_cis.toArray();
+		    	for (k = 0; k &lt; relatedItemList.length; k++) {
+		    		item = relatedItemList[k];
+		    		//if (!lib.ArrayUtil.contains(members, item)) {
+			    		members.push(item);
+		    		//}
+		    	}
+	    	}
+	    	if (members.length&gt;maxMembers &amp;&amp; ciDisplayName!==null &amp;&amp; ciDisplayName!==""){
+		    	break;
+			}
+			result = data.getNext();
+		}
+	}
+	
+	return members;
+}	
+</script>
+    <package type="string">Configuration Management</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:38</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

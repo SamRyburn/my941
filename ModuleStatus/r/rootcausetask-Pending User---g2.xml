@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ModuleStatus">
+  <record id="module=&quot;rootcausetask&quot; and status=&quot;Pending User&quot;" recordid="rootcausetask - Pending User">
+    <status type="string">Pending User</status>
+    <sysmodtime type="dateTime">05/13/11 09:58:07</sysmodtime>
+    <sysmodcount type="decimal">2</sysmodcount>
+    <sysmoduser type="string">snandita</sysmoduser>
+    <module type="string">rootcausetask</module>
+    <tablename type="string">rootcausetask</tablename>
+    <sort.order type="decimal">5</sort.order>
+  </record>
+</recordset>

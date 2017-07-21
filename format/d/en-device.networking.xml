@@ -1,0 +1,1044 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;device.networking&quot;" recordid="en - device.networking">
+    <name mandatory="true" type="string">device.networking</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">87</length>
+        <window type="decimal">20</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">NoteBook;X=0	Y=0	Height=40	Width=173	Elastic=3	Pages=TCP/IP Settings;AppleTalk Settings;Netware Settings;Net BIOS	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">85</length>
+        <window type="decimal">19</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">TCP/IP Settings</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">page;Caption=TCP/IP Settings	X=0	Y=0	Height=37	Width=170	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">85</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">TCP/IP Settings Information</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption= TCP/IP Settings Information	X=0	Y=0	Height=2	Width=169	Elastic=1	ForeColor=10	BackColor=14	Bold=1	Opaque=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">1</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Host Name:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Host Name:	X=1	Y=2	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">18</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">tcpip.hostname</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=tcpip.hostname	X=35	Y=2	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">45</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Interface:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Interface:	X=89	Y=2	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">62</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">interface</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=interface	X=123	Y=2	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">1</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Description:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Description:	X=1	Y=4	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">18</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">tcpip.description</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=tcpip.description	X=35	Y=4	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">45</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Auto Addressing?</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Auto Addressing?	X=89	Y=4	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">62</column>
+        <length type="decimal">3</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">auto.addressing</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Caption=	Input=auto.addressing	X=123	Y=4	Height=2	Width=5	ArrayLength=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">1</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">IP Address:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=IP Address:	X=1	Y=6	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">18</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">network.address</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=network.address	X=35	Y=6	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">45</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">LDP Enabled?</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=LDP Enabled?	X=89	Y=6	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">62</column>
+        <length type="decimal">3</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">ldp.enabled</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Caption=	Input=ldp.enabled	X=123	Y=6	Height=2	Width=5	ArrayLength=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">1</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Broadcast Address:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Broadcast Address:	X=1	Y=8	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">18</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">broadcast.address</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=broadcast.address	X=35	Y=8	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">45</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">LPD Port:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=LPD Port:	X=89	Y=8	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">62</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">lpd.port</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=lpd.port	X=123	Y=8	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">1</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Subnet Mask:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Subnet Mask:	X=1	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">18</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">subnet.mask</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=subnet.mask	X=35	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">45</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">TCP/IP Enabled?</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=TCP/IP Enabled?	X=89	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">62</column>
+        <length type="decimal">3</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">tcpip.enabled</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Caption=	Input=tcpip.enabled	X=123	Height=2	Width=5	ArrayLength=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">1</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Default Gateway:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Default Gateway:	X=1	Y=12	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">18</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">default.gateway</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=default.gateway	X=35	Y=12	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">85</length>
+        <window type="decimal">19</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">AppleTalk Settings</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">page;Caption=AppleTalk Settings	X=0	Y=0	Height=37	Width=170	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">85</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Apple Talk Settings Information</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption= Apple Talk Settings Information	X=0	Y=0	Height=2	Width=169	Elastic=1	ForeColor=10	BackColor=14	Bold=1	Opaque=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">1</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">appletalk.enabled</input>
+        <output type="string">AppleTalk Enabled?</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Caption=AppleTalk Enabled?	Input=appletalk.enabled	X=1	Y=2	Height=2	Width=39	TextLocation=0	ArrayLength=1	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">45</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">AppleTalk Zone:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=AppleTalk Zone:	X=89	Y=2	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">62</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">appletalk.zone</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=appletalk.zone	X=123	Y=2	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">1</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">AppleTalk Name:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=AppleTalk Name:	X=1	Y=4	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">18</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">appletalk.name</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=appletalk.name	X=35	Y=4	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">45</column>
+        <length type="decimal">15</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">AppleTalk Phase:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=AppleTalk Phase:	X=89	Y=4	Height=2	Width=30	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">62</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">appletalk.phase</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=appletalk.phase	X=123	Y=4	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">1</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Description:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Description:	X=1	Y=6	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">18</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">appletalk.description</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=appletalk.description	X=35	Y=6	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">45</column>
+        <length type="decimal">15</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">AppleTalk Interface:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=AppleTalk Interface:	X=89	Y=6	Height=2	Width=30	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">62</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">appletalk.interface</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=appletalk.interface	X=123	Y=6	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">85</length>
+        <window type="decimal">19</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Netware Settings</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">page;Caption=Netware Settings	X=0	Y=0	Height=37	Width=170	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">85</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Netware Settings Information</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption= Netware Settings Information	X=0	Y=0	Height=2	Width=169	Elastic=1	ForeColor=10	BackColor=14	Bold=1	Opaque=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">1</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">netware.enabled</input>
+        <output type="string">Netware Enabled?</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Caption=Netware Enabled?	Input=netware.enabled	X=1	Y=2	Height=2	Width=39	TextLocation=0	ArrayLength=1	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">45</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">NDS Tree::</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=NDS Tree::	X=89	Y=2	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">62</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">netware.nds.tree</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=netware.nds.tree	X=123	Y=2	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">1</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Print Server Name:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Print Server Name:	X=1	Y=4	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">18</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">print.server.name</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=print.server.name	X=35	Y=4	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">45</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">NDS Context:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=NDS Context:	X=89	Y=4	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">62</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">netware.nds.context</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=netware.nds.context	X=123	Y=4	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">1</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Primary File Server:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Primary File Server:	X=1	Y=6	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">18</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">netware.primary.file.server</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=netware.primary.file.server	X=35	Y=6	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">45</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">IPX Frame Type:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=IPX Frame Type:	X=89	Y=6	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">62</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">netware.ipx.frame.type</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=netware.ipx.frame.type	X=123	Y=6	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">1</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Interface:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Interface:	X=1	Y=8	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">18</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">netware.interface</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=netware.interface	X=35	Y=8	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">45</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Poll Interval:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Poll Interval:	X=89	Y=8	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">62</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">netware.poll.interval</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=netware.poll.interval	X=123	Y=8	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">1</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Description:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Description:	X=1	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">18</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">netware.description</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=netware.description	X=35	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">45</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">SAP Rate (seconds):</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=SAP Rate (seconds):	X=89	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">62</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">netware.sap.rate</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=netware.sap.rate	X=123	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">85</length>
+        <window type="decimal">19</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Net BIOS</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">page;Caption=Net BIOS	X=0	Y=0	Height=37	Width=170	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">85</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Net Bios Information</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption= Net Bios Information	X=0	Y=0	Height=2	Width=169	Elastic=1	ForeColor=10	BackColor=14	Bold=1	Opaque=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">1</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">netbios.enabled</input>
+        <output type="string">Net BIOS Enabled?</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Caption=Net BIOS Enabled?	Input=netbios.enabled	X=1	Y=2	Height=2	Width=39	TextLocation=0	ArrayLength=1	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">45</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Work Group:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Work Group:	X=89	Y=2	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">62</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">netbios.workgroup</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=netbios.workgroup	X=123	Y=2	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">1</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Host Name:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Host Name:	X=1	Y=4	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">18</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">netbios.hostname</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=netbios.hostname	X=35	Y=4	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">45</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Connections:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Connections:	X=89	Y=4	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">62</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">netbios.connections</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=netbios.connections	X=123	Y=4	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">1</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Description:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Description:	X=1	Y=6	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">18</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">netbios.description</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=netbios.description	X=35	Y=6	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">45</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Connection Timeout:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Connection Timeout:	X=89	Y=6	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">62</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">netbios.connection.timeout</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=netbios.connection.timeout	X=123	Y=6	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">1</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Printer Name:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Printer Name:	X=1	Y=8	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">18</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">netbios.printer.name</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=netbios.printer.name	X=35	Y=8	Height=2	Width=46	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">falcon</editor>
+    <last.update type="dateTime">05/27/03 02:13:45</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">04/16/07 05:15:58</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

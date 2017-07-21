@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="unload">
+  <record id="name=&quot;Export Patches and Signaturemake&quot;" recordid="Export Patches and Signaturemake">
+    <name mandatory="true" type="string">Export Patches and Signaturemake</name>
+    <unload type="boolean">true</unload>
+    <purge type="boolean">false</purge>
+    <record sctype="array">
+      <record sctype="structure">
+        <filename type="string">patches</filename>
+        <query type="string">name="SM94"</query>
+        <datamap NullValue="1" type="boolean"/>
+      </record>
+      <record sctype="structure">
+        <filename type="string">signaturemake</filename>
+        <query type="string">true</query>
+        <datamap NullValue="1" type="boolean"/>
+      </record>
+    </record>
+    <protected.formats NullValue="1" sctype="array">
+      <protected.formats NullValue="1" type="string"/>
+    </protected.formats>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">zhouanqing</sysmoduser>
+    <sysmodtime type="dateTime">07/06/14 20:40:54</sysmodtime>
+  </record>
+</recordset>

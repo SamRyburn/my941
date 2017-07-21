@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="RuleSet">
+  <record id="id=&quot;kmdocument_createCopy&quot;" recordid="kmdocument_createCopy">
+    <id type="string">kmdocument_createCopy</id>
+    <name type="string">Create working copy</name>
+    <tablename sctype="array">
+      <tablename sctype="string">kmdocument</tablename>
+    </tablename>
+    <rule sctype="array">
+      <rule sctype="structure">
+        <ruleId type="decimal">2</ruleId>
+        <isGroup type="boolean">false</isGroup>
+        <parentGroup type="decimal">0</parentGroup>
+        <ruleXML NullValue="1" type="string"/>
+        <ruleDesc type="string">Set Create Flag</ruleDesc>
+        <condition type="string">true</condition>
+        <conditionDesc NullValue="1" type="string"/>
+        <conditionXML NullValue="1" type="string"/>
+        <fullDesc type="string">Set Create Flag</fullDesc>
+        <level type="decimal">0</level>
+        <type type="string">JSValidate</type>
+        <ruleJSON type="string">{"type":"JSValidate","script":"// Set the create variable that is used by the legacy create process\u000avars.$L_kmcreateWC=\"true\";"}</ruleJSON>
+      </rule>
+      <rule sctype="structure">
+        <ruleId type="decimal">1</ruleId>
+        <isGroup type="boolean">false</isGroup>
+        <parentGroup type="decimal">0</parentGroup>
+        <ruleXML NullValue="1" type="string"/>
+        <ruleDesc type="string">Call the kmdocument.addfeedbackbeforemodify process.</ruleDesc>
+        <condition type="string">true</condition>
+        <conditionDesc NullValue="1" type="string"/>
+        <conditionXML NullValue="1" type="string"/>
+        <fullDesc type="string">Call the kmdocument.addfeedbackbeforemodify process.</fullDesc>
+        <level type="decimal">0</level>
+        <type type="string">callProcess</type>
+        <ruleJSON type="string">{"type":"callProcess","process":"kmdocument.addfeedbackbeforemodify"}</ruleJSON>
+      </rule>
+    </rule>
+    <lastRuleId type="decimal">1</lastRuleId>
+    <isAction type="boolean">true</isAction>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:01:11</sysmodtime>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

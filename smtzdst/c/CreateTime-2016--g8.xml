@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="smtzdst">
+  <record id="tzname=&quot;CreateTime&quot; and dstyear=2016" recordid="">
+    <tzname type="string">CreateTime</tzname>
+    <dstyear type="decimal">2016</dstyear>
+    <dstbegin type="dateTime">07/16/17 16:47:34</dstbegin>
+    <dstend type="dateTime">07/16/17 16:47:34</dstend>
+    <isdst type="decimal">0</isdst>
+  </record>
+</recordset>

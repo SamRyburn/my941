@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="htmltemplates">
+  <record id="name=&quot;ChM Change Approval Approved_Timeperiod Conflict&quot; and language=&quot;en&quot;" recordid="ChM Change Approval Approved_Timeperiod Conflict - en">
+    <id type="string">864</id>
+    <type NullValue="1" type="string"/>
+    <name type="string">ChM Change Approval Approved_Timeperiod Conflict</name>
+    <expression type="string">//Prepare url for web access
+//#################################################################################################################
+//This is the url for index.do. if you want to generate url for ess.do, please use getESSURLFromQuery instead
+var file_name = system.functions.filename($RECORD);
+var record_name = system.functions.scmsg(file_name,"tablename");
+var record_title = record_name+" "+$RECORD.number;
+var record_query = "number=\""+$RECORD.number+"\"";
+var web_url = lib.urlCreator.getURLFromQuery(file_name,record_query,record_title);
+
+//#################################################################################################################
+var relative_file_name = "timeperiodDefinition";
+var relative_record_name = system.functions.scmsg(relative_file_name, "tablename");
+var relative_record_title = relative_record_name+ " "+$RECORDOLD.timeperiodId;
+var relative_record_query= "id=\""+$RECORDOLD.timeperiodId+"\""; 
+var relative_web_url = lib.urlCreator.getURLFromQuery(relative_file_name,relative_record_query,relative_record_title);
+
+//Generate Email address of change coordinator
+
+var coordinatorName = $RECORD.coordinator;
+var coordinatorEmail = lib.timeperiodConflict.getEmailAddress(coordinatorName);
+
+var $ = lib.c.$;
+var current_phase = $("#datadictService").displayValue($RECORD,"current.phase");
+ 
+var affected_item_disp_new= system.functions.get_display_value($RECORD, "affected.item",-1,true);
+var assets_disp_new= system.functions.get_display_value($RECORD, "assets",-1,true);</expression>
+    <content NullValue="1" sctype="array">
+      <content NullValue="1" type="string"/>
+    </content>
+    <module type="string">cm3r</module>
+    <cap.exec NullValue="1" sctype="array">
+      <cap.exec NullValue="1" type="string"/>
+    </cap.exec>
+    <active type="boolean">true</active>
+    <htmlcode type="string">&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;table style="WIDTH: 98%"&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;td valign="top" align="left"&gt;
+            &lt;table style="WIDTH: 600px"&gt;
+                &lt;tbody&gt;
+                    &lt;tr&gt;
+                        &lt;td valign="top"&gt;
+                        &lt;table style="FONT-FAMILY: arial" cellspacing="10" cellpadding="10" width="100%"&gt;
+                            &lt;tbody&gt;
+                                &lt;tr&gt;
+                                    &lt;td style="WIDTH: 100%" valign="top" align="left"&gt;
+                                    &lt;h1 style="COLOR: #036; FONT-SIZE: 24px"&gt;HP Service Manager&lt;/h1&gt;
+                                    &lt;table border="0" cellspacing="0" cellpadding="0" width="100%"&gt;
+                                        &lt;tbody&gt;
+                                            &lt;tr&gt;
+                                                &lt;td style="BACKGROUND-COLOR: #cfe0f1" height="10" colspan="2"&gt;&amp;nbsp;&lt;/td&gt;
+                                            &lt;/tr&gt;
+                                            &lt;tr&gt;
+                                                &lt;td style="BACKGROUND-COLOR: #cfe0f1" width="10"&gt;&amp;nbsp;&lt;/td&gt;
+                                                &lt;td style="BACKGROUND-COLOR: #cfe0f1; FONT-FAMILY: arial"&gt;Change &lt;a href="{web_url}"&gt;{$RECORD.number}&lt;/a&gt; , which conflicts with time period &lt;a href="{relative_web_url}"&gt;{$RECORDOLD.timeperiodId}&lt;/a&gt; , has been approved&lt;/td&gt;
+                                            &lt;/tr&gt;
+                                            &lt;tr&gt;
+                                                &lt;td style="BACKGROUND-COLOR: #cfe0f1" height="10" colspan="2"&gt;&amp;nbsp;&lt;/td&gt;
+                                            &lt;/tr&gt;
+                                        &lt;/tbody&gt;
+                                    &lt;/table&gt;
+                                    &lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr&gt;
+                                    &lt;td style="WIDTH: 100%" valign="top" align="left"&gt;
+                                    &lt;div style="POSITION: relative; PADDING-BOTTOM: 0px; MARGIN-TOP: -24px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; PADDING-TOP: 0px"&gt;
+                                    &lt;h2 style="COLOR: #036; FONT-SIZE: 18px"&gt;Details&lt;/h2&gt;
+                                    &lt;/div&gt;
+                                    &lt;/td&gt;
+                                &lt;/tr&gt;
+                            &lt;/tbody&gt;
+                        &lt;/table&gt;
+                        &lt;table style="FONT-FAMILY: arial; FONT-SIZE: 11px" cellspacing="2" cellpadding="6" width="94%" align="center"&gt;
+                            &lt;tbody&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td width="20%" align="right"&gt;Change ID&lt;/td&gt;
+                                    &lt;td&gt;&lt;a href="{web_url}"&gt;{$RECORD.number}&lt;/a&gt;&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Category&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.category}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td width="20%" align="right"&gt;Phase&lt;/td&gt;
+                                    &lt;td&gt;{current_phase}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Status&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.status}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;Approval Status&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.approval_status}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Service&lt;/td&gt;
+                                    &lt;td&gt;{affected_item_disp_new}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;Affected CI&lt;/td&gt;
+                                    &lt;td&gt;{assets_disp_new}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Planned Start&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.planned_start}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;Planned End&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.planned_end}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Change Coordinator&lt;/td&gt;
+                                    &lt;td&gt;{coordinatorEmail}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;Timeperiod ID &lt;/td&gt;
+                                    &lt;td&gt;&lt;a href="{relative_web_url}"&gt;{$RECORDOLD.timeperiodId}&lt;/a&gt;&lt;/td&gt;
+                                &lt;/tr&gt;
+                            &lt;/tbody&gt;
+                        &lt;/table&gt;
+                        &lt;div style="POSITION: relative; MARGIN-TOP: 20px; FONT-FAMILY: arial; MARGIN-LEFT: 20px; FONT-SIZE: 11px"&gt;
+                        &lt;p style="FONT-WEIGHT: bold"&gt;Change Management Team&lt;/p&gt;
+                        &lt;p style="COLOR: #999"&gt;Sent from HP Service Manager. Do not reply to this email.&lt;/p&gt;
+                        &lt;/div&gt;
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                &lt;/tbody&gt;
+            &lt;/table&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;</htmlcode>
+    <language type="string">en</language>
+    <mandant NullValue="1" sctype="array">
+      <mandant NullValue="1" type="string"/>
+    </mandant>
+    <test.record type="string">C10001</test.record>
+    <mail.title type="string">Change {$RECORD.number} , which conflicts with time period {$RECORDOLD.timeperiodId} , has been approved</mail.title>
+  </record>
+</recordset>

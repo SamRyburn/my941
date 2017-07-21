@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptPackage">
+  <record id="name=&quot;PDFramework&quot;" recordid="PDFramework">
+    <name type="string">PDFramework</name>
+    <description NullValue="1" type="string"/>
+    <sysmodtime type="dateTime">03/12/14 15:23:06</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">5</sysmodcount>
+  </record>
+</recordset>

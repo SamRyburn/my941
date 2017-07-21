@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;changeModelHelper&quot;" recordid="changeModelHelper">
+    <name type="string">changeModelHelper</name>
+    <script type="string">/**
+ * Function: Check whether a change model is valid based on the id, name ,category and subcategory.
+ * @param changeModel {String} change model id
+ * @param changeModelName {String} change model name
+ * @param category {String} 
+ * @param subcategory {String} 
+ * @return {boolean}
+ */
+function isChangeModelValid(changeModel, changeModelName, category, subcategory)
+{
+	if(changeModel != null &amp;&amp; changeModel != "" &amp;&amp; changeModelName != null &amp;&amp; changeModelName != "")
+	{
+		var file = new SCFile("changeModel")
+		var query = "id=\"" + changeModel + "\"";
+		query += getCondition("name", changeModelName);
+		query += getCondition("category", category);
+		query += getCondition("subcategory", subcategory);
+		if(RC_SUCCESS==file.doSelect(query))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * Function: return a additional query conidtion
+ * @param fieldName {String} change model id
+ * @param fieldValue {String} change model name
+ * @return {String}
+ * @private 
+ */
+function getCondition(fieldName, fieldValue)
+{
+	if(fieldValue != null &amp;&amp; fieldValue != "")
+	{
+		return " and " + fieldName + "=\"" + fieldValue + "\"";
+	}
+	return ""	
+}</script>
+    <package type="string">ChangeManagement</package>
+    <sysmodtime type="dateTime">09/18/13 13:20:39</sysmodtime>
+    <sysmoduser type="string">shiji.shu</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

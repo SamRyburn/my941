@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;folderFunctions&quot;" recordid="folderFunctions">
+    <name type="string">folderFunctions</name>
+    <script type="string">/**  This function is used to return limiting sql for folder permissions
+*
+*	@param {String} tableName	-  The name of the table to reference
+*	@param {String}	profileName	-	The name of the module profile to use
+*	@return the limiting sql from the scaccess record for the corresponding module/profile
+*		if the profileName is null then the function will retrieve the correct profile
+*	@type String
+*/
+
+function getAllowedFolders( tableName, profileName )
+{
+	var scaccessRecord = new SCFile("scaccess")
+	var folderSql = "folder=NULL"
+	var profile;
+	
+	if (profileName != null)
+	    profileName=null;
+
+	if ( profileName == null )
+	{
+		switch( tableName )
+		{
+			case "incidents":
+				profile = system.vars.$G_sm_environment;
+				profileName = system.vars.$G_sm_environment.name
+				break		
+			case "probsummary":
+				profile = system.vars.$G_pm_environment;
+				profileName = system.vars.$G_pm_environment.name
+				break
+			case "rootcause":
+			case "rootcausetask":
+			case "knownerror":
+			    profile = system.vars.$G_rc_environment;
+				profileName = system.vars.$G_rc_environment.name
+				break
+			case "device":
+			    profile = system.vars.$G_am_environment
+				profileName = system.vars.$G_am_environment.name
+				break								
+			case "contract":
+				profile = system.vars.$G_ct_environment;
+				profileName = system.vars.$G_ct_environment.name
+				break				
+			case "sla":
+				profile = system.vars.$G_sla_profile;
+				profileName = system.vars.$G_sla_profile.name
+				break		
+			case "ocmo":
+			case "ocml":
+			case "ocmq":
+			case "request":
+				profile = system.vars.$G_ocmq_environment;
+				profileName = system.vars.$G_ocmq_environment.name
+				system.functions.strclpl(profileName,2)
+				break
+			case "requestTask":
+				profile = system.vars.$G_ocml_environment;
+				profileName = system.vars.$G_ocml_environment.name
+				system.functions.strclpl(profileName,2)
+				break	
+			case "cm3r":
+			case "cm3t":
+				profile = system.vars.$G_cm3r_environment;
+				profileName = system.vars.$G_cm3r_environment.name
+				system.functions.strclpl(profileName,2)
+				break																							
+		}
+	}
+
+	var folders=lib.tableAccess.getFoldersWithViewAccess(profile);
+	if (folders.length&gt;0)
+	{
+	    folderSql="(folder isin "+system.functions.str(folders)+"or folder=NULL)";
+	}
+	
+	var sql = "filename=\"" + tableName + "\" and security.id=\"" + profileName + "\"";
+
+	if ( scaccessRecord.doSelect( sql ) == RC_SUCCESS )
+	{
+		if (folders.length&gt;0)
+		{
+		    return folderSql+" and "+scaccessRecord.restricting_query;
+		}
+		return scaccessRecord.restricting_query
+	}
+	else
+	{
+		return folderSql
+	}
+}
+
+function createFolderRights( folderDef )
+{
+	var rights = new SCFile( "secRights" );
+	if ( rights.doSelect( "true" ) == RC_SUCCESS )
+	{
+		do
+		{
+			var fRights = new SCFile( "FolderRights" );
+			var sql = "role=\"" + rights.role + "\" and area=\"" +rights.area+"\" and folder=\"" + folderDef.name +"\"";
+
+			if ( fRights.doSelect( sql ) != RC_SUCCESS )
+			{
+				fRights.folder = folderDef.name;
+				fRights.role = rights.role;
+				fRights.area = rights.area;
+				fRights.view = rights.view;
+				fRights._new = rights._new;
+				fRights.update = rights.update;
+				fRights._delete = rights._delete;
+				fRights.expert = rights.expert;
+				fRights.admin = rights.admin;
+				fRights.allowedStatus = rights.allowedStatus;
+				
+				fRights.doInsert();
+			}
+
+		}
+		while ( rights.getNext() == RC_SUCCESS )
+	};
+}
+
+function removeFolderRights( folderDef )
+{
+	var rights = new SCFile( "FolderRights" );
+	var sql = "folder=\""+folderDef.name+"\""; 
+	
+	if ( rights.doSelect( sql ) == RC_SUCCESS )
+	{
+		do
+		{
+			rights.doDelete();
+
+		}
+		while ( rights.getNext() == RC_SUCCESS )
+	};
+}
+
+function renameFolderRights( folderDef, oldFolderDef )
+{
+	var rights = new SCFile( "FolderRights" );
+	var sql = "folder=\""+oldFolderDef.name+"\""; 
+	
+	if ( rights.doSelect( sql ) == RC_SUCCESS )
+	{
+		do
+		{
+			rights.folder = folderDef.name;
+			rights.doUpdate();
+
+		}
+		while ( rights.getNext() == RC_SUCCESS )
+	};
+}
+
+/**
+QCCR1E74348 - An operator who has no folder right to view incident management records can incorrectly view all incident management records.
+Update the scFolderAccess that has no view rights
+ */
+function updateFolderAccessNoViewRights(){
+    var rights = new SCFile( "FolderRights" );
+    var sql = "view=false";
+    var ret = rights.doSelect( sql );
+    
+    while (ret==RC_SUCCESS){
+        var rc = system.functions.rtecall("callrad", 1, "trigger.folderAccess", 
+								["file", "record", "index"],  [rights, rights, 2], false);
+        ret = rights.getNext();
+    }
+		
+}
+
+function getAllFolders() {
+    var i=0;
+    var folders=[];
+    var folder=new SCFile("FolderDef");
+    var rc=folder.doSelect("true");
+    while (rc==RC_SUCCESS) {
+        folders[i++]=folder.name;
+        rc=folder.getNext();
+    }
+    return folders;
+}
+</script>
+    <package type="string">BaseUtilities</package>
+    <sysmodtime type="dateTime">07/22/14 19:00:09</sysmodtime>
+    <sysmoduser type="string">zhouanqing</sysmoduser>
+    <sysmodcount type="decimal">17</sysmodcount>
+    <prgnsystem type="boolean">true</prgnsystem>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

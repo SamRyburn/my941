@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="Process">
+  <record id="process=&quot;getans.create.solution&quot;" recordid="getans.create.solution">
+    <process type="string">getans.create.solution</process>
+    <pre.expressions sctype="array">
+      <pre.expressions sctype="operator">$L.createSolutionURL=""</pre.expressions>
+      <pre.expressions sctype="operator">$L.gaDocType=nullsub($L.selection, "")</pre.expressions>
+      <pre.expressions sctype="operator">$gamapname=nullsub($gamapname, filename($L.file))</pre.expressions>
+    </pre.expressions>
+    <post.expressions sctype="array">
+      <post.expressions sctype="operator">cleanup($gamapname)</post.expressions>
+    </post.expressions>
+    <rad sctype="array">
+      <rad sctype="structure">
+        <application type="string">us.launch.external</application>
+        <names sctype="array">
+          <names sctype="string">name</names>
+        </names>
+        <values sctype="array">
+          <values sctype="string">$L.createSolutionURL</values>
+        </values>
+        <rad.condition type="boolean">true</rad.condition>
+        <pre.rad.expressions sctype="array">
+          <pre.rad.expressions sctype="operator">$L.createSolutionURL=jscall("GetAnswers.getCreateSolutionURL", $L.gaDocType)</pre.rad.expressions>
+        </pre.rad.expressions>
+        <post.rad.expressions sctype="array"/>
+      </rad>
+    </rad>
+    <next.process NullValue="1" sctype="array">
+      <next.process NullValue="1" type="string"/>
+    </next.process>
+    <process.condition NullValue="1" sctype="array">
+      <process.condition NullValue="1" type="boolean"/>
+    </process.condition>
+    <run.standard NullValue="1" type="boolean"/>
+    <sysmodcount type="decimal">4</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">05/03/05 08:08:05</sysmodtime>
+    <save.cursor.position NullValue="1" type="boolean"/>
+    <run.in.window type="boolean">false</run.in.window>
+    <window.name NullValue="1" type="string"/>
+    <javascript.pre type="string">vars.$L_gaDocType = vars.$L_selection[0];
+system.library.GetAnswers.createSolution(vars.$gamapname, vars.$L_gaDocType);</javascript.pre>
+    <javascript.post type="string">print( system.functions.scmsg(16, "ga") );  //Author Solution sent to Get-Answers message
+</javascript.post>
+    <baseMethod NullValue="1" type="string"/>
+  </record>
+</recordset>

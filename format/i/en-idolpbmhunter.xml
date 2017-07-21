@@ -1,0 +1,706 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;idolpbmhunter&quot;" recordid="en - idolpbmhunter">
+    <name mandatory="true" type="string">idolpbmhunter</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">2</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Module Name</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Module Name	Name=label1401340406580	Justification=1	Font=6	Height=2	Name=label1401340406580	Width=35	X=2	Y=5		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">21</column>
+        <length type="decimal">75</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">table.name</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=input1401340471171	Height=2	Name=input1401340471171	ReadOnly=1	Width=150	X=40	Y=5		Input=table.name	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">2</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">DB Name</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=DB Name	Name=label1401340648032	Justification=1	?Caption=	Font=6	Height=2	Name=label1401340648032	Width=35	X=2	Y=7		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">21</column>
+        <length type="decimal">75</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">database.name</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=input1401340676123	AccessibleName=	Height=2	Name=input1401340676123	ReadOnly=1	Width=150	X=40	Y=7		Input=database.name	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">113</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;ArrayLength=0	canCollapse=0	?Caption=	?Visible=	floatGroup=1	Height=5	Name=	isExpanded=1	Width=225	X=0	Y=-1	Caption= 		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">113</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Hot Topic Analytics</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Hot Topic Analytics	BackColor=12	Bold=1	?Caption=	FontIncrease=4	ForeColor=10	Height=2	Name=	Width=225			X=0	Y=-1		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">80</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Edit hot topic analytics configuration and run action using this form.</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Edit hot topic analytics configuration and run action using this form.	?Caption=	?Visible=	ForeColor=4	Height=2	Name=	labelfor=	Width=159			X=0	Y=1		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">2</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Index Status</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Index Status	Name=label1402018481520	Justification=1	BackColor=10	Font=6	ForeColor=0	Height=2	Name=label1402018481520	Width=35	X=2	Y=10		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">21</column>
+        <length type="decimal">75</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$L.collstate</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Height=2	Name=	ReadOnly=1	Width=150	X=40	Y=10		Input=$L.collstate	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">2</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Last Index Time</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Last Index Time	Justification=1	?Visible=[$L.mode]&lt;&gt;"search"	Font=6	ForeColor=0	Height=2	Name=	Width=35	X=2	Y=12		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4100</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">21</column>
+        <length type="decimal">75</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$lastIndexTime</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">DateTime;Name=input1388394715650	Height=2	Name=input1388394715650	ReadOnly=1	Width=150	X=40	Y=12		Input=$lastIndexTime	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">42</column>
+        <length type="decimal">18</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Start Index</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Start Index	Name=button1401785362029	ButtonID=55	?Caption=	Height=2	Name=button1401785362029	Width=35	X=83	Y=15		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">60</column>
+        <length type="decimal">18</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Stop Index</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Stop Index	ButtonID=84	?Caption=	Height=2	Name=	Width=35	X=119	Y=15		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">78</column>
+        <length type="decimal">18</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Refresh Status</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Refresh Status	ButtonID=56	?Caption=	Height=2	Name=	Bitmaps=	Width=35	X=155	Y=15		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4100</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">103</column>
+        <length type="decimal">8</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">is.active</input>
+        <output type="string">Active</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Name=input1388394736781	?Caption=	?ReadOnly=is.active=false	?Visible=	Height=2	Name=input1388394736781	ReadOnly=1	Visible=0	Width=16	X=205	Y=15	Caption=Active		Input=is.active	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">2</column>
+        <length type="decimal">110</length>
+        <window type="decimal">14</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">NoteBook;Name=notebook1401781632463	Height=27	Name=notebook1401781632463	Width=220	X=2	Y=17		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">6</column>
+        <length type="decimal">1</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Analytic Corpus</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">page;Name=page1401781632464	Name=page1401781632464	X=10	Y=10	Caption=Analytic Corpus		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">1</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Index Condition</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Index Condition	Justification=1	?Caption=	?Visible=[$L.mode]&lt;&gt;"search"	Font=6	ForeColor=0	Height=2	Name=	Width=35	X=0	Y=2		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">20</column>
+        <length type="decimal">75</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">query</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;AccessibleName=	?Caption=	?Visible=[$L.mode]&lt;&gt;"search"	Height=2	Name=	Width=150	X=38	Y=2		Input=query	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">96</column>
+        <length type="decimal">10</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=label1401783528550	?Visible=	Height=2	Name=label1401783528550	Visible=0	Width=20	X=190	Y=2		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">21</column>
+        <length type="decimal">15</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Query Builder</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Query Builder	ButtonID=47	?ButtonID=	?Caption=	?Visible=[$L.mode]&lt;&gt;"search"	Height=2	Name=	Width=30	X=40	Y=4		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">1</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Title Field</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Title Field	Justification=1	?Visible=[$L.mode]&lt;&gt;"search"	Font=6	ForeColor=0	Height=2	Name=	Width=35	X=0	Y=7		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">20</column>
+        <length type="decimal">75</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">title.field</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;ArrayLength=1	?Visible=[$L.mode]&lt;&gt;"search"	Height=2	Name=	Mandatory=1	SelectOnly=1	Width=150	X=38	Y=7		Input=title.field	DisplayList=$fieldCaptions	ValueList=$fieldNames	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">1</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Contents Fields</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Contents Fields	Justification=1	?Visible=[$L.mode]&lt;&gt;"search"	Font=6	ForeColor=0	Height=2	Name=	Width=35	X=0	Y=10		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">20</column>
+        <length type="decimal">70</length>
+        <window type="decimal">3</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">contents.fields</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;ArrayLength=3	?Visible=[$L.mode]&lt;&gt;"search"	Height=2	Name=	Mandatory=1	SelectOnly=1	Width=139	X=38	Y=10		Input=contents.fields	DisplayList=$fieldCaptions	ValueList=$fieldNames	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">92</column>
+        <length type="decimal">3</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;ButtonID=49	?Bitmap=	?ButtonID=	?Caption=	?Enabled=	?Visible=[$L.mode]&lt;&gt;"search"	Height=2	Name=	Bitmaps=fillm	BalloonHelp=Multi Level Field	Width=6	X=182	Y=10		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">6</column>
+        <length type="decimal">1</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Filter Fields</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">page;Name=page1401781658708	Name=page1401781658708	X=10	Y=10	Caption=Filter Fields		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Timestamp Field</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Timestamp Field	Justification=1	?Visible=[$L.mode]&lt;&gt;"search"	Font=6	ForeColor=0	Height=2	Name=	Width=35	X=0	Y=1		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">20</column>
+        <length type="decimal">75</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">timestamp.field</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;ArrayLength=1	?Visible=[$L.mode]&lt;&gt;"search"	Height=2	Name=	Mandatory=1	SelectOnly=1	Width=150	X=38	Y=1		Input=timestamp.field	DisplayList=$dateFieldCaptions	ValueList=$dateFieldNames	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">1</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Properties Fields</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Properties Fields	Justification=1	?Visible=[$L.mode]&lt;&gt;"search"	Font=6	ForeColor=0	Height=2	Name=	Width=35	X=0	Y=4		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">20</column>
+        <length type="decimal">75</length>
+        <window type="decimal">6</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">properties.fields</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;ArrayLength=6	?Mandatory=	?ValueList=	?Visible=[$L.mode]&lt;&gt;"search"	Height=2	Name=	Mandatory=1	SelectOnly=1	Width=150	X=38	Y=4		Input=properties.fields	DisplayList=$fieldCaptions	ValueList=$fieldNames	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">95</column>
+        <length type="decimal">3</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;ButtonID=48	?Bitmap=	?ButtonID=	?Caption=	?Enabled=	?Visible=	Height=2	Name=	Bitmaps=fillm	BalloonHelp=Multi Level Field	Visible=0	Width=6	X=189	Y=4		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">6</column>
+        <length type="decimal">1</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Advanced</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">page;Name=page1406778344505	?Visible=	Name=page1406778344505	X=10	Y=10	Caption=Advanced		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">1</column>
+        <length type="decimal">19</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Expiry Days</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Expiry Days	Justification=1	Font=6	Height=2	Name=	Width=37	X=1	Y=2		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">20</column>
+        <length type="decimal">30</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">expiry</input>
+        <output type="string">Expiry</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Number;?Caption=	Height=2	Name=	Width=60	X=39	Y=2	Caption=Expiry		Input=expiry	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">50</column>
+        <length type="decimal">58</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=label1406779645605	Height=2	Name=label1406779645605	Width=116	X=99	Y=2		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">1</column>
+        <length type="decimal">19</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Max Return Results</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Max Return Results	Justification=1	?Caption=	FontIncrease=0	Font=6	Height=2	Name=	labelfor=limit.number	Width=37	X=1	Y=5		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">20</column>
+        <length type="decimal">30</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">limit.number</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Number;Name=limit.number	Height=2	Name=limit.number	Width=60	X=39	Y=5		Input=limit.number	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">20</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">show.all</input>
+        <output type="string">Show All Results</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Name=input1427795662447	Height=2	Name=input1427795662447	Width=40	X=39	Y=8	Caption=Show All Results		Input=show.all	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">1</column>
+        <length type="decimal">19</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Group By</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Group By	Justification=1	?Caption=	Font=6	Height=2	Name=	labelfor=limit.number	Width=37	X=1	Y=11		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">20</column>
+        <length type="decimal">30</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">group.by</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;Name=select1427867926945	?ReadOnly=	Height=2	Name=select1427867926945	Width=60	X=39	Y=11		Input=group.by	DisplayList=$fieldCaptions	ValueList=$fieldNames	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">51</column>
+        <length type="decimal">3</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;ButtonID=50	?Bitmap=	?ButtonID=	?Caption=	?Enabled=	?Visible=	Height=2	Name=	Bitmaps=fillm	BalloonHelp=Multi Level Field	Visible=0	Width=6	X=100	Y=11		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">1</column>
+        <length type="decimal">19</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Analytics Action</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Analytics Action	Justification=1	?Caption=	?Visible=([$L.mode]&lt;&gt;"search") &amp; ( [table.name]="probsummary")	Font=6	ForeColor=0	Height=2	Name=	Visible=0	Width=37	X=1	Y=14		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">20</column>
+        <length type="decimal">75</length>
+        <window type="decimal">4</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Table;Columns=Type;Query	?ReadOnly=	?Visible=([$L.mode]&lt;&gt;"search") &amp; ( [table.name]="probsummary")	Height=7	Name=	scElastic=both	Width=150	X=39	Y=14		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">candidates.action</input>
+        <output type="string">Type</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Column;=		Caption=Type	=	Column Width%=34.1				ValueList=$G.gl.idolhta.actiontype.key	DisplayList=$G.gl.idolhta.actiontype.display	Input=candidates.action	Y=0	X=0	SelectOnly=1	Name=	ButtonID=column1431942797940	AccessibleName=	scType=ComboBox		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">candidates.query</input>
+        <output type="string">Query</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Column;=		Caption=Query	=	Column Width%=65.9			Input=candidates.query	Y=0	X=0	Name=	ButtonID=column1431942460089	AccessibleName=	scType=Text		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">falcon</editor>
+    <last.update type="dateTime">08/05/15 18:26:20</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:00:35</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptPackage">
+  <record id="name=&quot;SLA&quot;" recordid="SLA">
+    <name type="string">SLA</name>
+    <description NullValue="1" type="string"/>
+    <sysmodtime type="dateTime">06/29/14 08:41:15</sysmodtime>
+    <sysmoduser type="string">dengxin</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+  </record>
+</recordset>

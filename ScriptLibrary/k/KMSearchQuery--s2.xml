@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;KMSearchQuery&quot;" recordid="KMSearchQuery">
+    <name type="string">KMSearchQuery</name>
+    <script type="string">/**  @fileoverview KMSearchQuery
+ *   @Modified by Huan Li
+ */
+
+function getvalidKBs(record, user) {
+    record.knowledgebases.pop();
+    record.kbselections.pop();
+    var tempknowledgebases =  new Datum();
+    tempknowledgebases.setType(8);
+    var tempShowName =  new Datum();
+    tempShowName.setType(8);
+    var filemaps = new SCDatum();
+    filemaps.setType(8); //type array   
+    vars.$fsyslibs = filemaps;
+    var kmlibFile = new SCFile("kmknowledgebase");
+    var kmFind = kmlibFile.doSelect("true");
+    if (kmFind == RC_SUCCESS) {
+        kmFind = kmlibFile.getFirst();
+        var count = 0; // for the index
+        var libArray;
+        if(vars.$G_kmsearchengine == "IDOL") {
+            libArray =lib.KMQuery_IDOL.require().getOnLineLibs();
+        }
+        while (kmFind == RC_SUCCESS) {
+            var nameNoDot = system.library.KMUtils.removetoken(kmlibFile.kbname, ".");
+            var nameNoUnderscore = system.library.KMUtils.removetoken(nameNoDot, "_");
+
+            // check user rights for this kb
+            var strEval = true;
+            if (kmlibFile.kbaccessscript) {
+            	strEval = eval("system.library." + kmlibFile.kbaccessscript + ".checkAccess(user,kmlibFile)");
+            }
+
+            if (vars.$G_kmsearchengine != "IDOL")
+            {
+                if (system.library.KMCollection_Statistics.checkIndexStatus(kmlibFile.kbname) != 0)
+                {
+                    
+                    strEval = false;
+                }
+            }
+            else
+            {
+                if( !lib.ArrayUtil.contains(libArray,kmlibFile.kbname))
+                {
+                    strEval = false;
+                }
+            }
+
+            if (strEval) {
+                tempknowledgebases.push(kmlibFile.kbname);
+                tempShowName.push(kmlibFile.kbdescription);
+                if (kmlibFile.kbtype == "fsyslib") {
+                    var arrayLength = kmlibFile.fileURLlist.length();
+                    var m;
+                    for (m = 0; m &lt; arrayLength; ++m) {
+                        var fileURLlist = kmlibFile.fileURLlist[m];
+                        
+                        if (!system.functions._null(fileURLlist) &amp;&amp; fileURLlist.filestartpath != null &amp;&amp; fileURLlist.filestartpath != "" &amp;&amp; fileURLlist.filestartpath != "null" &amp;&amp; fileURLlist.filemapfrom != null &amp;&amp; fileURLlist.filemapfrom != "" &amp;&amp; fileURLlist.filemapfrom != "null" &amp;&amp; fileURLlist.filemapto != null &amp;&amp; fileURLlist.filemapto != "" &amp;&amp; fileURLlist.filemapto != "null") {
+                            vars.$fsyslibs.push(kmlibFile.kbname + ";" + fileURLlist.filestartpath + ";" + fileURLlist.filemapfrom + ";" + fileURLlist.filemapto);
+                        }
+                    }
+                    
+                }++count;
+                
+            } else {
+                eval("record." + nameNoUnderscore + "=false;");
+                eval("vars.$" + nameNoUnderscore + "index=-1;");
+            }
+            kmFind = kmlibFile.getNext();
+        }
+    }
+    if(tempknowledgebases.length()&gt;0)
+        reorderKnowledgebase(record,tempknowledgebases,tempShowName);
+    return;
+}
+
+
+function getSectionDisplayNames() {
+    var tempknowledgebases =  new Datum();
+    tempknowledgebases.setType(8);
+    var tempShowName =  new Datum();
+    tempShowName.setType(8);
+    var kmlibFile = new SCFile("kmknowledgebase");
+    var kmFind = kmlibFile.doSelect("true");
+    if (kmFind == RC_SUCCESS) {
+        kmFind = kmlibFile.getFirst();
+        var count = 0; // for the index
+        while (kmFind == RC_SUCCESS) {
+            nameNoDot = system.library.KMUtils.removetoken(kmlibFile.kbname, ".");
+            nameNoUnderscore = system.library.KMUtils.removetoken(nameNoDot, "_");
+            tempknowledgebases.push(kmlibFile.kbname);
+            tempShowName.push(kmlibFile.kbdescription);
+            kmFind = kmlibFile.getNext();
+        }
+    }
+    if(tempknowledgebases.length()&gt;0)
+        reorderSectionDisplayNames(tempknowledgebases,tempShowName);
+    return;
+}
+
+function reorderSectionDisplayNames(tempknowledgebases,tempShowName)
+{
+    var oldindex=0;
+    oldindex = checkLibraryAvailable(tempknowledgebases,"Knowledge_Library");
+    if(oldindex&gt;=0)
+    {
+        if(tempShowName[oldindex]!=null)eval("vars.$L_name1=\""+ tempShowName[oldindex] +"\";");
+        else eval("vars.$L_name1=\""+ tempknowledgebases[oldindex] +"\";");
+
+    }
+    oldindex = checkLibraryAvailable(tempknowledgebases,"KnownError_Library");
+    if(oldindex&gt;=0)
+    {
+        if(tempShowName[oldindex]!=null)eval("vars.$L_name2=\""+ tempShowName[oldindex] +"\";");
+        else eval("vars.$L_name2=\""+ tempknowledgebases[oldindex] +"\";");
+    }
+    oldindex = checkLibraryAvailable(tempknowledgebases,"Problem_Library");
+    if(oldindex&gt;=0)
+    {
+        if(tempShowName[oldindex]!=null)eval("vars.$L_name3=\""+ tempShowName[oldindex] +"\";");
+        else eval("vars.$L_name3=\""+ tempknowledgebases[oldindex] +"\";");
+    }
+    oldindex = checkLibraryAvailable(tempknowledgebases,"Incident_Library");
+    if(oldindex&gt;=0)
+    {
+        if(tempShowName[oldindex]!=null)eval("vars.$L_name4=\""+ tempShowName[oldindex] +"\";");
+        else eval("vars.$L_name4=\""+ tempknowledgebases[oldindex] +"\";");
+    }
+    oldindex = checkLibraryAvailable(tempknowledgebases,"Interaction_Library");
+    if(oldindex&gt;=0)
+    {
+        if(tempShowName[oldindex]!=null)eval("vars.$L_name5=\""+ tempShowName[oldindex] +"\";");
+        else eval("vars.$L_name5=\""+ tempknowledgebases[oldindex] +"\";");
+    }
+    oldindex = checkLibraryAvailable(tempknowledgebases,"Change_Library");
+    if(oldindex&gt;=0)
+    {
+        if(tempShowName[oldindex]!=null)eval("vars.$L_name6=\""+ tempShowName[oldindex] +"\";");
+        else eval("vars.$L_name6=\""+ tempknowledgebases[oldindex] +"\";");
+    }
+    oldindex = checkLibraryAvailable(tempknowledgebases,"Request_Library");
+    if(oldindex&gt;=0)
+    {
+        if(tempShowName[oldindex]!=null)eval("vars.$L_name7=\""+ tempShowName[oldindex] +"\";");
+        else eval("vars.$L_name7=\""+ tempknowledgebases[oldindex] +"\";");
+    }
+    oldindex = checkLibraryAvailable(tempknowledgebases,"Catalog_Library");
+    if(oldindex&gt;=0)
+    {
+        if(tempShowName[oldindex]!=null)eval("vars.$L_name8=\""+ tempShowName[oldindex] +"\";");
+        else eval("vars.$L_name8=\""+ tempknowledgebases[oldindex] +"\";");
+    }
+    oldindex = checkLibraryAvailable(tempknowledgebases,"Contact_Library");
+    if(oldindex&gt;=0)
+    {
+        if(tempShowName[oldindex]!=null)eval("vars.$L_name9=\""+ tempShowName[oldindex] +"\";");
+        else eval("vars.$L_name9=\""+ tempknowledgebases[oldindex] +"\";");
+    }
+    oldindex = checkLibraryAvailable(tempknowledgebases,"Location_Library");
+    if(oldindex&gt;=0)
+    {
+        if(tempShowName[oldindex]!=null)eval("vars.$L_name10=\""+ tempShowName[oldindex] +"\";");
+        else eval("vars.$L_name10=\""+ tempknowledgebases[oldindex] +"\";");
+    }
+    oldindex = checkLibraryAvailable(tempknowledgebases,"Device_Library");
+    if(oldindex&gt;=0)
+    {
+        if(tempShowName[oldindex]!=null)eval("vars.$L_name11=\""+ tempShowName[oldindex] +"\";");
+        else eval("vars.$L_name11=\""+ tempknowledgebases[oldindex] +"\";");
+    }
+    system.functions.cleanup(tempknowledgebases);
+    system.functions.cleanup(tempShowName);
+}
+
+function reorderKnowledgebase(record,tempknowledgebases,tempShowName)
+{
+    var tmpindex=0;
+    var oldindex=0;
+    oldindex = checkLibraryAvailable(tempknowledgebases,"Knowledge_Library");
+    if(oldindex&gt;=0)
+    {
+        record.kbselections.push(true);
+        if(tempShowName[oldindex]!=null)record.knowledgebases.push(tempShowName[oldindex]);
+        else record.knowledgebases.push(tempknowledgebases[oldindex]);
+        eval("record.KnowledgeLibrary=true;");
+        eval("vars.$KnowledgeLibraryindex=" + tmpindex + ";");
+        tmpindex++;
+    }
+    oldindex = checkLibraryAvailable(tempknowledgebases,"KnownError_Library");
+    if(oldindex&gt;=0)
+    {
+        record.kbselections.push(true);
+        if(tempShowName[oldindex]!=null)record.knowledgebases.push(tempShowName[oldindex]);
+        else record.knowledgebases.push(tempknowledgebases[oldindex]);
+        eval("record.KnownErrorLibrary=true;");
+        eval("vars.$KnownErrorLibraryindex=" + tmpindex + ";");
+        tmpindex++;
+    }
+    oldindex = checkLibraryAvailable(tempknowledgebases,"Problem_Library");
+    if(oldindex&gt;=0)
+    {
+        record.kbselections.push(true);
+        if(tempShowName[oldindex]!=null)record.knowledgebases.push(tempShowName[oldindex]);
+        else record.knowledgebases.push(tempknowledgebases[oldindex]);
+        eval("record.ProblemLibrary=true;");
+        eval("vars.$ProblemLibraryindex=" + tmpindex + ";");
+        tmpindex++;
+    }
+    oldindex = checkLibraryAvailable(tempknowledgebases,"Incident_Library");
+    if(oldindex&gt;=0)
+    {
+        record.kbselections.push(true);
+        if(tempShowName[oldindex]!=null)record.knowledgebases.push(tempShowName[oldindex]);
+        else record.knowledgebases.push(tempknowledgebases[oldindex]);
+        eval("record.IncidentLibrary=true;");
+        eval("vars.$IncidentLibraryindex=" + tmpindex + ";");
+        tmpindex++;
+    }
+    oldindex = checkLibraryAvailable(tempknowledgebases,"Interaction_Library");
+    if(oldindex&gt;=0)
+    {
+        record.kbselections.push(true);
+        if(tempShowName[oldindex]!=null)record.knowledgebases.push(tempShowName[oldindex]);
+        else record.knowledgebases.push(tempknowledgebases[oldindex]);
+        eval("record.InteractionLibrary=true;");
+        eval("vars.$InteractionLibraryindex=" + tmpindex + ";");
+        tmpindex++;
+    }
+    for(j =0;j&lt;tempknowledgebases.length();++j)
+    {
+        if(tempknowledgebases[j]!="Knowledge_Library" &amp;&amp; tempknowledgebases[j]!="Problem_Library" &amp;&amp;
+            tempknowledgebases[j]!="KnownError_Library" &amp;&amp; tempknowledgebases[j]!="Incident_Library" &amp;&amp; tempknowledgebases[j]!="Interaction_Library")
+        {
+            record.kbselections.push(true);
+            if(tempShowName[j]!=null)record.knowledgebases.push(tempShowName[j]);
+            else record.knowledgebases.push(tempknowledgebases[j]);
+            var tmpnameNoDot = system.library.KMUtils.removetoken(tempknowledgebases[j], ".");
+            var tmpnameNoUnderscore = system.library.KMUtils.removetoken(tmpnameNoDot, "_");
+            eval("record."+ tmpnameNoUnderscore +"= true;");
+            eval("vars.$"+ tmpnameNoUnderscore +"index=" + tmpindex + ";");
+            tmpindex++;
+        }
+    }
+    system.functions.cleanup(tempknowledgebases);
+    system.functions.cleanup(tempShowName);
+}
+
+function checkLibraryAvailable(tempknowledgebases,kbname)
+{
+    for(k = 0; k&lt;tempknowledgebases.length();++k)
+    {
+        if(tempknowledgebases[k]==kbname)
+        {
+            return k;
+        }
+    }
+    return -1;
+}
+
+function getsearchSecurity(user, kblist) {
+    var kmsearchquery = "";
+    var tmpsearchquery = "";
+    var kmlibFile = new SCFile("kmknowledgebase");
+    var kmFind = kmlibFile.doSelect("true");
+    if (kmFind == RC_SUCCESS) {
+        kmFind = kmlibFile.getFirst();
+        while (kmFind == RC_SUCCESS) {
+            
+            // check kbname in kblist, no need to check kbs the user doesn't have access to.
+            if (kblist.indexOf(kmlibFile.kbname) &gt; -1) {
+                tmpsearchquery = eval("system.library." + kmlibFile.searchsecurityscript + ".getSecurityInfo(user, kmlibFile)");
+                
+                if (tmpsearchquery.length &gt; 1)
+                {
+                    if (kmsearchquery.length &lt; 1)
+                    {
+                        kmsearchquery = "(" + tmpsearchquery + " AND ( knowledgebase_name: " + kmlibFile.kbname + "))";
+                    }
+                    else
+                    {
+                        kmsearchquery += " OR " + tmpsearchquery;
+                    }
+                }
+                else {
+                    if (kmsearchquery.length &lt; 1) {
+                        kmsearchquery += " ( knowledgebase_name: " + kmlibFile.kbname + ")";
+                    } else {
+                        kmsearchquery += " OR ( knowledgebase_name: " + kmlibFile.kbname + ")";
+                    }
+                }
+            } // if (kblist.indexOf(kmlibFile.kbname) &gt; -1)
+            kmFind = kmlibFile.getNext();
+        } //while( kmFind == RC_SUCCESS ) 
+
+
+    } //if( kmFind == RC_SUCCESS )
+    return kmsearchquery;
+}
+
+</script>
+    <package type="string">KnowledgeManagement</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:41</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

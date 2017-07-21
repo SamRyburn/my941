@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;KMCollection_WebCrawl&quot;" recordid="KMCollection_WebCrawl">
+    <name type="string">KMCollection_WebCrawl</name>
+    <script type="string">function writewebStyleFile()
+{
+  var getenginename = system.library.KMSearchInterface.getEngineName();
+  var result = 0;
+  if (getenginename == "K2")
+  {
+    result = system.library.KMCollection_WebCrawl_K2.writewebStyleFile();
+    return result;
+  }
+  else
+  return 0;
+}
+
+function webCreateIndex(strCollection)
+{
+  var getenginename = system.library.KMSearchInterface.getEngineName();
+  var result = 0;
+  if (getenginename == "K2")
+  {
+    result = system.library.KMCollection_WebCrawl_K2.webCreateIndex();
+    return result;  
+  }
+  else
+  {
+  // check for slaves, call init and create for master and slaves here...
+		var strXML;
+		var serverFile = new SCFile("kmsearchservers");
+  		var serverFind = serverFile.doSelect("servername = \""+vars.$L_file.searchservername+"\"");
+  		if (serverFind == RC_SUCCESS)
+  		{
+  			serverFind = serverFile.getFirst();
+  			
+  			for (var y = 0; y &lt; serverFile.servers.length(); y++)
+  			{
+  				var strCfg = "&lt;SEConfig&gt;";
+  				strCfg += "&lt;adminhost&gt;"+ serverFile.servers[y].hostname + "&lt;/adminhost&gt;";
+				strCfg += "&lt;adminport&gt;" + serverFile.servers[y].port + "&lt;/adminport&gt;";
+				strCfg += "&lt;admininstance&gt;" + serverFile.servers[y].searchinstancename + "&lt;/admininstance&gt;";
+				strCfg += "&lt;webdav&gt;" + serverFile.webdavname + "&lt;/webdav&gt;";
+				strCfg += "&lt;/SEConfig&gt;";
+				
+				system.library.KMSearchInterface.initializeEngine(strCfg);
+  				var xmlRec = system.library.KMCollection_WebCrawl.webRecordToXML(vars.$L_file);
+  				result = system.library.KMSearchInterface.configureIndex(xmlRec.toXMLString());
+  				result = system.library.KMSearchInterface.createIndex(strCollection);
+    			
+  			}
+  		}
+ 		return result;
+  }
+}
+
+function webDeleteIndex(strCollection)
+{
+	var strxml = system.library.KMUtils.getSearchEngineConfig(vars.$L_file.kbname, "admin");
+   
+    result = system.library.KMSearchInterface.initializeEngine(strxml);
+    
+	if (result == -1)
+	 	return -1;   	
+	result = system.library.KMSearchInterface.deleteIndex(strCollection);
+    return result;
+}
+
+function createJob(record)
+{
+  print("creating Job");
+  var crawlhost = "";
+  crawlhost = record.crawlhost;
+
+  if (system.functions._null(crawlhost))
+  {
+  	var arrayArgs = new SCDatum();
+  	arrayArgs.setType(8);  //type array
+  	arrayArgs.push("Crawler Host");
+	var errorMsg = system.functions.scmsg(223, "km", arrayArgs);
+	system.library.KMUtils.domessageBox(errorMsg);
+ 	
+	system.library.KMCollection_Update_Utils.logUnexpectedError(errorMsg);			
+    return -1; // no environment record
+   }
+   
+  var crawlport = "";
+  crawlport = record.crawlport;
+  if (system.functions._null(crawlport))
+  {
+  	var arrayArgs = new SCDatum();
+  	arrayArgs.setType(8);  //type array
+  	arrayArgs.push("Crawler Port");
+	var errorMsg = system.functions.scmsg(223, "km", arrayArgs);
+	system.library.KMUtils.domessageBox(errorMsg);
+ 	
+	system.library.KMCollection_Update_Utils.logUnexpectedError(errorMsg);			
+    return -1; // no environment record
+  } 
+  
+  if (record.kbtype == "weblib")
+  {
+  var weburls = "";
+  if (system.library.KMUtils.isSCArray(record.weburllist))
+  {
+   	weburls = system.library.KMUtils.scArrayToString(record.weburllist);
+  }
+  
+  if (weburls == null || weburls.length &lt; 5)
+  {
+    var arrayArgs = new SCDatum();
+  	arrayArgs.setType(8);  //type array
+  	arrayArgs.push("URLS");
+	var errorMsg = system.functions.scmsg(223, "km", arrayArgs);
+	system.library.KMUtils.domessageBox(errorMsg);
+ 	
+	system.library.KMCollection_Update_Utils.logUnexpectedError(errorMsg);
+   	return -1;
+  }  
+  
+  if (record.webjumps == null)
+  {
+    var arrayArgs = new SCDatum();
+  	arrayArgs.setType(8);  //type array
+  	arrayArgs.push("Max Links to Follow");
+	var errorMsg = system.functions.scmsg(223, "km", arrayArgs);
+	system.library.KMUtils.domessageBox(errorMsg);
+ 	
+	system.library.KMCollection_Update_Utils.logUnexpectedError(errorMsg);  
+	return -1;
+  } 
+  
+  }
+  
+  if (record.webpathlen == null)
+  {
+    var arrayArgs = new SCDatum();
+  	arrayArgs.setType(8);  //type array
+  	if (record.kbtype == "weblib")
+  		arrayArgs.push("URL Path Depth");
+  	else
+  		arrayArgs.push("Path Depth");
+	var errorMsg = system.functions.scmsg(223, "km", arrayArgs);
+	system.library.KMUtils.domessageBox(errorMsg);
+ 	
+	system.library.KMCollection_Update_Utils.logUnexpectedError(errorMsg);  
+  	return -1;
+  }
+  
+
+
+  var getenginename = system.library.KMSearchInterface.getEngineName();
+  var result = 0;
+  if (getenginename == "K2")
+  {
+    result = system.library.KMCollection_WebCrawl_K2.createJob();
+    return result;  
+  }
+  else
+  {
+    
+    var slaveXML = system.library.KMCollection_Update_Utils.getSlaveXML(record.searchservername);
+    
+    var xmlRec = system.library.KMCollection_WebCrawl.webRecordToXML(record);
+    var strJobName = system.library.KMUtils.scToJSName(record.kbname);
+    if (slaveXML != null)
+    if (slaveXML.length &gt; 0)
+  	{
+  		// add slaveXML to xmlRec
+  		slaveXML = "&lt;slaveinfo&gt;"+slaveXML+"&lt;/slaveinfo&gt;";
+		var slaveXMLRec = new XML();
+		slaveXMLRec = slaveXMLRec.setContent(slaveXML);
+		var FoundNode = findTargetElement( slaveXMLRec , "slaveinfo" );
+		var NewNode = xmlRec.importNode( FoundNode );
+		var appendedNode = xmlRec.appendNode( NewNode );
+		
+  	}
+    
+    result = system.library.KMSearchInterface.createJob(strJobName, xmlRec.toXMLString());
+    return result;
+  }
+}
+
+function deleteJob(record)
+{
+	print("deleting Job");
+  	var crawlhost = "";
+  	crawlhost = record.crawlhost;
+  	var crawlport = "";
+  	crawlport = record.crawlport;
+  	var strJobName = system.library.KMUtils.scToJSName(record.kbname);
+  	var jobxml = "";
+  	jobxml = "&lt;deletejob&gt;&lt;jobname&gt;"+strJobName+"&lt;/jobname&gt;&lt;crawlhost&gt;"+crawlhost+"&lt;/crawlhost&gt;&lt;crawlport&gt;"+crawlport+"&lt;/crawlport&gt;&lt;/deletejob&gt;";
+    result = system.library.KMSearchInterface.deleteJob(jobxml);
+    return result;
+}
+
+
+function startwebcrawl(strCollection)
+{
+  var getenginename = system.library.KMSearchInterface.getEngineName();
+  var result = 0;
+  if (getenginename == "K2")
+  {
+    result = system.library.KMCollection_WebCrawl_K2.startwebcrawl(strCollection);
+    return result;  
+  }
+  else
+  {
+     result = system.library.KMSearchInterface.startJob(system.library.KMCollection_WebCrawl.getCrawlDestination(vars.$L_file));
+     return result;
+  }
+}
+
+function stopwebcrawl(strCollection)
+{
+  var getenginename = system.library.KMSearchInterface.getEngineName();
+  var result = 0;
+  if (getenginename == "K2")
+  {
+    result = system.library.KMCollection_WebCrawl_K2.stopwebcrawl(strCollection);
+    return result;  
+  }
+  else
+  {
+    result = system.library.KMSearchInterface.stopJob(system.library.KMCollection_WebCrawl.getCrawlDestination(vars.$L_file));
+    return result;
+  }
+}
+
+function getJobStatus(strCollection)
+{
+  var getenginename = system.library.KMSearchInterface.getEngineName();
+  var result = 0;
+  if (getenginename == "K2")
+  {
+  	result = system.library.KMAdmin.kmjvmconnect();
+	if (result != 0)
+		return -1;
+    result = system.library.KMCollection_WebCrawl_K2.getJobStatus();
+    system.library.KMAdmin.kmjvmdisconnect();
+    return result;  
+  }
+  else
+  {
+    result = system.library.KMSearchInterface.getJobStatus(system.library.KMCollection_WebCrawl.getCrawlDestination(vars.$L_file));
+    return result;
+  }
+}
+
+function webRecordToXML(record)
+{
+	var indexConfig = new XML();
+	indexConfig = indexConfig.setContent(system.library.KMUtils.getSearchEngineConfig(record.kbname, "index"));
+	//locate elements by name
+	var indexHost = system.library.KMCollection_WebCrawl.findTargetElement(indexConfig, "indexhost");
+	var indexPort = system.library.KMCollection_WebCrawl.findTargetElement(indexConfig, "indexport");
+	var indexInstance = system.library.KMCollection_WebCrawl.findTargetElement(indexConfig, "indexinstance");
+	//need to convert $L.file to xml
+	var xmlRec = record.getXML();
+	//find "instance" element
+	var targetElement = system.library.KMCollection_WebCrawl.findTargetElement(xmlRec, "instance");
+	//create new nodes for xmlRec using data from SEConfig xml
+	var NewNodeServer = xmlRec.createNode(1,indexHost.getNodeName(),"");
+	NewNodeServer.setValue(indexHost.getNodeValue());
+	var NewNodePort = xmlRec.createNode(1,indexPort.getNodeName(),"");
+	NewNodePort.setValue(indexPort.getNodeValue());
+	var NewNodeInstance = xmlRec.createNode(1,indexInstance.getNodeName(),"");
+	NewNodeInstance.setValue(indexInstance.getNodeValue());
+	//add nodes to xmlRec at our target element "instance"
+	targetElement.appendNode(NewNodeServer);
+	targetElement.appendNode(NewNodePort);	
+	targetElement.appendNode(NewNodeInstance);
+	var mimeElement = system.library.KMCollection_WebCrawl.findTargetElement(xmlRec, "mastermimelist");
+	if (mimeElement != null)
+		mimeElement.setValue(getXMLMimeList(record));
+	else
+	{
+		//create mastermimelistnode here...
+		var NewNodeMimes = xmlRec.createNode(1,"mastermimelist","");
+		NewNodeMimes.setValue(getXMLMimeList(record));
+		targetElement.appendNode(NewNodeMimes);
+	}
+	
+	return xmlRec;
+
+}
+
+function findTargetElement( node, targetElem )
+{
+ var topNodeName = node.getNodeName();
+ while (node != null &amp;&amp; node.getNodeName() != targetElem )
+ {
+  var childNode = node.getFirstChildElement();
+  if (childNode == null)
+  {
+   childNode = node.getNextSiblingElement();
+   while (childNode == null)
+   {
+    node = node.getParentNode();
+    if ( node == null || topNodeName == node.getNodeName() )
+    {
+     return null;
+    }
+    childNode = node.getNextSiblingElement();
+   }
+   node = childNode;
+  }
+  else
+  {
+   node = childNode;
+  }
+ }
+ return node;
+}
+
+
+function getCrawlDestination(record)
+{
+	var crawlXML = "";
+	crawlXML = "&lt;jobinfo&gt;\n";
+	crawlXML += "&lt;crawlhost&gt;"+record.crawlhost+"&lt;/crawlhost&gt;\n";
+	crawlXML += "&lt;crawlport&gt;"+record.crawlport+"&lt;/crawlport&gt;\n";
+	crawlXML += "&lt;crawlinstance&gt;"+"crawlinstance"+"&lt;/crawlinstance&gt;\n";
+	crawlXML += "&lt;jobname&gt;"+record.kbname+"&lt;/jobname&gt;\n";
+	crawlXML += "&lt;/jobinfo&gt;\n";
+	
+	return crawlXML;
+	
+
+}
+
+function didJobChange(current_record, new_record)
+{
+    
+    var oldurl = "";
+    var newurl = "";
+    if (system.library.KMUtils.isSCArray(current_record.weburllist))
+    {
+    	newurl = system.library.KMUtils.scArrayToString(new_record.weburllist);
+    	oldurl = system.library.KMUtils.scArrayToString(current_record.weburllist);
+    }
+	if (oldurl != newurl)
+	{
+    	
+    	return true;
+	}
+	var oldmimelist = "";
+	var newmimelist = "";
+	if (system.library.KMUtils.isSCArray(current_record.mimelist))
+    {
+    	newmimelist = system.library.KMUtils.scArrayToString(new_record.mimelist);
+    	oldmimelist = system.library.KMUtils.scArrayToString(current_record.mimelist);
+    }
+	if (oldmimelist != newmimelist)
+	{
+   		
+   		return true;
+   	}
+   	
+   	if (current_record.webhost != new_record.webhost)
+	{
+   		
+   		return true;
+   	}
+   	if (current_record.webpathlen != new_record.webpathlen)
+	{
+   		
+   		return true;
+   	}
+   	if (current_record.webjumps != new_record.webjumps)
+	{
+   		
+   		return true;
+   	}
+   	if (current_record.mimeproperty != new_record.mimeproperty)
+	{
+   		
+   		return true;
+   	}
+   	if (current_record.crawlhost != new_record.crawlhost)
+   	{
+   		
+   		return true;
+   	}
+   	if (current_record.crawlport != new_record.crawlport)
+   	{
+   		
+   		return true;
+   	}
+   	
+   return false
+}
+
+function getXMLMimeList(record)
+{
+	var includeMimes = new SCDatum();
+  	includeMimes.setType(8); //type array
+  	if (record.mimeproperty == "unlimited")
+  		includeMimes.push("unlimited");
+	else if (record.mimeproperty == "include")
+	{
+		if (record.mimelist.mimelist == null)
+		{
+			includeMimes = vars.$mimetypes;
+		}
+		else
+			includeMimes = record.mimelist;
+	}
+	else if (record.mimeproperty == "exclude")
+	{
+		if (record.mimelist.mimelist == null)
+		{
+			includeMimes = vars.$mimetypes;
+		}
+		else
+		{
+			var excludeMimes = new SCDatum();
+  			excludeMimes.setType(8);  //type array
+  			excludeMimes = record.mimelist;
+  			var mimeFound = false;
+  			
+  			for (var i =0; i &lt; vars.$mimetypes.length(); i++)
+  			{
+  				for (var y = 0; y &lt; excludeMimes.length(); y++)
+  				{
+  					if (excludeMimes[y] == vars.$mimetypes[i] &amp;&amp; excludeMimes[y] != null)
+  					{
+						mimeFound = true;
+  					}
+  				}
+  				if (mimeFound == false)
+  					includeMimes.push(vars.$mimetypes[i]);
+  				else
+  					mimeFound = false;
+  			}
+  		}
+	}
+
+    var mastermimelist = "";
+	for (y=0; y&lt;includeMimes.length(); y++)
+	{
+		if (y&gt;0)
+			mastermimelist += ", ";
+		mastermimelist += "\""+includeMimes[y]+"\"";
+	}
+	print("masterMimeList: "+mastermimelist);
+	return mastermimelist;
+}</script>
+    <package type="string">KMAdmin</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:41</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

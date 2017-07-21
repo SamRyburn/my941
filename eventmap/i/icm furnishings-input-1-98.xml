@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="eventmap">
+  <record id="evmap=&quot;icm furnishings&quot; and evtype=&quot;input&quot; and evseq=1 and evindex=98" recordid="icm furnishings - input - 1 - 98">
+    <evmap type="string">icm furnishings</evmap>
+    <evindex type="decimal">98</evindex>
+    <evnullsub NullValue="1" type="string"/>
+    <evmaptyp NullValue="1" type="string"/>
+    <evfile type="string">joinfurnishings</evfile>
+    <evfield type="string">addl</evfield>
+    <evcalc NullValue="1" sctype="array">
+      <evcalc NullValue="1" type="expression"/>
+    </evcalc>
+    <evtype type="string">input</evtype>
+    <evsepchar type="string">|</evsepchar>
+    <evdtype type="decimal">8</evdtype>
+    <evquery NullValue="1" type="boolean"/>
+    <evxlate NullValue="1" type="string"/>
+    <evinit NullValue="1" sctype="array">
+      <evinit NullValue="1" type="expression"/>
+    </evinit>
+    <evseq type="decimal">1</evseq>
+    <evlength NullValue="1" type="decimal"/>
+    <evitmlng NullValue="1" type="decimal"/>
+    <evmapcond NullValue="1" type="boolean"/>
+    <eveltype type="decimal">9</eveltype>
+    <sysmodcount type="decimal">5</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">03/04/03 04:59:47</sysmodtime>
+    <evsepchar.struc type="string">`</evsepchar.struc>
+  </record>
+</recordset>

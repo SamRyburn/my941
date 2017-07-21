@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="Process">
+  <record id="process=&quot;idolserver.testidxconn&quot;" recordid="idolserver.testidxconn">
+    <process type="string">idolserver.testidxconn</process>
+    <pre.expressions NullValue="1" sctype="array">
+      <pre.expressions NullValue="1" type="expression"/>
+    </pre.expressions>
+    <post.expressions NullValue="1" sctype="array">
+      <post.expressions NullValue="1" type="expression"/>
+    </post.expressions>
+    <rad NullValue="1" sctype="array">
+      <rad sctype="structure">
+        <application NullValue="1" type="string"/>
+        <names NullValue="1" sctype="array">
+          <names NullValue="1" type="string"/>
+        </names>
+        <values NullValue="1" sctype="array">
+          <values NullValue="1" type="string"/>
+        </values>
+        <rad.condition NullValue="1" type="boolean"/>
+        <pre.rad.expressions NullValue="1" sctype="array">
+          <pre.rad.expressions NullValue="1" type="expression"/>
+        </pre.rad.expressions>
+        <post.rad.expressions NullValue="1" sctype="array">
+          <post.rad.expressions NullValue="1" type="expression"/>
+        </post.rad.expressions>
+      </rad>
+    </rad>
+    <next.process NullValue="1" sctype="array">
+      <next.process NullValue="1" type="string"/>
+    </next.process>
+    <process.condition NullValue="1" sctype="array">
+      <process.condition NullValue="1" type="boolean"/>
+    </process.condition>
+    <run.standard NullValue="1" type="boolean"/>
+    <sysmodcount type="decimal">25</sysmodcount>
+    <sysmoduser type="string">pengfei</sysmoduser>
+    <sysmodtime type="dateTime">06/19/14 22:01:21</sysmodtime>
+    <save.cursor.position NullValue="1" type="boolean"/>
+    <run.in.window NullValue="1" type="boolean"/>
+    <window.name NullValue="1" type="string"/>
+    <javascript.pre type="string">//print("vars.$L_file.server_url == " + vars.$L_file.server_url);
+vars.$rtn = lib.IDOL_Utilities.getIdolServerStatus(vars.$L_file.index_url, vars.$L_file.use_oem_license);
+//print("vars.rtn == " + vars.$rtn);
+if (vars.$rtn == true)
+{
+	system.functions.rtecall('msg', vars['$L.rc'], (system.functions.scmsg('2', 'idol'), 1);
+}
+else
+{
+	system.functions.rtecall('msg', vars['$L.rc'], (system.functions.scmsg('3', 'idol'), 3);
+}</javascript.pre>
+    <javascript.post NullValue="1" type="string"/>
+    <baseMethod NullValue="1" type="string"/>
+  </record>
+</recordset>

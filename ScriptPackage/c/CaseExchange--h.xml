@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptPackage">
+  <record id="name=&quot;CaseExchange&quot;" recordid="CaseExchange">
+    <name type="string">CaseExchange</name>
+    <description NullValue="1" type="string"/>
+    <sysmodtime type="dateTime">12/18/13 16:25:25</sysmodtime>
+    <sysmoduser type="string">zhichao.fei</sysmoduser>
+    <sysmodcount type="decimal">1</sysmodcount>
+  </record>
+</recordset>

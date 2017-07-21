@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;KMIdolSearch_Filter&quot;" recordid="KMIdolSearch_Filter">
+    <name type="string">KMIdolSearch_Filter</name>
+    <script type="string">var operatorCap = null;
+var dummyInteraction = null;
+
+function filterCatalog(catalogId) {
+	var catalog = new SCFile('svcCatalog', SCFILE_READONLY);
+
+	var rc = catalog.doSelect('id = "' + catalogId + '" and active = true and type isin {"item","bundle"}');
+	if (rc !== RC_SUCCESS) {
+		return false;
+	}
+	
+	//check capability words
+	var accessList = catalog['access.list'];
+	
+	if (accessList != null &amp;&amp; funcs.denull(accessList).length() &gt; 0) {
+		var allCap = getOperatorCap();
+		var hasCap = false;
+		for (var i = 0, len = accessList.length(); i &lt; len; i++) {
+			if (lib.ArrayUtil.contains(allCap, accessList[i])) {
+				hasCap = true;
+				break;
+			}
+		}
+		
+		if (!hasCap) {
+			return false;
+		}
+	}
+	
+	
+	//check access filter
+	var accessFilter = catalog['access.filter'];
+	if (accessFilter != null) {
+		accessFilter = accessFilter.toString();
+
+		if (accessFilter != '' &amp;&amp; accessFilter != 'true'){
+			vars['$L.tmp'] = vars['$L.file'];
+			vars['$L.file'] = getInteractionInstance();
+			var result = funcs.evaluate(funcs.parse(accessFilter, 2));
+			vars['$L.file'] = vars['$L.tmp'];
+			if (result != true) {
+				return false;
+			}
+		}
+	}
+	
+	return true;
+}
+
+
+function getOperatorCap() {
+	if (operatorCap) {
+		//print('hit cache');
+		return operatorCap;
+	}
+	
+	operatorCap = lib.capability.getAllCapabilityWordbyOperator(funcs.operator());
+	return operatorCap;
+}
+
+
+function getInteractionInstance() {
+	if (dummyInteraction) {
+		return dummyInteraction;
+	}
+	
+	dummyInteraction = new SCFile("incidents");
+	dummyInteraction["contact.name"] = vars.$lo_contact_name;
+	dummyInteraction["callback.contact"] = vars.$lo_contact_name;
+	dummyInteraction["alternate.contact"] = vars.$lo_contact_name;
+	dummyInteraction["category"] = "service catalog";
+	dummyInteraction["subcategory"] = "service catalog";
+	dummyInteraction["problem.type"] = "service catalog";
+	dummyInteraction["product.type"] = "service catalog";
+
+	var link = lib.ScAPI_RAD.se_get_record("incidents", "name", "link", true);
+
+	lib.ScAPI_RAD.us_link(dummyInteraction,"contact.name",link,"fill",true);
+	lib.ScAPI_RAD.us_link(dummyInteraction,"callback.contact",link,"fill",true);
+	lib.ScAPI_RAD.us_link(dummyInteraction,"alternate.contact",link,"fill",true);
+
+
+	return dummyInteraction;
+}</script>
+    <package type="string">KnowledgeManagement</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:41</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

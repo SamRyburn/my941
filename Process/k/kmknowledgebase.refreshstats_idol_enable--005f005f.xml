@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="Process">
+  <record id="process=&quot;kmknowledgebase.refreshstats_idol_enable&quot;" recordid="kmknowledgebase.refreshstats_idol_enable">
+    <process type="string">kmknowledgebase.refreshstats_idol_enable</process>
+    <pre.expressions sctype="array">
+      <pre.expressions sctype="operator">$errorids={}</pre.expressions>
+      <pre.expressions sctype="operator">$errormessages={}</pre.expressions>
+      <pre.expressions sctype="operator">$errortimes={}</pre.expressions>
+      <pre.expressions sctype="operator">$errorerrids={}</pre.expressions>
+    </pre.expressions>
+    <post.expressions NullValue="1" sctype="array">
+      <post.expressions NullValue="1" type="expression"/>
+    </post.expressions>
+    <rad NullValue="1" sctype="array">
+      <rad sctype="structure">
+        <application NullValue="1" type="string"/>
+        <names NullValue="1" sctype="array">
+          <names NullValue="1" type="string"/>
+        </names>
+        <values NullValue="1" sctype="array">
+          <values NullValue="1" type="string"/>
+        </values>
+        <rad.condition NullValue="1" type="boolean"/>
+        <pre.rad.expressions NullValue="1" sctype="array">
+          <pre.rad.expressions NullValue="1" type="expression"/>
+        </pre.rad.expressions>
+        <post.rad.expressions NullValue="1" sctype="array">
+          <post.rad.expressions NullValue="1" type="expression"/>
+        </post.rad.expressions>
+      </rad>
+    </rad>
+    <next.process NullValue="1" sctype="array">
+      <next.process NullValue="1" type="string"/>
+    </next.process>
+    <process.condition NullValue="1" sctype="array">
+      <process.condition NullValue="1" type="boolean"/>
+    </process.condition>
+    <run.standard NullValue="1" type="boolean"/>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:01:04</sysmodtime>
+    <save.cursor.position NullValue="1" type="boolean"/>
+    <run.in.window type="boolean">false</run.in.window>
+    <window.name NullValue="1" type="string"/>
+    <javascript.pre type="string">vars.$L_exit="refresh"
+
+// Code that works using the thread variables $L.errorids and $L.errormessages
+// Get the list of errors for this knowledgebase.
+var errorsFile = new SCFile("kmknowledgebaseerrors");
+errorsFile.setOrderBy(['sysmodtime'], [SCFILE_DSC]);
+var errRC = errorsFile.doSelect( "collectionname#\""+vars.$L_file.kbname+"\"");
+var maxErrorCount = 100;
+if ( errRC == RC_SUCCESS )
+{
+	//print("errorsFile: " + errorsFile);
+	var i = 0;
+	errRC = errorsFile.getFirst();
+	while( errRC == RC_SUCCESS &amp;&amp; i &lt; maxErrorCount)
+	{
+		// remove the leading knowledgebase name
+		//var id = errorsFile.sedocid.substring(vars.$L_file.kbname.length+1,errorsFile.sedocid.length-2);
+		var id = errorsFile.sedocid;
+		vars.$errorids.push(id);
+		vars.$errormessages.push(errorsFile.errormessage);
+		vars.$errortimes.push(errorsFile.sysmodtime);
+		vars.$errorerrids.push(errorsFile.id);
+		errRC = errorsFile.getNext();
+		i++;
+	}
+}
+
+if (vars['$L.file']['kbtype'] === 'splib' || vars['$L.file']['kbtype'] === 'weblib' || vars['$L.file']['kbtype'] === 'fsyslib') {
+	vars['$connector'] = [];
+	var connectors = lib.IDOL_SharePoint.require().getSharePointConnectors(lib.IDOL_SharePoint.require().getUrlTypeByKbtype(vars['$L.file']['kbtype']));
+	for (var i = 0, j = connectors.length; i &lt; j; i++) {
+		vars['$connector'].push(connectors[i]);
+	}
+	
+	//if share point library, get index status from idol
+	if (vars['$L.file']['indexstatus'] !== 'finished') {
+		var status = lib.IDOL_SharePoint.require().getSharePointStatus(vars['$L.file']['spconnectorurl'], vars['$L.file']['idoltoken']);
+		if (vars['$L.file']['indexstatus'] !== status) {
+			vars['$L.file']['indexstatus'] = status;
+			vars['$L.file'].doSave();
+		}
+	}
+	
+	//get task list
+	vars['$task'] = lib.IDOL_SharePoint.require().getTaskByConnector(vars['$L.file']['spconnectorurl']);
+}
+
+
+if (vars['$G.km.index.status.name'] &amp;&amp; vars['$G.km.index.status.name'].length() &gt; 0 &amp;&amp; vars['$G.km.index.status.display'] &amp;&amp; vars['$G.km.index.status.display'].length() &gt; 0){
+	var index = lib.ArrayUtil.indexOf(vars['$G.km.index.status.name'], vars['$L.file']['indexstatus']);
+	vars['$indexstatus'] = vars['$G.km.index.status.display'][index];
+} else {
+	vars['$indexstatus'] = vars['$L.file']['indexstatus'];
+}
+
+//show different for different lib
+if (vars['$L.file']['kbtype'] === 'sclib') {
+	vars['$L.format'] = 'kmknowledgebase.g';
+} else if (vars['$L.file']['kbtype'] === 'splib') {
+	vars['$L.format'] = 'kmknowledgebase.splib.g';
+} else if (vars['$L.file']['kbtype'] === 'weblib') {
+	vars['$L.format'] = 'kmknowledgebase.weblib.g';
+} else if (vars['$L.file']['kbtype'] === 'fsyslib') {
+	vars['$L.format'] = 'kmknowledgebase.fslib.g';
+}</javascript.pre>
+    <javascript.post NullValue="1" type="string"/>
+    <baseMethod NullValue="1" type="string"/>
+  </record>
+</recordset>

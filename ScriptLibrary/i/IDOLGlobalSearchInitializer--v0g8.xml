@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;IDOLGlobalSearchInitializer&quot;" recordid="IDOLGlobalSearchInitializer">
+    <name type="string">IDOLGlobalSearchInitializer</name>
+    <script type="string">var _ = lib.Underscore.require();
+
+var IDOLGlobalSearchInitializer = (function() {
+
+  function checkLicense() {
+    var licensed = funcs.lioption("Smart Analytics"),
+        enabled = vars.$lo_idol_enabled;
+    return licensed &amp;&amp; enabled;
+  }
+
+  function getFieldMappings() {
+    // no license, no library load
+    var IDOLGlobalSearchPrecondition = lib.IDOLGlobalSearchPrecondition.require();
+    var mappings = IDOLGlobalSearchPrecondition.getFieldMappings();
+    // var IDOLGlobalSearchPreCondition = lib.IDOLGlobalSearchPreCondition.require();
+    // var mappings = IDOLGlobalSearchPreCondition.getFieldMappings();
+    return { mappings : mappings };
+  }
+
+  function getSettings() {
+    var IDOLAdvancedSettings = lib.IDOLAdvancedSettings.require(); 
+    var settings = IDOLAdvancedSettings.GlobalSearch || {};
+    return {
+      pageSize : settings.PAGE_SIZE,
+      parametricPageSize : settings.PARAMETRIC_PAGE_SIZE,
+      enableESSCS : settings.ENABLE_ESS_CONTEXT_AWARENESS_SEARCH
+    };
+  }
+
+  function initialize() {
+    var licensed = checkLicense();
+    // no need to load field mapping if user doesn't have license
+    if (!licensed) {
+      return { hasLicense : licensed };
+    }
+    var mappings = getFieldMappings(),
+        settings = getSettings();
+    return _.extend({}, mappings, settings, { hasLicense : licensed });
+  }
+
+  return {
+    initialize : initialize
+  };
+}());
+
+function require() {
+  return IDOLGlobalSearchInitializer;
+}</script>
+    <package type="string">IDOL</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:40</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

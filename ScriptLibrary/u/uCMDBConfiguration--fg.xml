@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;uCMDBConfiguration&quot;" recordid="uCMDBConfiguration">
+    <name type="string">uCMDBConfiguration</name>
+    <script type="string">
+
+//Get the configuration item of RC Intergraton
+function getConfigurationItem(){
+	return lib.smis_ConfigurationManager.getEnabledConfigItem("SMtoUCMDB");
+}
+
+function isEnabled(){
+	return  vars.$G_system_info.UCMDB  || getConfigurationItem()!=null;
+}
+
+function getWebserviceUrl(){
+	var smValue=vars.$G_system_info.UCMDB_services_endpoint;
+	if(smValue!=null){
+		return smValue;
+	}
+	
+	var config = getConfigurationItem();
+   	if(config!=null)
+ 	 	return config.getConfigParameterValue("ucmdb.webservice.url");
+  	else 
+  		return null;
+  }
+  
+  function getMultiTenantWebserviceUrl(){
+ 
+   var smValue=vars.$G_system_info.UCMDB_mt_services_endpoint;
+	if(smValue!=null){
+		return smValue;
+	}
+	
+	
+	var config = getConfigurationItem();
+   	if(config!=null)
+ 	 	return config.getConfigParameterValue("multi-tenant.ucmdb.webservice.url");
+  	else 
+  		return null;
+  }
+   
+ function isUCMDBRelationship(){
+   var config = getConfigurationItem();
+   	if(config!=null){
+   		var str=config.getConfigParameterValue("using.ucmdb.store.ci.relationship");
+ 	 	return "Y"==str || "y"==str;
+ 	 	}
+  	else 
+  		return false;
+  }
+  function  getPort(){
+	
+  var config = getConfigurationItem();
+   	if(config!=null)
+ 	 	return config.getConfigParameterValue("port");
+  	else 
+  		return null;
+  }
+   function getServername(){
+
+   var config = getConfigurationItem();
+   	if(config!=null)
+ 	 	return config.getConfigParameterValue("servername");
+  	else 
+  		return null;
+  }
+  
+
+  
+  
+   function  getMultiTenantUsername(){
+   
+   var smValue=vars.$G_system_info.UCMDB_mt_user;
+	if(smValue!=null){
+		return smValue;
+	}
+	
+   
+   var config = getConfigurationItem();
+   	if(config!=null)
+ 	 	return config.getConfigParameterValue("multi-tenant.username");
+  	else 
+  		return null;
+  }
+    function  getUsername(){
+   
+     var smValue=vars.$G_system_info.UCMDB_user;
+	if(smValue!=null){
+		return smValue;
+	}
+	
+     var config = getConfigurationItem();
+   	if(config!=null)
+ 	 	return config.getConfigParameterValue("username");
+  	else 
+  		return null;
+  }
+     function  getPassword(){
+        var smValue=vars.$G_system_info.UCMDB_password;
+	if(smValue!=null){
+		return lib.operatorUtil.getPassword(smValue);
+	}
+	
+	
+     var config = getConfigurationItem();
+   	if(config!=null)
+ 	 	return config.getConfigParameterValue("password");
+  	else 
+  		return null;
+  }
+   function getMultiTenantPassword(){
+   
+      var smValue=vars.$G_system_info.UCMDB_mt_password;
+	if(smValue!=null){		
+		return lib.operatorUtil.getPassword(smValue);
+	}
+	
+	
+   var config = getConfigurationItem();
+   	if(config!=null)
+ 	 	return config.getConfigParameterValue("multi-tenant.password");
+  	else 
+  		return null;
+  }
+  
+  function getUCMDBVersion(){
+    var config = getConfigurationItem();
+   	if(config!=null)
+ 	 	return config.getConfigParameterValue("ucmdb.version");
+  	else 
+  		return null;
+  }
+  
+    function getUCMDBVersionNumber(){
+	   var version=getUCMDBVersion();
+	   if(version!=null &amp;&amp; version.match(/^(\d+)\..*$/)){
+	   	return version.replace(/^(\d+)\..*$/,"$1");
+	   }else {
+	    return "8";
+	   }
+	   
+  }
+
+</script>
+    <package type="string">Integration</package>
+    <sysmodtime type="dateTime">07/14/14 02:22:41</sysmodtime>
+    <sysmoduser type="string">qiqingsong</sysmoduser>
+    <sysmodcount type="decimal">4</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

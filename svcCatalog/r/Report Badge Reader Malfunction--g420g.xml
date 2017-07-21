@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="svcCatalog">
+  <record id="name=&quot;Report Badge Reader Malfunction&quot;" recordid="Report Badge Reader Malfunction">
+    <id type="decimal">2006</id>
+    <id.attach type="decimal">2006</id.attach>
+    <sysmodtime type="dateTime">07/16/17 17:02:18</sysmodtime>
+    <sysmodcount type="decimal">18</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <access.list NullValue="1" sctype="array">
+      <access.list NullValue="1" type="string"/>
+    </access.list>
+    <description type="string">Use this form to report a problem with a badge reader.</description>
+    <interface.id NullValue="1" type="string"/>
+    <name type="string">Report Badge Reader Malfunction</name>
+    <name.ir type="string">Report Badge Reader Malfunction</name.ir>
+    <name.join.child type="string">Report Badge Reader Malfunction</name.join.child>
+    <name.join.subcat type="string">Report Badge Reader Malfunction</name.join.subcat>
+    <options type="string">&lt;form&gt;&lt;text button="4001" id="Location" label="Location" mandatory="true" multiSelections=""/&gt;&lt;/form&gt;</options>
+    <optionsAlias type="string">&lt;form&gt;&lt;text button="4001" id="Location" label="Location" mandatory="true" multiSelections=""/&gt;&lt;/form&gt;</optionsAlias>
+    <type type="string">item</type>
+    <interface.info type="string">&lt;info&gt; &lt;affected.item&gt;MyDevices&lt;/affected.item&gt;&lt;assignment&gt;Service Desk&lt;/assignment&gt;&lt;/info&gt;</interface.info>
+    <interface.type type="string">Open an Incident</interface.type>
+    <parent sctype="array">
+      <parent sctype="string">Security Support</parent>
+    </parent>
+    <access.filter type="string">true</access.filter>
+    <bundle NullValue="1" sctype="array">
+      <bundle sctype="structure">
+        <item.id NullValue="1" type="decimal"/>
+        <item.name NullValue="1" type="string"/>
+        <item.option NullValue="1" type="string"/>
+        <item.quantity NullValue="1" type="decimal"/>
+        <item.cost.adj NullValue="1" type="decimal"/>
+      </bundle>
+    </bundle>
+    <access.filter.xml NullValue="1" type="string"/>
+    <owner NullValue="1" type="string"/>
+    <cost NullValue="1" type="decimal"/>
+    <currency type="string">USD</currency>
+    <sort.type type="decimal">3</sort.type>
+    <category.type NullValue="1" type="string"/>
+    <option.desc sctype="array">
+      <option.desc sctype="string">Location</option.desc>
+    </option.desc>
+    <option.names sctype="array">
+      <option.names sctype="string">Location</option.names>
+    </option.names>
+    <option.validation.desc sctype="array">
+      <option.validation.desc sctype="string">Must match the mandatory condition.  Must match the location field in the location table.  </option.validation.desc>
+    </option.validation.desc>
+    <option.validations type="string">&lt;validations&gt;&lt;string button="4001" id="Location" mandatory="true" matchField="location" matchTable="location"/&gt;&lt;/validations&gt;</option.validations>
+    <non.cart type="boolean">true</non.cart>
+    <active type="boolean">true</active>
+    <recurring.cost NullValue="1" type="decimal"/>
+    <recurring.cost.interval NullValue="1" type="string"/>
+    <option.instructions NullValue="1" type="string"/>
+    <unused.field NullValue="1" sctype="array">
+      <unused.field NullValue="1" type="string"/>
+    </unused.field>
+    <option.costs type="string">&lt;costs&gt;&lt;selectnode id="Location"/&gt;&lt;/costs&gt;</option.costs>
+    <delivery.objectives NullValue="1" sctype="array">
+      <delivery.objectives NullValue="1" type="string"/>
+    </delivery.objectives>
+    <approvals NullValue="1" sctype="array">
+      <approvals NullValue="1" type="string"/>
+    </approvals>
+    <createSubscription type="boolean">false</createSubscription>
+    <subscriptionItem NullValue="1" display="" type="string"/>
+    <subscribeIndividual NullValue="1" type="boolean"/>
+    <subscribeDept NullValue="1" type="boolean"/>
+    <optionList NullValue="1" type="string"/>
+    <optionOptions NullValue="1" type="string"/>
+    <connectorInfo NullValue="1" type="string"/>
+    <connectorSubInfo NullValue="1" sctype="array">
+      <connectorSubInfo NullValue="1" type="string"/>
+    </connectorSubInfo>
+    <serviceSLAs NullValue="1" sctype="array">
+      <serviceSLAs sctype="structure">
+        <serviceSLAid NullValue="1" type="decimal"/>
+        <serviceSLAaccess NullValue="1" sctype="array">
+          <serviceSLAaccess NullValue="1" type="decimal"/>
+        </serviceSLAaccess>
+      </serviceSLAs>
+    </serviceSLAs>
+    <infoOnly type="boolean">false</infoOnly>
+    <restrictQuantity NullValue="1" type="boolean"/>
+    <detailedDescription type="string">&lt;p&gt;&lt;span style="FONT-FAMILY: &amp;quot;Calibri&amp;quot;,&amp;quot;sans-serif&amp;quot;; COLOR: #1f497d; FONT-SIZE: 11pt; mso-fareast-font-family: ??; mso-fareast-theme-font: minor-fareast; mso-bidi-font-family: 'Times New Roman'; mso-ansi-language: EN-US; mso-fareast-language: ZH-CN; mso-bidi-language: AR-SA"&gt;&lt;span style="FONT-FAMILY: &amp;quot;Calibri&amp;quot;,&amp;quot;sans-serif&amp;quot;; COLOR: #1f497d; FONT-SIZE: 11pt; mso-fareast-font-family: ??; mso-bidi-font-family: 'Times New Roman'; mso-ansi-language: EN-US; mso-fareast-language: ZH-CN; mso-bidi-language: AR-SA"&gt;Use this form to report a problem with a badge reader.&lt;/span&gt;&lt;/span&gt;&lt;/p&gt;</detailedDescription>
+    <x.requestFor NullValue="1" type="string"/>
+    <x.unitCost NullValue="1" type="string"/>
+    <class NullValue="1" type="string"/>
+    <item.approvals NullValue="1" sctype="array">
+      <item.approvals NullValue="1" type="string"/>
+    </item.approvals>
+    <item.approvals.import NullValue="1" type="boolean"/>
+    <category type="string">incident</category>
+    <subcategory type="string">security</subcategory>
+    <product.type type="string">security event/message</product.type>
+    <support.item type="boolean">true</support.item>
+    <children.type type="string">empty</children.type>
+    <sortOrder NullValue="1" type="decimal"/>
+  </record>
+</recordset>

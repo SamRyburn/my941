@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;KMDocPreview&quot;" recordid="KMDocPreview">
+    <name type="string">KMDocPreview</name>
+    <script type="string">/*  This script is called when a kmdocument record needs the $L.docwithview 
+*   to contain the document preview html. 
+*
+*   This script is called from the Javascript in these processes:
+*     kmdocument.preview.init
+*     cm.update
+*/
+
+
+/**
+	This function  locates field tokens and replaces them with the actual data values for those fields.
+	@param theView - a String containing the view with tokens
+	@param record - kmdocument object that we want to generate a preview for
+	
+	@return String - A new string copy of the View with data inserted in place of the tokens
+	
+**/
+function replaceTokensWithData(theView, record)
+{
+	var spec_loc = theView.indexOf("*SCKM");
+	var tmpFld = "";
+    var tmpFld2 = "";
+	var tmpVal = "";
+	var strEval = "";
+	
+	var scdisp = theView.indexOf("DISPLAY: inline");
+ 
+	while (spec_loc &gt;= 0)
+	{
+		tmpFld = theView.substring(spec_loc + 6, theView.length);
+		tmpFld = tmpFld.substring(0, tmpFld.indexOf("*SCKM"));
+		//before we clean up dots in field names, put passed in name in var to use later for indexing
+		tmpFld2 = tmpFld;     
+	 	tmpVal = record[tmpFld];
+		//check for and handle array fields
+ 		if( system.library.KMUtils.isSCArray(tmpVal) )
+ 			tmpVal = system.library.KMUtils.scArrayToHTMLString(tmpVal); 		
+	 	if (tmpVal == null)
+	 	{
+	 		tmpVal = "";
+	 	}
+	 	else if (system.functions.type(tmpVal) == 3)
+		{
+			tmpVal = system.functions.str(tmpVal);
+		} 
+
+    	// Substitute the actual field's value for the name of the field,
+		theView = theView.substring(0, spec_loc) + tmpVal + theView.substring((theView.indexOf(tmpFld2 + "*SCKM")+tmpFld2.length+6), theView.length);
+		spec_loc = theView.indexOf("*SCKM");   
+	}
+	
+	if( scdisp &gt; 0)
+	{
+	  if(record.status == "draft" || record.status == "triage"|| ( !lib.security.getToken("Knowledge Document","feedback")) )
+	  {
+	    theView = theView.replace("DISPLAY: inline","DISPLAY: none");
+	  }
+	}
+
+	return theView;
+}
+
+function replaceLikeTokensWithData( theView, record)
+{
+  var spec_loc = theView.indexOf("*LIKENUM");
+  if(spec_loc &gt;=0)
+  {
+   var x = new SCFile("kmfeedback");
+   var ncount = x.doCount("kmdocumentid=\""+record.id +"\" and useful=true");
+   theView = theView.substring(0,spec_loc)+ncount+theView.substring(spec_loc+9,theView.length);
+  
+  }
+  return theView;
+}
+
+/**
+	
+	This function checks to see if they have used sc.msg tokens to request
+	localized doc view field labels...if we find them then we use the
+	sc message mechanism to translate the label within the view data
+	@param theView - a String containing the view with SCMSG tokens
+	
+	@return String - A new string copy of the View with scmessage data inserted in place of the tokens
+	
+
+**/
+function replaceSCMSGTokens(theView)
+{
+	var spec_loc2 = theView.indexOf("*SCMSG");
+	var tmpFld3 = "";
+	var tmpVal2 = "";
+ 
+	while (spec_loc2 &gt;= 0)
+	{
+		tmpFld3 = theView.substring(spec_loc2 + 7, theView.length);
+		tmpFld3 = tmpFld3.substring(0, tmpFld3.indexOf("*SCMSG"));
+ 		eval('tmpVal2 = system.functions.scmsg(' + tmpFld3 + ', "km");');
+	 	if (tmpVal2 == null)
+	 	{
+	 		tmpVal2 = "";
+	 	}   
+  
+    	// Substitute the localized label's value for the number
+		theView = theView.substring(0, spec_loc2) + tmpVal2 + theView.substring((theView.indexOf(tmpFld3 + "*SCMSG")+tmpFld3.length+7), theView.length);
+		spec_loc2 = theView.indexOf("*SCMSG");   
+	}
+	return theView;
+}
+
+/**
+	This function returns populates $L.docwithview to contain a document's preview html.
+	@param record - kmdocument object that we want to generate a preview for
+	
+	@return Boolean - true if preview file was generated sucessfully
+                      false if we put in an error check to see if DB calls did not succeed.
+	
+                      
+    Examples of how to call this script:
+    if (system.library.KMDocPreview.getDocWithView(vars.$L_document) == true) ...
+    or
+    system.library.KMDocPreview.getDocWithView(vars.$L_file);
+                      
+**/
+function getDocWithView(record)
+{
+	var record2 = new SCFile();	
+	system.functions.fduplicate(record2, record);
+	
+	if (null!=record.title) {
+	    record2.title = lib.StringUtil.escapeStringforXML(record.title);;
+	}
+	
+	if (null!=record.summary) {
+	    record2.summary = lib.StringUtil.escapeStringforXML(record.summary);
+	}
+	
+	record = record2;
+	
+	var showDoc = false;
+	//first we need to create some arrays of the values in every view
+	//so that we don't have to loop multiple times through the views later
+	var kmViewNameArray = new SCDatum();
+ 	var kmViewSecLevelArray = new SCDatum();
+	var kmViewGroupArray = new SCDatum();
+	kmViewNameArray.setType(8);
+	kmViewSecLevelArray.setType(8);
+	kmViewGroupArray.setType(8);
+
+
+	//QCCR1E54983 check the user authority for the document first unless they are in preview
+	if (!vars.$L_preview)
+	{
+		var auth= system.library.KMSecurity.doesUserHaveDocViewRights(record);
+ 		if(auth==false) 
+ 		{
+	     	var arrayArgs = new SCDatum();
+	   		arrayArgs.setType(2);  
+	   		arrayArgs.push(record.id);
+	   		print(system.functions.scmsg(185, "km", arrayArgs)); //You do not have permission to view the knowledge document with id %S.
+	   		return false;
+	   	}
+	}  
+
+
+    //get the doctype record
+	var q = new Query("kmdoctype", new QueryCond("name", EQ, record.doctype));
+	// Error check if the document was read correctly. I3150
+	if (! q[0])
+	{
+		print(system.functions.scmsg(159, "km")); // Cannot display this document, possibly due to the deletion of a linked document.
+		return false;
+	}
+	for (var vwIdx=0;vwIdx &lt; q[0].format_view.length();vwIdx++)
+	{
+		for (var vwGrpIdx=0;vwGrpIdx &lt; q[0].format_view[vwIdx].view_roles.length();vwGrpIdx++)
+		{
+			kmViewNameArray = system.functions.insert(kmViewNameArray,0,1,q[0].format_view[vwIdx].view_name,true);
+			kmViewSecLevelArray = system.functions.insert(kmViewSecLevelArray,0,1,q[0].format_view[vwIdx].view_seclevel,true);
+			kmViewGroupArray = system.functions.insert(kmViewGroupArray,0,1,q[0].format_view[vwIdx].view_roles[vwGrpIdx],true);
+		}		
+	}
+	
+	if (vwIdx==0)
+	{
+		//vwIdx should only be 0 if there were no views at all, in that case just
+		//give a message to the user
+	  	vars.$L_docwithview = "There is no view for this document type";		
+	}
+	else
+	{
+		//debugging statements
+		/*
+		print(kmViewNameArray);
+		print(kmViewSecLevelArray);
+		print(kmViewGroupArray);
+		*/
+		//now that we have all the views values sorted in arrays we can use 
+		//them to determine which view to use
+		var highestLevelVal = 0;
+		var highestLevelViewName = "";
+
+		//first check if the user is an admin
+		if (system.functions.index("SysAdmin", vars.$lo_ucapex) &gt; 0 ||
+		    system.functions.index("KMAdmin", vars.$lo_ucapex) &gt; 0 ||
+	    	vars.$G_km_environment.doctypes )
+		{	
+			//in this case just get the highest sec level view
+			for (var vwLstIdx=0;vwLstIdx &lt; kmViewNameArray.length();vwLstIdx++)
+			{
+				if (kmViewSecLevelArray[vwLstIdx] &gt; highestLevelVal)
+				{
+					highestLevelVal = kmViewSecLevelArray[vwLstIdx];
+					highestLevelViewName = kmViewNameArray[vwLstIdx];
+				}
+			}
+
+			if (highestLevelViewName == "")
+			{
+				showDoc = false;
+			}
+			else
+			{
+				showDoc = true;
+			}
+
+		}
+		else
+		{
+			//call api to determine which groups the user has rights in with 
+			//relation to the document based on the doc id passed in
+			var grps = {};
+			grps = system.library.KMSecurity.getKMGroupsForDocView(record);//call to api
+			//grps should now either be an 
+			//1 empty array (can't view doc)
+			if (grps.length() == 0)
+			{
+	  			showDoc = false;
+			}
+			//2 single value array(use that group to pick the view)
+			else if (grps.length() == 1)
+			{
+				for (var vwLstIdx=0;vwLstIdx &lt; kmViewNameArray.length();vwLstIdx++)
+				{
+					if (kmViewGroupArray[vwLstIdx] == grps[0])
+					{
+						highestLevelVal = kmViewSecLevelArray[vwLstIdx];
+						highestLevelViewName = kmViewNameArray[vwLstIdx];
+					}
+				}
+				if (highestLevelViewName == "")
+				{
+					showDoc = false;
+				}
+				else
+				{
+					showDoc = true;
+				}
+			}
+			//3 multi value array(multiple groups so sec level has to be considered)
+			else
+			{
+				for (var vwLstIdx=0;vwLstIdx &lt; kmViewNameArray.length();vwLstIdx++)
+				{
+					for (var grpsIdx=0;grpsIdx &lt; grps.length();grpsIdx++)
+					{
+						if (kmViewGroupArray[vwLstIdx] == grps[grpsIdx])
+						{
+							if (kmViewSecLevelArray[vwLstIdx] &gt; highestLevelVal)
+							{
+								highestLevelVal = kmViewSecLevelArray[vwLstIdx];
+								highestLevelViewName = kmViewNameArray[vwLstIdx];
+							}
+						}
+					}
+				}
+				if (highestLevelViewName == "")
+				{
+					showDoc = false;
+				}
+				else
+				{
+					showDoc = true;
+				}
+			}
+		}
+
+		if (showDoc)
+		{
+		    //Updated by kang.pan@hp.com for KM Mobile Detail View 8/8/2013
+			//If the client type is "mobile", the View Name should be "Default Mobile View"
+			if (vars.$G_client_type=="mobile"){
+				highestLevelViewName="Default Mobile View";
+			}
+	    	//now we SHOULD have a value in our name variable-if we don't there is an error
+			if (highestLevelViewName == "")
+		    {
+	    		//do nothing for now
+		  		vars.$L_docwithview = "There was an error trying to locate the view for this document";
+		    }	
+			else
+			{
+				//since we have a name here we want to find the view that corresponds
+				if (q[0].format_view.length() &gt; 0)
+				{
+					var idxName = 0;
+					for (var vwIdx2=0;vwIdx2 &lt; q[0].format_view.length();vwIdx2++)
+					{
+						if (q[0].format_view[vwIdx2].view_name == highestLevelViewName)
+						{
+							idxName = vwIdx2;
+						}
+					}
+			
+					//then get the view data from the query result
+					var theView = q[0].format_view[idxName].view_data;
+					if (theView==null)
+					{
+						vars.$L_docwithview = "There is no data in the Document View for this Document Type."; 
+					}
+					else
+					{
+						theView = system.library.KMDocPreview.replaceTokensWithData( theView, record);
+				    	if(vars.$G_client_type=="mobile")
+						{
+						  theView = system.library.KMDocPreview.replaceLikeTokensWithData( theView, record);
+						}
+				    	theView = system.library.KMDocPreview.replaceSCMSGTokens(theView);
+		    
+					  	vars.$L_docwithview = theView;
+					  	vars.$L_externaldoc = getAttPreview(record.id);
+					 }
+				 }
+				 else
+				 {
+				 	vars.$L_docwithview = "There is no Document View for this Document Type.";
+				 }
+			}
+		
+			
+		}
+		else
+		{
+
+			//so we have decided that if a user has no rights then they will get the default
+			//view...this may fail if the default view does not exist 
+		
+			//since we have a name here we want to find the view that corresponds
+			var idxName = 0;
+			var havedefault = false;
+			var defaultViewName = "Default View"
+			
+			//Updated by kang.pan@hp.com for KM Mobile Detail View 8/8/2013
+			//If the client type is "mobile", the Default View Name should be "Default Mobile View"
+			if (vars.$G_client_type=="mobile"){
+				defaultViewName="Default Mobile View";
+			}
+			
+			for (var vwIdx2=0;vwIdx2 &lt; q[0].format_view.length();vwIdx2++)
+			{
+				if (q[0].format_view[vwIdx2].view_name == defaultViewName)
+				{
+					idxName = vwIdx2;
+					havedefault = true;
+				}
+			}
+			
+			if ((idxName == 0 ) &amp;&amp; (havedefault == false))
+			{
+			  //this means they not only have no rights but there is no default view 
+			  //so they are unlucky...
+				vars.$L_docwithview = "There is no default view for this document.";
+			}
+			else
+			{
+				//then get the view data from the query result
+				var theView = q[0].format_view[idxName].view_data;
+				if (theView==null)
+				{
+					vars.$L_docwithview = "There is no data in the Document View for this Document Type."; 
+				}
+				else
+				{
+					theView = system.library.KMDocPreview.replaceTokensWithData( theView, record);
+
+				    theView = system.library.KMDocPreview.replaceSCMSGTokens(theView);
+	    			vars.$L_externaldoc = getAttPreview(record.id);
+		  			vars.$L_docwithview = theView;
+			  	}
+			 }
+		
+			
+		}
+	}
+	
+	return showDoc;
+}
+/**
+ *	QCCR1E74162 OVSM KM: Preview of External Document Type fails. Nothing is displayed to user
+ *	add attachment finding fucntion, return html text for the attachment.
+ *
+ */
+function getAttPreview( id ) {
+	var sysatt = new SCFile("SYSATTACHMENTS");
+	var sc = sysatt.doSelect("application=\"kmdocument\" and topic=\"" + id + "\"");
+	var extDoc = "";
+	if(sc==RC_SUCCESS)
+	{
+		if(vars.$G_client_type=="mobile"){
+		    extDoc = "&lt;div class='mobile-ext-doc'&gt;&lt;a href=\"scattach://"+sysatt.uid +":"+ sysatt.filename +":kmdocument:" + vars.$L_file.id +"\"&gt;"+sysatt.filename+"&lt;/a&gt;&lt;/div&gt;";
+	    } else {
+		    extDoc = "&lt;html&gt;&lt;iframe height=\"100%\" width=\"100%\" src=\"scattach://"+sysatt.uid +":"+ sysatt.filename +":kmdocument:" + id +"\"&gt;&lt;/iframe&gt;&lt;/html&gt;";
+	    }
+	}
+	else
+	{
+		extDoc = "&lt;html&gt;&lt;iframe height=\"100%\" width=\"100%\"&gt;&lt;/iframe&gt;&lt;/html&gt;";
+	}
+	return extDoc;
+}</script>
+    <package type="string">KnowledgeManagement</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:41</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem type="boolean">true</prgnsystem>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

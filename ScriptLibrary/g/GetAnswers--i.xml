@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;GetAnswers&quot;" recordid="GetAnswers">
+    <name type="string">GetAnswers</name>
+    <script type="string">/**  @fileoverview GetAnswers integration
+*   @author Joe Antoneccia
+*/
+
+/**
+*   @class GetAnswers
+*   @constructor
+*/
+function GetAnswers()
+{
+}
+
+/**  This function returns the base URL to the Get-Answers web server
+*	Example: http://localhost:8080/oaa
+*	
+*	@return Base URL to the Get-Answers Server
+*   @type String
+*/
+function getGetAnswersBaseURL()
+
+{
+	var strURL = vars.$G_system_info.getans_server;
+	//strip leading and trailing slashes and spaces	
+	var rexp = /(\/|\\|\s)$/; 
+	strURL = strURL.replace(rexp, "");	
+ 	return strURL;
+}
+
+
+/**  This function returns the URL to show the Get-Answers Audit Trail
+*	@return The URL to show the Get-Answers Audit Trail
+*   @type String
+*/
+function getAuditTrailURL()
+{
+	var strURL;
+/*	This code was used before the browser window workaround.  Leave for future reference
+*/
+	if( parseInt(system.sysinfo.ClientVersion.substring(0,1)) &gt;= 6 &amp;&amp; parseFloat(system.sysinfo.ClientVersion.substring(0,3)) &lt; 6.1 &amp;&amp; system.functions.current_device() != "Soap-Web")
+		strURL = system.library.GetAnswers.getGetAnswersBaseURL() + "/gaIntegration.jsp?e_answers_scintegration_auditTrailSearchHistory.do%253FclientPID=" + system.sysinfo.ClientPID;
+	else
+		strURL = system.library.GetAnswers.getGetAnswersBaseURL() + "/gaIntegration.jsp?e_answers_scintegration_auditTrailSearchHistory.do%3FclientPID=" + system.sysinfo.ClientPID;
+ 	return strURL;
+}
+
+
+/**  This function returns the URL to signal a Retrieve Solution call to Get-Answers
+*	@param {String} strFile - the mapping name to use
+*	@return  the URL to signal a Retrieve Solution call
+*   @type String
+*/
+function getRetrieveSolutionURL(strFile)
+{
+	var strURL;
+	var strContext = "";
+	if( !system.functions._null(vars.$L_file.number) ) //send the Incident Ticket number as Context
+	{
+		strContext =  vars.$L_file.number;
+	}
+	else if( !system.functions._null(vars.$L_file.incident_id) ) // send the Call Ticket number as Context
+	{
+		strContext =  vars.$L_file.incident_id;
+	}
+
+	//This code was used when we attempted integration using a servlet request.  Leave for future reference. 
+	if( parseInt(system.sysinfo.ClientVersion.substring(0,1)) &gt;= 6 &amp;&amp; parseFloat(system.sysinfo.ClientVersion.substring(0,3)) &lt; 6.1 &amp;&amp; system.functions.current_device() != "Soap-Web")
+		strURL = system.library.GetAnswers.getGetAnswersBaseURL() + "/gaIntegration.jsp?e_answers_kmSearchAlternate_basicSearch.do%253FFileType=" + strFile + "%2526clientPID=" + system.sysinfo.ClientPID + "%2526ContextTag=" + strContext;
+	else
+		strURL = system.library.GetAnswers.getGetAnswersBaseURL() + "/gaIntegration.jsp?e_answers_kmSearchAlternate_basicSearch.do%3FFileType=" + strFile + "%26clientPID=" + system.sysinfo.ClientPID + "%26ContextTag=" + strContext;
+
+ 	return strURL;
+}
+
+/**  This function returns the URL to signal a Create Solution call to Get-Answers
+*	@param {String} strDocType - the Get-Answers DocType to publish to
+*	@return The URL to signal a Create Solution call
+*   @type String
+*/
+function getCreateSolutionURL(strDocType)
+{
+	var strURL; 
+	//This code was used when we attempted integration using a servlet request.  Leave for future reference. 
+	if( parseInt(system.sysinfo.ClientVersion.substring(0,1)) &gt;= 6 &amp;&amp; parseFloat(system.sysinfo.ClientVersion.substring(0,3)) &lt; 6.1 &amp;&amp; system.functions.current_device() != "Soap-Web")
+		strURL = system.library.GetAnswers.getGetAnswersBaseURL() + "/gaIntegration.jsp%3Fe_answers_AuthoringExplorer_DocumentTypeList.do%253FclientPID=" + system.sysinfo.ClientPID + "%2526FindDocType="+ strDocType;
+	else //old client
+		strURL = system.library.GetAnswers.getGetAnswersBaseURL() + "/gaIntegration.jsp?e_answers_AuthoringExplorer_DocumentTypeList.do%3FclientPID=" + system.sysinfo.ClientPID + "%26FindDocType="+ strDocType;
+  	return strURL;
+}
+
+/**  This function returns the URL to signal a Search request to Get-Answers
+*	@return The URL to signal a Search request call
+*   @type String
+*/
+function getSearchURL()
+{
+	//This line was used before the browser window workaround.  Leave for reference.
+    var strURL;
+	if( parseInt(system.sysinfo.ClientVersion.substring(0,1)) &gt;= 6 &amp;&amp; parseFloat(system.sysinfo.ClientVersion.substring(0,3)) &lt; 6.1 &amp;&amp; system.functions.current_device() != "Soap-Web")
+     	strURL = system.library.GetAnswers.getGetAnswersBaseURL() + "/gaIntegration.jsp%3Fe_answers_kmSearchAlternate_searchInterface.do%3FclientPID=" + system.sysinfo.ClientPID;
+    else
+     	strURL = system.library.GetAnswers.getGetAnswersBaseURL() + "/gaIntegration.jsp?e_answers_kmSearchAlternate_searchInterface.do?clientPID=" + system.sysinfo.ClientPID;
+  	return strURL;
+}
+
+/**  This function looks up the fields to use in the search in the getansconfig table
+*	then it writes the values for those fields into the getansintegration table
+*	@param {String} strFile String containing the mapping name to use for the search
+*	@return true or false
+*   @type Boolean
+*/
+function getSearchParameters(strFile)
+{
+
+	var iCount = 0;
+	
+	//first delete any integrations rows for this clientPID. Should not be any but this is a safeguard.
+	system.library.GetAnswers.deleteIntegrationRows();
+
+	var q = new Query("getansconfig", new QueryCond("name", EQ, strFile));
+ 	for( row in q )
+ 	{
+  		for( idx in q[row].search_fields )
+  		{		
+			if(q[row].search_fields[idx].sc_searchfield == null)
+				continue;
+			var strFieldValue="";
+			var bFound=false;
+  			//check if we mapped a value for this target field already...if so append
+  			var qTemp = new Query( "getansintegration", new QueryCond("client_pid", EQ, system.sysinfo.ClientPID ).and(new QueryCond("field_name", EQ, q[row].search_fields[idx].getans_target)) );
+   		    for( foundRow in qTemp )
+ 			{
+  		    	strFieldValue = qTemp[foundRow].field_value;
+  		    	bFound = true;
+  		    }
+  		    //test for literal string 
+         	if( q[row].search_fields[idx].sc_searchfield.substring(0,1) == "\"" ) 
+            {
+                var len = q[row].search_fields[idx].sc_searchfield.length -1;
+                strFieldValue += q[row].search_fields[idx].sc_searchfield.substring(1, len)      
+            }
+            else // normal field mapping
+            {
+            	var recordFile = vars.$L_file;
+            	var searchfieldValue = recordFile[q[row].search_fields[idx].sc_searchfield];         	
+                if( system.library.GetAnswers.isSCArray( searchfieldValue ) )
+        	      	strFieldValue  += system.library.GetAnswers.scArrayToString(searchfieldValue);
+ 				else
+          	      	strFieldValue += searchfieldValue;
+            }
+            
+            if(bFound) //update the integration row we found with the new field value
+            {
+            	qTemp[0].field_value = strFieldValue;
+            	qTemp[0].doUpdate();
+            }
+            else //insert a new integration row 
+            {
+      			system.library.GetAnswers.insertRow( q[row].search_fields[idx].getans_target, strFieldValue, ++iCount,iCount );          
+            }    
+            
+  		}
+     }
+     return true;
+ }
+
+/**
+*	This function provides a utility to strip the SC Array style markup
+*	from a string representation of the array.  For example SC will return
+*	{"Hello"} and when passed to this function you will receive Hello
+*	@param {String} strString ServiceCenter String representation of an array
+*	@return String representation of the SC array
+*   @type String
+*	@deprecated 
+*   @see #scArrayToString
+*/
+function cleanArrayMarkup( strString )
+{
+  var reg = /(\{\")|(\"\})|(\{*,\s\")/g;
+  return strString.replace(reg, "");
+}
+
+
+/**
+*	Determines if the field passes as an argument is an array field
+*	@param  {Datum} fField - a field variable
+*	@return true or false
+*   @type Boolean
+*/
+function isSCArray( fField )
+{
+	return (!system.functions._null(fField) &amp;&amp; (fField.length) &amp;&amp; (typeof(fField) == "object")) ? true : false;
+}
+
+/**
+*	Concatenates the elements of an array field into a single string
+*	@param {Datum}  fField - array field variable
+*	@return String representation of ServiceCenter array field
+*   @type String
+*/
+function scArrayToString( fField )
+{
+	var strResult = "";
+	if( system.library.GetAnswers.isSCArray( fField ) )
+	{
+    	for(var idx in fField )
+    	{
+    		if( !system.functions._null(fField[idx]) )
+    			strResult += fField[idx] + " ";
+    	}
+    }
+    return strResult;
+}
+
+/**  This function returns a SC JavaScript compliant field name by replacing 
+*	"." (dot) characters in the field name with "_" (underscore) character
+*	@param {String} strFieldName - a string containing the name of a SC field
+*	@return The name of SC field in valid Javascript format
+*   @type String
+*/
+function scToJSName(strFieldName)
+{
+  	var reg = /\./g;
+  	return strFieldName.replace(reg, "_");
+}
+
+
+
+/**  This function deletes any rows in the getansintegration table for this clientPID.
+*/
+function deleteIntegrationRows()
+{
+	var fDelete = new Query( "getansintegration", new QueryCond("client_pid", EQ, system.sysinfo.ClientPID ));
+	for( row in fDelete )
+		fDelete[row].doRemove();
+
+}
+
+
+/**	Inserts a row into the getansintegration table.  If the insert fails try to  delete
+*	and reinsert the row.
+*	@param {String}  strFieldName A string variable containing thee name of a field
+*	@param {String} strFieldValue A string variable containing the value of the field
+*	@param {Integer} iRow A numeric value for the number of the row this row represents in the 
+*				 		entire transation
+*	@param {Integer} iCount A numeric value for the total number ofrows in the transaction
+*	@return	true or false representing success or failure
+*   @type Boolean
+*/
+function insertRow(strFieldName, strFieldValue, iRow, iCount)
+{
+
+	var f = new SCFile("getansintegration");
+	f.id = system.sysinfo.ClientPID + "-" + iRow;
+	f.field_name = strFieldName;
+	f.field_value = strFieldValue;
+	f.row_number = iRow;
+	f.row_count = iCount;
+	f.timestamp = system.functions.tod();
+	f.client_pid = system.sysinfo.ClientPID;
+	var rc = f.doInsert();
+	if( rc != RC_SUCCESS ) //insert failed try to delete and reinsert
+	{	
+		var fDelete = new SCFile();
+		fDelete.doSelect( "getansintegration", new QueryCond("id", EQ, f.id ));
+		rc = fDelete.doRemove();
+		if(rc != RC_SUCCESS)
+			rc = f.doInsert();
+	 } 
+ 	return rc;
+}
+
+/**	Retrieves the specified row number for this client session from the getansintegration table. 
+*	It will poll the table 4 times pausing for 3 seconds between each poll to wait to the data
+*	to arrive from GetAnswers.
+*	@param {Integer}  rowNumber - a numeric value for the row to retrieve
+*	@return	 a Datum containing the row or null if it was not found
+*   @type Datum
+*/
+function getIntegrationRow(rowNumber)
+{
+	var cnt = 0;
+ 	var q= new SCFile("getansintegration");
+	var rc = q.doSelect( new QueryCond("client_pid", EQ, system.sysinfo.ClientPID).and(new QueryCond("row_number", EQ, rowNumber)));
+ 	while( q.getFirst() != RC_SUCCESS &amp;&amp; cnt &lt;= 3 )
+ 	{
+      	system.functions.sleep(3);
+      	q.doSelect( new QueryCond("client_pid", EQ, system.sysinfo.ClientPID).and(new QueryCond("row_number", EQ, rowNumber)));
+      	cnt++;
+ 	}
+
+ 	if( q.getFirst() != RC_SUCCESS ) //Houston we have a problem...bail
+ 	{
+ 		print( system.functions.scmsg(13, "ga"));
+ 		return null;
+ 	}
+	return q;
+}
+
+/**	This function will map an incomming field from Get-Answers into the specified SC field
+*	It will perform any character mappings defined in the getanscharmap table for Incomming
+*	map types.  Also it need to handle array fields differently than regular fields.
+*	@param {String}	strFieldName - string containgin the name of the ServiceCenter field
+*	@param {String}	strFieldValue - string containing the value to append to the field
+*/
+function mapIncommingField(strFieldName, strFieldValue)
+{
+	var isArray = system.library.GetAnswers.isSCArray( vars.$L_file[strFieldName] );	
+	var strSetVal; 
+	if(isArray)
+	{
+		//break up any &lt;p&gt; and &lt;BR/&gt; into separate array elements
+		vars.$L_file[strFieldName].push("\n" + q.field_value);
+	}
+	else if(vars.$L_file[strFieldName] == null) 
+	{
+		 vars.$L_file[strFieldName] = q.field_value; 
+	}
+	else
+	{
+		vars.$L_file[strFieldName] += " " + q.field_value;
+	}
+
+}
+
+/** This function is a convenience method for displaying a status message.  It is
+*  intended to be called from a RAD Expression using jscall().
+*  @param {String} strMessage - a string containing the message to be displayed.
+*/ 
+function statusMessage(strMessage)
+{
+	print(strMessage);
+}
+
+/**
+* This function is called to retrieve the last solution viewed in Get-Answers.  
+* The user will request the retrieve using the Retrieve Solution display option (i.e. menu)
+* A Document Engine Process will call this function AFTER sending a URL Request to Get-Answers
+* The URL Request will pass the ClientPID and Get-Answers will query the getansconfig mapping table
+* in ServiceCenter using the DocType of the last document viewed.  Once Get-Answers retrieves the 
+* ServiceCenter fieldnames it needs to map to it writes a record into the getansintegration table for
+* each field mapped using the ClientPID as a key.  This function will poll the getansintegration table
+* waiting for the records to be written from Get-Answers.  Once they arrive they are processed.  
+*/
+function retrieveSolution()
+{
+ 	//query for the 1st record, if the record is not found pause then try again.  Attempt this 3 times.
+ 	var cnt = 0;
+ 	var q= new SCFile();
+ 	q = system.library.GetAnswers.getIntegrationRow(1);
+ 	if( q==null ) //Houston we have a problem...bail
+ 		return false;
+ 
+ 	//we have the first record, process it 
+	//because SC uses arrays for multiline fields, appending the data is done differently.  We must first determine
+	//if the field we are dealing with is an array then process it accordingly
+	
+	var strFieldName = q.field_name;
+	var isArray = system.library.GetAnswers.isSCArray( vars.$L_file[strFieldName] );
+	//needs work if you use this line:(!system.functions._null((eval("vars.$L_file." + q.field_name)) &amp;&amp; (eval("vars.$L_file." + q.field_name).length) &amp;&amp; (typeof(eval("vars.$L_file." + q.field_name)) == "object")) ? true : false
+		
+	if (isArray) {
+		vars.$L_file[strFieldName].push(q.field_value);
+	} else {
+		if (vars.$L_file[strFieldName] == null) {
+			vars.$L_file[strFieldName] = q.field_value;
+		} else {
+			vars.$L_file[strFieldName] += (" " + q.field_value);
+		}
+	}
+
+ 	q.doRemove();
+ 
+	//loop the rest of the records and process them as well
+	for( var i=2; i &lt;= q.row_count; i++ )
+ 	{
+ 		q = system.library.GetAnswers.getIntegrationRow( i );
+ 		if( !system.functions._null(q) )
+ 		{
+ 			strFieldName = q.field_name;
+			isArray = system.library.GetAnswers.isSCArray( vars.$L_file[strFieldName] );
+			if (isArray) {
+				vars.$L_file[strFieldName].push(q.field_value);
+			} else {
+				if (vars.$L_file[strFieldName] == null) {
+					vars.$L_file[strFieldName] = q.field_value;
+				} else {
+					vars.$L_file[strFieldName] += (" " + q.field_value);
+				}
+			}
+ 			q.doRemove();
+ 		}
+ 		else
+ 			break; 
+ 	} 
+   return true;
+}
+
+/**
+* This function is called to create a solution in Get-Answers from the current file record in ServiceCenter.  
+* The user will request the creation using the Create Solution display option (i.e. menu)
+* A selection wizard prompts the user to select the document type of the solution to create
+* Once selected the wizard calls a Process Record (getans.create.solution) that formats the call to this function 
+* @param {String} strFile - string containing the name of the current file ("probsummary", "incidents", etc... )
+* @param {String}  strType - the DocumentType in GetAnswers you wish to publish to
+*/
+function createSolution(strFile, strType)
+{
+	//first delete any integrations rows for this clientPID. Should not be any but this is a safeguard.
+	system.library.GetAnswers.deleteIntegrationRows();
+ 	var q = new Query("getansconfig", new QueryCond("name", EQ, strFile));
+ 	var rowcount = 0;
+ 	for( row in q )
+ 	{
+  		for( idx in q[row].fields )
+  		{
+  	  		var strDocType = "" + q[row].fields[idx].getans_doctype;
+      		if( strDocType != strType &amp;&amp; strDocType.toLowerCase() != "all" )
+      			continue;
+          //we found a mapping for this file type and doctype
+          //write the file information to the getansintegration table
+      
+          var strEval = q[row].fields[idx].sc_field;
+          //test for literal string
+          if( strEval.substring(0,1) == "\"" )
+          {
+          	var len = strEval.length -1;
+          	system.library.GetAnswers.insertRow(q[row].fields[idx].getans_field, strEval.substring(1, len), ++rowcount, -1);      
+          }
+          else //not a literal string so evaluate the value of the field and send that
+          {
+              var strValue = vars.$L_file[strEval];
+              
+              system.library.GetAnswers.insertRow(q[row].fields[idx].getans_field, strValue, ++rowcount, -1);
+          }
+   		}
+ 	}
+}
+
+/**  This function returns the URL to show the Get-Answers Audit Trail for
+*   the specified user on the specified date.
+*	@param {String} strUser  string containing the user id.
+*	@param {String} strDate  string containing the date
+*	@return The URL to show the Get-Answers Audit Trail
+*   @type String
+*/
+function requestAuditTrail( strUser, strDate )
+{
+	if( system.library.GetAnswers.insertRow("UserId", strUser, 1, 3) != RC_SUCCESS )
+	{
+ 		print( system.functions.scmsg(17, "ga"));
+ 		return "";
+ 	}
+		
+	if( system.library.GetAnswers.insertRow("Timestamp", strDate, 2, 3) != RC_SUCCESS)
+	{
+		print( system.functions.scmsg(17, "ga"));
+		return "";
+	}
+	
+	if( !system.functions._null(vars.$L_file.number) ) //send the Incident Ticket number as Context
+	{
+		system.library.GetAnswers.insertRow("ContextTag", vars.$L_file.number, 3, 3)
+	}
+	else if( !system.functions._null(vars.$L_file.incident_id) ) // send the Call Ticket number as Context
+	{
+		system.library.GetAnswers.insertRow("ContextTag", vars.$L_file.incident_id, 3, 3)
+	}
+
+	print( system.functions.scmsg(18, "ga"));		
+	return system.library.GetAnswers.getAuditTrailURL();
+}
+
+
+</script>
+    <package type="string">GetAnswers</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:39</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

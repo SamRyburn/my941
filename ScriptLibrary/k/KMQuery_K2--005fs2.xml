@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;KMQuery_K2&quot;" recordid="KMQuery_K2">
+    <name type="string">KMQuery_K2</name>
+    <script type="string">function nlqParse(query, langCode)
+{
+
+    var phrase = "";
+    var wildcards = "";
+    var vql = "&lt;ACCRUE&gt;(";
+    var manyword = "[45]&lt;Lang/"+langCode+"&gt;";
+    var thesaurus = "[30]";
+    var manystem = "[14]";
+    var manyphrase = "[45]";
+    var manykeyword= "[35]";
+    // Replace newline characters with spaces.
+
+    query = query.replace(/(.*)\n(.*)/g, "$1 $2");
+    
+    
+	phrase = system.library.KMQuery.parsePhrases(query);
+	query = system.library.KMQuery.stripPhrases(query);
+	wildcards = system.library.KMQuery.parseWildcards(query);
+	query = system.library.KMQuery.stripWildcards(query, wildcards);
+	query = system.library.KMQuery.compressWhiteSpace(query);
+	query = system.library.KMQuery.stripStop(query, langCode);
+	query = system.library.KMQuery.compressWhiteSpace(query);
+	
+	
+	var wordarray = query.split(" ");
+	if (wordarray[0] == "undefined")
+	  wordarray[0] = "";
+	  if (wordarray.length &gt; 1)
+	  {
+	  manyword += "&lt;ACCRUE&gt;(";
+	  thesaurus += "&lt;ACCRUE&gt;(";
+	  manystem += "&lt;ACCRUE&gt;(";
+	  manyphrase += "&lt;ACCRUE&gt;(";
+      manykeyword += "&lt;ACCRUE&gt;(";
+        for (var words =0; words &lt; wordarray.length; words++)
+        {
+           manyword += "&lt;MANY&gt;"+wordarray[words];//+"\"";
+           if (words == wordarray.length-1)
+            manyword +=" ";
+           else
+            manyword +=", ";
+            
+          thesaurus += "&lt;Lang/"+langCode+"&gt;&lt;Thesaurus&gt;"+wordarray[words];
+           if (words == wordarray.length-1)
+            thesaurus +=" ";
+           else
+            thesaurus +=", ";
+            
+          manystem += "&lt;Lang/"+langCode+"&gt;&lt;MANY&gt;&lt;STEM&gt;"+wordarray[words];
+           if (words == wordarray.length-1)
+            manystem +=" ";
+           else
+            manystem +=", ";
+            
+          manykeyword += wordarray[words];//+"\"";
+          
+           if (words == wordarray.length-1)
+            manykeyword +="&lt;IN&gt;SecondaryDoc ";
+           else
+            manykeyword +="&lt;IN&gt;SecondaryDoc, ";
+        }
+
+        var phrasearray = phrase.split(";");
+        if (phrasearray.length &gt; 1)
+	    {
+	      for (var phrases =0; phrases &lt; phrasearray.length; phrases++)
+	      {
+	       manyphrase +=phrasearray[phrases];
+           if (phrases == phrasearray.length-1)
+            manyphrase +=" ";
+           else
+            manyphrase +=", ";
+          }
+        }
+        else 
+        if (phrasearray.length &gt;0)
+         manyphrase += phrasearray[0];
+         
+        vql+= manyword+"),";
+        vql+= manykeyword+"),";
+        
+        if (phrase.length &gt; 0)
+        {
+        vql+= manyphrase;
+        if (wildcards.length == 0)
+         vql+="),";
+        }
+        if (wildcards.length &gt; 0)
+        {
+          if (phrase.length &gt; 0)
+           vql+= ","+wildcards+"),";
+          if (phrase.length == 0)
+           vql+= "&lt;ACCRUE&gt;("+wildcards+"),";
+        }
+        vql+= thesaurus+"),"+manystem+"))";
+       }
+       
+      else
+       {
+        var phrasearray = phrase.split(";");
+        
+        if (phrasearray.length &gt; 1)
+	    {
+	      for (var phrases =0; phrases &lt; phrasearray.length; phrases++)
+	      {
+	       manyphrase +=phrasearray[phrases];
+           if (phrases == phrasearray.length-1)
+            manyphrase +=" ";
+           else
+            manyphrase +=", ";
+          }
+        }
+        else 
+        if (phrasearray.length &gt;0)
+         manyphrase += phrasearray[0];
+       
+        // if we have more than one normal word, adjust word params
+        if (wordarray[0].length &gt;0 )
+        { 
+         manyword += "&lt;MANY&gt;&lt;WORD&gt;"+wordarray[0];
+         thesaurus += "&lt;Lang/"+langCode+"&gt;&lt;Thesaurus&gt;"+wordarray[0];
+         manystem += "&lt;Lang/"+langCode+"&gt;&lt;MANY&gt;&lt;STEM&gt;"+wordarray[0];
+         manykeyword += wordarray[0]+"&lt;IN&gt; SecondaryDoc";
+        }
+
+
+         // if we have a phrase or phrases, add it        
+         if (phrase.length &gt; 0)
+         {
+            vql += manyphrase;
+            // if we have a normal word or a wildcard, add a comma         
+            if (wordarray[0].length &gt; 0 || wildcards.length &gt; 0)
+              vql += ","; 
+         }
+         
+         // if we have a wildcard, add it
+         if (wildcards.length &gt; 0)
+         {
+           vql += wildcards;
+           // if we have a normal word, add a comma
+           if (wordarray[0].length &gt; 0)
+             vql += ",";
+         }
+         
+         // if we have normal words, add them here
+         if (wordarray[0].length &gt; 0)
+         {
+           
+           vql+=manyword+","+thesaurus+","+manystem+","+manykeyword;
+         }
+         vql+=")";
+       } 
+      
+     
+
+return vql;
+} 
+
+function noneWords(strQuery, fKMQuery)
+{
+if( fKMQuery.nonewords != null &amp;&amp; fKMQuery.nonewords.length &gt; 0 )	
+	{
+		var nonewords = fKMQuery.nonewords.split(" ");
+		if(nonewords.length &lt; 1 )
+			nonewords = fKMQuery.nonewords.split(",");
+		if(nonewords.length &gt; 0)
+		{	
+			for( var i = 0; i &lt; nonewords.length; i++ )
+			{
+				strQuery += " &lt;NOT&gt; " + nonewords[i];
+			}
+		}
+	}
+	return strQuery;
+}
+
+function allWords(strQuery, fKMQuery)
+{
+	if( fKMQuery.allwords != null &amp;&amp; fKMQuery.allwords.length &gt; 0 )	
+	{
+		var allwords = fKMQuery.allwords.split(" ");
+		if(allwords.length &lt; 1 )
+			allwords = fKMQuery.allwords.split(",");
+		if(allwords.length &gt; 0)
+		{	
+			strQuery += " &lt;AND&gt; (&lt;ALL&gt; "+ " (";
+			for( var i = 0; i &lt; allwords.length; i++ )
+			{
+				if(i &gt; 0)
+					strQuery += ", ";
+				strQuery += allwords[i];
+			}
+			strQuery += "))";
+		}
+	}
+    return strQuery;
+}
+
+function anyWords(strQuery, fKMQuery)
+{
+	if( fKMQuery.anywords != null &amp;&amp; fKMQuery.anywords.length &gt; 0 )	
+	{
+		var anywords = fKMQuery.anywords.split(" ");
+		if(anywords.length &lt; 1 )
+			anywords = fKMQuery.anywords.split(",");
+		if(anywords.length &gt; 0)
+		{	
+			strQuery += " &lt;AND&gt; (";
+			for( var i = 0; i &lt; anywords.length; i++ )
+			{
+				if(i &gt; 0)
+					strQuery += " &lt;OR&gt; ";
+				strQuery += anywords[i];
+			}
+			strQuery += ")";
+		}
+	}
+    return strQuery;
+}
+
+function exactPhrase(strQuery, fKMQuery)
+{
+if( fKMQuery.exactphrase != null &amp;&amp; fKMQuery.exactphrase.length &gt; 0 )	
+	{
+		strQuery += " &lt;AND&gt; (\"" + fKMQuery.exactphrase + "\")";		
+	}
+	return strQuery;
+}</script>
+    <package type="string">KMAdmin</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:41</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

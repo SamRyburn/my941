@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;addCIVisData&quot;" recordid="addCIVisData">
+    <name type="string">addCIVisData</name>
+    <script type="string">var fCIDevice = new SCFile("device");
+var rc = fCIDevice.doSelect("logical.name=\"ACMEpc012\"");
+
+var fCIRelationship = new SCFile("cirelationship");
+rc = fCIRelationship.doSelect("logical.name=\"ACMEserver002\"");
+
+for (var i = 0; i &lt; 100; i++)
+{
+	fCIDevice.logical_name = "TestPC0" + i; 
+	fCIRelationship.related_cis[fCIRelationship.related_cis.length()] = "TestPC0" + i;
+	
+	rc = fCIDevice.doInsert();
+	if (rc != RC_SUCCESS)
+	{
+		print("INSERT OF DEVICE FAILS");
+	}
+	else
+	{
+		rc = fCIRelationship.doUpdate();
+		if (rc != RC_SUCCESS)
+		{
+			print("UPDATE OF RELATIONSHIP FAILS");
+		}
+		else 
+		{
+			print("Added TestPC0" + i);
+		}
+	}
+}</script>
+    <package type="string">Test Tools</package>
+    <sysmodtime type="dateTime">08/14/08 04:52:14</sysmodtime>
+    <sysmoduser type="string">ffaegh</sysmoduser>
+    <sysmodcount type="decimal">3</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

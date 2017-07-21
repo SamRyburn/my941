@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;Test_ScAPI_RAD&quot;" recordid="Test_ScAPI_RAD">
+    <name type="string">Test_ScAPI_RAD</name>
+    <script type="string">/*
+ * Test cases for ScAPI_RAD
+ */
+
+function Test_ScAPI_RAD() {}
+
+Test_ScAPI_RAD.prototype = {
+
+    setup : function () {
+    },
+
+    teardown :function () {
+    },
+
+    test_select : function(){
+
+        lib.SMTFCore.assertTrue( lib.ScAPI_RAD._select( 'joinsvcDisplay',
+            'parent="Business and Department Services" and active=true' ) != null );
+    },
+
+    test_count : function(){
+
+        lib.SMTFCore.assertTrue( lib.ScAPI_RAD._count( 'joinsvcDisplay',
+            'parent="Business and Department Services" and active=true' ) &gt; 0 );
+    },
+
+    testus_convert_currency : function() {
+
+        var rstObj = lib.ScAPI_RAD.us_convert_currency( 'USD', 'HKD', 100, lib.ScAPI_RAD._tod() );
+        var rc = rstObj.getReturnCode();
+        lib.SMTFCore.assertTrue( rc == 'success' || rc == 'fuzzy' );
+        lib.SMTFCore.assertTrue( rstObj.getTargetQuantity() &gt; 0 );
+        
+    },
+
+    testsvcCat_get_items : function() {
+
+        var file = lib.ScAPI_RAD._select( "joinsvcDisplay", 'null(parent)' );
+        lib.SMTFCore.assertTrue( file != null );
+
+        var rstObj = lib.ScAPI_RAD.svcCat_get_items( file, null, 'falcon', 100, true, false );
+        lib.SMTFCore.assertEquals( rstObj.getItems().length(), 4 );
+        lib.SMTFCore.assertEquals( rstObj.getImages().length(), 4 );
+        lib.SMTFCore.assertEquals( rstObj.getDesc().length(), 4 );
+        lib.SMTFCore.assertEquals( rstObj.getTotal(), 4 );
+        lib.SMTFCore.assertEquals( rstObj.getOneClickItem().length(), 4 );
+        //lib.SMTFCore.assertEquals( rstObj.getFirstId(), 3 );
+        lib.SMTFCore.assertEquals( rstObj.getItemsDisplay().length(), 4 );
+        lib.SMTFCore.assertEquals( rstObj.getCosts().length(), 4 );
+        lib.SMTFCore.assertTrue( rstObj.isFirst() == false );
+        lib.SMTFCore.assertEquals( rstObj.getTypes().length(), 4 );
+
+    }
+
+}</script>
+    <package type="string">ScAPI</package>
+    <sysmodtime type="dateTime">11/15/09 15:19:45</sysmodtime>
+    <sysmoduser type="string">xingjia</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

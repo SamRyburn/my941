@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;sub.rc.assessment.horz&quot;" recordid="en - sub.rc.assessment.horz">
+    <name mandatory="true" type="string">sub.rc.assessment.horz</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">108</length>
+        <window type="decimal">5</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$rc.assessment.url</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">embeddedViewer;Name=embeddedViewer1263877403287	Height=10	Name=embeddedViewer1263877403287	TabStop=0	Width=215	X=0	Y=0		Input=$rc.assessment.url	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">Jianxin.ZHENG</editor>
+    <last.update type="dateTime">01/24/10 09:29:00</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">acorvino</sysmoduser>
+    <sysmodtime type="dateTime">02/09/10 08:54:24</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

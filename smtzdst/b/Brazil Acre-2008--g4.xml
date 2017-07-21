@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="smtzdst">
+  <record id="tzname=&quot;Brazil Acre&quot; and dstyear=2008" recordid="">
+    <tzname type="string">Brazil Acre</tzname>
+    <dstyear type="decimal">2008</dstyear>
+    <dstbegin type="dateTime">06/23/08 18:00:00</dstbegin>
+    <dstend type="dateTime">12/31/08 16:59:59</dstend>
+    <isdst type="decimal">1</isdst>
+  </record>
+</recordset>

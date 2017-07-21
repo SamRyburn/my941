@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;getansintegration.g&quot;" recordid="en - getansintegration.g">
+    <name mandatory="true" type="string">getansintegration.g</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">78</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Add New File</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Add New File	Name=Label0	Opaque=1	BackColor=6	Bold=1	FontIncrease=2	ForeColor=10	Height=2	Name=Label0	Elastic=1	Width=156	X=0	Y=0		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">2</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">id:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=id:	Name=Label1	ForeColor=0	Height=2	Name=Label1	Width=26	X=2	Y=4		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">17</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">id</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text2	Height=2	Name=Text2	Width=40	X=32	Y=4		Input=id	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">1</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">field.name:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=field.name:	Name=Label3	ForeColor=0	Height=2	Name=Label3	Width=34	X=0	Y=14		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">18</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">field.name</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text4	Height=2	Name=Text4	Width=36	X=35	Y=14		Input=field.name	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">10</line>
+        <column type="decimal">1</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">field.value:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=field.value:	Name=Label5	ForeColor=0	Height=2	Name=Label5	Width=34	X=1	Y=18		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">512</flags>
+        <line type="decimal">10</line>
+        <column type="decimal">18</column>
+        <length type="decimal">50</length>
+        <window type="decimal">9</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">field.value</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">MultiText;Name=MultiText6	Height=18	Name=MultiText6	Width=100	X=34	Y=18		Input=field.value	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">46</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">row.number</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Number;Name=input1072205790249	Height=2	Name=input1072205790249	Width=40	X=90	Y=4		Input=row.number	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">46</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">row.count</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Number;Name=input1072205818944	Height=2	Name=input1072205818944	Width=40	X=90	Y=7		Input=row.count	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">38</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Row</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Row	Name=label1072205851656	Height=2	Name=label1072205851656	Width=40	X=74	Y=4		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">38</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Count</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Count	Name=label1072205873320	Height=2	Name=label1072205873320	Width=40	X=74	Y=7		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">17</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">document.type</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=input1075770416114	Height=2	Name=input1075770416114	Width=40	X=32	Y=7		Input=document.type	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">2</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">DocType</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=DocType	Name=label1075770478705	Height=2	Name=label1075770478705	Width=25	X=2	Y=7		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">46</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">timestamp</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=input1080678778272	Height=2	Name=input1080678778272	Width=40	X=91	Y=10		Input=timestamp	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">17</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">client.pid</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=input1080685845904	Height=2	Name=input1080685845904	Width=40	X=32	Y=10		Input=client.pid	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">2</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">ClientPID</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=ClientPID	Name=label1080685856941	Height=2	Name=label1080685856941	Width=40	X=2	Y=10		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">38</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Timestamp</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Timestamp	Name=label1080685880966	Height=2	Name=label1080685880966	Width=40	X=74	Y=10		</property>
+      </field>
+    </field>
+    <file.name type="string">getansintegration</file.name>
+    <editor type="string">falcon</editor>
+    <last.update type="dateTime">03/30/04 07:34:23</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">02/16/05 03:40:48</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

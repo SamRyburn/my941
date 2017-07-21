@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;debugUtils&quot;" recordid="debugUtils">
+    <name type="string">debugUtils</name>
+    <script type="string">function printOut( strPrint )
+{
+	print( strPrint );
+}
+
+function logData( strLog )
+{
+	var retval = new SCDatum();
+	system.functions.rtecall("log", retval, strLog); 
+}
+
+function strReplace ( strTarget, strOld, strNew)
+{
+	strTarget = new String( strTarget );
+	strTarget = strTarget.replace(strOld, strNew, "g");
+	return strTarget;
+}
+
+var Parser = function(node) {
+    this.toJSON = function() {
+        var result = {};
+        foreach(node, function(node) { processField(node, result); });
+        return result;
+    };
+
+    function foreach(node, action) {
+        var node = node.getFirstChildElement();
+        while (node != null) {
+            action(node);
+            node = node.getNextSiblingElement();
+        }
+    }
+
+    function processField(node, result) {
+        var name = node.getNodeName();
+        result[name] = processFieldValue(node);
+    }
+
+    function processFieldValue(node) {
+        var result = null;
+        switch (node.getAttributeValue("type") || node.getAttributeValue("sctype")) {
+            case "":
+            case "structure":
+                result = {};
+                foreach(node, function(node) { processField(node, result); });
+                break;
+            case "array":
+                result = [];
+                foreach(node, function(node) { result.push(processFieldValue(node)); });
+                break;
+            default:
+                result = node.getNodeValue();
+                break;
+        }
+        return result;
+    }
+};
+
+// This function is to enhance "d $L.file" in RAD Debugger to display field name with field value
+// Usage: d jscall("debugUtils.display",$L.file)
+// Note: The field with empty value will not be displayed
+function display(file) {
+    if (!file) 
+    	return "Provided file is invalid.";
+    	
+    if (!file.getType) 
+    	return file;
+
+    var type = file.getType();
+    if (type != "RELATION")
+        return "Currently I can't handle type \"" + type + "\", only \"RELATION\" is acceptable";
+        
+    var node = file.getXML();
+    var name = node.getAttributeValue("name");
+    var json = new Parser(node).toJSON();
+    return name + " = " + lib.JSON.json().stringify(json, null, "   ");
+}
+
+
+/**
+ * Log message in rtm:3 mode
+ */
+function log(message)
+{
+	/*
+	 * This function doesn't has any code inside.
+	 * Server logs all the javascript parameter value in rtm:3 mode,
+	 * that is the purpose of the function, to print message in sm.log.
+	 */	
+}
+
+function printObject(obj) {
+	for(var item in obj) {
+	    print( " - " + item + ": " + obj[item]);
+	}
+}</script>
+    <package type="string">BaseUtilities</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:39</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;idolserverinfo&quot;" recordid="en - idolserverinfo">
+    <name mandatory="true" type="string">idolserverinfo</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">105</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Smart Analytics Configuration</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Smart Analytics Configuration	BackColor=12	Bold=1	?Caption=	FontIncrease=4	ForeColor=10	Height=2	Name=	Width=210	X=0	Y=0		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">1</column>
+        <length type="decimal">105</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Edit Smart Analytics Configuration using this form.</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Edit Smart Analytics Configuration using this form.	?Caption=	?Visible=	ForeColor=4	Height=2	Name=	labelfor=	Width=210	X=0	Y=2		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">1</column>
+        <length type="decimal">16</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Smart Analytics Server</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Smart Analytics Server	Name=label1431587630255	Height=2	Name=label1431587630255	Width=31	X=1	Y=5		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">27</column>
+        <length type="decimal">33</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">server.url</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text3	?ReadOnly=[enable]=false	?Visible=	ForeColor=0	Height=2	Name=Text3	Mandatory=1	Width=65	X=52	Y=5		Input=server.url	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">60</column>
+        <length type="decimal">15</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Test Connection</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Test Connection	Name=button1385535784298	ButtonID=55	?Enabled=[server.url] &lt;&gt; "" &amp; [enable]=true	?Visible=	Height=2	Name=button1385535784298	Width=30	X=119	Y=5		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">1</column>
+        <length type="decimal">25</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Default CFS server</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Default CFS server	Bold=0	Caption=Default CFS server	?Caption=	Height=2	Name=	Width=49	X=1	Y=8		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">27</column>
+        <length type="decimal">33</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">default.cfs.url</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;?ReadOnly=[enable]=false	Height=2	Name=	Mandatory=1	Width=65	X=52	Y=8		Input=default.cfs.url	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">60</column>
+        <length type="decimal">15</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Test Connection</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Test Connection	ButtonID=84	?Enabled=[default.cfs.url] &lt;&gt; "" &amp; [enable]=true	Height=2	Name=	Width=30	X=119	Y=8		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">1</column>
+        <length type="decimal">16</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Image Server</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Image Server	Height=2	Name=	Width=31	X=1	Y=11		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">27</column>
+        <length type="decimal">33</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">image.url</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;?ReadOnly=[image.enable]=false	?Visible=	ForeColor=0	Height=2	Name=	Mandatory=1	Width=65	X=52	Y=11		Input=image.url	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">60</column>
+        <length type="decimal">15</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Test Connection</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Test Connection	ButtonID=57	?Caption=	?Enabled=[image.url] &lt;&gt; "" &amp; [image.enable]=true	?Visible=	enabled=1	Height=2	Name=	Width=30	X=119	Y=11		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">17</column>
+        <length type="decimal">16</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">use.oem.license</input>
+        <output type="string">Use OEM License</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Name=input1399431175919	Height=2	Name=input1399431175919	Visible=0	Width=32	X=33	Y=14	Caption=Use OEM License		Input=use.oem.license	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">10</line>
+        <column type="decimal">2</column>
+        <length type="decimal">26</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Data Cleansing</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Data Cleansing 	Bitmap and Caption=true	Name=button1402299772524	ButtonID=58	?Caption=	?Enabled=[enable]=true	enabled=1	Height=2	Name=button1402299772524	Bitmaps=tdbmgr	Width=52	X=2	Y=19		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">13</line>
+        <column type="decimal">6</column>
+        <length type="decimal">15</length>
+        <window type="decimal">7</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Name=button1402372535892	ButtonID=61	?Enabled=[enable]=true	Height=13	Name=button1402372535892	Bitmaps=idol_st	BalloonHelp=Smart Ticket	Width=30	X=10	Y=24		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">13</line>
+        <column type="decimal">32</column>
+        <length type="decimal">15</length>
+        <window type="decimal">7</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Name=button1402372611525	ButtonID=63	?Enabled=[enable]=true	Height=13	Name=button1402372611525	Bitmaps=idol_hta	BalloonHelp=Hot Topic Analytics	Width=30	X=62	Y=24		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">13</line>
+        <column type="decimal">58</column>
+        <length type="decimal">15</length>
+        <window type="decimal">7</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;ButtonID=81	?Bitmap=	?ButtonID=	?Enabled=[$G.kmsearchengine]="IDOL"	Height=13	Name=	Bitmaps=idol_ss	BalloonHelp=Smart Search	Visible=1	Width=30	X=114	Y=24		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">19</line>
+        <column type="decimal">1</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Smart Ticket</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Smart Ticket	Justification=2	ArrayLength=0	?Italic=	FontIncrease=3	Font=6	ForeColor=0	Height=2	Name=	labelfor=	Width=46	X=0	Y=37		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">19</line>
+        <column type="decimal">27</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Hot Topic Analytics</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Hot Topic Analytics	Justification=2	?Italic=	FontIncrease=3	Font=6	ForeColor=0	Height=2	Name=	Width=46	X=52	Y=37		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">19</line>
+        <column type="decimal">53</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Smart Search</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Smart Search	Justification=2	?Italic=	FontIncrease=3	Font=6	ForeColor=0	Height=2	Name=	Width=46	X=104	Y=37		</property>
+      </field>
+    </field>
+    <file.name type="string">idolserverinfo</file.name>
+    <editor type="string">falcon</editor>
+    <last.update type="dateTime">07/23/15 21:06:38</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:00:35</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

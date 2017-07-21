@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;Query_AffectCI&quot;" recordid="Query_AffectCI">
+    <name type="string">Query_AffectCI</name>
+    <script type="string">var log = lib.ScAPI_Logger.log("Query_AffectCI");
+var getUcmdbIdFromCiList = lib.UcmdbDaoManager.getUcmdbIdFromCiList;
+var getaffectci = lib.UcmdbDaoManager.GET_METHOD_NAME(0);
+var getaffectservice = lib.UcmdbDaoManager.GET_METHOD_NAME(1);
+var getRelationship = lib.UcmdbDaoManager.GET_METHOD_NAME(2);
+var sendRequestToUcmdb = lib.UcmdbDaoManager.sendRequestToUcmdb;
+var parseResultToList = lib.UcmdbDaoManager.parseResultToList;
+var getCiFromUcmdbId = lib.UcmdbDaoManager.getCiFromUcmdbId;
+/*
+Function: Return the affect service list from ucmdb. There service maybe affected by
+          current ci occur incidentes or do the changes.
+Parameters:
+ciname: The configuration item list in service manager.(e.g. ['host1','host2'])
+includeSelf: Whether including current ci or not(true or false)
+maxHint:Max CI num in the return list(Default value is 5000 in sm)
+
+return: Service Item List(e.g. ['Service1','Service1'])
+
+Author: Fei, Zhi-Chao
+Date: 2012.03.16
+
+*/
+ function getAffectedService(ciName,includeSelf,maxHint )
+{	
+    var params = new Object();
+    var allMembers = new Array();
+    var affectcilist = new Array();
+    var nodetype = new Array();
+	for (var j=0;j&lt;ciName.length();j++){
+		affectcilist.push(ciName[j]);
+		var citype = getUcmdbCiType(ciName[j]);
+		nodetype.push(citype);
+	}
+	//Cover the ci logical.name to ucmdb.id
+	var ciList=getUcmdbIdFromCiList(affectcilist);
+	if(ciList == null || ciList.length==0){
+		return allMembers;
+	}
+	if(maxHint!=null)
+	params.max_hits = maxHint;
+    params.include_self=includeSelf;
+	params.trigger_ids = ciList;
+	params.types = nodetype;
+	//Get UCMDB Connection Information
+	var result = null;
+	try{
+		var ucmdbcon = lib.UcmdbDaoManager.getUCmdbConnection(params,getaffectservice);
+		log.info("Begin call UCMDB API "+getaffectservice);
+		//Call RTE to invoke the ucmdb API
+		var repdata = sendRequestToUcmdb(ucmdbcon);
+		//Cover the affect ci string to a ci list which including the ucmdb.id
+		var result = parseResultToList(repdata);
+	}
+	catch(e){
+		if(result == null){
+			log.info("It happen error when call RTE to ge the ci affected service data");
+			print("It happen error when call RTE to ge the ci affected service data");
+			result = new Array();
+		}	
+	}
+	if(result != null){
+		for(var i=0;i&lt;result.length;i++){
+	     	allMembers.push(result[i].global_id);
+	     }
+     }
+     log.info("Return affect ci list is "+allMembers.toString());
+     //Cover the affect ci string to a ci list which including the ucmdb.id
+    var ciaffectcilist = getCiFromUcmdbId(allMembers);
+    return ciaffectcilist;
+}
+
+/*
+Function: Return ci type which synchnize from UCMDB
+Parameters:
+ciname: The configuration item name in service manager.
+
+return: ci type(e.g. configuration_item)
+
+Author: Fei, Zhi-Chao
+Date: 2012.03.16
+*/
+function getUcmdbCiType(ciname)
+{
+	var citype = "configuration_item";
+	return citype;
+}
+
+
+/** @fileoverview BSGFunctions DO NOT MODIFY
+*   @author Hua Zhang
+*/
+
+/**
+*   @class BSGFunctions
+*   @constructor
+*/
+ 
+ function getDownStream(ciName,includeSelf,maxLevel, maxHint )
+{
+ 	var params = new Object();
+    var allMembers = new Array(); 
+	params.max_levels = maxLevel;
+	var ciList=getUcmdbIdFromCiList(ciName);
+	if(ciList == null || ciList.length==0){
+		return allMembers;
+	}
+	if(maxHint!=null)
+	params.max_hits = maxHint;
+	params.include_self=includeSelf;
+	params.trigger_ids = ciList;
+
+	var ucmdbcon = lib.UcmdbDaoManager.getUCmdbConnection(params,getaffectci);
+	//Call RTE to invoke the ucmdb API
+	var repdata = sendRequestToUcmdb(ucmdbcon);
+	//Cover the affect ci string to a ci list which including the ucmdb.id
+	var result = parseResultToList(repdata);	
+	if(result != null){
+	    for(var i=0;i&lt;result.length;i++){  
+	     	allMembers.push(result[i].global_id);
+	     }
+     }
+     var affectcilist = getCiFromUcmdbId(allMembers);
+    return affectcilist;
+ 
+}
+
+/** @fileoverview BSGFunctions DO NOT MODIFY
+*   @author Hua Zhang
+*/
+
+/**
+*   @class BSGFunctions
+*   @constructor
+*/
+
+function getRelationShipGather(ciName,downorup)
+{
+ 	var params = new Object();
+	var ciList=getUcmdbIdFromCiList(ciName);
+	if(ciList == null || ciList.length==0){
+		return allMembers;
+	}
+	params.trigger_id=ciList[0];
+    params.relationship_direction=downorup;
+	var ucmdbcon = lib.UcmdbDaoManager.getUCmdbConnection(params,getRelationship);
+	//Call RTE to invoke the ucmdb API
+	var repdata = sendRequestToUcmdb(ucmdbcon);
+	//Cover the affect ci string to a ci list which including the ucmdb.id
+	var result = parseResultToList(repdata);
+	var relationshiplist = new Array();
+	var uprelation = new Array();
+	var upciname = new Array();
+	var uplabellist = new Array();
+	var uprelationname = new Array();
+	var uptypelist = new Array();
+	var upcicountlist = new Array();
+	
+	var downrelation = new Array();
+	var downciname = new Array();
+	var downlabellist = new Array();
+	var downrelationname = new Array();
+	var downtypelist = new Array();
+	var downcicountlist = new Array();
+//	print("result "+repdata);
+
+	if(result != null){
+	    for(var i=0;i&lt;result.length;i++){
+	     	var allMembers = new Array();
+	     	var cirelation = new Array();
+	     	var relation_direction = result[i].relationship_direction;
+	     	allMembers.push(result[i].global_id);
+	     	var cinamelist = getCiFromUcmdbId(allMembers);
+	     	if(cinamelist == null || cinamelist.length==0){
+	     	    log.info("CI "+result[i].global_id+" doesn't exist in current system,please synchnize this ci to service manager firstly");
+	     		continue;
+	     	}
+	     	if(relation_direction == "2")
+	     	{
+	     		upciname.push(cinamelist[0]);
+	     		var relationshipname = (result[i].name==null?"":result[i].name);
+				uplabellist.push(relationshipname);
+				uprelationname.push(result[i].display_label);
+				uptypelist.push(result[i].type);
+				if(downorup==4)
+				{
+					upcicountlist.push(result[i].additional_relationship);
+				}
+			}
+			else{
+	     		downciname.push(cinamelist[0]);
+	     		var relationshipname = (result[i].name==null?"":result[i].name);
+				downlabellist.push(relationshipname);
+				downrelationname.push(result[i].display_label);
+				downtypelist.push(result[i].type);
+				if(downorup==4)
+				{
+					downcicountlist.push(result[i].additional_relationship);
+				}
+										
+			}
+	     }
+			
+	     uprelation.push(upciname);
+	     uprelation.push(uplabellist);
+	     uprelation.push(uprelationname);
+	     uprelation.push(uptypelist);
+	     downrelation.push(downciname);
+	     downrelation.push(downlabellist);
+	     downrelation.push(downrelationname);
+	     downrelation.push(downtypelist);
+	     if(downorup ==4)
+	     {
+	     	uprelation.push(upcicountlist);
+	     	downrelation.push(downcicountlist);
+	     	
+	     }
+	     relationshiplist.push(uprelation);
+	     relationshiplist.push(downrelation);
+     }
+    return relationshiplist;
+}</script>
+    <package type="string">Ucmdb Integration</package>
+    <sysmodtime type="dateTime">11/12/14 15:39:14</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">1</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

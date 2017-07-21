@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;us.unload.get.name.g&quot;" recordid="en - us.unload.get.name.g">
+    <name mandatory="true" type="string">us.unload.get.name.g</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">78</length>
+        <window type="decimal">15</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Caption=	X=0	Y=0	Height=29	Width=156	ForeColor=0	ArrayLength=15	ShadowStyle=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">2</column>
+        <length type="decimal">77</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">HP SERVICE MANAGER UNLOAD</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=HP SERVICE MANAGER UNLOAD	X=2	Y=1	Height=2	Width=153	ForeColor=0	Bold=1	Justification=2	FontIncrease=3	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">1</column>
+        <length type="decimal">77</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">This feature exports information from the unload script to an external file.</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=This feature exports information from the unload script to an external file.	X=1	Y=4	Height=2	Width=154	ForeColor=0	Justification=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">4</column>
+        <length type="decimal">16</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">External File Name:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=External File Name:	X=6	Y=8	Height=2	Width=32	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">20</column>
+        <length type="decimal">36</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">$L.unload.file</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Gfile;Input=$L.unload.file	X=38	Y=8	Height=2	Width=71	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">4</column>
+        <length type="decimal">16</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Member:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Member:	X=6	Height=2	Width=32	?Visible=[$L.mvs]=true	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">20</column>
+        <length type="decimal">12</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">$L.member</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=$L.member	X=38	Height=2	Width=24	?Visible=[$L.mvs]=true	MaxChars=8	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">20</column>
+        <length type="decimal">36</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">$L.append.flag</input>
+        <output type="string">Append to File</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Caption=  Append to File	Input=$L.append.flag	X=38	Y=12	Height=2	Width=71	ArrayLength=1	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">12</column>
+        <length type="decimal">57</length>
+        <window type="decimal">4</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">When loading records into an existing dbdict</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Caption= When loading records into an existing dbdict	X=22	Y=14	Height=7	Width=114	ForeColor=0	FontIncrease=1	ArrayLength=4	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">14</column>
+        <length type="decimal">55</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">$L.dbdict.opt</input>
+        <output type="string">Use existing dbdict</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Radio;Caption=Use existing dbdict	Input=$L.dbdict.opt	X=26	Y=16	Height=2	Width=109	Value=create	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">10</line>
+        <column type="decimal">14</column>
+        <length type="decimal">55</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">$L.dbdict.opt</input>
+        <output type="string">Use dbdict of loaded record (replace old dbdict)</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Radio;Caption=Use dbdict of loaded record (replace old dbdict)	Input=$L.dbdict.opt	X=26	Y=18	Height=2	Width=109	Value=replace	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">11</line>
+        <column type="decimal">12</column>
+        <length type="decimal">57</length>
+        <window type="decimal">4</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">When loading records</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Caption= When loading records	X=22	Y=21	Height=7	Width=114	ForeColor=0	FontIncrease=1	ArrayLength=4	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">12</line>
+        <column type="decimal">14</column>
+        <length type="decimal">55</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">$L.record.opt</input>
+        <output type="string">Add new records and update existing records</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Radio;Caption=Add new records and update existing records	Input=$L.record.opt	X=26	Y=23	Height=2	Width=109	Value=update	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">13</line>
+        <column type="decimal">14</column>
+        <length type="decimal">55</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">$L.record.opt</input>
+        <output type="string">Add new records only</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Radio;Caption=Add new records only	Input=$L.record.opt	X=26	Y=25	Height=2	Width=109	Value=add only	ForeColor=0	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">pbudic</editor>
+    <last.update type="dateTime">06/09/03 07:58:20</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">14</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/01/03 09:18:18</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

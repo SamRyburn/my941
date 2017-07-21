@@ -1,0 +1,1042 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;KMSearch&quot;" recordid="KMSearch">
+    <name type="string">KMSearch</name>
+    <script type="string">/**  @fileoverview KMSearch
+ *   @author Joe Antoneccia
+ */
+
+/**
+ *   @class KMSearch
+ *   @constructor
+ */
+function KMSearch()
+{
+}
+
+function submitSearch( serverspec, docstart, submitstring, querytype, queryfields, filterqueries, collections, hitlistfields, hitarray, doccount, maxdocs,sortinfo)
+{
+    var initSearcher = system.library.KMUtils.getSearchEngineConfig("", "search");
+    
+    var result = system.library.KMSearchInterface.initializeEngine(initSearcher);
+    if (result == -1)
+    {
+        system.library.KMUtils.domessageBox(system.functions.scmsg(224, "km"));
+        hitarray.push("FAILED",0);
+        return hitarray;
+    }
+    
+    //QCCR80005
+    if (docstart + doccount &gt; maxdocs)
+    {
+        doccount = maxdocs - docstart;
+    }
+    hitarray = system.library.KMSearchInterface.searchIndexes(submitstring, querytype, queryfields, system.functions.str(docstart), system.functions.str(doccount), system.functions.str(maxdocs), collections, hitlistfields, filterqueries, sortinfo);
+    
+    
+    return hitarray;
+
+}
+
+function initHotNews(fKMQuery)
+{
+    vars.$L_format="kmknowledgebase.search.g";
+    if(vars.$L_passedquery)
+    {
+        system.functions.fduplicate(fKMQuery,vars.$queryfile);
+    }
+    fKMQuery.docstart = 1;
+    fKMQuery.doccount = 10;
+    fKMQuery.maxdocs = vars.$G_km_globalenv.km_max_docs_returned;
+    fKMQuery.locale = system.library.KMUtils.getKMlangcode(vars.$G_my_language.slice(0,2));
+    fKMQuery.queryfields = "";
+    fKMQuery.filterqueries = "";
+    vars.$L_currentpage = 0;
+    vars.$L_lastpage = 0;
+}
+
+function initSearch( fKMQuery )
+{
+    vars.$L_format="kmknowledgebase.search.g";
+    if(vars.$G_client_type=="mobile") vars.$L_format="kmknowledgebase.search.g.mobile";
+
+    if(vars.$L_passedquery)
+    {
+        system.functions.fduplicate(fKMQuery,vars.$queryfile);
+    }
+
+    fKMQuery.hitlist = system.functions.nullsub(fKMQuery.hitlist, "Default");
+    system.library.KMSearch.getAvailableKnowledgeBases(fKMQuery);
+    fKMQuery.docstart = 1;
+    fKMQuery.doccount = 10;
+    fKMQuery.maxdocs = vars.$G_km_globalenv.km_max_docs_returned;
+    fKMQuery.locale = system.library.KMUtils.getKMlangcode(vars.$G_my_language.slice(0,2));
+    fKMQuery.queryfields = "";
+    fKMQuery.filterqueries = "";
+    vars.$L_currentpage = 0;
+    vars.$L_lastpage = 0;
+    vars.$L_showprevious=false;
+    vars.$L_showpager=false;
+    vars.$G_advsearch=false;
+    var strStyle = vars.$G_km_globalenv.kmhitliststyle;
+    fKMQuery.results = strStyle + "&lt;DIV&gt;&lt;/DIV&gt;";
+}
+
+/**
+ *  returns an array of strings representing the fields to display in the hitlist
+ *  @param  {SCFile} fHitList - a kmhitlist file variable
+ *  @return Array
+ *   @type String
+ */
+function getHitListFields(strHitlistTemplate)
+{
+    var hitlistfields = new Datum();
+    hitlistfields.setType(8);
+    //lookup the hitlist columns
+    var hitlist = new Query("kmhitlisttemplate", new QueryCond("name", EQ, strHitlistTemplate));
+    var hitlistcolumns = hitlist[0].columns;
+    for( var i = 0; i &lt; hitlistcolumns.length(); i++)
+    {
+        for(var j = 0; j &lt; hitlistcolumns[i].fields.length(); j++)
+        {
+            if (hitlistcolumns[i].fields[j] == "$KNOWLEDGEBASE_NAME")
+            {// workaround Verity bug...  Pull collection name from field instead of
+                // using Verity's collection_name function.  By removing the "$" here, it
+                // gets treated as a normal field instead of a special field.
+                hitlistcolumns[i].fields[j] = "knowledgebase_name";
+            }
+            if (hitlistcolumns[i].fields[j] == "$VLANG")
+            {// pull Verity assigned locale field for hitlist
+
+                hitlistcolumns[i].fields[j] = "vlang";
+            }
+            hitlistfields.push(system.library.KMUtils.scToJSName(hitlistcolumns[i].fields[j]));
+        }
+    }
+
+    return hitlistfields;
+}
+
+
+
+function getLinkPosition(hitlist, hitlistcolumns)
+{
+    var linkPosition = 0;
+    var bFound = false;
+    var numColumns = hitlistcolumns.length();
+    var numfields;
+    var rcode;
+    for( var cols = 0; bFound == false &amp;&amp; cols &lt; numColumns; cols++)
+    {
+        numfields = hitlistcolumns[cols].fields.length();
+        for(var f = 0; bFound==false &amp;&amp; f &lt; numfields; f++)
+        {
+            
+            rcode = system.functions.index( hitlist[0].link_field, hitlistcolumns[cols].fields[f], 1);
+            linkPosition++;
+            if(rcode == 0)
+                continue;
+            else
+            {
+                bFound = true;
+                
+            }
+        }
+    }
+    return linkPosition;
+
+}
+
+// The position of the knowledgebase name is needed for mapping the fsyslib 
+//   start path from UNIX to a path that a Windows client can use.
+// Whatever position of the knowledgebase name is returned, the calling code 
+//   will add one for the viewURL and one to account for a 1 based array in SC
+// OOB, it's 5, but the calling code will add 2 to make it 7
+function getKBNamePosition(hitlist, hitlistcolumns)
+{
+    var kbnamePosition = 0;
+    var bFound = false;
+    var numColumns = hitlistcolumns.length();
+    var numfields;
+    var rcode;
+    for( var cols = 0; bFound == false &amp;&amp; cols &lt; numColumns; cols++)
+    {
+        numfields = hitlistcolumns[cols].fields.length();
+        for(var f = 0; bFound==false &amp;&amp; f &lt; numfields; f++)
+        {
+            
+            rcode = system.functions.index( "$KNOWLEDGEBASE_NAME", hitlistcolumns[cols].fields[f], 1);
+            kbnamePosition++;
+            if(rcode == 0)
+                continue;
+            else
+            {
+                bFound = true;
+                
+            }
+        }
+    }
+    return kbnamePosition;
+
+}
+
+
+function addColumnHeadings(hitlistcolumns)
+{
+    var strHTML = "&lt;TR valign=top; align=left&gt;";
+    var numColumns = hitlistcolumns.length();
+    for( var hidx = 0; hidx &lt; numColumns; hidx ++)
+    {
+        var theHdr = hitlistcolumns[hidx].heading;
+        var spec_loc = theHdr.indexOf("*SCMSG");
+        var tmpFld = "";
+        var tmpVal = hitlistcolumns[hidx].heading;
+
+        if (spec_loc &gt;= 0)
+        {
+            tmpFld = theHdr.substring(spec_loc + 7, theHdr.length);
+            tmpFld = tmpFld.substring(0, tmpFld.indexOf("*SCMSG"));
+            eval('tmpVal = system.functions.scmsg(' + tmpFld + ', "km");');
+            if (tmpVal == null)
+            {
+                tmpVal = "";
+            }
+
+        }
+
+        strHTML += "&lt;TH&gt;" + tmpVal + "&lt;/TH&gt;";
+    }
+    strHTML += "&lt;/TR&gt;";
+    return strHTML;
+}
+
+function convertUnixToWindowsPath(strViewURL, kbname)
+{
+    // May need mapping. $fsyslibs has this format:
+    //   kbname;filestartpath;filemap
+    //   Test_File_Lib;/ServiceCenter/webcrawltest;\\\\tbrayblade100
+    // Map it if the strViewURL begins with filestartpath
+    var mapArray = system.library.KMUtils.parseListToSCArray(vars.$fsyslibs[k],";");
+    
+    
+    if ( strViewURL.indexOf(mapArray[1]) &gt;= 0 )
+    {
+        // Map strViewURL - substitute filemapto for filemapfrom
+        
+        if (mapArray[2].charAt(mapArray[2].length-1) == "//" ||
+            mapArray[2].charAt(mapArray[2].length-1) == "\\")
+            mapArray[2] = mapArray[2].substr(0,mapArray[2].length-1);
+        if (mapArray[3].charAt(mapArray[3].length-1) == "//" ||
+            mapArray[3].charAt(mapArray[3].length-1) == "\\")
+            mapArray[3] = mapArray[3].substr(0,mapArray[3].length-1);
+        strViewURL = mapArray[3] + strViewURL.substr(mapArray[2].length);
+        
+    }
+    return strViewURL;
+}
+
+/**
+ *  returns an HTML string reprsenting a hitlist array
+ *  @param  {Array} aHitList - a array datum variable
+ *  @return String
+ *   @type String
+ */
+function getHTMLHitListFromArray(aHitList, strHitlistTemplate) {
+
+    //lookup the hitlist columns
+    var hitlist = new Query("kmhitlisttemplate", new QueryCond("name", EQ, strHitlistTemplate));
+    var hitlistcolumns = hitlist[0].columns;
+
+    var strStyle = vars.$G_km_globalenv.kmhitliststyle;
+
+    var strQuery = vars.$L_file.submitstring.replace(/&gt;/g, "&amp;gt;");
+    strQuery = strQuery.replace(/&lt;/g, "&amp;lt;");
+
+    
+    if (aHitList[0] &gt;= 0) {
+        var arrayArgs = new SCDatum();
+        arrayArgs.setType(8);  //type array
+        arrayArgs.push(aHitList[0]);
+        arrayArgs.push(aHitList[1]);
+        var docsSearchedString = system.functions.scmsg(163, "km", arrayArgs);
+    }
+    else {
+        var docsSearchedString = system.functions.scmsg(222, "km");
+    }
+    var strHTML = strStyle + "&lt;DIV class=\"resultHeading\"&gt;" + docsSearchedString + "&lt;BR&gt;&lt;BR&gt;&lt;/DIV&gt;&lt;DIV class=\"resultTable\"&gt;";
+
+
+    //identify the position of the link field in the hitlist array
+    var linkPosition = system.library.KMSearch.getLinkPosition(hitlist, hitlistcolumns);
+    // identify the position of the knowledgebase name in the hitlist array.
+    // add one for the viewURL and one to account for a 1 based array in SC.
+    var kbnamePosition = 2 + system.library.KMSearch.getKBNamePosition(hitlist, hitlistcolumns);
+
+    //add the column heading row
+
+    var numColumns = hitlistcolumns.length();
+    
+    var rcount = 0;
+    var numRows = aHitList.length();
+    
+    var strViewURL;
+    var fieldcount;
+    var strRowClass;
+    var numfields;
+    var fsyslibLength = vars.$fsyslibs.length();
+    for (var i = 2; i &lt; numRows; rcount++) {
+        strViewURL = aHitList[i++]; //"sclink://kmdocument:id#11";
+
+        var kbname = aHitList[kbnamePosition] + ";";  // with a semi-colon on the end
+        // Loop through the $fsyslibs mappings that are build in KMSearchQuery.
+        // Determine if this row in the hitlist needs to be mapped from
+        //   the UNIX path to a Windows path.
+        for (var k = 0; k &lt; fsyslibLength; k++) {
+            
+            
+            
+            if (vars.$fsyslibs[k].indexOf(kbname) == 0) {
+                strViewURL = convertUnixToWindowsPath(strViewURL, kbname);
+                break;
+            }
+        }
+
+
+        fieldcount = 1; //we are already on position 1 because position 0 is the VIEW_URL
+        //add row for each hit
+        strRowClass = rcount % 2 == 0 ? "evenRow" : "oddRow";
+        strHTML += "&lt;DIV CLASS=\"" + strRowClass + "\"&gt;"
+        for (var j = 0; j &lt; numColumns; j++) {
+            if (hitlistcolumns[j].heading != null &amp;&amp; typeof(hitlistcolumns[j].heading) != "object") {
+                var theHdr = hitlistcolumns[j].heading;
+                var spec_loc = theHdr.indexOf("*SCMSG");
+                var tmpFld = "";
+                var tmpVal = hitlistcolumns[j].heading;
+
+                if (spec_loc &gt;= 0) {
+                    tmpFld = theHdr.substring(spec_loc + 7, theHdr.length);
+                    tmpFld = tmpFld.substring(0, tmpFld.indexOf("*SCMSG"));
+                    eval('tmpVal = system.functions.scmsg(' + tmpFld + ', "km");');
+                    if (tmpVal == null) {
+                        tmpVal = "";
+                    }
+
+                }
+                strHTML += "&lt;DIV class=\"fieldLabel\"&gt;" + tmpVal + ":&lt;/DIV&gt;";
+            }
+            strHTML += "&lt;DIV class=\"" + hitlistcolumns[j].width + "\" &gt;";
+            numfields = hitlistcolumns[j].fields.length();
+            for (var k = 0; k &lt; numfields; k++) {
+                if (fieldcount == linkPosition) { // build the view link
+                    strHTML += "&lt;a href=\"" + strViewURL + "\"&gt;&lt;SPAN class=\"resultLink\"&gt;" + customizeViewURL(aHitList[i]) + "&lt;/span&gt;&lt;/a&gt;";
+                }
+                else {
+                    strHTML += aHitList[i];
+                }
+                if (numfields &gt; 1 &amp;&amp; k &lt; numfields - 1) {
+                    i++;
+                }
+                fieldcount++;
+            }
+            strHTML += "&lt;/DIV&gt;"
+            i++;
+        }
+        strHTML += "&lt;/DIV&gt;";
+    }
+    return strHTML;
+}
+
+function gotopage(pageNumb)
+{
+    vars.$L_file.docstart = vars.$L_file.docstart + vars.$L_file.doccount*(pageNumb-1);
+    vars.$newsearch = false;
+}
+
+
+function getFieldValue(strTargetField, aDocumentFields)
+{
+    var strReturn = "";
+    for(var i = 0; i &lt; aDocumentFields.length(); i++ )
+    {
+        if( aDocumentFields[i].field_name == strTargetField)
+            strReturn = aDocumentFields[i].field_value
+    }
+    return strReturn;
+}
+
+function getAvailableKnowledgeBases(fKMQuery)
+{
+
+    // This function sets the index value in the KB array for the KBs that the user can see,
+    //   and for the KBs that the user CANNOT see, sets the index to 0
+    // It also sets the Boolean fields in kmquery to true for the KBs that the user can see,
+    //   and for the KBs that the user CANNOT see, sets the Boolean fields in kmquery to false
+    system.library.KMSearchQuery.getvalidKBs(fKMQuery, system.functions.operator());
+
+}
+
+/**
+ *  This function takes a kmquery file and returns an array of knowledgebase names the '
+ *   user selected for searching (advanced search screen)
+ *  @param SCFile a kmquery file object populated from advanced search
+ *  @return {String} array of strings containing the knowledgebase names selected
+ *   @type {String}
+ */
+function getSelectedCollections(fKMQuery)
+{
+    var colls = new Datum();
+    colls.setType(8);
+    var kmlibFile = new SCFile("kmknowledgebase");
+    var kmFind = kmlibFile.doSelect("true");
+    if( kmFind == RC_SUCCESS )
+    {
+        kmFind = kmlibFile.getFirst();
+        while( kmFind == RC_SUCCESS )
+        {
+            nameNoDot = system.library.KMUtils.removetoken(kmlibFile.kbname, ".");
+            nameNoUnderscore = system.library.KMUtils.removetoken(nameNoDot, "_");
+
+            var strEval = eval("fKMQuery."+nameNoUnderscore+"==true;");
+            if (strEval)
+            {
+                // get host:port/instance here
+                var getenginename = system.library.KMSearchInterface.getEngineName();
+                if (getenginename != "IDOL")
+                {
+                    var shardInfo = system.library.KMUtils.getShardInfo(kmlibFile.searchservername);
+
+                    eval("colls.push(\""+shardInfo+"/"+kmlibFile.kbname+"\");");
+                }
+                else
+                    eval("colls.push(\""+kmlibFile.kbname+"\");");
+            }
+
+            kmFind = kmlibFile.getNext();
+        }
+    }
+
+    // This is an example of what the eval code is generating:
+    //if(fKMQuery.KnowledgeLibrary)
+    //colls.push("Knowledge_Library");
+
+    return colls;
+
+}
+
+function getSelectedCollectionsString(fKMQuery)
+{
+    var colls = "";
+
+    var kmlibFile = new SCFile("kmknowledgebase");
+    var kmFind = kmlibFile.doSelect("true");
+    if( kmFind == RC_SUCCESS )
+    {
+        var firstTime = true;
+        kmFind = kmlibFile.getFirst();
+        while( kmFind == RC_SUCCESS )
+        {
+            nameNoDot = system.library.KMUtils.removetoken(kmlibFile.kbname, ".");
+            nameNoUnderscore = system.library.KMUtils.removetoken(nameNoDot, "_");
+
+            var strEval = eval("fKMQuery."+nameNoUnderscore+"==true;");
+            if (strEval)
+            {
+                if (firstTime)
+                {
+                    eval("colls +=\""+kmlibFile.kbname+"\";");
+                    firstTime = false;
+                }
+                else
+                    eval("colls += ((colls !=\"\" ? \"\;\":\"\") + \""+kmlibFile.kbname+"\");");
+            }
+
+            kmFind = kmlibFile.getNext();
+        }
+    }
+
+    // This is an example of what the eval code is generating:
+
+    return colls;
+}
+
+function buildQueryString(fKMQuery) {
+
+    //QCCR1E120567 - limit the query length to 1024
+  if(fKMQuery.query != null &amp;&amp; fKMQuery.query.length &gt;1024) {
+    fKMQuery.query = fKMQuery.query.substr(0, 1023);
+  }
+  //end of QCCR1E120567
+
+    var langCode = system.library.KMUtils.getKMlangcode(vars.$G_my_language.slice(0, 2));
+    // use user's login language unless set in advanced search
+    // SCR 41118, if the user deletes the entry in advanced search, default to
+    // english.
+    if (system.functions._null(fKMQuery.locale))
+        fKMQuery.locale = "en";
+
+    if (fKMQuery.locale != langCode)
+        langCode = fKMQuery.locale;
+
+    if (langCode.length &gt; 2) // some language have more than 2 chars...
+        langCode = langCode.slice(0, 2);
+    var strQuery = system.functions.nullsub(fKMQuery.query, "");
+
+    var phrase = "";
+    var wildcards = "";
+    var anyWords = "";
+    var noneWords = "";
+    var allWords = "";
+    var exactPhrase = "";
+
+    fKMQuery.queryfields = "docbody_" + langCode + " docbody adlearn_" + langCode + " adlearn";
+    fKMQuery.queryfields += (" attachment attachment_" + langCode);
+    fKMQuery.querytype = "dismax";
+    if (strQuery != null &amp;&amp; strQuery.length &gt; 0) {
+
+
+        phrase = system.library.KMQuery.parsePhrases(strQuery);
+        strQuery = system.library.KMQuery.stripPhrases(strQuery);
+        wildcards = system.library.KMQuery.parseWildcards(strQuery).toLowerCase();
+        strQuery = system.library.KMQuery.stripWildcards(strQuery, wildcards).toLowerCase();
+
+        fKMQuery.querytype = "dismax";
+        if (strQuery != null &amp;&amp; strQuery.length &gt; 0) {
+            strQuery = system.library.KMQuery_SOLR.nlqParse(strQuery, langCode);
+        }
+
+    }
+
+
+    allWords = system.library.KMQuery_SOLR.allWords(fKMQuery.allwords, langCode);
+    anyWords = system.library.KMQuery_SOLR.anyWords(fKMQuery.anywords, langCode);
+    exactPhrase = system.library.KMQuery_SOLR.exactPhrase(fKMQuery.exactphrase, langCode);
+    noneWords = system.library.KMQuery_SOLR.noneWords(fKMQuery.nonewords, langCode);
+
+    // Loop through all the KBs and if the user has entered fields values under
+    // the tab on Advanced Search for that KB
+    // (and the checkbox for that KB is checked in Advanced Search and
+    // either it's not a Hot News Search or else the KB is Knowledge_Library
+    // **whew**),
+    // THEN add those library-specific query values to strQuery.
+    // Each KB's _kmprocesslibcriteria script string returns a set of
+    // library-specific
+    // query values entered by the user to send to the search engine.
+
+    var selectedKBs = this.getSelectedCollectionsString(fKMQuery);
+    var kmlibFile = new SCFile("kmknowledgebase");
+    var kmFind = kmlibFile.doSelect("true");
+    var kbSecurity = "";
+    var advSearch = "";
+    var totAdvSearch = "";
+    fKMQuery.previousfilterqueries = system.functions.nullsub(fKMQuery.previousfilterqueries, "");
+    var filterqueries = "";
+    var advfilterqueries = "";
+    if (kmFind == RC_SUCCESS) {
+        kmFind = kmlibFile.getFirst();
+        while (kmFind == RC_SUCCESS) {
+            if (selectedKBs.indexOf(kmlibFile.kbname) &gt; -1) {
+                
+                kbSecurity = system.library.KMSearchQuery.getsearchSecurity(system.functions.operator(), kmlibFile.kbname);
+                
+
+                advSearch = eval("system.library." + kmlibFile.kbname + "_kmprocesslibcriteria.ProcessLibCriteria(fKMQuery);");
+                
+                
+
+                if (advSearch.length &gt; 0) {
+                    if (advfilterqueries.length &gt; 0)
+                        advfilterqueries += " OR ";
+                    advfilterqueries += kbSecurity;
+                    fKMQuery.querytype = "standard";
+
+                    if (totAdvSearch.length &gt; 0)
+                        totAdvSearch += " OR ";
+                    totAdvSearch += advSearch;
+
+                } else {
+                    if (filterqueries.length &gt; 0)
+                        filterqueries += " OR ";
+                    filterqueries += kbSecurity;
+                }
+
+            }
+            kmFind = kmlibFile.getNext();
+        }// while
+        if (strQuery == "*:*" || strQuery.length == 0) {
+            strQuery = totAdvSearch;
+        } else if (strQuery.length &gt; 0 &amp;&amp; totAdvSearch.length &gt; 0) {
+            
+            var strSTDQuery = "((docbody:" + strQuery + ")";
+            strSTDQuery += " OR (docbody_" + langCode + ":" + strQuery + ")";
+            strSTDQuery += " OR (adlearn:" + strQuery + ")";
+            strSTDQuery += " OR (adlearn_" + langCode + ":" + strQuery + ")";
+            strSTDQuery += " OR (attachment:" + strQuery + ")";
+            strSTDQuery += " OR (attachment_" + langCode + ":" + strQuery + ")";
+            strSTDQuery += ")";
+            strQuery = strSTDQuery + " AND (" + totAdvSearch + ")";
+        }
+
+        if (advfilterqueries.length &gt; 0)
+            fKMQuery.filterqueries = "(" + advfilterqueries + ")";
+        else
+            fKMQuery.filterqueries = "(" + filterqueries + ")";
+
+    }
+
+    var advqueryfilter = strQuery;
+    if (wildcards.length &gt; 0) {
+        fKMQuery.querytype = "standard";
+        strQuery += " " + system.library.KMQuery_SOLR.wrapStandardSearch(wildcards, langCode);
+    }
+
+    if (phrase.length &gt; 0) {
+        var strSTDQuery = "";
+        phraseArray = phrase.split(";");
+
+        if (phraseArray.length &gt; 0) {
+            for (var y = 0; y &lt; phraseArray.length; y++) {
+                if (phraseArray[y] == "")
+                    continue;
+
+                if (y &gt; 0)
+                    strSTDQuery += " ";
+
+                strSTDQuery += phraseArray[y];
+            }
+
+        } else {
+
+            strSTDQuery = phrase;
+        }
+        fKMQuery.querytype = "dismax";
+        if (strQuery == "*:*" || strQuery.length == 0) {
+            strQuery = strSTDQuery;
+        } else {
+            strQuery += " " + strSTDQuery;
+        }
+    }
+
+    /**
+     *
+     *Advanced Search -&gt; Filter by...
+     *Append "All of these words", "This exact phrase", "Any of these words", "None of these words"
+     *to query filter.
+     *
+     */
+    var filterBy = "";
+    if (anyWords.length &gt; 0) {
+        filterBy += " AND (" + anyWords + ")";
+    }
+
+    if (allWords.length &gt; 0) {
+        filterBy += " AND (" + allWords + ")";
+    }
+
+    if (noneWords.length &gt; 0) {
+        filterBy += " NOT (" + noneWords + ")";
+    }
+
+    if (exactPhrase.length &gt; 0) {
+        filterBy += exactPhrase;
+    }
+    fKMQuery.filterqueries += filterBy;
+
+    if (strQuery.length == 0) {
+        
+        // blank queries have to be submitted to "standard" query parser!
+        strQuery = "*:*";
+        fKMQuery.querytype = "standard";
+    }
+    fKMQuery.submitstring = strQuery.indexOf(" &lt;AND&gt; ") == 0 ? strQuery.substring(6, strQuery.length) : strQuery;
+    var lastQuery = fKMQuery.previousquery;
+    if (fKMQuery.searchinresults) {
+        // modified for QCCR1E62772
+        // Use "filter query" to implements the search in result feature.
+        var toAppendQueryFilter = buildQueryFilterForSearchInResult(fKMQuery.previousquery, langCode);
+        if (toAppendQueryFilter.length &gt; 0) {
+            fKMQuery.previousfilterqueries += " AND (" + toAppendQueryFilter + ")";
+        }
+        if (fKMQuery.previousfilterqueries.length &gt; 0) {
+            fKMQuery.filterqueries += fKMQuery.previousfilterqueries;
+        }
+        // end modified for QCCR1E62772
+    } else {
+        //clear previous filter, prevent infinit increament.
+        fKMQuery.previousfilterqueries = "";
+    }
+    // save our previous query.
+    fKMQuery.previousquery = system.functions.nullsub(fKMQuery.query, "");
+
+    
+    
+    return fKMQuery;
+}
+
+/**
+ * Build filter query segment for "search in result" function from previous query.
+ * There are different between the "query" part and "filter" part when handling raw query string.
+ * To add the query string to "filter" part, all of them have to use standard style search (while "query" part maybe dismax or standard).
+ * @param prevoiusquery should be the preious raw query string from GUI.
+ * @param langCode the language code
+ * @return string the filter query segment.
+ */
+function buildQueryFilterForSearchInResult(prevoiusquery, langCode) {
+    var previous_query_phrases = system.library.KMQuery_SOLR.wrapStandardSearch(system.library.KMQuery.parsePhrases(prevoiusquery), langCode);
+    var previous_query = system.library.KMQuery.stripPhrases(prevoiusquery, langCode);
+    var previous_query_wildcards = system.library.KMQuery_SOLR.wrapStandardSearch(system.library.KMQuery.parseWildcards(previous_query).toLowerCase(), langCode);
+    var previous_query = system.library.KMQuery.stripWildcards(previous_query, previous_query_wildcards).toLowerCase();
+    previous_query = system.library.KMQuery_SOLR.wrapStandardSearch(system.library.KMQuery_SOLR.nlqParse(previous_query, langCode), langCode);
+    var queryFilter ="";
+    queryFilter += previous_query_phrases;
+    queryFilter += previous_query_wildcards.length &gt; 0 ? " "+previous_query_wildcards : "";
+    queryFilter += previous_query.length &gt; 0 ? " " +previous_query : "";
+    return queryFilter;
+}
+
+function getSearchParameters(strMapping)
+{
+
+    var iCount = 0;
+    var kmsearch = new SCFile("kmquery");
+
+    var mapping = new Query("kmmapping", new QueryCond("name", EQ, strMapping));
+    for( row in mapping ) //this will only happen once if the mapping is found
+    {
+        //loop through the field-mapping array for this mapping
+        for( idx in mapping[row].search_fields )
+        {
+            if(mapping[row].search_fields[idx].sc_searchfield == null)
+                continue;
+            var strTargetField = system.library.KMUtils.scToJSName(mapping[row].search_fields[idx].km_target);
+
+            //test for literal string
+            if( mapping[row].search_fields[idx].sc_searchfield.substring(0,1) == "\"" )
+            {
+                var len = mapping[row].search_fields[idx].sc_searchfield.length -1;
+                eval("kmsearch." + strTargetField + " += mapping[row].search_fields[idx].sc_searchfield.substring(1, len)");
+            }
+            else // normal field mapping
+            {
+                var strFieldValue = "";
+                var strEvalString ="vars.$L_file." + system.library.KMUtils.scToJSName(mapping[row].search_fields[idx].sc_searchfield);
+                if( system.library.KMUtils.isSCArray( eval(strEvalString) ) )
+                {
+                    var tmpEvalStr = "";
+                    tmpEvalStr += system.library.KMUtils.scArrayToString(eval(strEvalString));
+                    tmpEvalStr=markWordWithSpecialCharInDoubleQuote(tmpEvalStr);
+                    //QCCR1E68796: replace it by next   linestrFieldValue += tmpEvalStr.replace(/\"/g, "\\\"");
+                    
+                    strFieldValue += lib.StringUtil.escapeAllStr(tmpEvalStr);
+                }
+                else
+                {
+                    var tmpEvalStr = "";
+                    tmpEvalStr += eval(strEvalString);
+                    tmpEvalStr=markWordWithSpecialCharInDoubleQuote(tmpEvalStr);
+                    //QCCR1E68796: replace it by next strFieldValue += tmpEvalStr.replace(/\"/g, "\\\"");
+                    strFieldValue += lib.StringUtil.escapeAllStr(tmpEvalStr);
+                }
+                if( eval("kmsearch."+strTargetField + "!= null")) //then append
+                    strEvalString = "kmsearch." + strTargetField + " += \"" + strFieldValue +"\"";
+                else
+                    strEvalString = "kmsearch." + strTargetField + " = \"" + strFieldValue +"\"";
+                eval(strEvalString);
+            }
+        }
+    }
+    return kmsearch;
+}
+
+
+
+
+
+/** This function is a convenience method for displaying a status message.  It is
+ *  intended to be called from a RAD Expression using jscall().
+ *  @param {String} strMessage - a string containing the message to be displayed.
+ */
+function statusMessage(strMessage)
+{
+    print(strMessage);
+}
+
+
+
+/**
+ * This function is called to use a solution being viewed in Knowledge Management in another module.
+ * The user will request the retrieve using the Use Solution display option (i.e. button or menu)
+ */
+function useSolution(strMapping, fSourceDocument, fTargetFile)
+{
+    var q = new Query("kmmapping", new QueryCond("name", EQ, strMapping));
+    var rowcount = 0;
+    var strSourceFilename = system.functions.filename(fSourceDocument);
+    var reg = /(\")|(\")|(\{*,\s\")/g; // regular expression used to strip out the quotes in a field
+    for( row in q )
+    {
+        for( idx in q[row].retrieval_fields )
+        {
+            //find the doctype mapping for our source kmdocument
+            var strDocType = "" + q[row].retrieval_fields[idx].km_type;
+            //check for non-kmdocument file mappings
+
+            if( strSourceFilename != "kmdocument" &amp;&amp; strDocType != strSourceFilename )
+                continue;
+            //process kmdocument file mappings
+            if( strSourceFilename == "kmdocument" &amp;&amp; strDocType != fSourceDocument.doctype &amp;&amp; strDocType.toLowerCase() != "all" )
+                continue;
+
+            //we found a mapping for this file type and doctype
+            //check if source value is lietral or field
+            var strSourceValue = "" + q[row].retrieval_fields[idx].km_source.substring(0,1) == "\""? q[row].retrieval_fields[idx].km_source : system.library.KMUtils.scToJSName(q[row].retrieval_fields[idx].km_source);
+            var strTargetValue = "" + system.library.KMUtils.scToJSName(q[row].retrieval_fields[idx].sc_target);
+            
+            strOperator = " = ";
+            //test for literal string
+            if( strSourceValue.substring(0,1) == "\"" )
+            {
+                
+                var len = strSourceValue.length -1;
+                var isArray = system.library.KMUtils.isSCArray( eval("fTargetFile." + strTargetValue) );
+                isArray ? eval("fTargetFile." + strTargetValue + ".push(strSourceValue.substring(1, len))")
+                    : eval( "fTargetFile." + strTargetValue + strOperator + "\"" + strSourceValue.substring(1, len) +"\"" );
+            }
+            else if( strSourceFilename != "kmdocument") //direct file mappings
+            {
+                var isTargetArray = system.library.KMUtils.isSCArray( eval("fTargetFile." + strTargetValue) );
+                var isSourceArray = system.library.KMUtils.isSCArray( eval("fSourceDocument." + strSourceValue) );
+                
+                if(isTargetArray)
+                {
+                    
+                    if (isSourceArray)
+                    {
+                        var tmpSourceArray = eval("fSourceDocument." + strSourceValue)
+                        for(var idx in tmpSourceArray )
+                        {
+                            
+                            if(tmpSourceArray[idx] != null)
+                            {
+                                // Strip out any quotes in the field, QC7966.
+                                tmpSourceArray[idx] = tmpSourceArray[idx].replace(reg, "");
+                                eval("fTargetFile." + strTargetValue + ".push(\""+tmpSourceArray[idx]+"\");");
+                            }
+                        }
+                    }
+                    else eval("fTargetFile." + strTargetValue + ".push(fSourceDocument." + strSourceValue+");");
+
+                }
+                else
+                {
+                    isSourceArray ? eval("fTargetFile." + strTargetValue + strOperator + "system.library.KMUtils.scArrayToString(fSourceDocument." + strSourceValue+" ))")
+                        : eval("fTargetFile." + strTargetValue + strOperator + "fSourceDocument." + strSourceValue );
+
+                }
+
+            }
+            else //not a literal string so evaluate the value of the field and send that
+            {
+
+                strSourceValue = system.library.KMUtils.scToJSName(strSourceValue);
+                var strSourceData = system.library.KMUtils.isSCArray( eval("fSourceDocument." + strSourceValue)) ?
+                    system.library.KMUtils.scArrayToString(eval("fSourceDocument." + strSourceValue)):
+                    eval("fSourceDocument." + strSourceValue);
+                
+                var strSourceCleaned = system.library.KMUtils.HTMLtoText(strSourceData);
+                var isArray = system.library.KMUtils.isSCArray( eval("fTargetFile." + strTargetValue) );
+                isArray ? eval("fTargetFile." + strTargetValue + ".push(strSourceCleaned)")
+                    : eval("fTargetFile." + strTargetValue + strOperator + "strSourceCleaned");
+
+            }
+        }
+    }
+    if(strSourceFilename == "kmdocument" || strSourceFilename == "rootcause" || strSourceFilename == "knownerror")
+        system.library.KMUsageStats.incrementUsageCount(fSourceDocument.id, strSourceFilename);
+    else if( strSourceFilename == "probsummary" )
+        system.library.KMUsageStats.incrementUsageCount(fSourceDocument.number, strSourceFilename);
+    else if( strSourceFilename == "incidents" )
+        system.library.KMUsageStats.incrementUsageCount(fSourceDocument.incident_id, strSourceFilename);
+
+
+}
+/**
+ * This function is called to create a solution in Knowledge Management from the current file record in ServiceCenter.
+ * The user will request the creation using the Create Knowledge display option (i.e. menu)
+ * A selection wizard prompts the user to select the document type of the solution to create
+ * Once selected the wizard calls a Process Record (kmmappedcreate and kmdocument.open.init) that formats the call to this function
+ * @param {String} strMapping - string containing the name of the current file ("probsummary", "incidents", etc... )
+ * @param {SCFile} fSourceFile - a file containing the source we are authoring from
+ * @param {SCFile} fTargetFile - a kmdocument file (with the doctype populated) we are authoring
+ */
+function createSolution(strMapping, fSourceFile, fTargetFile)
+{
+    var q = new Query("kmmapping", new QueryCond("name", EQ, strMapping));
+    var rowcount = 0;
+    for( row in q )
+    {
+        for( idx in q[row].fields )
+        {
+            var strDocType = "" + q[row].fields[idx].km_doctype;
+            if( strDocType != fTargetFile.doctype &amp;&amp; strDocType.toLowerCase() != "all" )
+                continue;
+            //we found a mapping for this file type and doctype
+            //write the file information to the getansintegration table
+            var strSourceValue = q[row].fields[idx].sc_field;
+            var strTargetValue = q[row].fields[idx].km_field
+            var strOperator = " += ";
+            if(eval("fTargetFile." + strTargetValue + " == null"))
+                strOperator = " = ";
+
+            //test for literal string
+            if( strSourceValue.substring(0,1) == "\"" )
+            {
+                var len = strSourceValue.length -1;
+                eval( "fTargetFile." + strTargetValue + strOperator + "\"" + strSourceValue.substring(1, len) +"\"" );
+            }
+            else //not a literal string so evaluate the value of the field and send that
+            {
+                strSourceValue = system.library.KMUtils.scToJSName(strSourceValue);
+                var isArray = system.library.KMUtils.isSCArray( eval("fSourceFile." + strSourceValue) );
+                isArray ? eval("fTargetFile." + strTargetValue + strOperator + "system.library.KMUtils.scArrayToHTMLString(fSourceFile." + strSourceValue +")")
+                    : eval("fTargetFile." + strTargetValue + strOperator + "fSourceFile." + strSourceValue.replace(/\"/g, "\\\"") );
+
+            }
+        }
+    }
+}
+
+//strip string "file:/" from URL
+function customizeViewURL(strViewURL)
+{
+    if ( strViewURL!= null)
+    {
+        strViewURL = strViewURL.replace("file:/","");
+    }
+    return strViewURL;
+}
+
+
+/*
+ *@NO:QCCR1E68776
+ *@Description:word will be marked in double quote if it include special characters , like I/*&amp;-O  will became "I/*&amp;-O",
+ *@Author:yuli
+ *@Since by 2011/9/15
+ */
+
+function markWordWithSpecialCharInDoubleQuote(queryStr)
+{
+
+    var reg=/\W+/g;
+    var rtnquery="";
+    var wordarray = queryStr.split(" ");
+    for (var words =0; words &lt; wordarray.length; words++)
+    {
+        wordarray[words]=wordarray[words].replace(/\\\"/g,"");
+        if (!reg.test(wordarray[words]))
+        {
+            if (rtnquery.length &gt; 1)
+                rtnquery += " "+wordarray[words]+" ";
+            else
+                rtnquery += wordarray[words];
+        }
+        else
+        {
+            if (rtnquery.length &gt; 1)
+                rtnquery += " \""+wordarray[words]+"\"";
+            else
+                rtnquery += " \""+wordarray[words]+"\"";
+        }
+    }
+    return rtnquery;
+}
+/**
+ @No.: QCCR1E83877
+ @Author: Zhang, Ming-Di
+ @Description: OVSM KM: Advanced Search on Title searches incorrectly depending on term and case
+ @Since: 2013/04/27
+ @param script, scriptLibrary file contains kbname and fieldmapping info
+ @return kbname, i.e. Knowledge_library_kmprocesslibcriteria =&gt; Knowledge_library
+ **/
+function parseKbname(script) {
+    return (new String(script)).replace("[C++ object library]", "").replace("_kmprocesslibcriteria", "");
+}
+
+/**
+ @No.: QCCR1E83877
+ @Author: Zhang, Ming-Di
+ @Description: OVSM KM: Advanced Search on Title searches incorrectly depending on term and case
+ @Since: 2013/04/27
+ @param KMQuery, kmquery file generated when search knowledge base,
+ @param fieldmapping, defined in scriptlibrary: library&gt;__kmprocesslibcriteria,
+ used to parse mapping relation between kmquery field and search engine field
+ @return strQuery, parsed search engine query string
+ **/
+function parseQueryFields(KMQuery,fieldmapping) {
+    strQuery = '';
+    for ( var i = 0; i &lt; fieldmapping.length; i++) {
+        var fields = fieldmapping[i];
+        if (KMQuery[fields[0]] != null) {
+            if (KMQuery[fields[0]].split(" ").length &gt; 1){
+                var tmp = KMQuery[fields[0]] ;
+                if(fields[2]) tmp= tmp.replace(/\s+/g,"+");
+                strQuery += fields[1] + ':(' + tmp + ")";
+
+            } else strQuery += fields[1] + ':' + KMQuery[fields[0]];
+            strQuery += " AND ";
+        } else {
+            //for a reference field, try to get display value
+            if (fields[0] != null) {
+               var fieldName = fields[0].replace("_", ".");
+               var refTable = system.library.DisplayName.getRefTable(fieldName, "kmquery");
+               if (refTable != null) {
+                 var displayValue = system.functions.get_display_value(KMQuery, fieldName,-1,true);
+                 if (displayValue != null) {
+                    //for reference field, display name is automactically indexed, so use field name plus displayname to do a query
+                    if (displayValue.split(" ").length &gt; 1){
+                        var tmp = displayValue;
+                        if (fields[2]) {
+                           tmp= tmp.replace(/\s+/g,"+");
+                        }
+                        strQuery += fields[1] + "displayname" + ':(' + tmp + ")";
+
+                     } else {
+                        strQuery += fields[1] + "displayname" + ':' + displayValue;
+                     }
+                     strQuery += " AND ";
+                 }
+               }
+            } 
+        }
+    }
+    return strQuery;
+    
+}
+/**
+ @No.: QCCR1E83877
+ @Author: Zhang, Ming-Di
+ @Description: OVSM KM: Advanced Search on Title searches incorrectly depending on term and case
+ @Since: 2013/04/27
+ @param KMQuery, kmquery file generated when search knowledge base,
+ @param fieldmapping, defined in scriptlibrary: library&gt;__kmprocesslibcriteria,
+ used to parse mapping relation between kmquery field and search engine field
+ @param that, scriptLibrary record which invoke this function,
+ hooking which the processSpecial function in invoker to generate search engine query string.
+ @return strQuery, parsed search engine query string
+ **/
+function processSolr(KMQuery, fieldmapping, that) {
+    var strQuery = "";
+    strQuery += parseQueryFields(KMQuery,fieldmapping);
+    strQuery += that.processSpecial(KMQuery);
+    if (strQuery)
+        strQuery = "(" + strQuery + " knowledgebase_name:" + parseKbname(that) + ")";
+        
+    return strQuery;
+}</script>
+    <package type="string">KnowledgeManagement</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:41</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

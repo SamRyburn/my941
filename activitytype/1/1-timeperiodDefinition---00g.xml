@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="activitytype">
+  <record id="activity.number=1 and table=&quot;timeperiodDefinition&quot;" recordid="1 - timeperiodDefinition">
+    <activity.number type="decimal">1</activity.number>
+    <activity.name type="string">Update</activity.name>
+    <visible type="string">Yes</visible>
+    <table type="string">timeperiodDefinition</table>
+    <sysmodtime type="dateTime">02/26/13 02:19:43</sysmodtime>
+    <sysmoduser type="string">jsteube</sysmoduser>
+    <sysmodcount type="decimal">3</sysmodcount>
+  </record>
+</recordset>

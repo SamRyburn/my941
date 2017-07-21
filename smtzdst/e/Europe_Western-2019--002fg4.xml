@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="smtzdst">
+  <record id="tzname=&quot;Europe/Western&quot; and dstyear=2019" recordid="">
+    <tzname type="string">Europe/Western</tzname>
+    <dstyear type="decimal">2019</dstyear>
+    <dstbegin type="dateTime">03/30/19 19:00:00</dstbegin>
+    <dstend type="dateTime">10/26/19 20:00:00</dstend>
+    <isdst type="decimal">1</isdst>
+  </record>
+</recordset>

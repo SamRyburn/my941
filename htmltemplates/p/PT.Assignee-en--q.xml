@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="htmltemplates">
+  <record id="name=&quot;PT.Assignee&quot; and language=&quot;en&quot;" recordid="PT.Assignee - en">
+    <id type="string">808</id>
+    <type NullValue="1" type="string"/>
+    <name type="string">PT.Assignee</name>
+    <expression type="string">//Prepare url for web access
+//#################################################################################################################
+//This is the url for index.do. if you want to generate url for ess.do, please use getESSURLFromQuery instead
+var file_name = system.functions.filename($RECORD);
+var record_name = system.functions.scmsg(lib.dbdictHelper.getPrimaryTablename(file_name),"tablename");
+var record_title = record_name+" "+$RECORD.id;
+var record_query = "id=\""+$RECORD.id+"\"";
+var web_url = lib.urlCreator.getURLFromQuery(file_name,record_query,record_title);
+//var web_url = lib.urlCreator.getESSURLFromQuery(file_name,record_query,record_title);
+//#################################################################################################################
+
+var language=vars.$G_my_language;
+file_name = lib.dbdictHelper.getPrimaryTablename(file_name); 
+var priority=lib.htmlenum.localvalue("Priority",$RECORD.priority_code,language);     
+</expression>
+    <content NullValue="1" sctype="array">
+      <content NullValue="1" type="string"/>
+    </content>
+    <module type="string">rootcausetask</module>
+    <cap.exec NullValue="1" sctype="array">
+      <cap.exec NullValue="1" type="string"/>
+    </cap.exec>
+    <active type="boolean">true</active>
+    <htmlcode type="string">&lt;p&gt;&lt;span style="FONT-FAMILY: &amp;quot;Futura Bk&amp;quot;, &amp;quot;sans-serif&amp;quot;; FONT-SIZE: 9pt; mso-bidi-font-size: 12.0pt; mso-bidi-font-family: 'Times New Roman'; mso-font-kerning: 1.0pt; mso-ansi-language: EN-US; mso-fareast-language: ZH-CN; mso-bidi-language: AR-SA"&gt;&lt;strong&gt;NOTE: SYSTEM GENERATED EMAIL, PLEASE DO NOT REPLY. FOR MORE INFORMATION REFER TO THE PROBLEM RECORD IN THE SYSTEM.&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span style="FONT-FAMILY: &amp;quot;Futura Bk&amp;quot;, &amp;quot;sans-serif&amp;quot;; FONT-SIZE: 9pt; mso-bidi-font-size: 12.0pt; mso-bidi-font-family: 'Times New Roman'; mso-font-kerning: 1.0pt; mso-ansi-language: EN-US; mso-fareast-language: ZH-CN; mso-bidi-language: AR-SA"&gt;Dear Sir/Madam,&lt;/span&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;/p&gt;
+&lt;p&gt;&lt;span style="FONT-FAMILY: &amp;quot;Futura Bk&amp;quot;, &amp;quot;sans-serif&amp;quot;; FONT-SIZE: 9pt; mso-bidi-font-size: 12.0pt; mso-bidi-font-family: 'Times New Roman'; mso-font-kerning: 1.0pt; mso-ansi-language: EN-US; mso-fareast-language: ZH-CN; mso-bidi-language: AR-SA"&gt;Task&amp;nbsp;{$RECORD.id} is assigned to you.&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span style="FONT-FAMILY: &amp;quot;Futura Bk&amp;quot;, &amp;quot;sans-serif&amp;quot;; FONT-SIZE: 9pt; mso-bidi-font-size: 12.0pt; mso-bidi-font-family: 'Times New Roman'; mso-font-kerning: 1.0pt; mso-ansi-language: EN-US; mso-fareast-language: ZH-CN; mso-bidi-language: AR-SA"&gt;Task&amp;nbsp;details are as follows:&lt;/span&gt;&lt;/p&gt;
+&lt;table style="FONT-FAMILY: arial" cellspacing="10" cellpadding="10" width="100%"&gt;
+    &lt;tbody&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;table style="FONT-FAMILY: arial; FONT-SIZE: 11px" cellspacing="2" cellpadding="6" width="94%" align="center"&gt;
+    &lt;tbody&gt;
+        &lt;tr bgcolor="#f8f9f9"&gt;
+            &lt;td width="20%" align="right"&gt;&lt;font size="2"&gt;Title:&lt;/font&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;font size="2"&gt;{$RECORD.brief_description} &lt;/font&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr bgcolor="#f8f9f9"&gt;
+            &lt;td align="right"&gt;&lt;font size="2"&gt;Description:&lt;/font&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;font size="2"&gt;{$RECORD.description}&lt;/font&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr bgcolor="#f8f9f9"&gt;
+            &lt;td align="right"&gt;&lt;font size="2"&gt;Priority:&lt;/font&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;font size="2"&gt;{priority}&lt;/font&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;span style="FONT-FAMILY: &amp;quot;Futura Bk&amp;quot;, &amp;quot;sans-serif&amp;quot;; FONT-SIZE: 9pt; mso-bidi-font-size: 12.0pt; mso-bidi-font-family: 'Times New Roman'; mso-font-kerning: 1.0pt; mso-ansi-language: EN-US; mso-fareast-language: ZH-CN; mso-bidi-language: AR-SA"&gt;&lt;span style="FONT-FAMILY: &amp;quot;Futura Bk&amp;quot;, &amp;quot;sans-serif&amp;quot;; FONT-SIZE: 9pt; mso-bidi-font-size: 12.0pt; mso-bidi-font-family: 'Times New Roman'; mso-font-kerning: 1.0pt; mso-ansi-language: EN-US; mso-fareast-language: ZH-CN; mso-bidi-language: AR-SA"&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; Click here to go to the Task&amp;nbsp;record &lt;a href="{web_url}"&gt;&lt;font size="2"&gt;{$RECORD.id}&lt;/font&gt;&lt;/a&gt;&lt;/span&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span style="FONT-FAMILY: &amp;quot;Futura Bk&amp;quot;, &amp;quot;sans-serif&amp;quot;; FONT-SIZE: 9pt; mso-bidi-font-size: 12.0pt; mso-bidi-font-family: 'Times New Roman'; mso-font-kerning: 1.0pt; mso-ansi-language: EN-US; mso-fareast-language: ZH-CN; mso-bidi-language: AR-SA"&gt;&lt;span style="FONT-FAMILY: &amp;quot;Futura Bk&amp;quot;, &amp;quot;sans-serif&amp;quot;; FONT-SIZE: 9pt; mso-bidi-font-size: 12.0pt; mso-bidi-font-family: 'Times New Roman'; mso-font-kerning: 1.0pt; mso-ansi-language: EN-US; mso-fareast-language: ZH-CN; mso-bidi-language: AR-SA"&gt;Thanks and regards,&lt;span style="FONT-FAMILY: &amp;quot;Futura Bk&amp;quot;, &amp;quot;sans-serif&amp;quot;; FONT-SIZE: 9pt; mso-bidi-font-size: 12.0pt; mso-bidi-font-family: 'Times New Roman'; mso-font-kerning: 1.0pt; mso-ansi-language: EN-US; mso-fareast-language: ZH-CN; mso-bidi-language: AR-SA"&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;h1 style="COLOR: #036; FONT-SIZE: 24px"&gt;&lt;font size="3"&gt;HP Service Manager&lt;/font&gt;&lt;/h1&gt;</htmlcode>
+    <language type="string">en</language>
+    <mandant NullValue="1" sctype="array">
+      <mandant NullValue="1" type="string"/>
+    </mandant>
+    <test.record type="string">PM10010-001</test.record>
+    <mail.title type="string">Task {$RECORD.id}  has been Assigned to you</mail.title>
+  </record>
+</recordset>

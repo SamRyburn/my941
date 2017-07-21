@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;KMSearchInterface&quot;" recordid="KMSearchInterface">
+    <name type="string">KMSearchInterface</name>
+    <script type="string">var IDOLKMQueryFactory = lib.IDOLKMQueryFactory.require(),
+     KMIDOLUtils = lib.KMIDOLUtils.require(),
+     IDOLErrorCode = lib.IDOLErrorCode.require(),
+                 _ = lib.Underscore.require();
+                 
+function getEngineName()
+{
+    if (system.functions._null(vars.$G_kmsearchengine))
+    {
+        var retText = new Datum();
+        system.functions.plugin("KMPLUGIN", "getEngineName", retText );
+        vars.$G_kmsearchengine = retText.getText();
+    }
+    
+    return vars.$G_kmsearchengine;
+}
+
+function configureIndex(strXML)
+{
+    return system.functions.plugin("KMPLUGIN","configureIndex", strXML);
+}
+
+function initializeEngine(strXML)
+{
+    return system.functions.plugin("KMPLUGIN","initializeEngine", strXML);
+}
+
+function createIndex(strIndexName)
+{
+
+    return system.functions.plugin("KMPLUGIN","createIndex", strIndexName);
+}
+
+function deleteIndex(strIndexName)
+{   
+    return system.functions.plugin("KMPLUGIN","deleteIndex", strIndexName);
+}
+
+function openIndex(strIndexName)
+{
+    return system.functions.plugin("KMPLUGIN","openIndex", strIndexName);
+}
+
+function closeIndex(strIndexName)
+{
+    return system.functions.plugin("KMPLUGIN","closeIndex", strIndexName);;
+}
+
+function addDocument(strIndexName, strDocumentData)
+{
+    return system.functions.plugin("KMPLUGIN","addDocument", strIndexName, strDocumentData);
+}
+
+function deleteDocument(strIndexName, strDocumentId)
+{
+    return system.functions.plugin("KMPLUGIN","deleteDocument", strIndexName, strDocumentId);
+}
+
+function getIndexStatistics(strIndexName)
+{
+    var aStatsArray = new Datum();
+    aStatsArray.setType(8);
+    system.functions.plugin("KMPLUGIN","getIndexStatistics", strIndexName, aStatsArray);
+
+    return aStatsArray;
+}
+
+function searchIndexes(strQuery, strQueryType, strQueryFields, strStartDoc, strMaxDocsToRetrieve, strMaxDocsToSearch, aCollections, aFields, strFilterQueries, sortInfo)
+{
+    var result;
+    var aHitArray = new Datum();
+    aHitArray.setType(8);
+
+    var xmlQuery = "&lt;kmquery&gt;";
+    xmlQuery += "&lt;query&gt;" + strQuery + "&lt;/query&gt;";
+    xmlQuery += "&lt;start_doc&gt;" + strStartDoc + "&lt;/start_doc&gt;";
+    xmlQuery += "&lt;max_docs_retrieve&gt;" + strMaxDocsToRetrieve + "&lt;/max_docs_retrieve&gt;";
+    xmlQuery += "&lt;max_docs_search&gt;" + strMaxDocsToSearch + "&lt;/max_docs_search&gt;";
+    for( var i = 0; i &lt; aCollections.length(); i++)
+        xmlQuery += "&lt;collection&gt;" + aCollections[i] + "&lt;/collection&gt;";
+    for( var i = 0; i &lt; aFields.length(); i++)
+        xmlQuery += "&lt;field&gt;" + aFields[i] + "&lt;/field&gt;";
+
+    xmlQuery += "&lt;query_type&gt;"+strQueryType+"&lt;/query_type&gt;";
+    xmlQuery += "&lt;attachment_highlight&gt;" + (vars.$G_km_globalenv.att_hl?true:false) + "&lt;/attachment_highlight&gt;";
+    xmlQuery += "&lt;filter_queries&gt;"+strFilterQueries+"&lt;/filter_queries&gt;";
+    xmlQuery += "&lt;query_fields&gt;"+strQueryFields+"&lt;/query_fields&gt;";
+    if (sortInfo!=null &amp;&amp; system.functions.lng(sortInfo)&gt;0)
+    {
+        xmlQuery += "&lt;sort_info&gt;"+sortInfo+"&lt;/sort_info&gt;";
+    }
+    xmlQuery +="&lt;/kmquery&gt;";
+
+    result = system.functions.plugin("KMPLUGIN","searchIndexes", xmlQuery, aHitArray);
+
+    if( result != RC_SUCCESS || aHitArray.length() &lt;= 1 || aHitArray[0] == "FAILED" )
+    {
+        //if failed and config changed reissue search with new settings.
+        if(lib.KMUtils.kmConfigChanged() )
+        {
+            aHitArray = new Datum();
+            aHitArray.setType(8);
+            result = initializeEngine(system.library.KMUtils.getSearchEngineConfig());
+            if(result == -1)
+            {
+                lib.KMUtils.domessageBox(system.functions.scmsg(224, "km"));
+                aHitArray.push("FAILED",0);
+                return aHitArray;
+            }
+            result = system.functions.plugin("KMPLUGIN","searchIndexes", xmlQuery, aHitArray);
+        }
+        else if(aHitArray[0] == "FAILED")
+        {
+            aHitArray.push("0 document is found due to timeout error in Search Engine");
+            system.library.KMUtils.domessageBox("0 document is found due to timeout error in Search Engine");
+        }
+
+    }
+    return aHitArray;
+}
+
+function pingEngine(aArgs)
+{
+    return system.functions.plugin("KMPLUGIN","pingEngine", aArgs);
+}
+
+function createJob(strJobName, strXML)
+{
+    return system.functions.plugin("KMPLUGIN","createJob", strJobName, strXML);
+}
+
+function deleteJob(strJobName)
+{
+    return system.functions.plugin("KMPLUGIN","deleteJob", strJobName);
+}
+
+function startJob(strXML)
+{
+    return system.functions.plugin("KMPLUGIN","startJob", strXML);
+}
+
+function stopJob(strXML)
+{
+    return system.functions.plugin("KMPLUGIN","stopJob", strXML);
+}
+
+function getJobStatus(strJobName)
+{
+    var retText = new Datum();
+    system.functions.plugin("KMPLUGIN","getJobStatus", strJobName, retText);
+    return retText.getText();
+
+}
+
+function isBadAttachment(returncode)
+{
+    if (returncode == -1 || returncode == -2 || returncode == -8 || returncode == -13)
+        return true; //bad attachment
+    else
+        return false;
+}
+
+function isBadDocument(returncode)
+{
+    if (returncode == -4 || returncode == -6 || returncode == -7 || returncode == -9 || returncode == -10)
+        return true; //document error
+    else
+        return false;
+}
+
+function isBadServer(returncode)
+{
+    if (returncode == -3 || returncode == -5)
+        return true; //server error
+    else
+        return false;
+}
+
+function isJobNotFound(returncode)
+{
+    if (returncode == -14)
+        return true;
+    else
+        return false;
+}
+
+function isSchedulerException(returncode)
+{
+    if (returncode == -15)
+        return true;
+    else
+        return false;
+}
+
+function isJobNameInvalid(returncode)
+{
+    if (returncode == -16)
+        return true;
+    else
+        return false;
+}
+
+function isJobStopException(returncode)
+{
+    if (returncode == -17)
+        return true;
+    else
+        return false;
+}
+
+function isJobHTTPException(returncode)
+{
+    if (returncode == -18)
+        return true;
+    else
+        return false;
+}
+function isJobNullPointerException(returncode)
+{
+    if (returncode == -19)
+        return true;
+    else
+        return false;
+}
+
+function isJobStatusRunning(returncode)
+{
+    if (returncode == 1)
+        return true;
+    else
+        return false;
+}
+
+function isJobStatusScheduled(returncode)
+{
+    if (returncode == 2)
+        return true;
+    else
+        return false;
+}
+
+function isJobStatusCompleted(returncode)
+{
+    if (returncode == 3)
+        return true;
+    else
+        return false;
+}
+function isJobIOException( returncode ){
+    if ( -2 == returncode )
+        return true;
+    else
+        return false;
+}
+
+function srcSearch( text, filterObj, docstart, maxdocs )
+{
+  var fKMQuery =  new SCFile('kmquery');
+  fKMQuery.query = text;
+  fKMQuery.docstart = docstart;
+  fKMQuery.maxdocs = docstart+maxdocs-1;
+  
+  var searchResult = null;
+  vars.$G_advsearch = false;
+     
+  try {
+        var Filters = [];
+        if(filterObj &amp;&amp; filterObj.Filters){
+           Filters = filterObj.Filters;
+          var langFilter = _.where(Filters,{field:"language"});
+          if(langFilter &amp;&amp; langFilter.value){
+              fKMQuery.locale = langFilter.value;
+              vars.$G_advsearch = true;
+            }
+        }
+       
+       IDOLKMSRCQuery = IDOLKMQueryFactory.create('src', fKMQuery);
+       
+       IDOLKMSRCQuery.filters = Filters;
+
+       var printField ={"PrintFields":"DRETITLE+CATEGORY+KMSEARCHCATEGORY+DOCTYPE+SYSMODTIME_DATE+ID+KMSTATUS+GUIDS+CONTENT-TYPE+SMUUID+FILEURL+LISTITEMURL"};
+       
+       try{
+           searchResult = IDOLKMSRCQuery.search(printField);
+           var messages = IDOLKMSRCQuery.getMessages() || [];
+           var actions = IDOLKMSRCQuery.getActions();
+
+            _.each(actions, function(a) {
+              var action = a.action, msg;
+              if (action === 'suggest.query') {
+                msg = funcs.scmsg('suggest.query', 'idol', [ a.suggest ]);
+              } else if (action === 'alternative.search') {
+                msg = funcs.scmsg('alternative.search', 'idol', [ a.alternative, a.query ]);
+              }
+              if (msg) {
+                messages.push(msg);
+              }
+            });
+            searchResult =  KMIDOLUtils.setMessagesInSRCResponse(searchResult, messages);
+       }catch( e ){
+           if(e.id &amp;&amp; e.id == IDOLErrorCode.INVALID_QUERY_TEXT){
+             var msg = funcs.scmsg('2001', 'idol');
+             searchResult = KMIDOLUtils.getSRCInvalidQueryResp(msg);    
+           }else{
+            throw e;
+           }
+       }
+       
+   }
+    catch(er){
+        var logger = getLog('KMSearchInterface');
+        logger.error(er);
+        throw(er);
+     }
+     
+  return searchResult;
+}
+
+function retrieveKMArticle( docID )
+{
+   var kmdoc = null;
+   if( docID )
+   {
+      try{
+           var docfile =  new SCFile("kmdocument");
+           var rc = docfile.doSelect('id="'+docID+'"');
+           if( rc == RC_SUCCESS )
+           {
+              kmdoc = docfile.getXML();
+              var guidstr= lib.KMDocumentAttachment.getGUIDs(docID);
+            if(guidstr)
+            {  
+              KMIDOLUtils.appendNewNode( 1, 'guids', null, kmdoc, 'instance' );
+              KMIDOLUtils.appendNewNode( 3, null, guidstr, kmdoc, 'guids' );
+            }
+           }
+       }
+       catch(er){
+         var logger = getLog('KMSearchInterface');
+        logger.error(er);
+        throw er;
+       }
+   }
+   
+   return kmdoc;
+}
+</script>
+    <package type="string">KnowledgeManagement</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:41</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

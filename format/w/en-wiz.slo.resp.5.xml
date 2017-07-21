@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;wiz.slo.resp.5&quot;" recordid="en - wiz.slo.resp.5">
+    <name mandatory="true" type="string">wiz.slo.resp.5</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">1</column>
+        <length type="decimal">15</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Alerts:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Alerts:	X=0	Y=4	Height=2	Width=30	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">17</column>
+        <length type="decimal">27</length>
+        <window type="decimal">3</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">alert.names</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComFill;Input=alert.names	X=32	Y=4	Height=2	Width=53	TabStop=1	ArrayLength=3	ComboButtonVisible=0	ThirdButtonID=8	ThirdButtonBitmap=4	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">1</column>
+        <length type="decimal">15</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Suspend processing</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Suspend processing	X=0	Y=12	Height=2	Width=30	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">17</column>
+        <length type="decimal">27</length>
+        <window type="decimal">4</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">suspend.states</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComFill;Input=suspend.states	X=32	Y=12	Height=2	Width=53	TabStop=2	ValueList=$resp.list	SelectOnly=1	ArrayLength=4	FillButtonVisible=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">1</column>
+        <length type="decimal">15</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">for these states:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=for these states:	X=0	Y=14	Height=2	Width=30	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">12</line>
+        <column type="decimal">1</column>
+        <length type="decimal">3</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">$L.void</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=	Input=$L.void	X=0	Y=22	Height=2	Width=5	Visible=0	ForeColor=0	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">prietke</editor>
+    <last.update type="dateTime">03/17/05 11:00:34</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">8</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">03/18/05 08:06:01</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

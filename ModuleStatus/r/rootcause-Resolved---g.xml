@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ModuleStatus">
+  <record id="module=&quot;rootcause&quot; and status=&quot;Resolved&quot;" recordid="rootcause - Resolved">
+    <status type="string">Resolved</status>
+    <sysmodtime type="dateTime">12/07/14 20:39:18</sysmodtime>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <module type="string">rootcause</module>
+    <tablename type="string">rootcause</tablename>
+    <sort.order type="decimal">10</sort.order>
+  </record>
+</recordset>

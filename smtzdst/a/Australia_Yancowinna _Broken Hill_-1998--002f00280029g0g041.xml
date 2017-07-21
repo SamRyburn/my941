@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="smtzdst">
+  <record id="tzname=&quot;Australia/Yancowinna (Broken Hill)&quot; and dstyear=1998" recordid="">
+    <tzname type="string">Australia/Yancowinna (Broken Hill)</tzname>
+    <dstyear type="decimal">1998</dstyear>
+    <dstbegin type="dateTime">03/28/98 20:00:00</dstbegin>
+    <dstend type="dateTime">10/24/98 20:00:00</dstend>
+    <isdst type="decimal">0</isdst>
+  </record>
+</recordset>

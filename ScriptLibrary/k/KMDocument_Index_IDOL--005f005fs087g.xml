@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;KMDocument_Index_IDOL&quot;" recordid="KMDocument_Index_IDOL">
+    <name type="string">KMDocument_Index_IDOL</name>
+    <script type="string">/**  @fileoverview KMCollection_Update_IDOL
+ *   @author Yang,Chun-Fu
+ */
+
+var IDOLKMIndexService = lib.IDOLKMIndexService.require(),
+    KMIDOLLanguageMap  = lib.KMIDOLLanguageMap.require(),
+    KMIDOLUtils = lib.KMIDOLUtils.require(),
+    IDOLDataCleansing = lib.IDOLDataCleansing.require(),
+    KMQuery_IDOL = lib.KMQuery_IDOL.require();
+
+
+
+var SRC_FIELDS = {"category":1,"doctype":1,"sysmodtime_date":1,"id":1,"kmstatus":1,"kmsearchcategory":1,"guids":1};
+
+var KMDocument_Index_IDOL = (function()
+{
+    var REF_PREFIX = '_DN_';
+
+    function setDocumentFieldValue(strField, fieldValue, indexDoc, indexWeight, dataType,match)
+    {
+        var srcPrintFieldName =null;
+
+        if ( match ){
+            indexDoc = setDocumentRawField(strField+'_MATCH',fieldValue, indexDoc);
+        }
+
+        if (SRC_FIELDS[strField]){srcPrintFieldName = strField;}
+
+        if ( dataType == 'Date' &amp;&amp; indexWeight &gt;= 0 &amp;&amp; KMIDOLUtils.getFieldPostfix(indexWeight) ){
+            indexDoc = setDocumentRawField(strField, fieldValue, indexDoc);
+        }
+
+        strField += KMIDOLUtils.getFieldPostfix(indexWeight);
+
+        indexDoc = setDocumentRawField(strField, fieldValue, indexDoc);
+
+        if(srcPrintFieldName &amp;&amp; srcPrintFieldName !== strField){
+            indexDoc = setDocumentRawField(srcPrintFieldName, fieldValue, indexDoc);
+        }
+
+        return indexDoc;
+    }
+
+    function setDocumentRawField(strField, varFieldValue, indexDoc)
+    {
+        if(strField =="kmstatus"){
+            //sort field. add match field for sort performance
+            indexDoc = setDocumentRawField(strField+'_MATCH',varFieldValue, indexDoc);
+        }
+
+		
+        varFieldValue +="";
+        strField = strField.toUpperCase();
+        indexDoc += "#DREFIELD "+strField+ "=\""+ varFieldValue.replace(/\]\]&gt;/g,"") +"\"\n";
+
+        return indexDoc;
+    }
+
+    function dumpAttachment(strCollectionFile, sclibFile,isReindex)
+    {
+        if (strCollectionFile.indexattachments || sclibFile.doctype =="external")
+        {
+            var doc_id = sclibFile[strCollectionFile.docid];
+            var fAttachments = new SCFile("SYSATTACHMENTS",SCFILE_READONLY);
+            var rc = fAttachments.doSelect("application=\""+strCollectionFile.sclibtablename+"\" and topic=\""+ doc_id  +"\" and segment=0");
+
+            if( RC_SUCCESS == rc){
+                var kbname = strCollectionFile.kbname;
+                
+                lib.KMAttachmentUpdatesDAO.create(doc_id, kbname, kbname)
+            }
+        }
+    }
+
+    function addFieldExpireDate( drefield ){
+        var dt =  new Date();
+        var expire = vars['$G.km.globalenv']['km.expiration.period']||365;
+        dt.setDate(dt.getDate() + expire);
+        var expiration_date = lib.KMUtils.kmIDOLDateFormat(dt);
+        drefield += "#DREFIELD VALID_TIME=\""+expiration_date+"\"\n";
+
+        return drefield;
+    }
+
+
+    function indexDocument(strCollectionFile, sclibFile, indexFieldSet,isReindex)
+    {
+        var result ;
+        var indexDBName = strCollectionFile.kbname;
+        if(vars.$L_currRec %50 == 0){
+            print(vars.$L_currRec+" documents indexed. ");
+        }
+        dumpAttachment(strCollectionFile, sclibFile,isReindex);
+        var idolDoc = createIndexDoc( strCollectionFile, sclibFile, indexFieldSet);
+        idolDoc += "#DREENDDATAREFERENCE\n\n";
+
+        if(isReindex){
+            indexDBName += IDOLKMIndexService.tempDBPostFix();
+        }
+        result = IDOLKMIndexService.addDocument(indexDBName, idolDoc);
+
+        return result;
+    }
+
+    function getGroupString(catarray){
+        var groupstr = "";
+        var groups = new SCDatum();
+        groups.setType(8);
+        var numcats = catarray.length;
+
+        for (var grp=0; grp &lt; numcats ; grp++){
+            groups = lib.Knowledge_Library_kmcategoryidxscript.getGroupsforCategory(groups, catarray[grp]);
+        }
+
+        for (var len=0; len &lt; system.functions.lng(groups); len++ ){
+            if (groups[len]!=null &amp;&amp; groups[len]!=""){
+                groupstr+=groups[len]+",";
+            }
+        }
+        if (groupstr!=""){
+            groupstr= groupstr.substr(0,groupstr.length-1);
+        }
+
+        return groupstr;
+    }
+
+
+    function createIndexDoc( fKmKnowledgebase, sclibFile, indexFieldSet )
+    {
+        var indexDoc = "";
+        var dreref = "#DREREFERENCE ";
+        var dretitle = "#DRETITLE ";
+        var dreend = "#DREENDDOC"+"\n";
+        var foundTitle =false;
+        var kbname = fKmKnowledgebase.kbname;
+        var doc_id = sclibFile[fKmKnowledgebase.docid];
+        var doc_id_fs = lib.KMUtils.cleanDocID(doc_id);
+        var sedocid = lib.KMUtils.scToJSName(kbname)+"_"+doc_id_fs+"_0";
+        var indexFields = indexFieldSet.indexFields;
+        var indexfType = indexFieldSet.indexfType;
+        var indexfAlias = indexFieldSet.indexfAlias;
+        var indexWeights = indexFieldSet.indexWeights;
+        var isMatch = indexFieldSet.isMatch;
+        var dataCleansing = indexFieldSet.dataCleansing;
+        var securityFields = indexFieldSet.securityFields;
+        var kmnonworkflowstatus =  'draft; external; internal; retired';
+
+        var isLanguage = false;
+
+        var categoryStr = lib[fKmKnowledgebase.categoryindexscript].getCategoryStr(sclibFile);
+        if(system.functions._null(categoryStr)){
+            categoryStr = "";
+        }
+
+        var catarray = categoryStr.split(";");
+        var numcats = catarray.length;
+        var numfields = fKmKnowledgebase.kbfields.length();
+
+        var groupstr = '';
+        if ( kbname =="Knowledge_Library") {
+            //set for SRC
+            groupstr = getGroupString(catarray);
+            indexDoc = setDocumentRawField("groups", groupstr, indexDoc);
+        }
+
+        var sefilename = fKmKnowledgebase.sclibtablename;
+        var sequery = sefilename+":"+fKmKnowledgebase.docid+"=&amp;quot;"+doc_id+"&amp;quot;";
+        var doc_link = "scactivelink://"+sequery+"&amp;nbsp;and&amp;nbsp;kbname=&amp;quot;"+kbname+"&amp;quot;";
+
+        indexDoc = setDocumentRawField("sedocid", sedocid, indexDoc);
+        indexDoc = setDocumentRawField("sefilename", sefilename, indexDoc);
+        indexDoc = setDocumentRawField("sequery", fKmKnowledgebase.docid+"=\""+doc_id+"\"", indexDoc);
+
+        doc_link = encodeURIComponent(doc_link);
+        dreref += doc_link +"\n";
+
+        if (categoryStr.length &gt;0) {
+            for (var cats =0; cats &lt; numcats; cats++) {
+                indexDoc = setDocumentRawField('KMSEARCHCATEGORY_MATCH', catarray[cats], indexDoc);
+                //for src usage
+                indexDoc = setDocumentRawField('KMSEARCHCATEGORY', catarray[cats], indexDoc);
+            }
+        }
+
+        indexDoc = setDocumentRawField('knowledgebase_name_match', kbname, indexDoc);
+        indexDoc = setDocumentRawField('DREDBName', kbname, indexDoc);
+        indexDoc = addFieldExpireDate(indexDoc);
+        
+        var cleanser = IDOLDataCleansing.getCleanser(sefilename);
+        
+
+        var sysmodtime = null;
+        for (var i = 0; i&lt; numfields; i++)
+        {
+            var fieldValue = sclibFile[indexFields[i]];
+            var fieldName = indexFields[i];
+            if (fieldName.toUpperCase() === 'HOTNEWS' &amp;&amp; fKmKnowledgebase.kbname === 'Knowledge_Library'){
+               if (!fieldValue){
+                  fieldValue = 'false';
+               }
+            }
+
+            //if (!fieldValue) continue;
+            
+            var weight = indexWeights[i];
+            var match = isMatch[i];
+
+            if (fieldName === 'guids' &amp;&amp; fKmKnowledgebase.kbname === 'Knowledge_Library'){
+                fieldValue= lib.KMDocumentAttachment.getGUIDs(doc_id);
+            }
+
+            if (fieldName === 'category'){
+                if (fKmKnowledgebase.kbname === 'Knowledge_Library')
+                    fieldValue = lib.KMCollection_Update_Utils.categoryStrtoName(categoryStr);
+            }
+
+            if (indexfType[i] === 'Date'){              
+                if (fieldName.toUpperCase() == 'SYSMODTIME'){
+                 //set as autn:data meta data in idol server configuration file
+                	if (fieldValue) {
+						sysmodtime = KMQuery_IDOL.getEpochSeconds(fieldValue);
+                	} else {
+                		sysmodtime = KMQuery_IDOL.getEpochSeconds(new Date());
+                	}
+                 //autn:date must be the last datetype field in the index document, will set later
+                 continue;
+                }
+                
+                fieldValue = lib.KMUtils.kmIDOLDateFormat(fieldValue);
+                if (fieldName.match(/_date$/g)== null){
+                    fieldName += '_DATE';
+                }
+            }
+
+            if (lib.KMUtils.isSCArray(fieldValue)){
+                fieldValue = lib.KMUtils.scArrayToString(fieldValue);
+            }
+
+            if(dataCleansing[i] &amp;&amp; cleanser){fieldValue = cleanser(fieldValue); }
+            if(fieldName.toUpperCase() == 'TITLE'){
+                if(!fieldValue){fieldValue = doc_id;}
+                dretitle += fieldValue+"\n";
+                indexDoc += dretitle;
+                foundTitle = true;
+                //do not index title to avoid duplicated result
+                continue;
+            }
+
+            var fieldResult =  createIndexField(fieldName,fieldValue,weight,match,indexFields,indexfAlias,indexfType,i,indexDoc,isLanguage,foundTitle,'');
+            indexDoc = fieldResult.indexDoc;
+            isLanguage = fieldResult.isLanguage;
+            foundTitle = fieldResult.foundTitle;
+
+            //fix the impact to logical name change
+            if (indexfType[i] == 'Reference' )
+            {
+                fieldValue = funcs.get_display_value(sclibFile, fieldName.replace('_', '.'), -1, true);
+                
+				// even empty value need index, used to create parametric field or something like
+				if (fieldValue === null || fieldValue === undefined) { // need to handle 'boolean false' or 'number 0'
+					fieldValue = "";
+				}
+                
+                if (lib.KMUtils.isSCArray(fieldValue)){
+
+                    for (var idx =0; idx &lt;fieldValue.length(); idx++){
+                        var fvalue = system.functions.strraw(fieldValue[idx]);
+                            
+                        fieldResult =  createIndexField(fieldName,fvalue,weight,match,indexFields,indexfAlias,indexfType,i,indexDoc,isLanguage,foundTitle,REF_PREFIX);
+                        indexDoc = fieldResult.indexDoc;
+                        isLanguage = fieldResult.isLanguage;
+                        foundTitle = fieldResult.foundTitle;
+                    }
+                }else {
+                    indexDoc = setDocumentFieldValue(REF_PREFIX+fieldName, fieldValue, indexDoc, weight, indexfType[i], match);
+                    var temp = setAliasFieldValues(indexFields, indexfType, indexfAlias, i, fieldValue, indexDoc, isLanguage,foundTitle,REF_PREFIX);
+                    if (temp) {
+                        indexDoc = temp.indexDoc;
+                        foundTitle = temp.foundTitle;
+                    }
+                }
+
+            }
+        } //end for loop
+
+        if(!isLanguage)
+        {
+            var vlang = null;
+            if (sclibFile.locale)
+            {
+                vlang = KMIDOLLanguageMap[sclibFile.locale];
+                if( vlang) {
+                    indexDoc = setDocumentRawField('LANGUAGE', vlang, indexDoc);
+                }
+            }
+        }
+        
+        if( !foundTitle){
+                dretitle += doc_id+"\n";
+                indexDoc += dretitle;
+                foundTitle = true;
+        }
+
+        indexDoc = setSecurityFields(securityFields,sclibFile,indexDoc,kbname);
+
+        var ALText = "";
+        if (vars.$G_km_globalenv.use_kmadaptivelearning)
+            ALText = lib.KMCollection_Update_Utils.getALtext(kbname, doc_id);
+
+        if (ALText &amp;&amp; ALText.length &gt; 0){
+            indexDoc = setDocumentRawField( 'adlearn_INDEX', ALText, indexDoc );
+        }
+        
+        //autn:date must be the last datetype field in the index document
+        if ( sysmodtime ){  
+           indexDoc = setDocumentRawField( 'sysmodtime_date', sysmodtime, indexDoc );
+         }
+
+        
+        return dreref + indexDoc + dreend;
+    }
+
+
+
+    function createIndexField(fieldName,fieldValue,weight,match,indexFields,indexfAlias,indexfType,i,indexDoc,isLanguage,foundTitle,prefix){
+        var retValue ={indexDoc:indexDoc,
+            isLanguage:isLanguage,
+            foundTitle:foundTitle
+        };
+        //if( !fieldValue){return retValue;}
+        // even empty value need index, used to create parametric field or something like
+		if (fieldValue === null || fieldValue === undefined) { // need to handle 'boolean false' or 'number 0'
+			fieldValue = "";
+		}
+
+        fieldValue += ''; //convert numbers to strings
+        if (indexfType[i] == 'Rich_Text' ){
+            fieldValue = lib.KMCollection_Update_Utils.processRichText(fieldValue);
+        }
+
+        fieldName = prefix+fieldName;
+        indexDoc = setDocumentFieldValue(fieldName, fieldValue, indexDoc, weight,indexfType[i],match);
+        var temp = setAliasFieldValues(indexFields,indexfType,indexfAlias,i, fieldValue, indexDoc, isLanguage,foundTitle,prefix);
+        if( temp ) {
+            indexDoc = temp.indexDoc;
+            isLanguage = temp.isLanguage;
+            foundTitle = temp.foundTitle;
+        }
+
+
+        retValue.indexDoc = indexDoc;
+        retValue.isLanguage =isLanguage;
+        retValue.foundTitle = foundTitle;
+
+        return retValue;
+    }
+
+    function setAliasFieldValues(indexFields,indexfType,indexfAlias, idx, fieldValue, indexDoc,isLanguage,foundTitle,prefix)
+    {
+        var aliasFields = lib.KMCollection_Update_Utils.getFieldAlias(indexFields,indexfAlias,idx);
+        if(aliasFields) {
+            for (var i = 0; i &lt; aliasFields.length; ++i) {
+                var fieldName = aliasFields[i];
+
+                if(fieldName ==="language" &amp;&amp; !isLanguage)
+                {
+                    var lang = KMIDOLLanguageMap[fieldValue];
+                    indexDoc = setDocumentRawField("LANGUAGE", lang, indexDoc);
+                    isLanguage = true;
+                }
+                if(!foundTitle &amp;&amp; fieldName.toUpperCase() == "TITLE"){
+                    var dretitle = "#DRETITLE ";
+                    dretitle += fieldValue+"\n";
+                    indexDoc += dretitle;
+                    foundTitle = true;
+                    continue;
+                }
+
+                if(indexfType[idx] == "Date" ){
+                    if (fieldName.match(/date$/g)== null){
+                        fieldName += '_DATE';
+                    }
+                }
+                fieldName = prefix+fieldName;
+                indexDoc = setDocumentRawField(fieldName, fieldValue, indexDoc);
+            }
+        }
+
+        return {indexDoc:indexDoc,
+            isLanguage:isLanguage,
+            foundTitle:foundTitle
+        };
+    }
+
+    function setSecurityFields(securityFields,sclibFile,indexDoc,kbname)
+    {
+        if(null != securityFields){
+
+            for(var i = 0; i &lt; securityFields.length; ++i)
+            {
+                var fieldName = lib.KMUtils.scToJSName(securityFields[i]);
+
+                var fieldValue = sclibFile[fieldName];
+                if(fieldValue === null ||fieldValue===undefined){
+                  fieldValue = ''; //convert numbers to strings
+                }
+                
+                fieldName +='_MATCH';
+                indexDoc = setDocumentRawField( fieldName, fieldValue, indexDoc);
+            }
+        }
+
+        return indexDoc;
+    }
+
+    return {
+        indexDocument:indexDocument
+    }
+})();
+
+
+function require()
+{
+    return KMDocument_Index_IDOL;
+}
+</script>
+    <package type="string">KnowledgeManagement</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:41</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

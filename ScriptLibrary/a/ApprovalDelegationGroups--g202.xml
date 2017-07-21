@@ -1,0 +1,907 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;ApprovalDelegationGroups&quot;" recordid="ApprovalDelegationGroups">
+    <name type="string">ApprovalDelegationGroups</name>
+    <script type="string">/**
+* This script contains various functions used in aproval engine
+* to support approval delegation
+* 
+* Hua Zhang
+*/
+
+
+var delegationList;
+var asDelegateList = null;
+var approverList = new Array();
+
+
+/**
+* This function returns constructs a query for retrieve
+* approvals that a user gets from delegation. This function 
+* is called from approval inbox application 
+*
+* Hua Zhang
+*/
+function getDelegationSql()
+{	
+	initDelegation();
+	if(delegationList.length == 0)
+		return "";		
+		
+	var changeSql = getChangeDelegationGroups();
+	var requestSql = getRequestDelegationGroups();
+	var svcSql = getSVCDelegationGroups();	
+	var tpSql = getTPDelegationGroups();	
+	
+	
+	var returnSql = changeSql + requestSql + svcSql + tpSql;		
+	
+	return returnSql;
+}
+
+function getChangeDelegationGroups()
+{	
+ 	//find id there is a delegate all 
+	var allDele = new Array();
+	var partDele = new Array();
+	for(var i=0;i&lt;delegationList.length;++i)
+	{	
+		if(delegationList[i].module == "all")
+			allDele.push(delegationList[i]);  
+	}	
+ 	var allChangeGroups = new Array();
+	var allTaskGroups = new Array();	
+	var partChangeGroups = new Array();
+	var partTaskGroups = new Array();
+	
+	for(var i=0;i&lt;allDele.length;++i)
+	{
+		var combo = getAllChangeTaskGroups(allDele[i]);
+ 		var changes = combo[0];
+		var tasks = combo[1];		
+		for(var j=0;j&lt;changes.length;++j)
+		{
+			if(arrayIndexOf(allChangeGroups,changes[j])&lt;0)
+				allChangeGroups.push(changes[j]);
+		}
+		for(var j=0;j&lt;tasks.length;++j)
+		{
+			if(arrayIndexOf(allTaskGroups,tasks[j])&lt;0)
+				allTaskGroups.push(tasks[j]);
+		}
+	}
+	
+	
+	
+	var combo = getDelegatedChangeTaskGroups();
+	partChangeGroups = combo[0];
+	partTaskGroups = combo[1];
+	
+	return buildChangeSql(allChangeGroups,partChangeGroups,allTaskGroups,partTaskGroups);	
+}
+
+ 
+
+
+function getAllChangeTaskGroups(aDele)
+{	
+	var approver = aDele.approver;
+
+	//get approver operator
+	var user = getApprover(approver);
+	
+	
+	if (lib.ProcessDesignerEnablement.isRequestEnabled()==true) {
+		 
+		 changeGroups = lib.MyGroupsSync.getApprovalOfInMyGroups(approver);  
+		 taskGroups = changeGroups;
+ 		 	
+  	} else {
+  	
+	
+		if (user.profile_change == null || user.profile_change.length == 0)
+			return "";
+		
+		//get all of his change profile
+		var profileNames = system.functions.str(system.functions.denull(user.profile_change))
+		var profileSql = "name isin "+profileNames;
+		var profiles = new SCFile("cm3profile");
+		var rc = profiles.doSelect(profileSql);
+		
+		//go through and return change query
+		var changeGroups = new Array();
+		var taskGroups = new Array();
+		while(rc == RC_SUCCESS)  
+		{ 	
+	
+			if (profiles.area == "c" || profiles.area == "a")
+			{
+			
+				var approvalGroups = profiles.approval_groups;			
+	
+			
+				for (var i=0;i&lt;approvalGroups.length();++i)
+				{
+					changeGroups.push(approvalGroups[i]);
+				}
+			}
+			if (profiles.area == "t" || profiles.area == "a")
+			{
+				var approvalGroups = profiles.approval_groups;
+				for (var i=0;i&lt;approvalGroups.length();++i)
+				{
+	
+					taskGroups.push(approvalGroups[i]);
+				}
+			}
+			rc = profiles.getNext();
+		}
+	}
+	changeGroups.push(approver);
+	taskGroups.push(approver);
+	
+	var combo = new Array();
+	combo[0] = changeGroups;
+	combo[1] = taskGroups;
+
+	return combo;	
+}
+
+function getDelegatedChangeTaskGroups()
+{
+	//find id there is a delegate all 
+	var groupChangeList =  new Array();
+	var groupTaskList =  new Array();
+	for(var i=0;i&lt;delegationList.length;++i)
+	{
+		if(delegationList[i].module == "Change" &amp;&amp; (delegationList[i].area == "a" || delegationList[i].area == "c"))
+			groupChangeList.push(delegationList[i].group);
+	}
+	
+	for(var i=0;i&lt;delegationList.length;++i)
+	{
+		if(delegationList[i].module == "Change" &amp;&amp; (delegationList[i].area == "a" || delegationList[i].area == "t"))
+			groupTaskList.push(delegationList[i].group);
+	}
+	
+	var combo = new Array();
+	combo[0] = groupChangeList;
+	combo[1] = groupTaskList;
+	return combo;	
+}
+
+function buildChangeSql(allChangeGroups,partChangeGroups,allTaskGroups,partTaskGroups)
+{
+	for(var j=0;j&lt;partChangeGroups.length;++j)
+	{
+		if(allChangeGroups.length==0 || arrayIndexOf(allChangeGroups,partChangeGroups[j])&lt;0)
+			allChangeGroups.push(partChangeGroups[j]);
+	}
+	
+	for(var j=0;j&lt;partTaskGroups.length;++j)
+	{
+		if(allTaskGroups.length==0 || arrayIndexOf(allTaskGroups,partTaskGroups[j])&lt;0)
+			allTaskGroups.push(partTaskGroups[j]);
+	}
+	
+	//build a sql for change
+	var moreChangeSql = "file.name=\"cm3r\" and current.pending.groups isin {";
+	for (var i=0; i&lt;allChangeGroups.length;++i)
+	{
+		moreChangeSql += "\"" +allChangeGroups[i]+"\"";	
+		if (i&lt;allChangeGroups.length-1)
+			moreChangeSql+=","	
+	}
+	moreChangeSql += "} "; 
+	
+	//build a sql for task
+	var moreTaskSql = "file.name=\"cm3t\" and current.pending.groups isin {";
+	for (var i=0; i&lt;allTaskGroups.length;++i)
+	{
+		moreTaskSql += "\"" +allTaskGroups[i]+"\"";	
+		if (i&lt;allTaskGroups.length-1)
+		 	moreTaskSql+=","	
+	}
+	moreTaskSql += "} ";
+	
+	var returnSql = "";
+	
+	if(allChangeGroups.length &gt; 0)
+		returnSql +=  " or ("+moreChangeSql+")";
+	if(allTaskGroups.length &gt; 0)
+		returnSql +=  " or ("+moreTaskSql+")";	
+			
+	
+	return returnSql; 
+}
+
+function getRequestDelegationGroups()
+{	
+	//find id there is a delegate all 
+	var allDele = new Array();
+	var partDele = new Array();
+	for(var i=0;i&lt;delegationList.length;++i)
+	{
+		if(delegationList[i].module == "all") 
+			allDele.push(delegationList[i]);
+			 
+	}
+	 	
+ 	var allRequestGroups = new Array();
+	var partRequestGroups = new Array();
+	
+	for(var i=0;i&lt;allDele.length;++i)
+	{
+		var requests = getAllRequestGroups(allDele[i]);
+ 		for(var j=0;j&lt;requests.length;++j)
+		{
+			if(arrayIndexOf(allRequestGroups,requests[j])&lt;0)
+				allRequestGroups.push(requests[j]);
+		}		
+	}
+	
+	partRequestGroups = getDelegatedRequestGroups();			
+ 	return buildRequestSql(allRequestGroups,partRequestGroups);			
+}
+
+function getAllRequestGroups(aDele)
+{	
+	var approver = aDele.approver;
+ 	var user = getApprover(approver);
+	var ocmGroups = new Array();
+ 	
+	if (lib.ProcessDesignerEnablement.isRequestEnabled()==true) {
+		 
+		 ocmGroups = lib.MyGroupsSync.getApprovalOfInMyGroups(approver); 
+   	}
+	else { 
+	
+		if (user.profile_request == null || user.profile_request.length == 0)
+			return "";
+		
+		//get all of his change profile
+		var profileNames = system.functions.str(system.functions.denull(user.profile_request))
+		var profileSql = "name isin "+profileNames;
+		var profiles = new SCFile("ocmprofile");
+		var rc = profiles.doSelect(profileSql);
+		
+		//go through and return change/task query
+		while(rc == RC_SUCCESS)  
+		{ 			
+			var approvalGroups = profiles.approval_groups;
+			for (var i=0;i&lt;approvalGroups.length();++i)
+			{
+	
+				ocmGroups.push(approvalGroups[i]);
+			}
+			rc = profiles.getNext();
+		}
+	}
+	
+	ocmGroups.push(approver);
+	
+ 	return ocmGroups;
+}
+
+function getDelegatedRequestGroups()
+{
+	//find id there is a delegate all 
+	var groupList =  new Array();
+	for(var i=0;i&lt;delegationList.length;++i)
+	{
+		if(delegationList[i].module == "Request")
+			groupList.push(delegationList[i].group);
+	}
+	
+	return groupList; 	
+}
+
+function buildRequestSql(allRequestGroups, partRequestGroups)
+{	
+	for(var j=0;j&lt;partRequestGroups.length;++j)
+	{
+		if(arrayIndexOf(allRequestGroups,partRequestGroups[j])&lt;0)
+			allRequestGroups.push(partRequestGroups[j]);
+	}
+	
+	//build a sql for request
+	var fileName="\"ocmq\"";
+	if (lib.ProcessDesignerEnablement.isRequestEnabled()==true) 
+		fileName="\"request\"";
+
+	var moreRequestSql = "file.name = " + fileName + " and current.pending.groups isin {";
+	for (var i=0; i&lt;allRequestGroups.length;++i)
+	{
+		moreRequestSql += "\"" +allRequestGroups[i]+"\"";	
+		if (i&lt;allRequestGroups.length-1)
+			moreRequestSql+=","	
+	}
+	//add approver to the list	
+	moreRequestSql += "} "; 		
+	
+	var returnSql = "";
+	if(allRequestGroups.length &gt; 0)
+		returnSql +=  " or ("+moreRequestSql+")";	
+	
+	return returnSql; 
+}
+
+function getSVCDelegationGroups()
+{			
+	//find id there is a delegate all 
+	var allDele = new Array();
+	var partDele = new Array();
+	for(var i=0;i&lt;delegationList.length;++i)
+	{
+		if(delegationList[i].module == "all")
+			allDele.push(delegationList[i]);
+	}	
+	
+	var allSVCGroups = new Array();
+	var partSVCGroups = new Array();
+	
+	for(var i=0;i&lt;allDele.length;++i)
+	{
+		var svcs = getAllSVCGroups(allDele[i]);
+		
+		for(var j=0;j&lt;svcs.length;++j)
+		{
+			if(arrayIndexOf(allSVCGroups,svcs[j])&lt;0)
+				allSVCGroups.push(svcs[j]);
+		}		
+	}
+	
+	partSVCGroups = getDelegatedSVCGroups();		
+	
+	
+	 return buildSVCSql(allSVCGroups,partSVCGroups);		
+}
+
+function getAllSVCGroups(aDele)
+{	
+	var approver = aDele.approver;
+
+	var user = getApprover(approver);
+
+	if (user.profile_service == null || user.profile_service.length == 0)
+	{				
+		return "";
+	}
+	
+	//get all of his change profile
+	var profileNames = user.profile_service;
+	var profileSql = "name=\""+profileNames+"\"";
+	var profiles = new SCFile("smenv");
+	var rc = profiles.doSelect(profileSql);
+	
+	//go through and return change/task query
+	var svcGroups = new Array();
+	var approvalGroups = profiles.approval_groups;
+	for (var i=0;i&lt;approvalGroups.length();++i)
+	{
+		svcGroups.push(approvalGroups[i]);
+	}
+	svcGroups.push(approver);
+	return svcGroups;
+}	
+
+function getDelegatedSVCGroups()
+{
+	//find id there is a delegate all 
+	var groupList =  new Array();
+	for(var i=0;i&lt;delegationList.length;++i)
+	{
+		if(delegationList[i].module == "SVC")
+			groupList.push(delegationList[i].group);
+	}
+	
+	return groupList;	
+}
+
+function buildSVCSql(allSVCGroups,partSVCGroups)	
+{		
+	for(var j=0;j&lt;partSVCGroups.length;++j)
+	{
+		if(arrayIndexOf(allSVCGroups,partSVCGroups[j])&lt;0)
+			allSVCGroups.push(partSVCGroups[j]);
+	}
+			
+	//build a sql for change
+	var moreSVCSql = "(file.name=\"incidents\" or file.name=\"svcCartItem\") and current.pending.groups isin {";
+	for (var i=0; i&lt;allSVCGroups.length;++i)
+	{
+		moreSVCSql += "\"" +allSVCGroups[i]+"\"";	
+		if (i&lt;allSVCGroups.length-1)
+			moreSVCSql+=","	
+	}
+	//add approver to the list	
+	moreSVCSql += "} ";
+	
+	var returnSql = ""; 			
+	if(allSVCGroups.length &gt; 0)
+		returnSql +=  " or ("+moreSVCSql+")";	
+			
+	return returnSql; 
+}
+
+// QCRQ1E82239 Workflow capabilies &amp; approval delegation for timeperiod records added
+function getTPDelegationGroups()
+{			
+	//find id there is a delegate all 
+	var allDele = new Array();
+	var partDele = new Array();
+	for(var i=0;i&lt;delegationList.length;++i)
+	{
+		if(delegationList[i].module == "all")
+			allDele.push(delegationList[i]);
+	}	
+	
+	var allTPGroups = new Array();
+	var partTPGroups = new Array();
+	
+	for(var i=0;i&lt;allDele.length;++i)
+	{
+		var svcs = getAllTPGroups(allDele[i]);
+		
+		for(var j=0;j&lt;svcs.length;++j)
+		{
+			if(arrayIndexOf(allTPGroups,svcs[j])&lt;0)
+				allTPGroups.push(svcs[j]);
+		}		
+	}
+	
+	partTPGroups = getDelegatedTPGroups();		
+	
+	var sql = buildSVCSql(allTPGroups,partTPGroups);	
+	return sql;		
+}
+
+// QCRQ1E82239 Workflow capabilities &amp; approval delegation for timeperiod records added
+function getAllTPGroups(aDele)
+{	
+	var approver = aDele.approver;
+	var access = lib.security.getRights("Timeperiod", "view");
+	
+	if (access == null || access == "false" || access=="")
+	{				
+		return "";
+	}
+		
+	//go through and return Group query
+	var tpGroups = new Array();
+	var approvalGroups = vars.$lo_pm_assignments;
+	if (approvalGroups!= null) {
+		for (var i=0;i&lt;approvalGroups.length();++i)
+		{
+			tpGroups.push(approvalGroups[i]);
+		}
+		tpGroups.push(approver);
+		
+	}
+	return tpGroups;
+}	
+
+// QCRQ1E82239 Workflow capabilities &amp; approval delegation for timeperiod records added
+function getDelegatedTPGroups()
+{
+	//find id there is a delegate all 
+	var groupList =  new Array();
+	for(var i=0;i&lt;delegationList.length;++i)
+	{
+		if(delegationList[i].module == "Timeperiod")
+			groupList.push(delegationList[i].group);
+	}
+	
+	return groupList;	
+}
+
+// QCRQ1E82239 Workflow capabilities &amp; approval delegation for timeperiod records added
+function buildTPSql(allTPGroups,partTPGroups)	
+{		
+	for(var j=0;j&lt;partTPGroups.length;++j)
+	{
+		if(arrayIndexOf(allTPGroups,partTPGroups[j])&lt;0)
+			allTPGroups.push(partTPGroups[j]);
+	}
+			
+	//build a sql for change
+	var moreTPSql = "file.name=\"timeperiodDefinition\" and current.pending.groups isin {";
+	for (var i=0; i&lt;allTPGroups.length;++i)
+	{
+		moreTPSql += "\"" +allTPGroups[i]+"\"";	
+		if (i&lt;allTPGroups.length-1)
+			moreTPSql+=","	
+	}
+	//add approver to the list	
+	moreTPSql += "} ";
+	
+	var returnSql = ""; 			
+	if(allTPGroups.length &gt; 0)
+		returnSql +=  " or ("+moreTPSql+")";	
+			
+	return returnSql; 
+}
+
+function addDelegateGroups(currentGroups,module) 
+{
+        initDelegation();
+        if(delegationList.length == 0)
+                return currentGroups;
+        if(module=="cm3r")
+        {
+                var changeSql = getChangeDelegationGroups();
+                if(changeSql != "")
+                {
+                        changeSql = changeSql.substring(changeSql.indexOf("{"));
+                        var delegateGroups = system.functions.evaluate(system.functions.parse(changeSql,8));
+                        for(var i=0;i&lt;system.functions.lng(delegateGroups);++i)
+                        {
+                                //@QCNo:QCCR1E63622
+                                //@Description:The Approve button may be unavailable to a user who has been added as an approval delegate and multiple approvals are required
+                                //@Author:YuLi
+                                //@Since 2010/4/28
+                                //@Purpose:check the group  in delegategroups if exiting in currentgroups, if true, will not . otherwise insert
+                                if(!lib.ApprovalUtil.isDuplicate(currentGroups,delegateGroups[i]))
+                                {       
+                                        currentGroups = system.functions.insert(currentGroups,1,1,delegateGroups[i]);
+                                }
+                        }
+                }               
+        }     
+        else if(module=="ocmq" || module=="request")
+        {
+                var requestSql = getRequestDelegationGroups();
+                if(requestSql != "")
+                {
+                        requestSql = requestSql.substring(requestSql.indexOf("{"));
+                        var delegateGroups = system.functions.evaluate(system.functions.parse(requestSql,8));
+                        for(var i=0;i&lt;system.functions.lng(delegateGroups);++i)
+                        {
+                                if(!lib.ApprovalUtil.isDuplicate(currentGroups,delegateGroups[i]))
+                                {       
+                                        currentGroups = system.functions.insert(currentGroups,1,1,delegateGroups[i]);
+                                }
+                        }
+                } 
+         }       
+        
+        else if(module=="timeperiodDefinition")
+        {
+        	var requestSql = getTPDelegationGroups();
+                if(requestSql != "")
+                {
+                        requestSql = requestSql.substring(requestSql.indexOf("{"));
+                        var delegateGroups = system.functions.evaluate(system.functions.parse(requestSql,8));
+                        for(var i=0;i&lt;system.functions.lng(delegateGroups);++i)
+                        {
+                                if(!lib.ApprovalUtil.isDuplicate(currentGroups,delegateGroups[i]))
+                                {       
+                                        currentGroups = system.functions.insert(currentGroups,1,1,delegateGroups[i]);
+                                }
+                        }
+                }               
+        }  
+        if(module=="incidents" || module=="svcCartItem")
+        {
+                var svcSql = getSVCDelegationGroups();
+                if(svcSql != "")
+                {
+                        svcSql = svcSql.substring(svcSql.indexOf("{"));
+                        var delegateGroups = system.functions.evaluate(system.functions.parse(svcSql,8));
+                        for(var i=0;i&lt;system.functions.lng(delegateGroups);++i)
+                        {
+                                if(!lib.ApprovalUtil.isDuplicate(currentGroups,delegateGroups[i]))
+                                {       
+                                        currentGroups = system.functions.insert(currentGroups,1,1,delegateGroups[i]);
+                                }
+                        }
+                }               
+        }       
+
+        return currentGroups;   
+}
+
+function storeDelegateRecords(ownSql) 
+{
+	if (asDelegateList==null)
+	{
+		asDelegateList=new Array();
+	}
+	var approvals = new SCFile("Approval");
+	var rc = approvals.doSelect(ownSql);
+
+	while(rc == RC_SUCCESS)  
+	{ 	
+		asDelegateList.push(lib.DBUtils.getTagByRecord(approvals));
+		rc = approvals.getNext();
+	}	
+	
+	return;
+}
+
+function isDelegateApproval(id)
+{
+    /*
+	for(var i=0;i&lt;asDelegateList.length;++i)
+	{
+		if(id.indexOf(asDelegateList[i])&gt;0)
+			return "NO";
+	}
+    
+	return "YES";
+	*/
+	
+	if (asDelegateList==null)
+	{
+		return "NO";
+	}
+	if (asDelegateList.length == 0)
+		return "YES";
+	return system.functions.index(id, asDelegateList) &gt; 0 ? "NO" : "YES";
+}
+
+//This function checks for current pending groups, expand its member and query 
+// current active group
+function getDelegatedForNotify(module, pendingGroups,delegatedGroups)
+{
+	//retrieve current pending groups
+	var groupType = "cm3groups";
+	if(module == "Change")
+		groupType = "cm3groups";
+	else if (module == "Request")
+		groupType = "ocmgroups";
+	else if (module == "SVC")
+		groupType = "assignment"
+	else if (module =="Timeperiod")	
+		groupType = "assignment"		
+	
+	var groupSql = "name isin {";
+	for (var i=0;i&lt;pendingGroups.length();++i)
+	{
+		groupSql+="\""+pendingGroups[i]+"\"";
+		if (i&lt;pendingGroups.length()-1)
+			groupSql+=","
+	}	
+	groupSql +=  "}";
+	
+	
+	
+	var groups = new SCFile(groupType);
+	var rc = groups.doSelect(groupSql);
+	
+	var date = system.functions.str(system.functions.tod());
+	var delegationSql =  "Enable=true and DateFrom &lt;='"+date+"' and DateTo &gt;='"+date+"' and Approver isin {"
+	//get member of each group
+	var memberArray = new Array();
+	while (rc == RC_SUCCESS)
+	{
+		if (module == "cm3r" ||module == "cm3t" || module == "ocmq")
+		{
+			for(var i=0;i&lt;groups.approvers.length();++i)
+			{
+				memberArray.push(groups.approvers[i]);
+			}
+		}
+		else if (module == "incidents" || module == "svcCartItem" || module == "timeperiodDefinition")
+		{
+			for(var i=0;i&lt;groups.operators.length();++i)
+			{
+				memberArray.push(groups.operators[i]);
+			}	
+		}
+		rc = groups.getNext();
+	}
+	
+	
+	
+	for (var i=0;i&lt;memberArray.length;++i)
+	{
+		delegationSql += "\""+ memberArray[i] +"\"";
+		if (i&lt;memberArray.length-1)
+			delegationSql += ",";
+	}
+	delegationSql += "}";
+	
+	
+	
+	//select delegation
+	var delegation = new SCFile("ApprovalDelegation");
+	var rc = delegation.doSelect(delegationSql);
+	
+	var matchModule = "Change";
+	if (module.substring("cm3") &gt;0)
+		matchModule = "Change";
+	else if (module.substring("ocm")&gt;0)
+		matchModule = "Request";
+	else if (module == "incidents" || module == "svcCartItem")
+		matchModule = "SVC";
+	else if (module == "timeperiodDefinition")
+		matchModule = "Timeperiod";
+				
+	//build a notification list
+	while (rc == RC_SUCCESS)
+	{
+		if (delegation.AppModule == "all" || delegation.AppModule == matchModule)
+			delegatedGroups = system.functions.insert(delegatedGroups,0,1,delegation.Delegate); 
+		rc = delegation.getNext();
+	}	
+	
+	return delegatedGroups;	
+}	
+
+function disableExpiredDelegation(user)
+{
+	var date = system.functions.str(system.functions.tod());
+	var delegateSql = "Enable=true and Approver=\""+system.functions.operator()+"\" and DateTo &lt;'"+date+"'";
+	var delegate = new SCFile("ApprovalDelegation");
+	
+	var rc = delegate.doSelect(delegateSql);
+	
+	
+	while(rc == RC_SUCCESS)  
+	{ 	
+		delegate.Enable=false;
+		var rc2=	delegate.doUpdate();
+		rc = delegate.getNext();
+	}	
+}	
+
+
+function initDelegation()
+{
+
+	var date = system.functions.str(system.functions.tod());
+
+	var delegateSql = "Enable=true and Delegate=\""+system.functions.operator()+"\" and DateFrom &lt;='"+date+"' and DateTo &gt;'"+date+"'";
+
+	var delegate = new SCFile("ApprovalDelegation");
+	
+	var rc = delegate.doSelect(delegateSql);
+	
+	delegationList =  new Array();
+ 	while(rc == RC_SUCCESS)  
+	{ 	
+		
+		var aDele = new Object();
+		aDele.module = delegate.AppModule;
+		aDele.group = delegate.AppGroup;
+		aDele.approver = delegate.Approver;
+		aDele.area = delegate.AppArea;
+		delegationList.push(aDele);
+		rc = delegate.getNext();
+	}		
+}
+
+function getDelegation()
+{
+	return delegationList;
+}	
+
+/**
+* gets current approver operator record
+*
+*/
+function getApprover(approver)
+{
+	for (var i=0;i&lt;approverList.length;++i)
+	{
+		var aUser = approverList[i];
+		if (aUser.name == approver)
+			return aUser;
+	}		
+		
+	//get approver operator
+	var user = new SCFile("operator");
+	var sql = "name=\""+approver+"\"";	
+	var rc = user.doSelect(sql);
+	if(rc == RC_SUCCESS)
+	{
+		approverList.push(user);
+		return user;
+	}
+	else return null;
+}
+
+function arrayIndexOf(array1,string1)
+{
+	for(var i=0;i&lt;array1.length;++i)
+	{
+		if (array1[i] == string1)
+			return i;
+	}
+	return -1;		
+}
+
+//This function is the fix of QC48598(Emails do not get sent out to the approval delegates as the documentation says). Find the delegations and store them
+//in the $L.delegates.The notification should add another msg to send the email.
+function checkDelegation()
+{
+	var needToSend =false;
+	var approvalDelegation= new SCFile("ApprovalDelegation");
+	var query = false;
+	var filename = system.functions.filename(vars.$L_file);
+	
+	var pendingGroups = vars.$L_file.current_pending_groups;
+	
+	if (filename=="timeperiodDefinition"){
+		pendingGroups = lib.timeperiod.getApprovalDetails(vars.$L_file.id, "current.pending.groups");
+	}
+	
+	if(pendingGroups==null){
+		return needToSend;
+	}
+	 
+	var pendingGroupsLength = system.functions.lng(system.functions.denull(pendingGroups))
+	
+	if (pendingGroupsLength	== 0 )
+		return needToSend;
+		
+	query="Approver isin "+ system.functions.str(pendingGroups); 
+	
+	if (filename=="Approval")
+	{
+		filename= vars.$L_file.file_name;
+	}	
+	  	  
+    if (filename=="incidents" || filename=="svcCartItem")   
+    {   	       	
+        query=query+" and (AppModule=\"SVC\" or AppModule=\"all\")";  
+    }
+    if (filename=="cm3r" || filename=="cm3t")
+    {        
+        query=query+" and (AppModule=\"Change\" or AppModule=\"all\")"; 
+    } 
+    if (filename=="timeperiodDefinition")
+    {  
+        query=query+" and (AppModule=\"Timeperiod\" or AppModule=\"all\")"; 
+    }	  
+    if (filename=="ocmq" || filename=="request")
+    {
+        query=query+" and (AppModule=\"Request\" or AppModule=\"all\")"; 
+    }      	  
+        
+	var delegate=approvalDelegation.doSelect(query);
+	if(delegate==RC_SUCCESS)
+	{
+		delegate=approvalDelegation.getFirst();
+		var moreOperators= new Array();
+		while ( delegate == RC_SUCCESS )  
+         {
+              var currentTime=system.functions.tod();               
+              if (approvalDelegation.Enable &amp;&amp; currentTime&gt;=approvalDelegation.DateFrom &amp;&amp; currentTime&lt;=approvalDelegation.DateTo)
+              {                    
+                    var alreadyIn= false;
+                    
+                    for (var i=0;i&lt;pendingGroupsLength;i++)
+                    {
+                    		if (pendingGroups[i]==approvalDelegation.Delegate)
+                    		{
+                    			alreadyIn =true;
+                    			break;
+                    		}
+                    } 
+  
+                    if (alreadyIn==false)
+                    {
+                        moreOperators.push(approvalDelegation.Delegate);
+                        needToSend = true;   
+                    }
+            
+              }
+              delegate = approvalDelegation.getNext();
+         }
+      }
+      vars.$L_delegates=moreOperators;
+      return needToSend;
+}
+
+
+getDelegationSql();</script>
+    <package type="string">Approval</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:38</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="smtzdst">
+  <record id="tzname=&quot;US/Hawaii&quot; and dstyear=1918" recordid="">
+    <tzname type="string">US/Hawaii</tzname>
+    <dstyear type="decimal">1918</dstyear>
+    <dstbegin type="dateTime">03/30/1918 20:00:00</dstbegin>
+    <dstend type="dateTime">10/26/1918 20:00:00</dstend>
+    <isdst type="decimal">1</isdst>
+  </record>
+</recordset>

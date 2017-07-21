@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;RCConfiguration&quot;" recordid="RCConfiguration">
+    <name type="string">RCConfiguration</name>
+    <script type="string">
+
+//Get the configuration item of RC Intergraton
+function getConfigurationItem(){
+	return lib.smis_ConfigurationManager.getEnabledConfigItem("SMtoRC");
+}
+
+//return if the RC Integration is enabled
+function isRCEnabled(){
+	var isEnable = false;
+	var config = getConfigurationItem();
+	if(config != null){
+		isEnable = true;
+	}	
+	return isEnable;
+}
+
+
+//Get the RC Server URL
+function getServerUrl(){
+	var config = getConfigurationItem();
+	if(config!=null){
+		return config.getConfigParameterValue("rc.server.url");
+	}else{
+		return null;
+	}
+}
+
+//Get the sepcified Service Desk Name
+function getServiceDeskName(){
+	var config = getConfigurationItem();
+	if(config!=null){
+		return config.getConfigParameterValue("rc.adapter.name");
+	}else{
+		return null;
+	}
+}
+
+//Get the RC run mode; standalone or with uCMDB integration
+function getRCMode(){
+	var config = getConfigurationItem();
+	if(config!=null){
+		return config.getConfigParameterValue("rcStandalone")=='true';
+	}else{
+		return false;
+	}
+}
+
+//Get the toggle-switch whether to turn on 508 or not
+function getRCAccessible(){
+	var config = getConfigurationItem();
+	if(config!=null){
+		return config.getConfigParameterValue("rcSimplified")=='true';
+	}else{
+		return false;
+	}
+}</script>
+    <package type="string">Integration</package>
+    <sysmodtime type="dateTime">07/23/13 15:33:06</sysmodtime>
+    <sysmoduser type="string">eling</sysmoduser>
+    <sysmodcount type="decimal">31</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

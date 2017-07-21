@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;reporting.migrate.mysm&quot;" recordid="en - reporting.migrate.mysm">
+    <name mandatory="true" type="string">reporting.migrate.mysm</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">33</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">MySM Migration Tool</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;ArrayLength=0	?Caption=	Height=6	Name=	Width=65	X=0	Y=0	Caption=MySM Migration Tool		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">2</column>
+        <length type="decimal">28</length>
+        <window type="decimal">2</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Migrate MySM</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Migrate MySM	Bitmap and Caption=true	ButtonID=312	?ButtonID=	?Caption=	?Visible=	Height=3	Name=	Bitmaps=DEFAULT	Width=55			X=3	Y=2		</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">falcon</editor>
+    <last.update type="dateTime">07/27/14 02:33:28</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">1</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/27/14 02:33:29</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

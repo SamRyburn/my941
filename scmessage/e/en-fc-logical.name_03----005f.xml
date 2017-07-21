@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="scmessage">
+  <record id="syslanguage=&quot;en&quot; and class=&quot;fc&quot; and message.id=&quot;logical.name_03&quot;" recordid="en - fc - logical.name_03">
+    <syslanguage type="string">en</syslanguage>
+    <message.id type="string">logical.name_03</message.id>
+    <severity NullValue="1" type="decimal"/>
+    <message type="string">The display field %S invisible condition can not be set to true.</message>
+    <class type="string">fc</class>
+    <comments NullValue="1" sctype="array">
+      <comments NullValue="1" type="string"/>
+    </comments>
+    <sysmodtime type="dateTime">07/16/17 17:01:24</sysmodtime>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+  </record>
+</recordset>

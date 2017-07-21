@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;upgradeConvert&quot;" recordid="upgradeConvert">
+    <name type="string">upgradeConvert</name>
+    <script type="string">function convertSM93(runForOld) {
+    if (runForOld == null) {
+        runForOld = false;
+    }
+    
+    var fromVersion = lib.upgradeVersionUtil.getUpgradeFromVersion();
+    if (!runForOld &amp;&amp; fromVersion.indexOf("9.3")&lt;0) {
+        return;
+    }
+        
+    var fromIndex = lib.upgradeVersionUtil.getVersionIndex(fromVersion);
+    if (fromIndex&lt;0) {
+        return;
+    }
+    
+    if (fromIndex &lt; lib.upgradeVersionUtil.getVersionIndex("9.32.0016")) {
+        lib.svcCatalogMix.mix();
+        lib.upgradeAssetManager.run();
+        lib.folderFunctions.updateFolderAccessNoViewRights();
+        lib.svcCatalogUpdateAllSvcItemCounts.updateAllsvcItemCounts();
+        lib.ScAPI_Tailoring_Configuration.initSrcTailoringConfiguration();
+    }
+    
+    if (fromIndex &lt; lib.upgradeVersionUtil.getVersionIndex("9.34.0032")) {
+        var ret;
+        system.functions.rtecall("counter", ret, 1);
+        lib.timeperiodOccurrence.createTimePeriodOccurrenceSchedule();
+        system.functions.rtecall("counter", ret, 0);
+    }
+    
+    if (fromIndex &lt;= lib.upgradeVersionUtil.getVersionIndex("9.34.0032")) {
+        lib.svcCatUpdateUserOptions.setAllMandatoryOptions();
+    }
+}
+
+function postConvert(version) {
+    var ret = 0;
+
+	// update kmquery dbdict
+    lib.upgradeLog.detail("Update dbdict kmquery.");
+	lib.KMknowledgebase.rebuildKmqueryDbdict();
+	
+    fixInfoData();
+    updateSlacontrol();
+    updateSchedules();
+    
+    fixRenameRecords();
+    
+    fixActivityservicemgt();
+    
+    // Fix data for Calendar
+    lib.upgradeLog.detail("Fix data for Calendar.");
+    lib.CalendarDao.removeOldEmbeddedCalendarConfiguration();
+    lib.CalendarDao.removeEnablementFromCalendarSettings();
+    
+    lib.RuleWizard.popupAllRuleType();
+    
+	// remove abandoned inbox
+	lib.InboxHelper.removeAbandonedInboxRecords();
+
+	// cleanup legacy UCMDB web service data
+	lib.DisplayName.cleanUpUCMDBIntegrationWebService();
+
+	// update idol
+    lib.upgradeLog.upgrade("Update IDOL.");
+    lib.upgradeLog.detail("Update IDOL.");
+    system.functions.rtecall("counter", ret, 1);
+	lib.idolUpgrade.upgrade();
+	system.functions.rtecall("counter", ret, 0);
+	lib.upgradeKeyChanges.addKey({"table":"dept", "keyType":8, "columns":["seq.id"]});
+	lib.upgradeKeyChanges.addKey({"table":"svcDisplay", "keyType":8, "columns":["displayId"]});
+		
+	// update CI displayName
+    lib.upgradeLog.upgrade("Update CI display name.");
+    lib.upgradeLog.detail("Update CI display name.");
+	lib.DisplayName.batchUpdateCIDisplayNameByLogicalName();
+	lib.upgradeKeyChanges.updateKey({"table":"device", "keyType":0, "columns":["network.name", "logical.name"], "updateTo":["network.name", "display.name"]});
+	lib.upgradeKeyChanges.addKey({"table":"device", "keyType":4, "columns":["display.name"]});
+    
+    lib.processDesignerSLMUpgrade.upgradeSecurity();
+    system.functions.rtecall("trigger", ret, 0);
+    
+    lib.upgradeLanguage.fixLanguagesPost();
+}
+
+function fixInfoData() {
+    lib.upgradeLog.upgrade("Fix info data.");
+    lib.upgradeLog.detail("Fix info data.");
+    var info=lib.upgradeUtility.getRecord("info", "type=\"company\"");
+    if (info!=null) {
+        if (info.nativeCCM!=true) {
+            info.nativeCCM=true;
+            info.doUpdate();
+        }
+    }
+}
+
+function updateSlacontrol() {
+    lib.upgradeLog.upgrade("Update slacontrol.");
+    lib.upgradeLog.detail("Update slacontrol.");
+    
+    var slacontrol=lib.upgradeUtility.getRecord("slacontrol", "unique.key=1");
+    if (slacontrol!=null) {
+        var update=false;
+        if (slacontrol.effective_condition==null || system.functions.lng(slacontrol.effective_condition)==0) {
+            update=true;
+            slacontrol.effective_condition="current.phase in $L.file=\"agreed\""; 
+        }
+        
+        if (slacontrol.group_table==null || system.functions.lng(slacontrol.group_table)==0) {
+            update=true;
+            slacontrol.group_table="assignment";
+        }
+        
+        if (update) {
+            slacontrol.doUpdate();
+        }
+    }
+}
+
+function updateSchedules() {
+    lib.upgradeLog.upgrade("Add/Update schedules.");
+    lib.upgradeLog.detail("Add/Update schedules.");
+    addRefCheckToSchedule();
+    
+    var scheduleObjs = {
+		
+		"adds": [
+			// 9.40
+			{
+				name: "Background Reorder Scheduler",
+				schedule_id: 2600685,
+				_class: "ocm",
+				sched_class: "ocm",
+				description: "",
+				repeat: "00 23:59:59",
+				javascript: "lib.ReorderService.reOrder(\"\");"
+			},
+	    	// 9.41
+			{
+				name: "AutomationTaskUpdate",
+				schedule_id: 2600565,
+				_class: "AutomationTaskUpdate",
+				sched_class: "AutomationTaskUpdate",
+				description: "Manages the Automation Task executed in OO",
+				repeat: "00 00:05:00",
+				javascript: "lib.SMOOAutomationTaskService.refreshOOFlowStatus();"
+			},
+			{
+				name: "background purge/archive TodoAlertList",
+				schedule_id: 2700006,
+				_class: "report",
+				sched_class: "report",
+				description: "",
+				repeat: "1 00:00:00",
+				application: "pa.main.appl.bg",
+				strings:
+				[
+      				"TodoAlertList",
+      				"TodoAlertList",
+      				"record.update.time&lt;tod()-'14 00:00:00'",
+      				"",
+      				"purge",
+      				"append",
+      				"create",
+      				"update",
+      				"",
+      				"false",
+      				"winnt",
+      				"",
+      				"",
+      				"",
+      				"",
+      				"false"	
+				]
+			},
+			{
+				name: "KMAttachment",
+				schedule_id: 2554587,
+				_class: "KMAttachment",
+				sched_class: "KMAttachment",
+				description: "",
+				repeat: "00 00:05:00",
+				javascript: "lib.IDOL_Utilities.scheduleKMAttachment();"
+			},
+			{
+				name: "KMAttachmentStatus",
+				schedule_id: 2554588,
+				_class: "KMAttachment",
+				sched_class: "KMAttachment",
+				description: "",
+				repeat: "00 00:05:00",
+				javascript: "lib.IDOL_Utilities.scheduleKMAttachmentStatus();"
+			},
+			{
+				name: "Process Time Duration Reporting Data",
+				schedule_id: 2700005,
+				_class: "timedurationdata",
+				sched_class: "timedurationdata",
+				description: "",
+				repeat: "00 00:05:00",
+				javascript: "lib.timeDurationEtl.doWork();"
+			}
+		],
+		"updates": [
+			{
+				name: "KMUpdate",
+				javascript:	"lib.IDOL_Utilities.scheduleKMUpdate();"
+			}
+		]
+	};
+	
+	lib.upgradeCommonHelper.createSchedules(scheduleObjs);    
+}
+
+function addRefCheckToSchedule() {
+    lib.upgradeLog.detail("Add schedule \"Reference missing check report scheduler\".");
+    
+    var file = new SCFile( "schedule" );
+    var actiionTime = new Date();
+    var expiration = new Date();
+    expiration.setMinutes( expiration.getMinutes() + 1 );
+ 
+    var duration = new XMLDate( "P00DT00H01M00S" );
+ 
+    file["name"] = "Reference missing check report scheduler";
+    var err;
+    var schedule = lib.upgradeUtility.getRecord("schedule", "schedule.id=2600600");
+    if (schedule == null) {
+        file["schedule.id"] = 2600600;
+    } else {
+        system.functions.rtecall("counter", err, 1);
+    }
+    file["class"] = "refcheck";
+    file["expiration"] = expiration;
+    file["sched.class"] = "refcheck";
+    file["action.time"] = actiionTime;
+    file["repeat"] = duration.getDatum();
+    file["repeatm"] = false;
+    file["repeatq"] = false;
+    file["repeatb"] = false;
+    file["repeata"] = false;
+ 
+    file["description"][0] = "This scheduler is used to generate the reference missing report for those big tables/long running scans.";
+    file["description"][1] = "Most of the time, it should be triggerred doing nothing, but as long as there is a task put into the reference missing check queue,";
+    file["description"][2] = "the scheduler should call the Javascript to execute the reference missing check process.";
+ 
+    file["javascript"] = "system.library.refCheckScheduler.refCheckScheduler();";
+ 
+    file.doSave();
+    file.doClose();
+    
+    system.functions.rtecall("counter", err, 0);
+}
+
+var renameList = 
+    [
+        {
+            "table" : "migrationSetting",
+            "field" : "name",
+            "values": ["Legacy known error to problem", "Legacy known error attachment to problem attachment"],
+            "prefix": "Deleted-"
+        },
+        {
+            "table" : "Object",
+            "field" : "file.name",
+            "values": ["activityservicemgt"],
+            "prefix": "Obsoleted-"
+        }
+    ];
+
+function fixRenameRecords() {
+	var i, j;
+    for (i=0; i&lt;renameList.length; i++) {
+        var table = renameList[i].table;
+        var field = renameList[i].field;
+        var prefix = renameList[i].prefix;
+        var values = renameList[i].values;
+        lib.upgradeLog.detail("Rename the records of "+table);
+        for (j=0; j&lt;values.length; j++) {
+            var file = lib.upgradeUtility.getRecord(table, field+"=\""+values[j]+"\"");
+            if (file != null) {
+                file[field] = prefix + values[j];
+                var renamedFile = lib.upgradeUtility.getRecord(table, field+"=\""+file[field]+"\"");
+                if (renamedFile != null) {
+                    renamedFile.doDelete();
+                }
+                lib.upgradeLog.detail("Renamed "+table+" "+values[j]);
+                file.doUpdate();
+            }
+        }
+    } 
+}
+
+function fixActivityservicemgt() {
+    lib.upgradeLog.detail("Fix datadict activityservicemgt.");
+    
+    var tableName="activityservicemgt";
+    var datadictRecord=new SCFile("datadict");
+    var datadictSql="name=\""+tableName+"\"";
+    if(datadictRecord.doSelect(datadictSql)===RC_SUCCESS){
+        datadictRecord['sc.area']="";
+        datadictRecord.doUpdate();
+    }
+}
+
+function fixPdData() {
+    lib.upgradeLog.upgrade("Fix Process Designer data.");
+    lib.upgradeLog.detail("Fix Process Designer data.");
+    
+    var pdVersion = lib.upgradeVersionUtil.getPdVersion();
+    
+    lib.upgradeLog.detail("Fix datadict of Helpdesk.");
+    lib.ProcessDesignHelpDeskEnableManager.enableDatadicts();
+    
+    lib.upgradeLog.detail("Fix datadict of Change.");
+    lib.ProcessDesignerChangeEnableManager.enableDatadict();
+    lib.ProcessDesignerChangeEnableManager.enableCMCategoryForm();
+   
+    lib.upgradeLog.detail("Fix product catalog link of Request.");
+    lib.ProcessDesignerRequestEnableManager.enableProductCatalogLink();
+    
+    var ret;
+    system.functions.rtecall("trigger", ret, 1);
+    lib.upgradeLog.detail("Fix assignment of Request.");
+    lib.ProcessDesignerRequestEnableManager.enableAssignment();
+    
+    system.functions.rtecall("trigger", ret, 0);
+    
+    lib.upgradeLog.detail("Fix security of Request.");
+    lib.ProcessDesignerRequestEnableManager.enableSecurity();
+    
+    lib.upgradeLog.detail("Fix schedule of Request.");
+    lib.ProcessDesignerRequestEnableManager.enableSchedules();
+
+    lib.upgradeLog.detail("Update upgraderesults for Process Designer .");
+    lib.upgradeMerging.handleResult4PD();
+    
+    if (pdVersion == "PDCP4") {
+        fixSdCategory();
+    } else if (pdVersion == "PDCP3") {
+        lib.ProcessDesignHelpDeskEnableManager.enableSecurity();
+        lib.upgradePDMigration.executePdMigration();
+    }
+}
+
+// Only invoke this function for PD4
+function fixSdCategory() {
+    lib.upgradeLog.detail("Fix sdCategory.");
+    var category = lib.upgradeUtility.getRecord("sdCategory", "name=\"request for administration\"");
+    if (category != null &amp;&amp; category["escalate.type"] !="request") {
+        category["escalate.type"] ="request";
+        category.doUpdate();
+    }
+    
+    category = lib.upgradeUtility.getRecord("sdCategory", "name=\"request for information\"");
+    if (category != null &amp;&amp; category["escalate.type"] !="request") {
+        category["escalate.type"] ="request";
+        category.doUpdate();
+    }
+}
+
+
+/**
+ * Refresh Data
+ */
+function refreshData()
+{
+	// refresh special ScriptLibrary which will cause error 
+	var fScript = new SCFile("ScriptLibrary");
+	var name = "WorkflowTriggers";
+	var rc = fScript.doSelect("name=\"" + name + "\"");
+	
+	if (rc == RC_SUCCESS &amp;&amp; fScript.sysmodcount == 0)
+	{
+		// update to increase sysmodcount
+		fScript.doUpdate();
+		lib.upgradeLog.detail(system.functions.scmsg(201, "object", ["ScriptLibrary", name]));
+	}
+}
+</script>
+    <package type="string">Upgrade</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:45</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

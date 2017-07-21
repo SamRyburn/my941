@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;IDOLGlobalSearchPrecondition&quot;" recordid="IDOLGlobalSearchPrecondition">
+    <name type="string">IDOLGlobalSearchPrecondition</name>
+    <script type="string">var _ = lib.Underscore.require(),
+    IDOLKMMapping = lib.IDOLKMMapping.require(),
+    IDOLGlobalSearchPreconditionCriteria = lib.IDOLGlobalSearchPreconditionCriteria.require();
+
+var IDOLGlobalSearchPrecondition = (function() {
+
+  function convertToJSON(precondition) {
+    var library = precondition.library.toArray(),
+        sql = precondition.sql.toArray(),
+        ast = parseQuery(precondition.criteria),
+        criteria = IDOLGlobalSearchPreconditionCriteria.compile(ast);
+
+    var zip = _.zip(library, sql);
+    var search = _.map(zip, function(z) {
+      return { library : z[0], sql : z[1] };
+    });
+    var text = funcs.parse_evaluate(precondition['display.name'], 2);
+    return {
+      id : precondition.id,
+      filename : precondition.filename,
+      text : text,
+      search : search,
+      when : {
+        format : precondition.format,
+        criteria : criteria
+      }
+    };
+  }
+
+  function readPreconditions() {
+    var smartsearchpreconditions = new SCFile('smartsearchpreconditions', SCFILE_READONLY), preconditions = [];
+    smartsearchpreconditions.setOrderBy(['id'], [SCFILE_ASC]);
+    var rc = smartsearchpreconditions.doSelect(true);
+    while (rc === RC_SUCCESS) {
+      preconditions.push(convertToJSON(smartsearchpreconditions));
+      rc = smartsearchpreconditions.getNext();
+    }
+    return preconditions;
+  }
+
+
+  // should read from kmmapping table
+  function getFieldMappings() {
+    var mappings = IDOLKMMapping.getFieldMappings();
+    var definitions = IDOLGlobalSearchPrecondition.readPreconditions();
+    return _.map(definitions, function(def) {
+      var legacy = _.findWhere(mappings, { filename : def.filename });
+
+      if (legacy) {
+        def.fields = legacy.searchs;
+      }
+      return def;
+    });
+  }
+
+  return {
+    getFieldMappings : getFieldMappings,
+    readPreconditions : readPreconditions
+  };
+}());
+
+
+function require() {
+  return IDOLGlobalSearchPrecondition;
+}</script>
+    <package type="string">IDOL</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:40</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

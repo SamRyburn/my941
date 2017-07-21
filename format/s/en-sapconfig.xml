@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;sapconfig&quot;" recordid="en - sapconfig">
+    <name mandatory="true" type="string">sapconfig</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">2</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Enable HR Interface:</output>
+        <format NullValue="1" type="string"/>
+        <property NullValue="1" type="string"/>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">27</column>
+        <length type="decimal">28</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">EC for HP Service Manager Configuration File</output>
+        <format NullValue="1" type="string"/>
+        <property NullValue="1" type="string"/>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">16</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">31</column>
+        <length type="decimal">5</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">hr.enabled</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property NullValue="1" type="string"/>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">38</column>
+        <length type="decimal">12</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">(true/false)</output>
+        <format NullValue="1" type="string"/>
+        <property NullValue="1" type="string"/>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">5</column>
+        <length type="decimal">15</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Interface Type:</output>
+        <format NullValue="1" type="string"/>
+        <property NullValue="1" type="string"/>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">31</column>
+        <length type="decimal">3</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">hr.type</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property NullValue="1" type="string"/>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">38</column>
+        <length type="decimal">8</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">(sap/ps)</output>
+        <format NullValue="1" type="string"/>
+        <property NullValue="1" type="string"/>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">2</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Default HR Server Name:</output>
+        <format NullValue="1" type="string"/>
+        <property NullValue="1" type="string"/>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">31</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">hr.sap.server</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property NullValue="1" type="string"/>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">2</column>
+        <length type="decimal">24</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Enable SAP MM Interface:</output>
+        <format NullValue="1" type="string"/>
+        <property NullValue="1" type="string"/>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">31</column>
+        <length type="decimal">5</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">mm.enabled</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property NullValue="1" type="string"/>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">38</column>
+        <length type="decimal">12</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">(true/false)</output>
+        <format NullValue="1" type="string"/>
+        <property NullValue="1" type="string"/>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">2</column>
+        <length type="decimal">27</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Default MM SAP Server Name:</output>
+        <format NullValue="1" type="string"/>
+        <property NullValue="1" type="string"/>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">31</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">mm.sap.server</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property NullValue="1" type="string"/>
+      </field>
+    </field>
+    <file.name type="string">sapconfig</file.name>
+    <editor type="string">lisa</editor>
+    <last.update type="dateTime">09/22/99 04:54:10</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">12</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">10/24/01 08:17:31</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

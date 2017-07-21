@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;upgradeFileHelper&quot;" recordid="upgradeFileHelper">
+    <name type="string">upgradeFileHelper</name>
+    <script type="string">function getFileSuffix() {
+    var pdEnabled = lib.ProcessDesignerEnablement.isChangeEnabled();
+    if (pdEnabled)
+        return "-pd";
+    else
+        return "";
+}
+
+function getDataFolder() {
+    var suffix = getFileSuffix();
+    return "data"+suffix;
+}
+
+function getUpgradeInfName(language) {
+    var suffix = getFileSuffix();
+    if (language == null) {
+        return "upgrade"+suffix+".inf";
+    } else {
+        return "upgrade"+suffix+"-"+language+".inf";
+    }
+}
+
+// Only for upgrade language
+function getUpgradeInfPrefix() {
+    var suffix = getFileSuffix();
+    return "upgrade"+suffix+"-";
+}</script>
+    <package type="string">Upgrade</package>
+    <sysmodtime type="dateTime">11/12/14 15:39:13</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">4</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

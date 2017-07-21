@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="export">
+  <record id="dataset.name=&quot;techterms.export&quot; and name=&quot;techterms&quot;" recordid="techterms.export - techterms">
+    <dataset.name type="string">techterms.export</dataset.name>
+    <name type="string">techterms</name>
+    <format.control NullValue="1" type="string"/>
+    <fields sctype="array">
+      <fields sctype="structure">
+        <field.name type="string">variant</field.name>
+        <field.type type="decimal">2</field.type>
+        <starting.position type="decimal">1</starting.position>
+        <field.length type="decimal">18</field.length>
+        <element.type NullValue="1" type="decimal"/>
+        <maximum.occurrences NullValue="1" type="decimal"/>
+        <date.format NullValue="1" type="string"/>
+        <time.start NullValue="1" type="decimal"/>
+        <time.length NullValue="1" type="decimal"/>
+        <field.name.to.use type="string">variant</field.name.to.use>
+        <time.inc NullValue="1" type="boolean"/>
+      </fields>
+      <fields sctype="structure">
+        <field.name type="string">standard</field.name>
+        <field.type type="decimal">2</field.type>
+        <starting.position type="decimal">19</starting.position>
+        <field.length type="decimal">18</field.length>
+        <element.type NullValue="1" type="decimal"/>
+        <maximum.occurrences NullValue="1" type="decimal"/>
+        <date.format NullValue="1" type="string"/>
+        <time.start NullValue="1" type="decimal"/>
+        <time.length NullValue="1" type="decimal"/>
+        <field.name.to.use type="string">standard</field.name.to.use>
+        <time.inc NullValue="1" type="boolean"/>
+      </fields>
+    </fields>
+    <exp.ready type="boolean">true</exp.ready>
+    <translate NullValue="1" type="string"/>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">N/A</sysmoduser>
+    <sysmodtime type="dateTime">03/31/99 09:48:37</sysmodtime>
+  </record>
+</recordset>

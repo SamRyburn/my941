@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;rtecallUtil&quot;" recordid="rtecallUtil">
+    <name type="string">rtecallUtil</name>
+    <script type="string">/**
+ * get the SCFile record count
+ */
+function countFile(file)
+{
+	var iTotal= new SCDatum();
+	var returnCode = 1;
+	
+	system.functions.rtecall("count", returnCode, file, "", iTotal); 
+	
+	
+	return iTotal.getText();
+}
+
+
+/**
+ * Call rad scmsg function
+ * Return a string containing the complete message text indicated by the arguments.
+ */
+function scmsg(number, msgclass, msgargs)
+{
+	var args = msgargs;
+	
+	if (msgargs == null)
+	{
+		args = new SCFile();
+		args.setType(lib.DataTypeConst.typeArray());
+	}
+	else if (typeof(msgargs) == "string")
+	{
+		args = new SCFile();
+		args.setType(lib.DataTypeConst.typeArray());
+		args.push(msgargs);		
+	}
+
+	return system.functions.scmsg(number, msgclass, args);
+
+}
+/**
+ *
+ */
+function log(msg) {
+ system.functions.rtecall("log", vars.$L_void, "" + msg);
+}</script>
+    <package type="string">BaseUtilities</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:43</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

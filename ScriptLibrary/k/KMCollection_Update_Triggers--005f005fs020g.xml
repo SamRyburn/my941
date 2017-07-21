@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;KMCollection_Update_Triggers&quot;" recordid="KMCollection_Update_Triggers">
+    <name type="string">KMCollection_Update_Triggers</name>
+    <script type="string">/*   @author Tony Bray
+ *
+ *   Package: KMAdmin
+ * 
+ *   Description: This library contains the default triggers for KM.  All indexed
+ *   tables use these triggers.  
+ *
+ */
+
+function KMCollection_Update_Triggers()
+{
+
+}
+
+function dumpAttachment(collectionFile, sclibFile)
+{
+    if (vars['$G.kmsearchengine'] !== "IDOL") {
+		return;
+	}
+	
+    var doc_id = sclibFile[collectionFile.docid];
+    var indexattach = collectionFile.indexattachments;
+    var attinfo = null;
+    var doc_type = sclibFile.doctype;
+    if (indexattach == true || doc_type =="external")
+    {
+        var fAttachments = new SCFile("SYSATTACHMENTS");
+        var rc = fAttachments.doSelect("application=\""+collectionFile.sclibtablename+"\" and topic=\""+ doc_id  +"\" and segment=0");
+
+        if( RC_SUCCESS == rc){
+            lib.KMAttachmentUpdatesDAO.create(doc_id, collectionFile.kbname)
+        }
+
+    }
+
+}
+
+function kmtriggerAfterAdd(filename, record)
+{
+    //When adding, no need to check for old version since there isn't one
+    //Query kmknowledgebase for the filename.
+    //iterate through the returned records and get the stored query and the
+    //field specified to be the doc_id
+    //run each query + doc_id = docid from record
+    //if we get a record back, add a new record to kmknowledgebaseupdates
+    //with collectionname, docid, and action = "U"
+    
+    
+    
+    //QCCR1E120643[Performance Improvement] Need to optimize KM trigger for creating incident
+    if(!vars.$G_indexedSCFileArray){
+        lib.KMUtils.getIndexedSCFileArray();
+    }
+    
+    if(!lib.ArrayUtil.contains(vars.$G_indexedSCFileArray,filename))
+    {
+      return;
+    }
+    
+    var kmFile = new SCFile("kmknowledgebase");
+    var kmFind = kmFile.doSelect("sclibtablename = \""+filename+"\"");
+    if (kmFind == RC_SUCCESS)
+    {
+        kmFind = kmFile.getFirst();
+        while (kmFind == RC_SUCCESS)
+        {
+            var kmQuery = kmFile.scquery;
+            var scFile = new SCFile(filename);
+            
+            var scquery = "true";
+            scquery =  kmQuery;
+            if (scquery == null)
+                scquery = "";
+            else
+                scquery ="("+scquery+") and ";
+            
+            var scFind = scFile.doSelect(scquery+kmFile.docid+" = \""+record[kmFile.docid]+"\"");
+            if (scFind == RC_SUCCESS)
+            {
+                //doc matches the query, we need to add it's docid, filename, and action
+                //to the update table
+                var kmuFile = new SCFile("kmknowledgebaseupdates");
+                kmuFile.id = system.library.KMCollection_Update_Utils.getNextKMUpdateId();
+                kmuFile.collectionname = kmFile.kbname;
+                kmuFile.docid = record[kmFile.docid] + '';
+                kmuFile.recdata = system.library.KMUtils.recordToXML(record);
+                kmuFile.action = "U";
+                kmuFile.sedocid = kmFile.kbname+"_"+(record[kmFile.docid]+'_0');
+                kmuFile.doInsert();
+                dumpAttachment(kmFile,record);
+            }
+            kmFind = kmFile.getNext();
+        }//while
+    }
+}
+
+function kmtriggerBeforeUpdate(filename, record)
+{
+    
+    //Query kmknowledgebase for the filename.
+    //iterate through the returned records and get the stored query and the
+    //field specified to be the doc_id
+    //run each query + doc_id = docid from record
+    //if we get a record back, add a new record to kmknowledgebaseupdates
+    //with collectionname, docid, and action = true
+    //otherwise, add a new record to kmknowledgebaseupdates
+    //with collectionname, docid, and action = false
+    
+    
+    //QCCR1E120643[Performance Improvement] Need to optimize KM trigger for creating incident
+    if(!vars.$G_indexedSCFileArray){
+        lib.KMUtils.getIndexedSCFileArray();
+    }
+    
+    if(!lib.ArrayUtil.contains(vars.$G_indexedSCFileArray,filename))
+    {
+      return;
+    }
+    
+    
+    var kmFile = new SCFile("kmknowledgebase");
+    var kmFind = kmFile.doSelect("sclibtablename = \""+filename+"\"");
+    
+    if (kmFind == RC_SUCCESS)
+    {
+        kmFind = kmFile.getFirst();
+        var found = false;
+        while (kmFind == RC_SUCCESS)
+        {
+            
+            var kmQuery = kmFile.scquery;
+            var scFile = new SCFile(filename);
+            var scquery = "true";
+            scquery =  kmQuery;
+            if (scquery == null)
+                scquery = "";
+            else
+                scquery ="("+scquery+") and ";
+            var scFind = scFile.doSelect(scquery+kmFile.docid+" = \""+record[kmFile.docid]+"\"");
+            if (scFind == RC_SUCCESS)
+            {
+                //doc matches the query, we need to add it's docid, filename, and action
+                //to the update table
+                //we need to find out if the docid AND collectionname exists in
+                //the update table.  If so, overwrite it, otherwise add it.
+
+                var kmuFile = new SCFile("kmknowledgebaseupdates");
+                var docid = record[kmFile.docid];
+                
+                var kmuFind = kmuFile.doSelect("docid = \""+record[kmFile.docid]+"\" and collectionname = \""+kmFile.kbname+"\" ");
+                if (kmuFind == RC_SUCCESS)
+                {
+                    
+                    kmuFind = kmuFile.getFirst();
+                    if (kmFind == RC_SUCCESS)
+                    {
+                        kmuFile.action = "T";
+                        kmuFile.doUpdate();
+                        dumpAttachment(kmFile,record);
+                        found = true;
+                    }
+                }
+                else
+                {
+                    
+                    kmuFile.id = system.library.KMCollection_Update_Utils.getNextKMUpdateId();
+                    kmuFile.collectionname = kmFile.kbname;
+                    
+                    
+                    kmuFile.docid = record[kmFile.docid] + '';
+                    
+                    kmuFile.sedocid = system.library.KMUtils.scToJSName(kmFile.kbname)+"_"+record[kmFile.docid]+"_0";
+                    kmuFile.action = "T";
+                    kmuFile.doInsert();
+                    dumpAttachment(kmFile,record);
+
+                }
+            }
+            else
+            {
+                var kmuFile = new SCFile("kmknowledgebaseupdates");
+                var kmuFind = kmuFile.doSelect("docid = \""+record[kmFile.docid]+"\" and collectionname = \""+kmFile.kbname+"\"");
+                if (kmuFind == RC_SUCCESS)
+                {
+                    
+                    kmuFind = kmuFile.getFirst();
+                    if (kmFind == RC_SUCCESS)
+                    {
+                        kmuFile.action = "F";
+                        kmuFile.doUpdate();
+                        dumpAttachment(kmFile,record);
+                    }
+                }
+                else
+                {
+                    docid = record[kmFile.docid] + '';
+                    
+                    kmuFile.id = system.library.KMCollection_Update_Utils.getNextKMUpdateId();
+                    kmuFile.collectionname = kmFile.kbname;
+                    kmuFile.docid = record[kmFile.docid] + '';
+                    kmuFile.sedocid = system.library.KMUtils.scToJSName(kmFile.kbname)+"_"+(record[kmFile.docid]+"_0");
+                    kmuFile.action = "F";
+                    kmuFile.sedocid = kmFile.kbname+"_"+(record[kmFile.docid]+"_0");
+                    kmuFile.doInsert();
+                    dumpAttachment(kmFile,record);
+                }
+            }
+            // check for multiple categories here
+            kmFind = kmFile.getNext();
+        }
+    }
+    
+}
+
+function kmtriggerAfterUpdate(filename, record)
+{
+    //QCCR1E120643[Performance Improvement] Need to optimize KM trigger for creating incident
+    if(!vars.$G_indexedSCFileArray){
+        lib.KMUtils.getIndexedSCFileArray();
+    }
+    
+    if(!lib.ArrayUtil.contains(vars.$G_indexedSCFileArray,filename))
+    {
+      return;
+    }
+
+    //Query kmknowledgebase for the filename.
+    //iterate through the returned records and get the stored query and the
+    //field specified to be the doc_id
+    //run each query + doc_id = docid from record
+    //if we get a record back, set a flag to true, else set it to false.
+    //Query the update table where docid=docid, collection=collection, and
+    //action = true or false.
+    // if action = true and flag = true, then change action=true to action=U
+    // if action = true and flag = false, then change action=true to action=D
+    // if action = false and flag = true, then change action=false to action=U
+    // if action = false and flag = false, delete the current record from the update table
+
+    
+
+    var kmFile = new SCFile("kmknowledgebase");
+    var kmFind = kmFile.doSelect("sclibtablename = \""+filename+"\"");
+    if (kmFind == RC_SUCCESS)
+    {
+        kmFind = kmFile.getFirst();
+        while (kmFind == RC_SUCCESS)
+        {
+            var kmQuery = kmFile.scquery;
+            var scFile = new SCFile(filename);
+            var scquery = "true";
+            scquery =  kmQuery;
+            if (scquery == null)
+                scquery = "";
+            else
+                scquery ="("+scquery+") and ";
+            var scFind = scFile.doSelect(scquery+kmFile.docid+" = \""+record[kmFile.docid]+"\"");
+            var match = "F";
+            if (scFind == RC_SUCCESS)
+            {
+                match="T";
+            }
+            else
+            {
+                match="F";
+            }
+            
+            //match is T or F depending on whether the new doc matched a query
+            //now we need to know if it matched before the update
+            var kmuFile = new SCFile("kmknowledgebaseupdates");
+            /**
+             * QCCR1E89815 The kmknowledgebaseupdates table becomes corrupt
+             * change the query string, add "()" in action condition
+             * if the query string is not correct, it will cause the model name and filename conflict,
+             * error happens when KMUpdates process records in kmknowledgebaseupdates table.
+             */
+            var kmuFind = kmuFile.doSelect("docid = \""+record[kmFile.docid]+"\" and collectionname = \""+kmFile.kbname+"\" and (action = \"T\" or action = \"F\")");
+            if (kmuFind == RC_SUCCESS)
+            {
+                
+                kmuFind = kmuFile.getFirst();
+                if (kmuFind == RC_SUCCESS)
+                {
+                    //if we matched before and after, it's an update
+                    if (kmuFile.action == "T" &amp;&amp; match == "T")
+                    {
+                        
+                        kmuFile.action = "U";
+                        kmuFile.recdata = system.library.KMUtils.recordToXML(record);
+                        kmuFile.doUpdate();
+                        dumpAttachment(kmFile,record);
+                    }
+                    //if we matched before but not after, it's a delete
+                    if (kmuFile.action == "T" &amp;&amp; match == "F")
+                    {
+                        
+                        
+                        kmuFile = new SCFile("kmknowledgebaseupdates");
+                        kmuFind = kmuFile.doSelect("sedocid = \""+kmFile.kbname+"_"+record[kmFile.docid]+"_0\" and action = \"D\"");
+                        if (kmuFind == RC_SUCCESS)
+                        {
+                            kmuFind = kmuFile.getFirst();
+                            if (kmuFind == RC_SUCCESS)
+                            { // we already have a delete record with this id
+                                //check for multiple categories, delete master if multiple
+                                
+                                /**
+                                 * QCCR1E89815 The kmknowledgebaseupdates table becomes corrupt
+                                 */
+                                kmuFind = kmuFile.doSelect("docid = \""+record[kmFile.docid]+"\" and collectionname = \""+kmFile.kbname+"\" and (action = \"T\" or action = \"F\")");
+                                kmuFind = kmuFile.getFirst();
+                                
+                                dumpAttachment(kmFile,record);
+                                kmuFile.doDelete();
+                            }
+                        }
+                        else
+                        {
+                            
+                            /**
+                             * QCCR1E89815 The kmknowledgebaseupdates table becomes corrupt
+                             */
+                            kmuFind = kmuFile.doSelect("docid = \""+record[kmFile.docid]+"\" and collectionname = \""+kmFile.kbname+"\" and (action = \"T\" or action = \"F\")");
+                            kmuFind = kmuFile.getFirst();
+                            kmuFile.sedocid = kmFile.kbname+"_"+system.library.KMUtils.cleanDocID(record[kmFile.docid])+"_0";
+                            kmuFile.action = "D";
+                            kmuFile.doUpdate();
+                            dumpAttachment(kmFile,record);
+                        }
+                    }
+                    //if we didn't match before but we do now, it's an insert
+                    if (kmuFile.action == "F" &amp;&amp; match == "T")
+                    {
+                        
+                        kmuFile.action = "U";
+                        kmuFile.sedocid = "";
+                        kmuFile.recdata = system.library.KMUtils.recordToXML(record);
+                        kmuFile.doUpdate();
+                        dumpAttachment(kmFile,record);
+                    }
+                    //if we didn't match before or after, no action is needed, delete the record from the update table
+                    if (kmuFile.action == "F" &amp;&amp; match == "F")
+                    {
+                        
+                        dumpAttachment(kmFile,record);
+                        kmuFile.doDelete();
+                    }
+                }
+            }
+            kmFind = kmFile.getNext();
+        }
+    }
+}
+
+function kmtriggerBeforeDelete(filename, record)
+{
+    //QCCR1E120643[Performance Improvement] Need to optimize KM trigger for creating incident
+    if(!vars.$G_indexedSCFileArray){
+        lib.KMUtils.getIndexedSCFileArray();
+    }
+    
+    if(!lib.ArrayUtil.contains(vars.$G_indexedSCFileArray,filename))
+    {
+      return;
+    }
+    
+    
+    var kmFile = new SCFile("kmknowledgebase");
+    var kmFind = kmFile.doSelect("sclibtablename = \""+filename+"\"");
+    
+    if (kmFind == RC_SUCCESS)
+    {
+        kmFind = kmFile.getFirst();
+        var found = false;
+        while (kmFind == RC_SUCCESS)
+        {
+            var kmQuery = kmFile.scquery;
+            var scFile = new SCFile(filename);
+            var scquery = "true";
+            scquery =  kmQuery;
+            if (scquery == null)
+                scquery = "";
+            else
+                scquery ="("+scquery+") and ";
+            var scFind = scFile.doSelect(scquery+kmFile.docid+" = \""+record[kmFile.docid]+"\"");
+            if (scFind != RC_SUCCESS)
+            {
+                return;
+            }
+
+            // Record needs to be deleted from index here.
+            // first look to see if we have an existing record...
+            // if so, delete it, we will add a new one based on categories
+            var kmuFile = new SCFile("kmknowledgebaseupdates");
+            
+            var kmuFind = kmuFile.doSelect("docid = \""+record[kmFile.docid]+"\" and collectionname = \""+kmFile.kbname+"\"");
+            if (kmuFind == RC_SUCCESS)
+            {
+                kmuFind = kmuFile.getFirst();
+                if (kmFind == RC_SUCCESS)
+                {
+                    found = true;
+                    kmuFile.action = "D";
+                    kmuFile.doUpdate();
+                    dumpAttachment(kmFile,record);
+                    
+                }
+            }
+
+            // check for multiple categories here
+            
+            if (found == false)
+            {
+                
+                var categoryStr = lib[kmFile.categoryindexscript].getCategoryStr(record);
+                if ( system.functions._null(categoryStr) )  // DE2773
+                    categoryStr = "";
+                // check categoryStr for semicolons, indicating multiple categories
+                var catarray = categoryStr.split(";");
+                var numcats = catarray.length;
+                for (var cats =0; cats &lt; numcats; cats++)
+                {
+                    
+                    kmuFile.id = system.library.KMCollection_Update_Utils.getNextKMUpdateId();
+                    kmuFile.collectionname = kmFile.kbname;
+                    kmuFile.docid = record[kmFile.docid];
+                    kmuFile.sedocid = kmFile.kbname+"_"+(record[kmFile.docid]+'_0');
+                    kmuFile.action = "D";
+                    kmuFile.doInsert();
+                    dumpAttachment(kmFile,record);
+                    
+                }
+            }
+            kmFind = kmFile.getNext();
+        }
+    }
+}
+
+function kmaltriggerAfterUpdate(filename, record)
+{
+    //QCCR1E120643[Performance Improvement] Need to optimize KM trigger for creating incident
+    if(!vars.$G_indexedSCFileArray){
+        lib.KMUtils.getIndexedSCFileArray();
+    }
+    
+    // use kbname to find KMKnowledgebase record, retrieve the tablename.  
+    var kbFile = new SCFile("kmknowledgebase");
+    var kbFind = kbFile.doSelect("kbname = \""+record.kbname+"\"");
+    if (kbFind == RC_SUCCESS)
+    {
+        kbFind = kbFile.getFirst();
+        if (kbFind == RC_SUCCESS)
+        {
+            var sclibtablename = kbFile.sclibtablename;
+            var docidfield = kbFile.docid;
+
+        }
+    }
+    // get the record that has been changed 
+    var collectionFile = new SCFile(sclibtablename);
+    var collFind = collectionFile.doSelect(docidfield+"= \""+system.library.KMUtils.scToJSName(record.id)+"\"");
+    if (collFind == RC_SUCCESS)
+    {
+        collFind = collectionFile.getFirst();
+        if (collFind == RC_SUCCESS)
+        {
+            // touch the record to trigger update triggers
+            collectionFile.doUpdate();
+        }
+
+    }
+
+}
+</script>
+    <package type="string">KMAdmin</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:41</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

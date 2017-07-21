@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="triggers">
+  <record id="trigger.name=&quot;trigger.sync.company.with.rc.after.update&quot;" recordid="trigger.sync.company.with.rc.after.update">
+    <trigger.name type="string">trigger.sync.company.with.rc.after.update</trigger.name>
+    <trigger.type type="decimal">4</trigger.type>
+    <table.name type="string">company</table.name>
+    <application.name NullValue="1" type="string"/>
+    <sysmodcount type="decimal">3</sysmodcount>
+    <sysmoduser type="string">zhichao.fei</sysmoduser>
+    <sysmodtime type="dateTime">03/09/11 19:12:12</sysmodtime>
+    <javascript type="string">var oldCompany = oldrecord.company;
+var company = record.company;
+var ucmdbCustomerId = record.ucmdb_customer_id;
+var oldShowCompany = oldrecord.show_company;
+var showCompany = record.show_company;
+
+var isRcSynced = system.functions.nullsub(record.rc_synced,false);
+var isOldRcSynced = system.functions.nullsub(oldrecord.rc_synced,false);
+
+if (vars.$G_multi &amp;&amp; vars.$G_system_info.SMtoRC ) 
+{
+	if (!isRcSynced) 
+	{
+		if (showCompany == "Y")
+			system.library.multiTenantRC.syncCompanyAfterAddOrUpdate(company, ucmdbCustomerId);
+	} 
+	else if (oldCompany != company || oldShowCompany != showCompany) 
+	{
+		if (oldCompany != company) 
+		{ //company is changed
+			if (oldShowCompany == "Y")
+				system.library.multiTenantRC.syncCompanyAfterDelete(oldCompany);
+			if (showCompany == "Y")
+				system.library.multiTenantRC.syncCompanyAfterAddOrUpdate(company, ucmdbCustomerId);
+		} 
+		else 
+		{ // company remains the same
+			if (showCompany == "Y")
+				system.library.multiTenantRC.syncCompanyAfterAddOrUpdate(company, ucmdbCustomerId);
+			else //showCompany != 'Y'
+				system.library.multiTenantRC.syncCompanyAfterDelete(company);
+		}
+	}
+}</javascript>
+  </record>
+</recordset>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="smtzdst">
+  <record id="tzname=&quot;Canada/Pacific&quot; and dstyear=1991" recordid="">
+    <tzname type="string">Canada/Pacific</tzname>
+    <dstyear type="decimal">1991</dstyear>
+    <dstbegin type="dateTime">04/06/91 19:00:00</dstbegin>
+    <dstend type="dateTime">10/26/91 20:00:00</dstend>
+    <isdst type="decimal">1</isdst>
+  </record>
+</recordset>

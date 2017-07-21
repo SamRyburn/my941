@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="Process">
+  <record id="process=&quot;kmknowledgebase.refreshstats&quot;" recordid="kmknowledgebase.refreshstats">
+    <process type="string">kmknowledgebase.refreshstats</process>
+    <pre.expressions sctype="array">
+      <pre.expressions sctype="operator">$L.collstate="offline"</pre.expressions>
+      <pre.expressions sctype="operator">$L.collcreated=""</pre.expressions>
+      <pre.expressions sctype="operator">$L.collsqueezed=""</pre.expressions>
+      <pre.expressions sctype="operator">$L.collpurged=""</pre.expressions>
+      <pre.expressions sctype="operator">$L.colllivedocs="0"</pre.expressions>
+      <pre.expressions sctype="operator">$L.webstatus=""</pre.expressions>
+      <pre.expressions sctype="operator">$errorids={}</pre.expressions>
+      <pre.expressions sctype="operator">$errormessages={}</pre.expressions>
+      <pre.expressions sctype="operator">$L.errorids={}</pre.expressions>
+      <pre.expressions sctype="operator">$L.errormessages={}</pre.expressions>
+      <pre.expressions sctype="operator">$mimetypes={}</pre.expressions>
+    </pre.expressions>
+    <post.expressions NullValue="1" sctype="array">
+      <post.expressions NullValue="1" type="expression"/>
+    </post.expressions>
+    <rad NullValue="1" sctype="array">
+      <rad sctype="structure">
+        <application NullValue="1" type="string"/>
+        <names NullValue="1" sctype="array">
+          <names NullValue="1" type="string"/>
+        </names>
+        <values NullValue="1" sctype="array">
+          <values NullValue="1" type="string"/>
+        </values>
+        <rad.condition NullValue="1" type="boolean"/>
+        <pre.rad.expressions NullValue="1" sctype="array">
+          <pre.rad.expressions NullValue="1" type="expression"/>
+        </pre.rad.expressions>
+        <post.rad.expressions NullValue="1" sctype="array">
+          <post.rad.expressions NullValue="1" type="expression"/>
+        </post.rad.expressions>
+      </rad>
+    </rad>
+    <next.process NullValue="1" sctype="array">
+      <next.process NullValue="1" type="string"/>
+    </next.process>
+    <process.condition NullValue="1" sctype="array">
+      <process.condition NullValue="1" type="boolean"/>
+    </process.condition>
+    <run.standard NullValue="1" type="boolean"/>
+    <sysmodcount type="decimal">75</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">02/10/11 11:17:27</sysmodtime>
+    <save.cursor.position NullValue="1" type="boolean"/>
+    <run.in.window type="boolean">false</run.in.window>
+    <window.name NullValue="1" type="string"/>
+    <javascript.pre type="string">// Make sure that the system is configured.
+var getenginename = system.library.KMSearchInterface.getEngineName();
+
+  if (getenginename == "K2")
+  { 
+	var strServerAlias = "";
+	strServerAlias = vars.$G_km_globalenv.km_host;
+	if (strServerAlias == null
+    	|| system.functions._null(vars.$G_km_globalenv.km_smhost)
+    	|| system.functions._null(vars.$G_km_globalenv.km_smport)
+    	|| system.functions._null(vars.$G_km_globalenv.km_smlogin) )
+	{
+		system.library.KMUtils.domessageBox(system.functions.scmsg(65, "km")); //DE4304
+		//system.library.KMUtils.domessageBox("Search Engine incorrect or not found!\nPlease check the Environment Settings");
+		return -1;
+	}
+  }
+//print ("current file: "+vars.$L_file);
+var result = 0;
+var arrayStats = new Array();
+result = system.library.KMCollection_Statistics.getStatistics(arrayStats);
+//if (result == -1)
+////{
+//	system.library.KMUtils.domessageBox(system.functions.scmsg(216, "km"));
+	//return -1;
+//}
+//print("arrayStats: "+arrayStats);
+vars.$L_collcreated = arrayStats[1];
+vars.$L_collstate = arrayStats[6];
+
+vars.$L_collsqueezed = arrayStats[2];
+vars.$L_collpurged = arrayStats[3];
+vars.$L_colllivedocs = arrayStats[4];
+if (vars.$L_file.kbtype != "sclib")
+{
+  	result = system.library.KMCollection_WebCrawl.getJobStatus(vars.$L_file.kbname);
+	if (parseInt(result) &gt; 0)
+  	{
+    	print("checking return code");
+  		if (system.library.KMSearchInterface.isJobStatusRunning(parseInt(result)))
+  			vars.$L_webstatus = system.functions.scmsg(232, "km");
+  		if (system.library.KMSearchInterface.isJobStatusScheduled(parseInt(result)))
+  			vars.$L_webstatus = system.functions.scmsg(233, "km");
+  		if (system.library.KMSearchInterface.isJobStatusCompleted(parseInt(result)))
+  			vars.$L_webstatus = system.functions.scmsg(234, "km");	
+    }
+  	//build mimetype dropdown list here...
+  	
+	var mimeFile = new SCFile("kmmimetypes");
+  	var mimeFind = mimeFile.doSelect("mimelist = \"true\"");
+  	if (mimeFind == RC_SUCCESS)
+  	{
+  		mimeFind = mimeFile.getFirst();
+  		while (mimeFind == RC_SUCCESS)
+  		{
+  			vars.$mimetypes.push(mimeFile.mimetype);
+	  		mimeFind = mimeFile.getNext();
+  		}
+
+  	}	
+  else
+  {
+  	vars.$L_webstatus = "";
+  }
+}
+// Code that works using the thread variables $L.errorids and $L.errormessages
+// Get the list of errors for this knowledgebase.
+var errorsFile = new SCFile("kmknowledgebaseerrors");
+var errRC = errorsFile.doSelect( "collectionname#\""+vars.$L_file.kbname+"\"");
+if ( errRC == RC_SUCCESS )
+{
+	//print("errorsFile: " + errorsFile);
+	errRC = errorsFile.getFirst();
+	while( errRC == RC_SUCCESS )
+	{
+		// remove the leading knowledgebase name
+		//var id = errorsFile.sedocid.substring(vars.$L_file.kbname.length+1,errorsFile.sedocid.length-2);
+		var id = errorsFile.sedocid;
+		vars.$L_errorids.push(id);
+		vars.$L_errormessages.push(errorsFile.errormessage);
+		errRC = errorsFile.getNext();
+	}
+}
+
+//if ($L.response="yes") then (kbfields in $L.file=delete(kbfields in $L.file, cursor.line(1)))
+
+</javascript.pre>
+    <javascript.post NullValue="1" type="string"/>
+    <baseMethod NullValue="1" type="string"/>
+  </record>
+</recordset>

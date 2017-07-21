@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;IDOLGlobalSearchPreview&quot;" recordid="IDOLGlobalSearchPreview">
+    <name type="string">IDOLGlobalSearchPreview</name>
+    <script type="string">var _ = lib.Underscore.require(),
+    XQuery = lib.XQuery.require(),
+    IDOLAdvancedSettings = lib.IDOLAdvancedSettings.require(),
+    IDOLClientFactory = lib.IDOLClientFactory.require(),
+    IDOLAssistantsProvider = lib.IDOLAssistantsProvider.require(),
+    IDOLGlobalSearchFieldCaption = lib.IDOLGlobalSearchFieldCaption.require(),
+    IDOLGlobalSearchDisplayValue = lib.IDOLGlobalSearchDisplayValue.require();
+
+var GlobalSearchSettings = IDOLAdvancedSettings.GlobalSearch;
+
+var IDOLGlobalSearchPreview = (function() {
+
+  function getCaptionMapping(filename) {
+    return IDOLGlobalSearchFieldCaption.getCaptions(filename);
+  }
+
+  function getHitList(filename) {
+    var file = new SCFile('kmknowledgebase');
+    var query = new QueryCond('sclibtablename', EQ, filename);
+    var rc = file.doSelect(query);
+    if (rc !== RC_SUCCESS) { return {}; }
+
+    var fields = file.kbfields;
+    var hitlists = [], i;
+    for (i = 0, length = fields.length(); i &lt; length; i++) {
+      var field = fields[i];
+      if (field.hitlist) {
+        var sort = parseInt(field.sort, 10);
+        if (_.isNaN(sort)) {
+          sort = Number.MAX_VALUE;
+        }
+        hitlists.push({
+          name: field.kbfieldname,
+          type: field.kbfieldtype,
+          order : sort
+        });
+      }
+    }
+    return hitlists;
+  }
+
+  function extractPreviewFields(file, hitlist, captions) {
+    var filename = funcs.filename(file);
+    return _.chain(hitlist).sortBy(function(def) {
+      return def.order;
+    }).map(function(def) {
+      var name = def.name, 
+          value = file[name], 
+          caption = captions[name] || name;
+      var displayValue = IDOLGlobalSearchDisplayValue.toDisplay(filename, name, value);
+      return { name: name, caption: caption, value: displayValue };
+    }).value();
+  }
+
+  function getPreviewData(file) {
+    var filename = funcs.filename(file),
+        hitlist = getHitList(filename),
+        captions = getCaptionMapping(filename);
+    return extractPreviewFields(file, hitlist, captions);
+  }
+
+  function getMoreSummary(database, reference, text) {
+    var client = IDOLClientFactory.create('GlobalSearch');
+    var doc = client.executeAction({
+      action : 'SuggestOnText',
+      DatabaseMatch : database,
+      MatchReference : encodeURIComponent(reference),
+      QuerySummary : true,
+      Summary : 'Context',
+      Characters : GlobalSearchSettings.PREVIEW_CHARACTERS,
+      Text : text,
+      SingleMatch : true,
+      Print : 'none'
+    });
+    return XQuery.queryText('responsedata/autn:hit/autn:summary', doc);
+  }
+
+  // TODO: validate if current user has priviledge to view this record
+  function getPreview(qs) {
+    var filename = qs.filename, 
+        query = qs.query,
+        database = qs.database,
+        reference = qs.reference,
+        summary = qs.summary;
+
+    var response = { data : [], preview : [], actions: []};
+
+    if (filename &amp;&amp; query) {
+      var assoc = new SCFile(filename, SCFILE_READONLY);
+      var rc = assoc.doSelect(query);
+      if (rc === RC_SUCCESS) {
+        var fields = getPreviewData(assoc);
+        response.data = _.filter(fields, function(field) {
+          return _.isBoolean(field.value) ? true : !!field.value;
+        });
+      }
+    } else if (database &amp;&amp; reference) {
+      var content = getMoreSummary(database, reference, summary);
+      content = _.escape(content);
+      content = content.replace(/\n+/g, '&lt;br&gt;');
+      response.preview = [{value : content}];
+    }
+    var record = vars['$L.file'];
+    if (record) {
+      response.actions = IDOLAssistantsProvider.getActions(record, qs);
+    }
+    return response;
+  }
+
+  return {
+    getPreview : getPreview
+  };
+}());
+
+
+function require() {
+  return IDOLGlobalSearchPreview;
+}</script>
+    <package type="string">IDOL</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:40</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

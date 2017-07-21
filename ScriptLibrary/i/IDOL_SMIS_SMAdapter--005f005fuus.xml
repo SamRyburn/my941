@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;IDOL_SMIS_SMAdapter&quot;" recordid="IDOL_SMIS_SMAdapter">
+    <name type="string">IDOL_SMIS_SMAdapter</name>
+    <script type="string">var Class = lib.smis_Prototype.getClass();
+var _ = lib.Underscore.require();
+
+var IDOL_SMAdapterClass = Class.create({
+
+  initialize: function(configItem) {
+    this.configItem = configItem;
+  },
+  
+  sendRecords: function(task) {
+    try{
+      var script = this.getScriptByAction(task.action);
+      if (script) {
+        var params = task.inRecord;
+        params = _.compact(params);
+        var strParams = '';
+        //process the parameter by its type
+        for (var i = 0; i &lt; params.length; i++){
+          var value = params[i].value;
+          var type = params[i].type;
+          if (type === 'String') {
+            value = '"' + value + '"';
+          } else if (type === 'Array') {
+            var arrValue = '';
+            if (value.length &gt; 0) {
+              for (var j = 0; j &lt; value.length; j++) {
+                if (j === 0) {
+                  arrValue += '[';
+                }
+                arrValue += "\"" + lib.StringUtil.escapeAllStr(value[j]) + "\"";
+                if (j !== value.length - 1) {
+                  arrValue += ',';
+                }
+                if (j === value.length - 1) {
+                  arrValue += ']';
+                }
+              }
+            } else {
+              arrValue = '[]';
+            }
+            value = arrValue;
+          }
+          
+          strParams += value;
+          if (i &lt; params.length - 1) {
+            strParams += ',';
+          }
+        }
+        //call the corresponding js
+        var result = eval('lib.' + script + '(' + strParams + ')');
+        if (result != null) {
+          task.responseMsg = result + '';
+        }
+        return true;
+        /*if (result !== true) {
+          task.responseMsg = result + '';
+          return false;
+        } else {
+          return true;
+        }*/
+      }
+    
+      task.responseMsg = 'Action "' + task.action + '" is not defined or has no script';
+      return false;
+    } catch(ex) {
+      task.responseMsg = ex + '';
+      return false;
+    }
+  },
+  
+  getScriptByAction: function(action) {
+    var actions = this.configItem.getConfigParameterValue('actions');
+    var scripts = this.configItem.getConfigParameterValue('scripts');
+    
+    if (actions &amp;&amp; scripts) {
+      actions = actions.split('~');
+      scripts = scripts.split('~');
+      for (var i in actions) {
+        if (actions[i] === action) {
+          return scripts[i];
+        }
+      }
+    }
+    
+    return null;
+  }
+ 
+
+});
+
+
+function getClass() {return IDOL_SMAdapterClass;}
+</script>
+    <package type="string">IDOL</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:40</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

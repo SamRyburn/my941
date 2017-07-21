@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="RuleSet">
+  <record id="id=&quot;rm.initial.display&quot;" recordid="rm.initial.display">
+    <id type="string">rm.initial.display</id>
+    <name type="string">Initial settings for form dispaly</name>
+    <tablename sctype="array">
+      <tablename sctype="string">request</tablename>
+    </tablename>
+    <rule sctype="array">
+      <rule sctype="structure">
+        <ruleId type="decimal">3</ruleId>
+        <isGroup type="boolean">false</isGroup>
+        <parentGroup type="decimal">0</parentGroup>
+        <ruleXML NullValue="1" type="string"/>
+        <ruleDesc type="string">Run JavaScript to Initialize the ServiceCatalogItem Table</ruleDesc>
+        <condition type="string">true</condition>
+        <conditionDesc type="string">Always</conditionDesc>
+        <conditionXML NullValue="1" type="string"/>
+        <fullDesc type="string">Run JavaScript to Initialize the ServiceCatalogItem Table (when Always)</fullDesc>
+        <level type="decimal">0</level>
+        <type type="string">JSValidate</type>
+        <ruleJSON type="string">{"type":"JSValidate","script":"vars.$L_cartItemId = new SCDatum([]);\u000avars.$L_description = new SCDatum([]);\u000avars.$L_requestedfor = new SCDatum([]);\u000avars.$L_quantity = new SCDatum([]);\u000avars.$L_status = new SCDatum([]);\u000avars.$L_optionlabel = new SCDatum([]);\u000avars.$L_optionvalue = new SCDatum([]);"}</ruleJSON>
+      </rule>
+      <rule sctype="structure">
+        <ruleId type="decimal">1</ruleId>
+        <isGroup type="boolean">false</isGroup>
+        <parentGroup type="decimal">0</parentGroup>
+        <ruleXML NullValue="1" type="string"/>
+        <ruleDesc type="string">Run JavaScript to clear Activity Type</ruleDesc>
+        <condition type="string">true</condition>
+        <conditionDesc NullValue="1" type="string"/>
+        <conditionXML NullValue="1" type="string"/>
+        <fullDesc type="string">Run JavaScript to clear Activity Type</fullDesc>
+        <level type="decimal">0</level>
+        <type type="string">JSValidate</type>
+        <ruleJSON type="string">{"type":"JSValidate","script":"vars['$rm_activity']=null;\u000avars['$rm.activity.type']=null;\u000a\u000a"}</ruleJSON>
+      </rule>
+      <rule sctype="structure">
+        <ruleId type="decimal">2</ruleId>
+        <isGroup type="boolean">false</isGroup>
+        <parentGroup type="decimal">0</parentGroup>
+        <ruleXML NullValue="1" type="string"/>
+        <ruleDesc type="string">Set Cust Visible via JavaScript</ruleDesc>
+        <condition type="string">true</condition>
+        <conditionDesc NullValue="1" type="string"/>
+        <conditionXML NullValue="1" type="string"/>
+        <fullDesc type="string">Set Cust Visible via JavaScript</fullDesc>
+        <level type="decimal">0</level>
+        <type type="string">setField</type>
+        <ruleJSON type="string">{"type":"setField","fieldName":"cust.visible","script":"value=false;"}</ruleJSON>
+      </rule>
+    </rule>
+    <lastRuleId type="decimal">3</lastRuleId>
+    <isAction NullValue="1" type="boolean"/>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:01:15</sysmodtime>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

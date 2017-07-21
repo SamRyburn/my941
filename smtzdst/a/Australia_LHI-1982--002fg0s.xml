@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="smtzdst">
+  <record id="tzname=&quot;Australia/LHI&quot; and dstyear=1982" recordid="">
+    <tzname type="string">Australia/LHI</tzname>
+    <dstyear type="decimal">1982</dstyear>
+    <dstbegin type="dateTime">03/06/82 21:00:00</dstbegin>
+    <dstend type="dateTime">10/30/82 20:00:00</dstend>
+    <isdst type="decimal">0</isdst>
+  </record>
+</recordset>

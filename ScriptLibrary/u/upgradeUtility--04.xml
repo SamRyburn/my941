@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;upgradeUtility&quot;" recordid="upgradeUtility">
+    <name type="string">upgradeUtility</name>
+    <script type="string">
+	var target_version = lib.upgradeConstants.TARGET_VERSION();
+	
+	/**
+	 * To get the record through the query in the specified table. Returns null if no records exists.
+	 */
+	function getRecord(table, query){
+		var file = new SCFile(table);
+		var rc = file.doSelect(query);
+		if(rc == RC_SUCCESS){
+			return file;
+		}
+		return null;
+	}
+	
+	function getUpgradeStatus(){
+		return getRecord("upgradestatus", "true");
+	}
+	
+	/**
+	 * To get the supported languages for creating upgrade package
+	 */
+	function getSupportedLanguages(){
+		var history = new SCFile("upgradehistory");
+		var scverion = getRecord("scversion", "true");
+		var rc = history.doSelect("new.version = \"" + scverion.application_version + "\"");
+		var array = new SCDatum();
+		array.setType(8);
+		var codes = []; // This variable is only used for checking if the language has already existed in array.
+		if(rc == RC_SUCCESS){
+			while(rc == RC_SUCCESS){
+				for(var i = 0; history.upgraded_lang != null &amp;&amp; i &lt; history.upgraded_lang.length(); i++){
+					if(!isAlreadyIncluded(history.upgraded_lang[i].lang_code, codes)){
+						var element = new SCDatum();
+						element.setType(9);
+						element.push(true);
+						element.push(history.upgraded_lang[i].lang_name);
+						element.push(history.upgraded_lang[i].lang_code);
+						array.push(element);
+						codes[codes.length] = history.upgraded_lang[i].lang_code;
+					}
+				}
+				rc = history.getNext();
+			}
+		}else{
+			var language = new SCFile("language");
+		    var rc = language.doSelect("active=true and unique.id ~= \"en\"");
+		    while(rc == RC_SUCCESS &amp;&amp; language != null){
+				var element = new SCDatum();
+				element.setType(9);
+				element.push(true);
+				element.push(language.language);
+				element.push(language.unique_id);
+				array.push(element);
+				rc = language.getNext();
+			}
+		}
+		return array;
+	}
+	
+	function isAlreadyIncluded(code, codes){
+		if(code == null){
+			return true;
+		}
+		for(var i = 0; i &lt; codes.length; i++){
+			if(codes[i] == code){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	function setUpgradeStatus(file){
+		var info = getRecord("upginfo", "true");
+		var array = new SCDatum();
+		array.setType(8);
+		for(var i = 0; i &lt; info.lang_selected.length(); i++){
+			var language = getRecord("language", "unique.id=\"" + info.lang_selected[i].language_code + "\" and active = true");
+			var element = new SCDatum();
+			element.setType(9);
+			if(language == null){
+				element.push(false);
+			}else{
+				element.push(true);
+			}
+			element.push(info.lang_selected[i].language);
+			element.push(info.lang_selected[i].language_code);
+			array.push(element);
+		}
+		file.lang_selected = array;
+	}
+	
+	function getLangCount(status){
+		var langs = status.lang_selected;
+		var count = 0;
+		for(var i = 0; i &lt; langs.length(); i++){
+			if(langs[i].selected){
+				count++;
+			}
+		}
+		return count;
+	}
+	
+	function addInstalledLang(status, history){
+		history.upgraded_lang = system.functions._delete(history.upgraded_lang, 1);
+		for(var i = 0; i &lt; status.lang_selected.length(); i++){
+			if(status.lang_selected[i].selected){
+				var length = history.upgraded_lang.length();
+				history.upgraded_lang[length].lang_code = status.lang_selected[i].language_code;
+				history.upgraded_lang[length].lang_name = status.lang_selected[i].language;
+			}
+		}
+	}
+	
+	/**
+	get last version before upgrade to 930.
+	
+	return the version variable.
+	
+	@author Li, Huan
+	*/
+	function getLatestVersionB4UpgradeTo930(){
+		var ret = target_version;
+		var fData=new SCFile("upgradehistory");
+		var query="old.version&lt;&gt;\""+ ret +"\" and new.version=\"" + ret + "\"";
+		var rc=fData.doSelect(query);
+		if ( rc == RC_SUCCESS )
+		{
+			ret = fData.old_version;
+		}
+		return ret;
+	}
+	
+	/**
+	 * Upgraded languages are stored in upgradehistory table, they sometimes may be duplicated or re-upgraded.
+	 * We originally use this to display upgraded languages in re-run wizard.
+	 * Author: Wang Weihua
+	 */
+	function getUpgradedLang(){
+		if(vars.$G_tmpUpgToVer == null){
+			return null;
+		}
+		var langs = "";
+		var history = new SCFile("upgradehistory");
+		var rc = history.doSelect("new.version = \"" + vars.$G_tmpUpgToVer + "\"");
+		while(rc == RC_SUCCESS){
+			for(var i = 0; history.upgraded_lang != null &amp;&amp; i &lt; history.upgraded_lang.length(); i++){
+				if(langs.indexOf(history.upgraded_lang[i].lang_name) == -1 &amp;&amp; history.upgraded_lang[i].lang_name != null){
+					if(langs != ""){
+						langs += ", ";
+					}
+					langs += history.upgraded_lang[i].lang_name;
+				}
+			}
+			rc = history.getNext();
+		}
+		return langs;
+	}
+	
+	/**
+	 * To determine if it is in rerun process
+	 */
+	function isRerun(){
+		var history = getRecord("upgradehistory", "new.version = \"" + vars.$G_tmpUpgToVer + "\"");
+		if(history == null){
+			return false;
+		}
+		return true;
+	}
+	
+	</script>
+    <package type="string">Upgrade</package>
+    <sysmodtime type="dateTime">08/03/14 01:30:55</sysmodtime>
+    <sysmoduser type="string">zhouanqing</sysmoduser>
+    <sysmodcount type="decimal">76</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="notification">
+  <record id="id=&quot;Approval Added_1&quot;" recordid="Approval Added_1">
+    <name type="string">Approval Added</name>
+    <condition type="operator">approval.status in $L.file~="denied"</condition>
+    <message sctype="array">
+      <message sctype="structure">
+        <scmessage.class type="string">alert</scmessage.class>
+        <scmessage.number type="string">48</scmessage.number>
+        <recipient type="string">current.pending.groups in $L.file</recipient>
+        <msgclass type="string">email</msgclass>
+        <msg.condition type="operator">file.name in $L.file="incidents" and not  (null($G.webserver.url))</msg.condition>
+        <group.file type="string">assignment</group.file>
+        <arguments type="string">{name in $L.file, unique.key in $L.file, $L.web.url}</arguments>
+        <group.area NullValue="1" type="string"/>
+        <subgroup NullValue="1" type="string"/>
+        <subject.class type="string">alert</subject.class>
+        <subject.no type="string">47</subject.no>
+        <subject.args type="string">{name in $L.file, unique.key in $L.file}</subject.args>
+        <format NullValue="1" type="string"/>
+      </message>
+      <message sctype="structure">
+        <scmessage.class type="string">alert</scmessage.class>
+        <scmessage.number type="string">48</scmessage.number>
+        <recipient type="string">current.pending.groups in $L.file</recipient>
+        <msgclass type="string">email</msgclass>
+        <msg.condition type="operator">file.name in $L.file="incidents" and not  (null($G.webserver.url))</msg.condition>
+        <group.file NullValue="1" type="string"/>
+        <arguments type="string">{name in $L.file, unique.key in $L.file, $L.web.url}</arguments>
+        <group.area NullValue="1" type="string"/>
+        <subgroup NullValue="1" type="string"/>
+        <subject.class NullValue="1" type="string"/>
+        <subject.no NullValue="1" type="string"/>
+        <subject.args NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+      </message>
+      <message sctype="structure">
+        <scmessage.class type="string">alert</scmessage.class>
+        <scmessage.number type="string">49</scmessage.number>
+        <recipient type="string">current.pending.groups in $L.file</recipient>
+        <msgclass type="string">email</msgclass>
+        <msg.condition type="operator">file.name in $L.file="incidents" and null($G.webserver.url)</msg.condition>
+        <group.file type="string">assignment</group.file>
+        <arguments type="string">{name in $L.file, unique.key in $L.file}</arguments>
+        <group.area NullValue="1" type="string"/>
+        <subgroup NullValue="1" type="string"/>
+        <subject.class NullValue="1" type="string"/>
+        <subject.no NullValue="1" type="string"/>
+        <subject.args NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+      </message>
+      <message sctype="structure">
+        <scmessage.class type="string">alert</scmessage.class>
+        <scmessage.number type="string">49</scmessage.number>
+        <recipient type="string">current.pending.groups in $L.file</recipient>
+        <msgclass type="string">email</msgclass>
+        <msg.condition type="operator">file.name in $L.file="incidents" and null($G.webserver.url)</msg.condition>
+        <group.file NullValue="1" type="string"/>
+        <arguments type="string">{name in $L.file, unique.key in $L.file}</arguments>
+        <group.area NullValue="1" type="string"/>
+        <subgroup NullValue="1" type="string"/>
+        <subject.class NullValue="1" type="string"/>
+        <subject.no NullValue="1" type="string"/>
+        <subject.args NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+      </message>
+      <message sctype="structure">
+        <scmessage.class type="string">alert</scmessage.class>
+        <scmessage.number type="string">48</scmessage.number>
+        <recipient type="string">1 in $L.args</recipient>
+        <msgclass type="string">email</msgclass>
+        <msg.condition type="operator">file.name in $L.file="incidents" and not  (null($G.webserver.url)) and not  (null(1 in $L.args))</msg.condition>
+        <group.file type="string">assignment</group.file>
+        <arguments type="string">{name in $L.file, unique.key in $L.file}</arguments>
+        <group.area NullValue="1" type="string"/>
+        <subgroup NullValue="1" type="string"/>
+        <subject.class NullValue="1" type="string"/>
+        <subject.no NullValue="1" type="string"/>
+        <subject.args NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+      </message>
+      <message sctype="structure">
+        <scmessage.class type="string">alert</scmessage.class>
+        <scmessage.number type="string">48</scmessage.number>
+        <recipient type="string">1 in $L.args</recipient>
+        <msgclass type="string">email</msgclass>
+        <msg.condition type="operator">file.name in $L.file="incidents" and not  (null($G.webserver.url)) and not  (null(1 in $L.args))</msg.condition>
+        <group.file NullValue="1" type="string"/>
+        <arguments type="string">{name in $L.file, unique.key in $L.file}</arguments>
+        <group.area NullValue="1" type="string"/>
+        <subgroup NullValue="1" type="string"/>
+        <subject.class NullValue="1" type="string"/>
+        <subject.no NullValue="1" type="string"/>
+        <subject.args NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+      </message>
+      <message sctype="structure">
+        <scmessage.class type="string">alert</scmessage.class>
+        <scmessage.number type="string">49</scmessage.number>
+        <recipient type="string">1 in $L.args</recipient>
+        <msgclass type="string">email</msgclass>
+        <msg.condition type="operator">file.name in $L.file="incidents" and null($G.webserver.url) and not  (null(1 in $L.args))</msg.condition>
+        <group.file type="string">assignment</group.file>
+        <arguments type="string">{name in $L.file, unique.key in $L.file}</arguments>
+        <group.area NullValue="1" type="string"/>
+        <subgroup NullValue="1" type="string"/>
+        <subject.class NullValue="1" type="string"/>
+        <subject.no NullValue="1" type="string"/>
+        <subject.args NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+      </message>
+      <message sctype="structure">
+        <scmessage.class type="string">alert</scmessage.class>
+        <scmessage.number type="string">49</scmessage.number>
+        <recipient type="string">1 in $L.args</recipient>
+        <msgclass type="string">email</msgclass>
+        <msg.condition type="operator">file.name in $L.file="incidents" and null($G.webserver.url) and not  (null(1 in $L.args))</msg.condition>
+        <group.file NullValue="1" type="string"/>
+        <arguments type="string">{name in $L.file, unique.key in $L.file}</arguments>
+        <group.area NullValue="1" type="string"/>
+        <subgroup NullValue="1" type="string"/>
+        <subject.class NullValue="1" type="string"/>
+        <subject.no NullValue="1" type="string"/>
+        <subject.args NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+      </message>
+      <message sctype="structure">
+        <scmessage.class type="string">alert</scmessage.class>
+        <scmessage.number type="string">49</scmessage.number>
+        <recipient type="string">1 in $L.args</recipient>
+        <msgclass type="string">email</msgclass>
+        <msg.condition type="operator">file.name in $L.file="cm3r" and not  (null(1 in $L.args))</msg.condition>
+        <group.file NullValue="1" type="string"/>
+        <arguments type="string">{name in $L.file, unique.key in $L.file}</arguments>
+        <group.area NullValue="1" type="string"/>
+        <subgroup NullValue="1" type="string"/>
+        <subject.class NullValue="1" type="string"/>
+        <subject.no NullValue="1" type="string"/>
+        <subject.args NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+      </message>
+      <message sctype="structure">
+        <scmessage.class type="string">alert</scmessage.class>
+        <scmessage.number type="string">49</scmessage.number>
+        <recipient type="string">1 in $L.args</recipient>
+        <msgclass type="string">email</msgclass>
+        <msg.condition type="operator">file.name in $L.file="ocmq" and not  (null(1 in $L.args))</msg.condition>
+        <group.file NullValue="1" type="string"/>
+        <arguments type="string">{name in $L.file, unique.key in $L.file}</arguments>
+        <group.area NullValue="1" type="string"/>
+        <subgroup NullValue="1" type="string"/>
+        <subject.class NullValue="1" type="string"/>
+        <subject.no NullValue="1" type="string"/>
+        <subject.args NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+      </message>
+      <message sctype="structure">
+        <scmessage.class type="string">alert</scmessage.class>
+        <scmessage.number type="string">49</scmessage.number>
+        <recipient type="string">$L.delegates</recipient>
+        <msgclass type="string">email</msgclass>
+        <msg.condition type="operator">file.name in $L.file="incidents" and null($G.webserver.url) and jscall("ApprovalDelegationGroups.checkDelegation")</msg.condition>
+        <group.file NullValue="1" type="string"/>
+        <arguments type="string">{name in $L.file, unique.key in $L.file}</arguments>
+        <group.area NullValue="1" type="string"/>
+        <subgroup NullValue="1" type="string"/>
+        <subject.class NullValue="1" type="string"/>
+        <subject.no NullValue="1" type="string"/>
+        <subject.args NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+      </message>
+      <message sctype="structure">
+        <scmessage.class type="string">alert</scmessage.class>
+        <scmessage.number type="string">48</scmessage.number>
+        <recipient type="string">current.pending.groups in $L.file</recipient>
+        <msgclass type="string">email</msgclass>
+        <msg.condition type="operator">file.name in $L.file="incidents" and not  (null($G.mobility.url))</msg.condition>
+        <group.file type="string">assignment</group.file>
+        <arguments type="string">{name in $L.file, unique.key in $L.file, $L.mobility.url}</arguments>
+        <group.area NullValue="1" type="string"/>
+        <subgroup NullValue="1" type="string"/>
+        <subject.class NullValue="1" type="string"/>
+        <subject.no NullValue="1" type="string"/>
+        <subject.args NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+      </message>
+      <message sctype="structure">
+        <scmessage.class type="string">alert</scmessage.class>
+        <scmessage.number type="string">48</scmessage.number>
+        <recipient type="string">current.pending.groups in $L.file</recipient>
+        <msgclass type="string">email</msgclass>
+        <msg.condition type="operator">file.name in $L.file="incidents" and not  (null($G.mobility.url))</msg.condition>
+        <group.file NullValue="1" type="string"/>
+        <arguments type="string">{name in $L.file, unique.key in $L.file, $L.mobility.url}</arguments>
+        <group.area NullValue="1" type="string"/>
+        <subgroup NullValue="1" type="string"/>
+        <subject.class NullValue="1" type="string"/>
+        <subject.no NullValue="1" type="string"/>
+        <subject.args NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+      </message>
+      <message sctype="structure">
+        <scmessage.class type="string">alert</scmessage.class>
+        <scmessage.number type="string">49</scmessage.number>
+        <recipient type="string">current.pending.groups in $L.file</recipient>
+        <msgclass type="string">email</msgclass>
+        <msg.condition type="operator">file.name in $L.file="timeperiodDefinition"</msg.condition>
+        <group.file NullValue="1" type="string"/>
+        <arguments type="string">{name in $L.file, unique.key in $L.file}</arguments>
+        <group.area NullValue="1" type="string"/>
+        <subgroup NullValue="1" type="string"/>
+        <subject.class NullValue="1" type="string"/>
+        <subject.no NullValue="1" type="string"/>
+        <subject.args NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+      </message>
+      <message sctype="structure">
+        <scmessage.class type="string">alert</scmessage.class>
+        <scmessage.number type="string">49</scmessage.number>
+        <recipient type="string">current.pending.groups in $L.file</recipient>
+        <msgclass type="string">email</msgclass>
+        <msg.condition type="operator">file.name in $L.file="timeperiodDefinition"</msg.condition>
+        <group.file type="string">assignment</group.file>
+        <arguments type="string">{name in $L.file, unique.key in $L.file}</arguments>
+        <group.area NullValue="1" type="string"/>
+        <subgroup NullValue="1" type="string"/>
+        <subject.class NullValue="1" type="string"/>
+        <subject.no NullValue="1" type="string"/>
+        <subject.args NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+      </message>
+    </message>
+    <str.condition type="string">approval.status in $L.file~="denied"</str.condition>
+    <sysmodtime type="dateTime">06/10/14 00:52:45</sysmodtime>
+    <sysmoduser type="string">qiqingsong</sysmoduser>
+    <sysmodcount type="decimal">9</sysmodcount>
+    <id type="string">Approval Added_1</id>
+  </record>
+</recordset>

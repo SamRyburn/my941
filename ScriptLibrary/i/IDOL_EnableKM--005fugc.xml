@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;IDOL_EnableKM&quot;" recordid="IDOL_EnableKM">
+    <name type="string">IDOL_EnableKM</name>
+    <script type="string">var pendingObj = {
+  format: {key: 'name', value:['kmknowledgebase.g','kmknowledgebase.advsearch.g', 'kmknowledgebase.advsearch.pd.g', 'kmknowledgebase.qbe.g']},
+  formatctrl: {key: 'name', value:['kmknowledgebase']},
+  Process: {key: 'process', value: ['kmknowledgebase.ondelete','kmknowledgebase.reindex','kmknowledgebase.onsave','kmknowledgebase.refreshstats','kmknowledgebase.newkb','kmknowledgebase.init','kmquery.advancedoptions','kmquery.submitsearch']},
+  States: {key: 'state', value: ['kmknowledgebase.view', 'kmknowledgebase.search', 'idolserverinfo.view']},
+  displayevent: {key: 'id', value: ['kmquery.default_requestlink']},
+  displayoption: {key: 'id', value: ['kmknowledgebase.view_add','idoltools.change_template', 'kmknowledgebase.view_selecterror', 'kmknowledgebase.view_changetable']},
+  displayscreen: {key: 'screen.id', value: ['idoltools', 'kmknowledgebase.view']},
+  Object: {key: 'file.name', value:['kmknowledgebase']}
+}
+
+var triggerPre = ['after.add.KM','after.update.KM','before.delete.KM','before.update.KM'];
+
+var suffix = '_idol_enable';
+
+var menu_to_remove = {'KM GUI MENU': ['Environment', 'Adaptive Learning', 'Configure Hitlists', 'Configure Search Servers', 'Search Knowledgebase', 'Update Indexes'],
+            'ESSSM': ['Search Knowledgebase'], 'ESSSM-Approval': ['Search Knowledgebase'], 'IM': ['Search Knowledgebase'], 'IM PD': ['Search Knowledgebase'],
+            'PM PD': ['Search Knowledgebase'], 'KB GUI MENU': ['Search Knowledgebase'], 'TAILORING': ['View Knowledge Base'], 'CC': ['Search Knowledge Base'],
+            'CC PD': ['Search Knowledgebase']};
+
+var schedulerName = 'KMAttachment';
+var schedulerNames = ['KMUpdate', 'KMAttachment'];
+
+var stop_words_to_remove = {en: ['and', 'or','about', 'above', 'across', 'after', 'again', 'against', 'all', 'almost', 'alone', 'along', 'already', 'also', 'although', 'always', 
+                  'among', 'an', 'another', 'any', 'anybody', 'anyone', 'anything', 'anywhere', 'are', 'area', 'areas', 'around', 'as', 'ask', 'at', 'away', 'back', 
+                  'backed', 'backing', 'backs', 'be', 'because', 'become', 'becomes', 'became', 'been', 'before', 'began', 'behind', 'being', 'beings', 'best', 
+                  'better', 'between', 'big', 'both', 'but', 'by', 'came', 'can', 'cannot', 'case', 'cases', 'certain', 'certainly', 'clear', 'clearly', 'come', 
+                  'could', 'did', 'differ', 'different', 'differently', 'do', 'does', 'done', 'down', 'downed', 'downing', 'downs', 'during', 'each', 'early', 
+                  'either', 'end', 'ended', 'ending', 'ends', 'enough', 'even', 'evenly', 'ever', 'every', 'everybody', 'everyone', 'everything', 'everywhere', 
+                  'face', 'faces', 'fact', 'facts', 'far', 'felt', 'few', 'find', 'finds', 'first', 'for', 'four', 'from', 'full', 'fully', 'further', 'furthered', 
+                  'furthering', 'furthers', 'gave', 'general', 'generally', 'get', 'gets', 'give', 'given', 'gives', 'go', 'going', 'good', 'goods', 'got', 'great', 
+                  'greater', 'greatest', 'group', 'grouping', 'groups', 'had', 'has', 'have', 'having', 'he', 'her', 'herself', 'here', 'high', 'higher', 'highest', 
+                  'him', 'himself', 'his', 'how', 'however', 'if', 'important', 'in', 'interest', 'interested', 'interesting', 'interests', 'into', 'is', 'it', 'its', 
+                  'itself', 'just', 'keep', 'keeps', 'kind', 'knew', 'know', 'known', 'knows', 'large', 'largely', 'last', 'later', 'latest', 'least', 'less', 'let', 
+                  'lets', 'like', 'likely', 'long', 'longer', 'longest', 'made', 'make', 'making', 'man', 'many', 'me', 'member', 'members', 'men', 'might', 'more', 
+                  'most', 'mostly', 'mr', 'mrs', 'much', 'must', 'my', 'myself', 'necessary', 'need', 'needed', 'needing', 'needs', 'never', 'new', 'newer', 'newest', 
+                  'next', 'no', 'non', 'not', 'nobody', 'noone', 'nothing', 'now', 'nowhere', 'number', 'numbers', 'of', 'off', 'often', 'old', 'older', 'oldest', 'on', 
+                  'once', 'one', 'only', 'open', 'opened', 'opening', 'opens', 'order', 'ordered', 'ordering', 'orders', 'other', 'others', 'our', 'out', 'over', 'part', 
+                  'parted', 'parting', 'parts', 'per', 'perhaps', 'place', 'places', 'point', 'pointed', 'pointing', 'points', 'possible', 'present', 'presented', 
+                  'presenting', 'presents', 'problem', 'problems', 'put', 'puts', 'quite', 'rather', 'really', 'right', 'room', 'rooms', 'said', 'same', 'saw', 'say', 
+                  'says', 'second', 'seconds', 'see', 'sees', 'seem', 'seemed', 'seeming', 'seems', 'several', 'shall', 'she', 'should', 'show', 'showed', 'showing', 
+                  'shows', 'side', 'sides', 'since', 'small', 'smaller', 'smallest', 'so', 'some', 'somebody', 'someone', 'something', 'somewhere', 'state', 'states', 
+                  'still', 'such', 'sure', 'take', 'taken', 'than', 'that', 'the', 'their', 'them', 'then', 'there', 'therefore', 'these', 'they', 'thing', 'things', 
+                  'think', 'thinks', 'this', 'those', 'though', 'thought', 'thoughts', 'three', 'through', 'thus', 'to', 'today', 'together', 'too', 'took', 'toward', 
+                  'turn', 'turned', 'turning', 'turns', 'two', 'under', 'until', 'up', 'upon', 'us', 'use', 'uses', 'used', 'very', 'want', 'wanted', 'wanting', 'wants', 
+                  'was', 'way', 'ways', 'we', 'well', 'wells', 'went', 'were', 'what', 'when', 'where', 'whether', 'which', 'while', 'who', 'whole', 'whose', 'why', 
+                  'will', 'with', 'within', 'without', 'work', 'worked', 'working', 'works', 'would', 'year', 'years', 'yet', 'you', 'young', 'younger', 'youngest', 
+                  'your', 'yours']};
+
+var do_to_disable = ['rmq.main.display_kmsearch', 'cc.edit.incident_find.solution', 'cc.edit.incident_find.solution_1', 'cc.edit.incident_kmsearch', 'cc.first_findsolution',
+          'cc.first_findsolution_1', 'cc.first_kmsearch', 'change.view_find.solution', 'change.view_kmsearch', 'change.open.display_find.solution', 'change.open.display_kmsearch',
+          'apm.edit.problem_kmsearch', 'kmdocFlow.view_adaptivelearning', 'kmknowledgebase.view_webcreateindex', 'kmknowledgebase.view_webstartcrawl', 'kmknowledgebase.view_webstopcrawl',
+          'environment.view_verify_path', 'environment.view_verify_server', 'environment.view_adaptivechkboxchange', 'rca.view_kmsearch', 'rca.view_kmsearch_1',
+          'rca.view_viewknowledge','kne.view_kmsearch', 'kne.view_kmsearch_1', 'kne.view_viewknowledge'];
+          
+var workflow_action_to_disable = [{name: 'Known Error', tableName: 'rootcause'}, {name: 'Problem', tableName: 'rootcause'}];
+var workflowphase_action_to_disable = [{phaseName: 'Logging', tableName: 'probsummary', workflowName: 'Incident'}, {phaseName: 'Categorization', tableName: 'probsummary', workflowName: 'Incident'}, {phaseName: 'Investigation', tableName: 'probsummary', workflowName: 'Incident'},
+                    {phaseName: 'Recovery', tableName: 'probsummary', workflowName: 'Incident'}, {phaseName: 'Review', tableName: 'probsummary', workflowName: 'Incident'}, {phaseName: 'Closure', tableName: 'probsummary', workflowName: 'Incident'},
+                    {phaseName: 'Logging', tableName: 'incidents', workflowName: 'Service Catalog'}, {phaseName: 'Categorization', tableName: 'incidents', workflowName: 'Service Catalog'}, {phaseName: 'Work In Progress', tableName: 'incidents', workflowName: 'Service Catalog'}, 
+                    {phaseName: 'Review', tableName: 'incidents', workflowName: 'Service Catalog'}, {phaseName: 'Closure', tableName: 'incidents', workflowName: 'Service Catalog'}, {phaseName: 'Logging', tableName: 'incidents', workflowName: 'ServiceDesk'}, 
+                    {phaseName: 'Categorization', tableName: 'incidents', workflowName: 'ServiceDesk'}, {phaseName: 'Work In Progress', tableName: 'incidents', workflowName: 'ServiceDesk'}, {phaseName: 'Review', tableName: 'incidents', workflowName: 'ServiceDesk'}, 
+                    {phaseName: 'Closure', tableName: 'incidents', workflowName: 'ServiceDesk'}];
+                    
+function enableIDOL(idolConfig) {
+  enableObj();
+  enableKMTriggers();
+  removeMenu();
+  enableSRCEnv();
+  addScheduleToStartUp();
+  removeStopWords();
+  disableKMSearch();
+  upgradeKnowledgeBase();
+  setLDAPFields(idolConfig);
+  upgradeHelp();
+  updateDbdict();
+  
+  print(funcs.scmsg('94', 'idol', []));
+}
+
+
+function enableObj() {
+  for (var filename in pendingObj) {
+    var key = pendingObj[filename].key;
+    var value = pendingObj[filename].value;
+    for (var i = 0; i &lt; value.length; i++){
+      var query = key + '="' + value[i] + '"';
+      var scfile = new SCFile(filename);
+      
+      // if this file's unique key is more than 1 field, need to deal it on special
+      if (filename === 'format') {
+        query += ' and syslanguage like "*"';
+        var rc = scfile.doSelect(query);
+        if (rc === RC_SUCCESS) {
+          while (rc === RC_SUCCESS) {
+            var keyValue = scfile[key];
+            var pendingFile = new SCFile(filename);
+            var language = scfile['syslanguage'];
+            var rc1 = pendingFile.doSelect(key + '="' + keyValue + suffix + '" and syslanguage = "' + language + '"');
+      
+            if (rc1 === RC_SUCCESS) {
+              pendingFile[key] = pendingFile[key].replace(suffix, '');
+              scfile.doDelete();
+              pendingFile.doUpdate();
+              print(funcs.scmsg('93', 'idol', [filename, keyValue + '-' + language]));
+            }
+            rc = scfile.getNext();
+          }
+        } else if (rc === RC_NO_MORE) {
+          var query = key + '="' + value[i] + suffix + '" and syslanguage like "*"';
+          var pendingFile = new SCFile(filename);
+          var rc1 = pendingFile.doSelect(query);
+          while (rc1 === RC_SUCCESS) {
+            pendingFile[key] = pendingFile[key].replace(suffix, '');
+            pendingFile.doUpdate();
+            rc1 = pendingFile.getNext();
+            print(funcs.scmsg('93', 'idol', [filename, keyValue + '-' + pendingFile['syslanguage']]));
+          }
+        }
+      } else {
+        var rc = scfile.doSelect(query);
+        if (rc === RC_SUCCESS) {
+          var keyValue = scfile[key];
+          var pendingFile = new SCFile(filename);
+          var rc1 = pendingFile.doSelect(key + '="' + keyValue + suffix + '"');
+        
+          if (rc1 === RC_SUCCESS) {
+            pendingFile[key] = pendingFile[key].replace(suffix, '');
+            if (filename === 'displayoption' || filename === 'displayevent') {
+              pendingFile['condition'] = scfile['condition']
+            } else if (filename === 'Object') {
+              pendingFile['unique.field'] = scfile['unique.field'];
+            }
+            scfile.doDelete();
+            pendingFile.doUpdate();
+            print(funcs.scmsg('93', 'idol', [filename, keyValue]));
+          }
+        } else if (rc === RC_NO_MORE) {
+          var keyValue = value[i];
+          var rc1 = pendingFile.doSelect(key + '="' + keyValue + suffix + '"');
+          
+          if (rc1 === RC_SUCCESS) {
+            pendingFile[key] = pendingFile[key].replace(suffix, '');
+            if (filename === 'displayoption' || filename === 'displayevent') {
+              pendingFile['condition'] = 'true';
+            }
+            pendingFile.doUpdate();
+            print(funcs.scmsg('93', 'idol', [filename, keyValue]));
+          }
+        }
+      }
+    }
+  }
+}
+
+function enableKnowlegebase() {
+  var kmknowledgebase = new SCFile('kmknowledgebase');
+  var rc = kmknowledgebase.doSelect('visible=false');
+  while (rc === RC_SUCCESS) {
+    kmknowledgebase.visible = true;
+    kmknowledgebase.doUpdate();
+    print(funcs.scmsg('93', 'idol', ['knowledgebase', kmknowledgebase.kbname]));
+    rc = kmknowledgebase.getNext();
+  }
+}
+
+
+function enableKMTriggers() {
+  for (var i = 0; i &lt; triggerPre.length; i++) {
+    var triggers = new SCFile('triggers');
+    print('trigger.name like"' + triggerPre[i] + '*' + suffix + '" and table.name=NULL');
+    var rc = triggers.doSelect('trigger.name like"' + triggerPre[i] + '*' + suffix + '" and table.name=NULL');
+    while (rc === RC_SUCCESS) {
+      var triggerName = triggers['trigger.name'];
+      var newTriggerName = triggerName.replace(suffix, '');
+      var tmpTrigger = new SCFile('triggers');
+      var rc1 = tmpTrigger.doSelect('trigger.name="' + newTriggerName + '"');
+      if (rc1 === RC_SUCCESS) {
+        triggers.doDelete();
+      } else {
+        var tableName = triggerName.slice(triggerPre[i].length + 1, triggerName.length - suffix.length);
+        triggers['table.name'] = tableName;
+        triggers['trigger.name'] = newTriggerName;
+        triggers.doUpdate();
+        print(funcs.scmsg('93', 'idol', ['trigger', triggerName]));
+      }
+      rc = triggers.getNext();
+    }
+  }
+}
+
+
+function removeMenu() {
+  for (var obj in menu_to_remove) {
+    var menu = new SCFile('menu');
+    var menuNodes = menu_to_remove[obj];
+    var rc = menu.doSelect('name="' + obj + '"');
+    if (rc === RC_SUCCESS) {
+      var description = menu['description'];
+      for (var i = description.length() - 1; i &gt;= 0; i--) {
+        if (lib.ArrayUtil.contains(menuNodes, description[i])) {
+          menu['description'] = removeElementInArray(menu['description'], i);
+          menu['command'] = removeElementInArray(menu['command'], i)
+          menu['condition'] = removeElementInArray(menu['condition'], i)
+          menu['application'] = removeElementInArray(menu['application'], i)
+          menu['pname'] = removeElementInArray(menu['pname'], i)
+          menu['pvalue'] = removeElementInArray(menu['pvalue'], i)
+          menu['system'] = removeElementInArray(menu['system'], i)
+          menu['thread'] = removeElementInArray(menu['thread'], i)
+          menu['group'] = removeElementInArray(menu['group'], i)
+          menu['icon'] = removeElementInArray(menu['icon'], i)
+          menu['option'] = removeElementInArray(menu['option'], i);
+        }
+      }
+      menu.doUpdate();
+      print(funcs.scmsg('93', 'idol', ['menu', obj]));
+    }
+  }
+  updateOperatorDefaultESSMenu();
+}
+
+
+function removeElementInArray(scArray, index){
+  if (scArray == null || scArray.length() == 0) {
+    return scArray;
+  }
+  var array = new SCDatum();
+  array.setType(8);
+  for (var i = 0; i &lt; scArray.length(); i++){
+    if (i !== index) {
+      array.push(scArray[i]);
+    }
+  }
+  return array;
+}
+
+
+function enableSRCEnv(){
+  var kmenv = new SCFile('environment');
+  var rc = kmenv.doSelect('name="knowledge management"');
+  if (rc === RC_SUCCESS) {
+    kmenv['src'] = true;
+    kmenv.doUpdate();
+    print(funcs.scmsg('100', 'idol'));
+  }
+}
+
+
+function addScheduleToStartUp(){
+  var info = new SCFile('info');
+  info.doSelect('type = "startup"');
+
+  for (var i = 0; i &lt; info['process.start.infos'].length(); i++) {
+    if (info['process.start.infos'][i]['name'] === schedulerName) {
+      return;
+    }
+  }
+
+  var parameters = new SCDatum();
+  parameters.setType(8);
+  parameters.push('scheduler');
+  parameters.push(schedulerName);
+  parameters.push('300');
+  parameters.push('1');
+
+  var name = schedulerName;
+
+  var processInfo = new SCDatum();
+  processInfo.setType(9);
+  processInfo.push(name);
+  processInfo.push(parameters);
+
+  info['process.start.infos'].push(processInfo);
+
+  info.doUpdate();
+  removeStopSchedule();
+  print(funcs.scmsg('101', 'idol', [schedulerName]));
+}
+
+
+function triggerScheduler() {
+  for (var i = 0; i &lt; schedulerNames.length; i++) {
+    var tmpSchedulerName = schedulerNames[i];
+    //check if the scheduler is already started
+    var proc = funcs.processes();
+    var started = false;
+    for (var j = 0; j &lt; proc.length(); j++) {
+      if (funcs.str(proc[j]).indexOf(tmpSchedulerName) &gt; 0) {
+        //print(funcs.str(proc[i]));
+        started = true;
+        break;
+      }
+    }
+
+    //start scheduler
+    if (!started) {
+      
+        var rteReturnValue = new SCDatum();
+      var argNames = new SCDatum();
+      var argVals = new SCDatum();
+      argVals.setType(8);     //type array
+      argNames.setType(8);    //type array
+      var argVal;
+        
+      argVal = new SCDatum();
+      argVal.setType(2); //string                           
+      argVal="name";
+      argNames.push(argVal);
+               
+      argVal = new SCDatum();
+      argVal.setType(6); //string                           
+      argVal = tmpSchedulerName;
+      argVals.push(argVal); 
+                
+               
+        system.functions.rtecall("callrad", 
+                                     rteReturnValue, 
+                                     "scheduler.start", //RAD app name
+                                     argNames,
+                                     argVals,
+                                     false); //false to run in same thread, true to run in new thread  
+      }
+    }                               
+                                     
+}
+
+
+function removeStopSchedule() {
+  var schedule = new SCFile('schedule');
+  var rc = schedule.doSelect('name="Stop KMUpdate Process" and class="KMUpdate"');
+  if (rc === RC_SUCCESS) {
+    schedule.doDelete();
+  }
+}
+
+function setLDAPFields(idolConfig) {
+  var result;
+  var scfile = new SCFile('datadict');
+  scfile.doSelect('name="operator"');
+  var ldapAttrs = scfile['ldapattrname'];
+  for (var i = 0; i &lt; ldapAttrs.length(); i++) {
+    var ldapAttr = ldapAttrs[i];
+    if (ldapAttr === 'sAMAccountName') {
+      result = scfile['fields'][i];
+    }
+  }
+  
+  if (result) {
+    idolConfig['sp.map.operator.prop'] = result;
+    print(funcs.scmsg('105', 'idol', [result]));
+  }
+}
+
+
+function removeStopWords() {
+  var stopWordsFile = new SCFile('kmstopword');
+  var rc = stopWordsFile.doSelect('true');
+  while (rc === RC_SUCCESS) {
+    var langCode = stopWordsFile['langcode'];
+    var removeStopWords = stop_words_to_remove[langCode];
+    if (removeStopWords) {
+      var stopWordsArr = [];
+      var stopWords = funcs.denull(stopWordsFile['stopwords']);
+      for (var i = 0; i &lt; stopWords.length(); i++) {
+        var toRemove = false;
+        for (var j = 0; j &lt; removeStopWords.length; j++) {
+          if (removeStopWords[j].toLocaleLowerCase() === stopWords[i].toLocaleLowerCase()) {
+            toRemove = true;
+          }
+        }
+        if (!toRemove) {
+          stopWordsArr.push(stopWords[i]);
+        }
+      }
+      stopWordsFile['stopwords'] = stopWordsArr;
+      stopWordsFile.doUpdate();
+    }
+    rc = stopWordsFile.getNext();
+  }
+  print(funcs.scmsg('106', 'idol'));
+}
+
+
+function disableKMSearch() {
+  disableDiplayOption();
+  disableWorkflow();
+  disableWorkflowPhase();
+}
+
+
+function disableDiplayOption() {
+  var displayOption = new SCFile('displayoption');
+  var query = 'id isin {"' + do_to_disable.join('","') + '"}'
+  var rc = displayOption.doSelect(query);
+  while (rc === RC_SUCCESS) {
+    displayOption['condition'] = false;
+    displayOption.doUpdate();
+    print(funcs.scmsg('107', 'idol',[displayOption['id']]));
+    rc = displayOption.getNext();
+  }
+}
+
+
+function disableWorkflow() {
+  for (var i = 0; i &lt; workflow_action_to_disable.length; i++) {
+    var query = 'true';
+    for (var obj in workflow_action_to_disable[i]) {
+      query += ' and ' + obj + '="' + workflow_action_to_disable[i][obj] + '"';
+    }
+    
+    var workflow = new SCFile('Workflow');
+    var rc = workflow.doSelect(query);
+    if (rc === RC_SUCCESS) {
+      var action = workflow['action'];
+      for (var j = 0; j &lt; action.length(); j++) {
+        if (action[j]['actionName'] === 'Search Knowledge') {
+          action[j]['actionCondition'] = false;
+          action[j]['actionCondXML'] = '&lt;XmlCondition&gt;&lt;collection logical="" negate="" &gt;&lt;condition logical="" negate="false"&gt;&lt;operand type="expression"&gt;&lt;Expression caption=""&gt;"false"&lt;/Expression&gt;&lt;/operand&gt;&lt;/condition&gt;&lt;/collection&gt;&lt;/XmlCondition&gt;';
+          action[j]['actionCondDesc'] = '( Expression: false)';
+        }
+      }
+      workflow.doUpdate();
+      print(funcs.scmsg('108', 'idol',[workflow['name']]));
+    }
+  }
+}
+
+
+function disableWorkflowPhase() {
+  for (var i = 0; i &lt; workflowphase_action_to_disable.length; i++) {
+    var query = true;
+    for (var obj in workflowphase_action_to_disable[i]) {
+      query += ' and ' + obj + '="' + workflowphase_action_to_disable[i][obj] + '"';
+    }
+    
+    var workflowPhase = new SCFile('WorkflowPhase');
+    var rc = workflowPhase.doSelect(query);
+    if (rc === RC_SUCCESS) {
+      var action = workflowPhase['action'];
+      for (var j = 0; j &lt; action.length(); j++) {
+        if (action[j]['actionName'] === 'Search Knowledge') {
+          action[j]['actionCondition'] = false;
+          action[j]['actionCondXML'] = '&lt;XmlCondition&gt;&lt;collection logical="" negate="" &gt;&lt;condition logical="" negate="false"&gt;&lt;operand type="expression"&gt;&lt;Expression caption=""&gt;"false"&lt;/Expression&gt;&lt;/operand&gt;&lt;/condition&gt;&lt;/collection&gt;&lt;/XmlCondition&gt;';
+          action[j]['actionCondDesc'] = '( Expression: false)';
+        }
+      }
+      workflowPhase.doUpdate();
+      print(funcs.scmsg('109', 'idol',[workflowPhase['workflowName'] + '-' + workflowPhase['phaseName']]));
+    }
+  }
+}
+
+
+function upgradeKnowledgeBase() {
+  var kmbaseTemp = new SCFile('kmknowledgebasetemp');
+  var rc = kmbaseTemp.doSelect('true');
+  while (rc === RC_SUCCESS) {
+    var kbname = kmbaseTemp['kbname'];
+    var tablename = kmbaseTemp['sclibtablename'];
+    var kmbase = new SCFile('kmknowledgebase');
+    var query = 'sclibtablename="' +  tablename + '"';
+    if (lib.ProcessDesignerEnablement.isProblemEnabled() &amp;&amp; tablename === 'rootcause') {
+      query = 'kbname="' + kbname + '"';
+    }
+    var rc1 = kmbase.doSelect(query);
+    if (rc1 !== RC_SUCCESS) {
+      copyKmbase(kmbaseTemp, kmbase);
+      kmbase.doInsert();
+      funcs.msg(funcs.scmsg('111', 'idol', [kmbase['kbname']]), 1)
+    }else {
+      while (rc1 === RC_SUCCESS) {
+        mergeToKmbase(kmbaseTemp, kmbase);
+        kmbase.doUpdate();
+        funcs.msg(funcs.scmsg('112', 'idol', [kmbase['kbname']]), 1)
+        rc1 = kmbase.getNext();
+      }
+    }
+    rc = kmbaseTemp.getNext();
+  }
+}
+
+
+function mergeToKmbase(kmbaseTemp, kmbase) {
+  var kbfields = kmbase['kbfields'];
+  var kbfieldsTemp = kmbaseTemp['kbfields'];
+  for (var i = 0; i &lt; kbfields.length(); i++) {
+    var isExist = false;
+    for (var j = 0; j &lt; kbfieldsTemp.length(); j++) {
+      if (kbfields[i]['kbfieldname'] === kbfieldsTemp[j]['kbfieldname']) {
+        kbfields[i]['weight'] = kbfieldsTemp[j]['weight'];
+        kbfields[i]['match'] = kbfieldsTemp[j]['match'];
+        kbfields[i]['sort'] = kbfieldsTemp[j]['sort'];
+        kbfields[i]['datacleansing'] = kbfieldsTemp[j]['datacleansing'];
+        kbfields[i]['hitlist'] = kbfieldsTemp[j]['hitlist'];
+        kbfields[i]['kbfieldtype'] = kbfieldsTemp[j]['kbfieldtype'];
+        kbfields[i]['kbfieldvalue'] = kbfieldsTemp[j]['kbfieldvalue'];
+        isExist = true;
+        break;
+      }
+    }
+    if (!isExist) {
+      kbfields[i]['weight'] = 0;
+      kbfields[i]['match'] = true;
+      kbfields[i]['sort'] = null;
+      kbfields[i]['datacleansing'] = false;
+    }
+  }
+  
+  //if new fields in kmknowledgebasetemp, add to kmknowledgebase
+  for (var i = 0; i &lt; kbfieldsTemp.length(); i++) {
+    var isNew = true;
+    for (var j = 0; j &lt; kbfields.length(); j++) {
+      if (kbfields[j]['kbfieldname'] === kbfieldsTemp[i]['kbfieldname']) {
+        isNew = false;
+        break;
+      }
+    }
+    if (isNew) {
+      var newkbFields = new SCDatum();
+      newkbFields.setType(9);
+      newkbFields.push(kbfieldsTemp[i]['kbfieldname']);
+      newkbFields.push(kbfieldsTemp[i]['kbfieldvalue']);
+      newkbFields.push(kbfieldsTemp[i]['kbfieldtype']);
+      newkbFields.push(kbfieldsTemp[i]['hitlist']);
+      newkbFields.push(kbfieldsTemp[i]['docbody']);
+      newkbFields.push(kbfieldsTemp[i]['weight']);
+      newkbFields.push(kbfieldsTemp[i]['match']);
+      newkbFields.push(kbfieldsTemp[i]['sort']);
+      newkbFields.push(kbfieldsTemp[i]['datacleansing']);
+      kbfields.push(newkbFields);
+    }
+  }
+  
+  kmbase['indexstatus'] = 'offline';
+  kmbase['lastindextime'] = null;
+}
+
+
+function copyKmbase(kmbaseTemp, kmbase) {
+  var xmlRecord = kmbaseTemp.getXML().toXMLString();
+  xmlRecord = xmlRecord.replace('kmknowledgebasetemp', 'kmknowledgebase');
+  var xml = new XML();
+  xml.setContent(xmlRecord);
+  kmbase.setRecord(xmlRecord);
+}
+
+function updateOperatorDefaultESSMenu() {
+  var batchUpdateSql = "update OPERATORM1 set ESS_INITIAL_APP='0' where ESS_INITIAL_APP='7'";
+  var result=lib.c.$("#dataService").executeSQL(batchUpdateSql);
+  print(funcs.scmsg('115', 'idol'));
+}
+
+function upgradeHelp() {
+  var help = new SCFile('help');
+  var rc = help.doSelect('file.name="kmknowledgebase" and field.name="kbfields_idol_enable" and syslanguage like "*"');
+  while (rc === RC_SUCCESS) {
+    help['field.name'] = 'kbfields';
+    help.doUpdate();
+    rc = help.getNext();
+  }
+  print(funcs.scmsg('117', 'idol',['help']));
+}
+
+
+function updateDbdict() {
+  var dbdict = new SCFile('dbdict');
+  var rc = dbdict.doSelect('name="kmknowledgebaseupdates"');
+  if (rc === RC_SUCCESS) {
+    //update the sql rc of recdata field to true
+    dbdict['field'][9][7][3] = true;
+    dbdict.doUpdate();
+  }
+}</script>
+    <package type="string">IDOL</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:39</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

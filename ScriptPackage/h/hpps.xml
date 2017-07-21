@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptPackage">
+  <record id="name=&quot;hpps&quot;" recordid="hpps">
+    <name type="string">hpps</name>
+    <description type="string">Professional Services ScriptLibraries</description>
+    <sysmodtime type="dateTime">07/17/17 07:17:04</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+  </record>
+</recordset>

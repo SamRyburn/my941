@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="RuleSet">
+  <record id="id=&quot;pbm.notification.resolution&quot;" recordid="pbm.notification.resolution">
+    <id type="string">pbm.notification.resolution</id>
+    <name type="string">Send Notification when Problem has resolution</name>
+    <tablename sctype="array">
+      <tablename sctype="string">rootcause</tablename>
+    </tablename>
+    <rule sctype="array">
+      <rule sctype="structure">
+        <ruleId type="decimal">2</ruleId>
+        <isGroup type="boolean">false</isGroup>
+        <parentGroup type="decimal">0</parentGroup>
+        <ruleXML NullValue="1" type="string"/>
+        <ruleDesc type="string">Send HTML Email: PM.Resolution to Problem Coordinators</ruleDesc>
+        <condition type="operator">rcStatus in $L.file="Resolved" and not  (same(rcStatus in $L.file.save, rcStatus in $L.file))</condition>
+        <conditionDesc type="string">( rcStatus in CurrentRecord = "Resolved" AND rcStatus in SavedRecord !=  rcStatus in CurrentRecord)</conditionDesc>
+        <conditionXML type="string">&lt;XmlCondition&gt;&lt;collection logical="" negate="" &gt;&lt;condition logical="" negate="false"&gt;&lt;operand type="field"&gt;&lt;TableName&gt;CurrentRecord&lt;/TableName&gt;&lt;FieldName caption="Problem Status"&gt;rcStatus&lt;/FieldName&gt;&lt;/operand&gt;&lt;Comparison&gt;equals&lt;/Comparison&gt;&lt;Value dataType="string"&gt;Resolved&lt;/Value&gt;&lt;/condition&gt;&lt;condition logical="AND" negate="false"&gt;&lt;operand type="field"&gt;&lt;TableName&gt;SavedRecord&lt;/TableName&gt;&lt;FieldName caption="Problem Status"&gt;rcStatus&lt;/FieldName&gt;&lt;/operand&gt;&lt;Comparison&gt;neq&lt;/Comparison&gt;&lt;Value type="field"&gt;&lt;TableName&gt;CurrentRecord&lt;/TableName&gt;&lt;FieldName caption="Problem Status"&gt;rcStatus&lt;/FieldName&gt;&lt;/Value&gt;&lt;/condition&gt;&lt;/collection&gt;&lt;/XmlCondition&gt;</conditionXML>
+        <fullDesc type="string">Send HTML Email: PM.Resolution to Problem Coordinators (when ( rcStatus in CurrentRecord = "Resolved" AND rcStatus in SavedRecord !=  rcStatus in CurrentRecord))</fullDesc>
+        <level type="decimal">0</level>
+        <type type="string">sendHTMLEmail</type>
+        <ruleJSON type="string">{"type":"sendHTMLEmail","tempName":"PM.Resolution","recipient":"Group","group":{"type":"assignment","value":"Problem Coordinators","sendTo":"All"}}</ruleJSON>
+      </rule>
+      <rule sctype="structure">
+        <ruleId type="decimal">1</ruleId>
+        <isGroup type="boolean">false</isGroup>
+        <parentGroup type="decimal">0</parentGroup>
+        <ruleXML NullValue="1" type="string"/>
+        <ruleDesc type="string">Send HTML Email: PM.Resolution to Opened By</ruleDesc>
+        <condition type="operator">rcStatus in $L.file="Resolved" and not  (same(rcStatus in $L.file, rcStatus in $L.file.save))</condition>
+        <conditionDesc type="string">( rcStatus in CurrentRecord = "Resolved" AND rcStatus in CurrentRecord !=  rcStatus in SavedRecord)</conditionDesc>
+        <conditionXML type="string">&lt;XmlCondition&gt;&lt;collection logical="" negate="" &gt;&lt;condition logical="" negate="false"&gt;&lt;operand type="field"&gt;&lt;TableName&gt;CurrentRecord&lt;/TableName&gt;&lt;FieldName caption="Problem Status"&gt;rcStatus&lt;/FieldName&gt;&lt;/operand&gt;&lt;Comparison&gt;equals&lt;/Comparison&gt;&lt;Value dataType="string"&gt;Resolved&lt;/Value&gt;&lt;/condition&gt;&lt;condition logical="AND" negate="false"&gt;&lt;operand type="field"&gt;&lt;TableName&gt;CurrentRecord&lt;/TableName&gt;&lt;FieldName caption="Problem Status"&gt;rcStatus&lt;/FieldName&gt;&lt;/operand&gt;&lt;Comparison&gt;neq&lt;/Comparison&gt;&lt;Value type="field"&gt;&lt;TableName&gt;SavedRecord&lt;/TableName&gt;&lt;FieldName caption="Problem Status"&gt;rcStatus&lt;/FieldName&gt;&lt;/Value&gt;&lt;/condition&gt;&lt;/collection&gt;&lt;/XmlCondition&gt;</conditionXML>
+        <fullDesc type="string">Send HTML Email: PM.Resolution to Opened By (when ( rcStatus in CurrentRecord = "Resolved" AND rcStatus in CurrentRecord !=  rcStatus in SavedRecord))</fullDesc>
+        <level type="decimal">0</level>
+        <type type="string">sendHTMLEmail</type>
+        <ruleJSON type="string">{"type":"sendHTMLEmail","tempName":"PM.Resolution","recipient":"Current Record","field":{"value":"opened.by","type":"operator"}}</ruleJSON>
+      </rule>
+    </rule>
+    <lastRuleId type="decimal">2</lastRuleId>
+    <isAction NullValue="1" type="boolean"/>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:01:12</sysmodtime>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

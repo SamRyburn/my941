@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="scmessage">
+  <record id="syslanguage=&quot;en&quot; and class=&quot;local:sdSubCategory&quot; and message.id=&quot;Request for Administration;service request&quot;" recordid="en - local:sdSubCategory - Request for Administration;service request">
+    <syslanguage type="string">en</syslanguage>
+    <message.id type="string">Request for Administration;service request</message.id>
+    <severity NullValue="1" type="decimal"/>
+    <message type="string">Request for Administration</message>
+    <class type="string">local:sdSubCategory</class>
+    <comments NullValue="1" sctype="array">
+      <comments NullValue="1" type="string"/>
+    </comments>
+    <sysmodtime type="dateTime">06/29/14 20:57:43</sysmodtime>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">xiaoning.li</sysmoduser>
+  </record>
+</recordset>

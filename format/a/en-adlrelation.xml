@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;adlrelation&quot;" recordid="en - adlrelation">
+    <name mandatory="true" type="string">adlrelation</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">3</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">adlnumber:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=adlnumber:	X=4	Y=0	Height=2	Width=40	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">22</column>
+        <length type="decimal">50</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">adlnumber</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=adlnumber	X=42	Y=0	Height=2	Width=100	ReadOnly=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">3</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">sourcetag:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=sourcetag:	X=4	Y=2	Height=2	Width=40	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">22</column>
+        <length type="decimal">50</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">sourcetag</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=sourcetag	X=42	Y=2	Height=2	Width=100	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">3</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">solutiontag:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=solutiontag:	X=4	Y=4	Height=2	Width=40	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">22</column>
+        <length type="decimal">50</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">solutiontag</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=solutiontag	X=42	Y=4	Height=2	Width=100	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">2</column>
+        <length type="decimal">75</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">This text was used during the search process.  The text below will be used in the learning process to aid future searches.</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=This text was used during the search process.  The text below will be used in the learning process to aid future searches.	X=2	Y=8	Height=2	Width=150	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">2</column>
+        <length type="decimal">70</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">If you would like to add aditional key words to aid in the learning process,  please enter them below.</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=If you would like to add aditional key words to aid in the learning process,  please enter them below.	X=2	Height=2	Width=140	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">512</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">2</column>
+        <length type="decimal">70</length>
+        <window type="decimal">8</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">description</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">MultiText;Input=description	X=2	Y=12	Height=16	Width=140	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">16</line>
+        <column type="decimal">2</column>
+        <length type="decimal">69</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Additonal comments (Not used in learning):</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Additonal comments (Not used in learning):	X=3	Y=30	Height=2	Width=137	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">512</flags>
+        <line type="decimal">17</line>
+        <column type="decimal">2</column>
+        <length type="decimal">70</length>
+        <window type="decimal">8</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">comments</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">MultiText;Input=comments	X=2	Y=32	Height=16	Width=140	</property>
+      </field>
+    </field>
+    <file.name type="string">adlrelation</file.name>
+    <editor type="string">joeh</editor>
+    <last.update type="dateTime">03/05/02 10:23:40</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">5</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">03/05/02 18:33:00</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

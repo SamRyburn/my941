@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;AppDiagnositic&quot;" recordid="AppDiagnositic">
+    <name type="string">AppDiagnositic</name>
+    <script type="string">
+function applicationCounter (moduleName, appName){
+
+	appCounter(moduleName, appName);
+} 
+
+function appEventCounter (appName) {
+	applicationCounter("Event Services", appName);
+}
+
+function appEventInCounter () {
+	appEventCounter("eventin");
+}
+
+function appMailInCounter () {
+	appEventCounter("emailin");
+}</script>
+    <package NullValue="1" type="string"/>
+    <sysmodtime type="dateTime">02/24/11 17:56:41</sysmodtime>
+    <sysmoduser type="string">xingjia</sysmoduser>
+    <sysmodcount type="decimal">2</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

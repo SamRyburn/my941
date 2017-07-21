@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;exercise.prompt.g&quot;" recordid="en - exercise.prompt.g">
+    <name mandatory="true" type="string">exercise.prompt.g</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">2</column>
+        <length type="decimal">79</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Application Exerciser</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Application Exerciser	X=2	Y=0	Height=2	Width=158	ForeColor=0	Justification=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">2</column>
+        <length type="decimal">29</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Name of Application to Call:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Name of Application to Call:	X=2	Y=2	Height=2	Width=58	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">31</column>
+        <length type="decimal">32</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">application</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=application	X=60	Y=2	Height=2	Width=64	MaxChars=32	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">2</column>
+        <length type="decimal">19</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Parameters to Pass:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Parameters to Pass:	X=2	Y=4	Height=2	Width=38	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">2</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Name</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Name	X=2	Y=6	Height=2	Width=26	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">35</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Value</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Value	X=68	Y=6	Height=2	Width=26	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">2</column>
+        <length type="decimal">32</length>
+        <window type="decimal">5</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">names</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=names	X=2	Y=8	Height=2	Width=64	ArrayLength=5	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">32768</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">35</column>
+        <length type="decimal">47</length>
+        <window type="decimal">5</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">values</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=values	X=68	Y=8	Height=2	Width=94	Parse=1	ArrayLength=5	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">prietke</editor>
+    <last.update type="dateTime">03/16/04 10:58:50</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">12</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/15/04 07:44:03</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

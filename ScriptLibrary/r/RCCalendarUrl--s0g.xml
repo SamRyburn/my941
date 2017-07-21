@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;RCCalendarUrl&quot;" recordid="RCCalendarUrl">
+    <name type="string">RCCalendarUrl</name>
+    <script type="string">/*
+The script is used to get the RC Change Calendar Url for different modules.
+The following functions are public.
+@author Zheng Jianxin
+@date 2010-01-14
+
+*/
+
+
+function getUrl(file){
+	var fileName = system.functions.filename(file);
+	if(fileName=="incidents"){
+		return getInteractionUrl(file);
+	}else if(fileName=="probsummary"){
+		return getIncidentUrl(file);
+	}else if(fileName=="rootcause"){
+		return getProblemUrl(file);
+	}else{
+		return null;
+	}
+}
+
+
+//Get the url for the given interaction, 
+function getInteractionUrl(file){	
+	var url = null;
+	var ciList= new Array();
+	if(file.logical_name!=null){
+	    ciList[ciList.length]= file.logical_name;
+	}	
+	if(file.affected_item!=null){
+	    ciList[ciList.length]= file.affected_item;
+	}
+	var ciParam = getCiParameter(ciList);
+	if(ciParam!=null){
+		url = getCalendarBaseUrl(false) + getTimeParameter(null) + ciParam;	
+	}
+	return url;
+}
+
+//Get the url for the given incident, paramter "incident" is the specified incident record 
+function getIncidentUrl(incident){
+	var url = null;
+	
+	var ciList= new Array();
+	if(incident.logical_name!=null){
+	    ciList[ciList.length]= incident.logical_name;
+	}	
+	if(incident.affected_item!=null){
+	    ciList[ciList.length]= incident.affected_item;
+	}
+	var ciParam = getCiParameter(ciList);
+	if(ciParam!=null){
+		url = getCalendarBaseUrl(false) + getTimeParameter(incident.downtime_start) + ciParam;	
+	}
+	return url;
+}
+
+
+//Get the url for the given problem, paramter "file" is the specified problem record 
+function getProblemUrl(file){
+	var url = null;
+	
+	var ciList= new Array();
+	if(file.logical_name!=null){
+	    ciList[ciList.length]= file.logical_name;
+	}	
+	var ACs = file.affected_ci;
+	if(ACs!=null)
+	{
+		for (var i in ACs){		
+		    if(ACs[i].ci_device_name !=null)
+			    ciList[ciList.length] = ACs[i].ci_device_name;		
+		}	
+	}
+	if(file.affected_item!=null){
+	    ciList[ciList.length]= file.affected_item;
+	}
+		
+	var ciParam = getCiParameter(ciList);
+	if(ciParam!=null){
+		url = getCalendarBaseUrl(false) + getTimeParameter(null) + ciParam;	
+	}
+	return url;
+}
+
+
+//Get the url for the given change or change task, 
+//paramter "file" is the specified change or change task record, "interative" indicate whether it is interactive mode
+function getChangeUrl(interative, file){
+	var url = null;	
+	var ciList= new Array();	
+	var assets = system.functions.denull(file.middle.assets);	
+	//QCCR1E117986 Even SM array is not null value, the elements could be only one empty string.
+	//Use length() function to check if the ci list is null.		
+	if(assets!=null &amp;&amp; assets.length()&gt;0) {
+		for (var i=0; i&lt;assets.length(); i++){
+			ciList[ciList.length] = assets[i];
+		}
+	}	
+	if(file.affected_item!=null){
+		ciList[ciList.length] = file.affected_item;
+	}
+	//The "logical_name" filed is only used in Unplanned Change" and "CI Group", since there is a defect(QC51038) in 
+	//logical_name filed, we do the follow special logic. If the defect fixed, we can remove the condition
+	if((file.category=="Unplanned Change" || file.category=="CI Group") &amp;&amp; file.middle.logical_name!= null)
+	{
+		ciList[ciList.length] = file.middle.logical_name;	
+	}
+	
+	var ciParam = getCiParameter(ciList);
+	if(ciParam!=null){
+		url = getCalendarBaseUrl(interative) + getTimeParameter(file.planned_start) + ciParam;
+		if(system.vars.$rc_calendar_mode != "add"){
+			url = url + "&amp;refId=" + file.number;    	
+    	}	
+		var rcSdName = lib.RCConfiguration.getServiceDeskName();		
+   		url = url +"&amp;serviceDesk="+rcSdName;
+	}
+	
+	return url;
+}
+
+
+//return the base url for RC Calendar
+
+function getCalendarBaseUrl(interactive){	
+	var url = lib.RCConfiguration.getServerUrl();	
+	if(url != null){
+	 	if(interactive==true){
+	 		url = url +"?requestOrigin=EXTERNAL&amp;filterName=any&amp;perspective=calendar&amp;"; 		
+	 	}else{
+	 		url = url +"/calendar.html?requestOrigin=EXTERNAL&amp;filterName=any&amp;";
+	 	} 
+	 	url += 	lib.RCUrl.getCommonParameters();
+	 	
+	 	// send a test request to RC server
+	 	var headers = new Array();
+		try{
+			doHTTPRequest("GET", url, headers, null, 10, 10, 10);
+		}catch(ex){
+			url = "RC_DOWN";
+		}
+ 	}
+ 	return url;
+}
+
+/* 
+Below are fucnctions are private.
+Called by internal fucntions only.
+
+*/
+
+//return the url parameter for specified timestamp
+function getTimeParameter(startTime){
+	if(startTime ==null)
+	{
+		startTime = new Date();
+	}
+	return "&amp;timestamp=" + startTime.getTime();	
+}
+
+//return the url parameter for specified CI list
+function getCiParameter(ciList){
+	if(ciList==null || ciList.length==0){
+		return null;
+	}
+	ciList = getFullCiList(ciList);
+
+	var parameter = null;
+	var rcStandalone = lib.RCConfiguration.getRCMode();
+	//print("rcMode = "+ rcStandalone);
+		
+	//It is a invalid case if rc integrate with uCMDB,but SM doesn't.
+	if(!rcStandalone &amp;&amp; ! lib.uCMDBConfiguration.isEnabled()){
+		print(system.functions.scmsg(1, "RCCalendar"));
+	}else if(rcStandalone){
+		//if rc run in standalone mode, we will use the CI's name as the parameter
+		if(ciList.length &gt; 0){
+			//Start for logical name solution
+			var ciDisplayList=[];
+			lib.DisplayName.getDisplayNamesByIds("device",ciList,[],ciDisplayList);
+			if(ciDisplayList.length===0) ciDisplayList=ciList;
+			//end
+			//QCCR1E117986 Encode the '#' in CI parameter to '%23' in case browser cannot sent out request correctly.
+			parameter = "&amp;field-lastImpact-cis-label=" + ciDisplayList.join(',').replace("#","%23");
+		}
+	}else{			
+		//if the ucmdb is enbaled and integrated with RC, we will use the ucmdb id as the parameter
+		var sysIdList = new Array();
+		var bizIdList = new Array();	
+		var device = new SCFile("device");
+		for(var i = 0; i &lt; ciList.length; i++){
+			var id = device.doSelect("logical.name=\""+ciList[i]+"\"");		
+			if(id == RC_SUCCESS){								
+				var ucmdbid = device.ucmdb_id;	
+				if(ucmdbid!=null){	
+					var type = device.type;			
+					if(type=="bizservice"||type=="application"){						
+						bizIdList[bizIdList.length]=ucmdbid;
+					}else{
+						sysIdList[sysIdList.length]=ucmdbid;
+					}
+				}
+			}
+		}				
+		if(bizIdList.length &gt; 0){		
+			parameter= "&amp;field-application=" + bizIdList[0];
+			for(var i = 1; i &lt; bizIdList.length; i++){
+				parameter = parameter + "," +bizIdList[i];
+			}		
+		}else if(sysIdList.length &gt; 0){		
+			parameter= "&amp;field-lastImpact-cis-refId=" + sysIdList[0];
+			for(var i = 1; i &lt; sysIdList.length; i++){
+				parameter = parameter + "," +sysIdList[i];
+			}		
+		} 
+	}			
+	return parameter;
+}
+
+//delete duplicated element in the array
+function unique(a)
+{
+   var r = new Array();
+   o:for(var i = 0, n = a.length; i &lt; n; i++) {
+      for(var x = i + 1 ; x &lt; n; x++)
+      {
+         if(a[x]==a[i]) continue o;
+      }
+      r[r.length] = a[i];
+   }
+   return r;
+}
+
+//Process Ci List to get all children CIs 
+function getFullCiList(ciList){
+	for(var i = 0; i &lt; ciList.length; i++){	
+		var ciName = ciList[i];			
+		var members = lib.ciGrouping.returnGroupMembers(ciName);
+		if(members != null){
+			for(var j = 0; j &lt; members.length; j++){
+				if(members[j] != ciName){
+					ciList[ciList.length] = members[j];
+				}
+			}		
+		}				
+	}
+	ciList = unique(ciList);	
+	return ciList;	
+}</script>
+    <package type="string">Integration</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:42</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

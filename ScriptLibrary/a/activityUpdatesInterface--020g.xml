@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;activityUpdatesInterface&quot;" recordid="activityUpdatesInterface">
+    <name type="string">activityUpdatesInterface</name>
+    <script type="string">var _msg = system.functions.scmsg;
+var _lng = system.functions.lng;
+
+function updateIncidentWorkaround(problem) {
+    var str = "Problem " + problem.id + " updated with new workaround.";
+    var workaround = system.functions.insert(problem.workaround, 1, 1, str);
+
+    return relatedIncidentUpdate(problem.id, "rootcause", "Problem Workaround", workaround);
+}
+
+function problemClosure( problem )
+{
+	var str; 
+	var resolution;
+
+	if ( problem.status == "Closed" ){
+		str = "Problem "+ problem.id +" has been closed.";
+		resolution = system.functions.insert(problem.resolution,1,1,str);
+		return relatedIncidentUpdate( problem.id, "rootcause", "Problem Closure", resolution );
+	}
+	else
+	if ( problem.status == "Cancelled" ){
+		str = "Problem "+ problem.id +" has been cancelled.";
+		resolution = system.functions.insert(problem.resolution,1,1,str);
+		return relatedIncidentUpdate( problem.id, "rootcause", "Problem Cancellation", resolution );
+	}
+	else
+		return false;
+}
+
+function errorClosure( knownError )
+{
+	var str = "Known Error "+ knownError.id +" has been closed." 
+	var resolution = system.functions.insert(knownError.resolution,1,1,str);
+	
+	if ( knownError.status == "Closed" )
+		return relatedProblemUpdate( knownError.id, "knownerror", "Error Closure", resolution );
+	else
+	if ( knownError.status == "Cancelled" )
+		return relatedProblemUpdate( knownError.id, "knownerror", "Error Cancellation", resolution );
+	else
+		return false;
+}
+
+// for incident module only
+function customerVisibleUpdate(activity) {
+    var str = _msg("incident", "activitySync", [activity.number, activity.operator]);
+    var update = system.functions.insert(activity.description, _lng(activity.description) + 1, 1, str);
+    if (activity.cust_visible == true) {
+        childIncidentRelatedCallUpdate(activity.number, "probsummary", "Incident Update", update, activity.cust_visible);
+    }
+    return relatedCallUpdate(activity.number, "probsummary", "Incident Update", update, activity.cust_visible);
+}
+ 
+function childIncidentRelatedCallUpdate(id, filename, activityType, activityText, custVisible) {
+    var returnCode = true;
+    if (system.library.MasterIncidentService.isMasterIncident(id))
+    {
+    	print("is master:"+system.library.MasterIncidentService.isMasterIncident(id));
+    	var childIMs = [];
+       	var query = 'parent.incident=\"' + id + '\"';
+        var children = new SCFile("probsummary");
+    	var rc = children.doSelect(query);
+    	while (rc == RC_SUCCESS) {
+    	    print("incident number="+children.number);
+        	childIMs.push(children.number);
+            system.library.activityUpdates.updateRecord(children, activityType, activityText, custVisible);
+        	rc = children.getNext();
+    	}
+    	var i;
+    	for (i= 0; i &lt; childIMs.length; i++) 
+    	{
+    	    print("incident id="+childIMs[i]);
+            returnCode = system.library.activityUpdates.relatedRecordUpdate(childIMs[i], filename, "incidents", activityType, activityText, custVisible);
+    		if (!returnCode) return returnCode;
+		}
+	}
+	return returnCode;
+}
+
+// for change module only
+function customerVisibleUpdate4ChM( activity )
+{
+
+	var args = new SCFile();
+	args.setType( 8 );	//type array
+	args.push( activity.number );
+	args.push(activity.operator);
+	
+	var str = _msg(902, "cm3", args);
+	
+    var update = system.functions.insert(activity.description, _lng(activity.description) + 1, 1, str);
+    return relatedCallUpdate(activity.number, "cm3r", "Change Update", update, activity.cust_visible);
+}
+
+
+// for request module only
+function customerVisibleUpdate4Request(activity) {
+    var str = _msg("request", "activitySync", [activity.number, activity.operator]);
+    var update = system.functions.insert(activity.description, _lng(activity.description) + 1, 1, str);
+    return relatedCallUpdate(activity.number, "request", "Request Update", update, activity.cust_visible);
+}
+
+// for PBM module only
+function customerVisibleUpdate4Problem(activity) {
+    var str = _msg("problem", "activitySync", [activity.number, activity.operator]);
+    var update = system.functions.insert(activity.description,  _lng(activity.description) + 1, 1, str);
+    return relatedCallUpdate(activity.number, "rootcause", "Problem Update", update, activity.cust_visible);
+}
+
+
+function relatedIncidentUpdate( id, filename, activityType, activityText )
+{
+	return system.library.activityUpdates.relatedRecordUpdate( id, filename, "probsummary", activityType, activityText );
+}
+
+function relatedProblemUpdate( id, filename, activityType, activityText )
+{
+	return system.library.activityUpdates.relatedRecordUpdate( id, filename, "rootcause", activityType, activityText );
+}
+
+function relatedCallUpdate(id, filename, activityType, activityText, custVisible) {
+    return system.library.activityUpdates.relatedRecordUpdate(id, filename, "incidents", activityType, activityText, custVisible);
+}
+
+function relatedRequestUpdate( id, filename, activityType, activityText )
+{
+	return system.library.activityUpdates.relatedRecordUpdate( id, filename, "request", activityType, activityText );
+}
+
+function relatedChangeUpdate( id, filename, activityType, activityText )
+{
+	return system.library.activityUpdates.relatedRecordUpdate( id, filename, "cm3r", activityType, activityText );
+}
+
+</script>
+    <package type="string">Activities</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:37</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem type="boolean">true</prgnsystem>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

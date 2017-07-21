@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;jsunit.getNewTest&quot;" recordid="en - jsunit.getNewTest">
+    <name mandatory="true" type="string">jsunit.getNewTest</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Test Name:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Test Name:	Name=Label4	ForeColor=0	Height=2	Name=Label4	Width=34	X=2	Y=3		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">19</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">string</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text1	ForeColor=0	Height=2	Name=Text1	Width=46	X=36	Y=3		Input=string	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Path:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Path:	Name=Label3	ForeColor=0	Height=2	Name=Label3	Width=34	X=2	Y=5		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">19</column>
+        <length type="decimal">40</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">strings,1</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;ForeColor=0	Height=2	Name=	Width=80	X=36	Y=5		Input=strings,1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">19</column>
+        <length type="decimal">12</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$L.jasmine.test</input>
+        <output type="string">Jasmine Test</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Name=input1393673073478	Height=2	Name=input1393673073478	Width=24	X=36	Y=8	Caption=Jasmine Test		Input=$L.jasmine.test	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">19</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Create</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Create	Name=button1252014246794	ButtonID=1	Height=2	Name=button1252014246794	Width=40	X=36	Y=10		</property>
+      </field>
+    </field>
+    <file.name type="string">typecheck</file.name>
+    <editor type="string">tiansha</editor>
+    <last.update type="dateTime">02/28/14 21:27:08</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:00:36</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

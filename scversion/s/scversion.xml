@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="scversion">
+  <record id="unique.key=&quot;scversion&quot;" recordid="scversion">
+    <unique.key type="string">scversion</unique.key>
+    <application.version type="string">9.41.0020</application.version>
+    <sysmodcount type="decimal">255</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:02:10</sysmodtime>
+    <application.build.date type="dateTime">08/30/15 22:00:00</application.build.date>
+    <build.no NullValue="1" type="decimal"/>
+  </record>
+</recordset>

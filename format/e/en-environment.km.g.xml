@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;environment.km.g&quot;" recordid="en - environment.km.g">
+    <name mandatory="true" type="string">environment.km.g</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">19</column>
+        <length type="decimal">43</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">KNOWLEDGE MANAGEMENT APPLICATION ENVIRONMENT</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=KNOWLEDGE MANAGEMENT APPLICATION ENVIRONMENT	Height=2	Name=	Width=85	X=36	Y=2		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">13</column>
+        <length type="decimal">79</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">allow.access</input>
+        <output type="string">Assign the Default Knowledge View Group to all operators</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Name=input1129868251371	?Caption=	Height=2	Name=input1129868251371	Visible=1	Width=158	X=24	Y=6	Caption=Assign the Default Knowledge View Group to all operators		Input=allow.access	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">13</column>
+        <length type="decimal">79</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">use.kmadaptivelearning</input>
+        <output type="string">Use Adaptive Learning to enhance search results</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;AccessibleName=	?Caption=	?State=	Height=2	Name=	Data Changed Event=302	Visible=1	Width=158	X=24	Y=9	Caption=Use Adaptive Learning to enhance search results		Input=use.kmadaptivelearning	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">13</column>
+        <length type="decimal">61</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">For the changes to take effect, you must log out and log back in.</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=For the changes to take effect, you must log out and log back in.	Height=2	Name=	Width=121	X=24	Y=12		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">13</column>
+        <length type="decimal">40</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Max Number Documents Returned from a Search:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Max Number Documents Returned from a Search:	Height=2	Name=	Width=80	X=24	Y=14		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">56</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">km.max.docs.returned</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;?Visible=	Height=2	Name=	Width=26	X=110	Y=14		Input=km.max.docs.returned	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">13</column>
+        <length type="decimal">42</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Default Expiration Period (0 if document never expires):</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Default Expiration Period (0 if document never expires):	Height=2	Name=	Width=83	X=24	Y=17		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">56</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">km.expiration.period</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;?Visible=	Height=2	Name=	Width=26	X=110	Y=17		Input=km.expiration.period	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">70</column>
+        <length type="decimal">6</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">days</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=days	?Caption=	Height=2	Name=	Width=11	X=138	Y=17		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">11</line>
+        <column type="decimal">13</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Style text for search results:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Style text for search results:	Name=label1142368303205	Height=2	Name=label1142368303205	Width=40	X=24	Y=20		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">512</flags>
+        <line type="decimal">11</line>
+        <column type="decimal">37</column>
+        <length type="decimal">32</length>
+        <window type="decimal">9</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">kmhitliststyle</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">MultiText;Name=textarea1142368253860	AccessibleName=	Height=17	Name=textarea1142368253860	Width=64	X=72	Y=20		Input=kmhitliststyle	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">12</line>
+        <column type="decimal">69</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=label1142529184812	?Visible=	Height=2	Name=label1142529184812	Width=40	X=136	Y=22		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">19</line>
+        <column type="decimal">42</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=label1142529106632	Height=2	Name=label1142529106632	Width=40	X=82	Y=37		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">20</line>
+        <column type="decimal">13</column>
+        <length type="decimal">5</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">SRC?</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=SRC?	Name=label1323173822332	Height=2	Name=label1323173822332	Width=9	X=25	Y=39		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">20</line>
+        <column type="decimal">19</column>
+        <length type="decimal">3</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">src</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Name=input1323173781116	Height=2	Name=input1323173781116	Width=5	X=36	Y=39		Input=src	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">21</line>
+        <column type="decimal">13</column>
+        <length type="decimal">34</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Highlight content of attachment in search result?</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Highlight content of attachment in search result?	Name=label1345620785313	Caption=Highlight content of attachment in search result?	Height=2	Name=label1345620785313	Width=67	X=25	Y=41		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">21</line>
+        <column type="decimal">44</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">att.hl</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Name=input1345620763031	Height=2	Name=input1345620763031	Width=40	X=87	Y=41		Input=att.hl	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">23</line>
+        <column type="decimal">13</column>
+        <length type="decimal">57</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">BevelFrame;InnerBevelWidth=0	Name=fieldset1323173927214	OuterBevelWidth=0	ArrayLength=0	?Visible=[src]	Height=9	Name=fieldset1323173927214	Visible=0	Width=113	X=24	Y=44		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">23</line>
+        <column type="decimal">13</column>
+        <length type="decimal">24</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Search Server Name:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Search Server Name:	Height=2	Name=	Width=48			X=24	Y=45		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">23</line>
+        <column type="decimal">37</column>
+        <length type="decimal">32</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">searchservername</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;Height=2	Name=	Width=64			X=72	Y=45		Input=searchservername	ValueList=$searchservers	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">26</line>
+        <column type="decimal">13</column>
+        <length type="decimal">24</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Full Reindex</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Full Reindex	Name=button1323174524699	ButtonID=303	Height=2	Name=button1323174524699	Width=48			X=24	Y=50		</property>
+      </field>
+    </field>
+    <file.name type="string">environment</file.name>
+    <editor type="string">Zhang, Ming-Di</editor>
+    <last.update type="dateTime">09/12/12 21:04:04</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">1</sysmodcount>
+    <sysmoduser type="string">Zhang, Ming-Di</sysmoduser>
+    <sysmodtime type="dateTime">09/12/12 21:04:04</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;upgradeBaseXmlGenerater&quot;" recordid="upgradeBaseXmlGenerater">
+    <name type="string">upgradeBaseXmlGenerater</name>
+    <script type="string">/*
+* Please generate the base version xml files according following steps:
+* - Install base version oob dataset with language package installed
+* - Execute *aapm.upgrade.purge sm command to remove the upgrade files completely
+* - Load preupg.bin and transfer.bin
+* - Load upgrade.inf and upgrade-&lt;lang&gt;.inf
+*   Or Load upgrade-pd.info and upgrade-pd-&lt;lang&gt;.inf for PD
+* - Never generate for SC6.2 and SM7
+*   For SC6.2 and SM7 base versions, add "id" character-ID-VARCHAR(70)-m1 to notification table
+*   Open notification table in db side, search all the records, update "id" values with "name" values + suffix "_1" or "_2"
+*   Change the Unique key to "id" for notification table
+* - Execute current JS
+*/
+	var parent = "C:\\oob\\";
+	
+	var versions = lib.upgradeConstants.FULL_VERSIONS();
+	
+	var bigVer = getBigVersion();
+	var scVer = lib.upgradeVersionUtil.getCurrentVersion();
+	
+        /*
+        generate();
+        */
+	
+	function generate(){
+		var i = 0;
+		var sigmake = new SCFile("signaturemake");
+		var rc = sigmake.doSelect("table.name~=\"displaycache\" and table.name~=\"code\" and table.name~=\"application\" and table.name~=\"enclapplication\" and table.name~=\"enclapplrev\"");
+		while(rc == RC_SUCCESS){
+			var j = 0;
+			var folder = parent + bigVer + "\\"+ sigmake.table_name;
+			var file = new SCFile("upgradeobjects");
+			var objectname = sigmake.table_name == "format" ? "Format Record" : sigmake.table_name + ",";
+			rc = file.doSelect("object.name # \"" + objectname + "\"");
+			
+			while(rc == RC_SUCCESS){
+				var content = file.contents[0];
+				if (!lib.upgradeCommonHelper.isValidTable(content.table)) {
+				    rc = file.getNext();
+				    continue;
+				}
+				
+				var curSig = getSignature(content.sigs, scVer);
+				var newSig = content.new_sig;
+				
+				
+				var toGenerate = false;
+				
+				if (curSig != null &amp;&amp; curSig.length &gt; 0 &amp;&amp; newSig != null) {
+				    for (var k=0; k&lt;curSig.length; k++) {
+				        if (curSig[k] != newSig) {
+				            toGenerate = true;
+				            break;
+				        }
+				    }
+				}
+				
+				if(toGenerate){
+					var object = new SCFile(content.table);
+					rc = object.doSelect(content.query);
+					if(rc == RC_SUCCESS){
+						i++;
+						j++;
+						makeDir(folder);
+						var path = folder + "\\" + getFileName(object, sigmake.key) + ".xml";
+						
+						saveToXML(object, path, getExclusion(sigmake.table_name, sigmake.fields, sigmake.fieldarray_type));
+					}
+				}
+				rc = file.getNext();
+			}
+			print((sigmake.table_name == "format" ? "Format Record" : sigmake.table_name) + ":" + j + " xml files generated.");
+			rc = sigmake.getNext();
+		}
+		print(i + " xml files generated.");
+	}
+	
+	function saveToXML(file, path, exclusion){
+		var text = file.getXml().toXMLString();
+		text = tailor(text, exclusion);
+		var rc = writeFile(path, false, text);
+	}
+	
+	function getSignature(sigs, version){
+		var verIndex = system.functions.index(version, versions);
+		var signature = [];
+		var lastIndex = -1;
+		for(var i = 0; i &lt; sigs.length(); i++){
+			if(sigs[i].version == version){
+				signature.push(sigs[i].sig);
+				continue;
+			}
+			
+			var tmpIndex = system.functions.index(sigs[i].version, versions);
+			if(tmpIndex &lt; verIndex &amp;&amp; tmpIndex &gt; lastIndex){
+				lastIndex = tmpIndex;
+			}
+		}
+		
+		if (signature.length == 0) {
+		    for(var i = 0; i &lt; sigs.length(); i++){
+		        var tmpIndex = system.functions.index(sigs[i].version, versions);
+			    if(tmpIndex == lastIndex){
+				    signature.push(sigs[i].sig);
+			    }
+			}
+		}
+		
+		return signature;
+	}
+	
+	function tailor(xml, exclusion){
+		for(var i = 0; i &lt; exclusion.length; i++){
+			var str = "&lt;" + exclusion[i] + "\\stype(.)*?&lt;/" + exclusion[i] + "&gt;";
+			var regex = new RegExp(str);
+			xml = xml.replace(regex, "");
+		}
+		xml = xml.replace(/&gt;&lt;/g, "&gt;\n&lt;");
+		return xml;
+	}
+	
+	function getFileName(file, key){
+		var name = file[key[0]];
+		for(var i = 1; i &lt; key.length(); i++){
+			name+= "-" + file[key[i]];
+		}
+		if(typeof(name) == "string" &amp;&amp; name != null){
+			return name.replace(/[\s\/\?:&gt;&lt;\"\*]/g, "_");
+		}
+		return name;
+	}
+	
+	function getExclusion(table, fields, excluded){
+		if(excluded == 0){
+			return fields.toArray();
+		}
+		var file = new SCFile("dbdict");
+		var rc = file.doSelect("name=\"" + table + "\"");
+		var exclusions = [];
+		if(rc == RC_SUCCESS){
+			for(var i = 0; i &lt; file.field.length(); i++){
+				if(file.field[i].level == 1 &amp;&amp; system.functions.index(file.field[i].name, fields) == 0){
+					exclusions[exclusions.length] = file.field[i].name;
+				}
+			}
+		}
+		return exclusions;
+	}
+	
+	function getBigVersion(){
+		var version=lib.upgradeVersionUtil.getCurrentVersion();
+		var pdVersion=lib.upgradeVersionUtil.getPdVersion();
+		if(version != "Unknown"){
+			var verList = ["SM7.10", "7.11", "9.2", "9.3"];
+			for(var i = 0; i &lt; verList.length; i++){
+				if(version.indexOf(verList[i]) == 0){
+					if (pdVersion=="")
+					    return verList[i];
+					else
+					    return verList[i]+"PD";
+				}
+			}
+			return version;
+		}
+		print("Failed to get version.");
+		return null;
+	}
+	</script>
+    <package type="string">Upgrade</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:45</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

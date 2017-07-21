@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;queryHelpers&quot;" recordid="queryHelpers">
+    <name type="string">queryHelpers</name>
+    <script type="string">/** @fileoverview queryHelpers - contains functions that may be useful when forming or using query strings
+*   @author Pete Budic
+*/
+
+
+/**  This function is used to translate a string into a "query safe" version
+*	*  All double quotes (") are replaced by escaped double quotes (\")
+*
+*	@param {Record} record - The current category record
+*	@return		True if successful, false if not.
+*	@type	Boolean
+*/
+function querySafe( string )
+{
+
+	var regExp = /"/g;
+	
+	string = string.replace(regExp, "\\\"");
+	
+	return string;
+
+}</script>
+    <package NullValue="1" type="string"/>
+    <sysmodtime type="dateTime">10/25/05 03:18:25</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

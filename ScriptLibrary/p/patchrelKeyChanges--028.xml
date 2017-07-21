@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;patchrelKeyChanges&quot;" recordid="patchrelKeyChanges">
+    <name type="string">patchrelKeyChanges</name>
+    <script type="string">/**
+ * Constants for key types
+ */
+var NULLSANDDUPLICATES = 0;
+var NONULLS = 4;
+var NODUPLICATES = 8;
+var UNIQUE = 12;
+var IR = 64;
+
+
+/**
+ * All the key changes are listed in the below JSON object.
+ * Each json object has 3 properties:
+ *   adds: All the added keys
+ *   updates: All the updated keys
+ *   removes: All the removed keys
+ * adds updates, removes have 3-4 properties also.
+ *   table: The table name where the key is being applied.
+ *   keyType: The type/flag of the key.
+ *   columns: The columns that listed in the current key of the system.
+ *   updateTo: The columns that the key is being updated to.
+ */
+var changes = 
+	[
+		{
+			"adds": 
+			[
+				// 9.41
+				{"table":"ApprovalDelegation",	"keyType":NULLSANDDUPLICATES, "columns":["Enable","AppGroup","AppModule","DateFrom","DateTo"]},
+				{"table":"cm3r", 		"keyType":NULLSANDDUPLICATES, "columns":["sysmodtime"]},
+				{"table":"device", 		"keyType":NULLSANDDUPLICATES, "columns":["sysmodtime"]},
+				{"table":"device", 		"keyType":NULLSANDDUPLICATES, "columns":["asset.tag"]},
+				{"table":"device", 		"keyType":NULLSANDDUPLICATES, "columns":["owner"]},
+				{"table":"device", 		"keyType":NULLSANDDUPLICATES, "columns":["subtype"]},
+				{"table":"device", 		"keyType":NULLSANDDUPLICATES, "columns":["assignment"]},
+				{"table":"incidents", 	"keyType":NULLSANDDUPLICATES, "columns":["approval.status"]},
+				{"table":"incidents", 	"keyType":NULLSANDDUPLICATES, "columns":["callback.contact","open"]},
+				{"table":"incidents", 	"keyType":NULLSANDDUPLICATES, "columns":["sysmodtime"]},
+				{"table":"probsummary", "keyType":NULLSANDDUPLICATES, "columns":["affected.item","number"]},
+				{"table":"probsummary", "keyType":NULLSANDDUPLICATES, "columns":["id"]},
+				{"table":"probsummary", "keyType":NULLSANDDUPLICATES, "columns":["sysmodtime"]},
+				{"table":"request", 	"keyType":NULLSANDDUPLICATES, "columns":["open"]},
+				{"table":"request", 	"keyType":NULLSANDDUPLICATES, "columns":["sysmodtime"]},
+				{"table":"rootcause", 	"keyType":NULLSANDDUPLICATES, "columns":["sysmodtime"]}
+			], 
+			"updates":
+			[
+				// 9.41
+				{"table":"imArea", 		  "keyType":UNIQUE, "columns":["area.name","subcategory","category"], "updateTo":["area.name","subcategory","category","company"]},
+				{"table":"imSubcategory", "keyType":UNIQUE, "columns":["subcategory.name","category"], 		  "updateTo":["subcategory.name","category","company"]},
+				{"table":"pbmArea", 	  "keyType":UNIQUE, "columns":["area.name","subcategory","category"], "updateTo":["area.name","subcategory","category","company"]},
+				{"table":"pbmSubcategory","keyType":UNIQUE, "columns":["subcategory.name","category"], 		  "updateTo":["subcategory.name","category","company"]},
+				{"table":"sdArea", 		  "keyType":UNIQUE, "columns":["category","subcategory","area.name"], "updateTo":["category","subcategory","area.name","company"]},
+				{"table":"sdSubcategory", "keyType":UNIQUE, "columns":["name","category"], 					  "updateTo":["name","category","company"]}
+			],
+			"removes":
+			[
+				// 9.41
+				{"table":"device", 		"keyType":NULLSANDDUPLICATES, "columns":["id","location"]}			
+			]
+		}
+	];
+
+
+/**
+ * This is the main entry.
+ */
+function applyKeyChanges()
+{
+	var i;
+	for(i = 0; i &lt; changes.length; i++)
+	{
+		var change = changes[i];
+		
+		var j;		
+		for(j = 0; j &lt; change.adds.length; j++)
+		{
+			lib.upgradeKeyChanges.addKey(change.adds[j]);
+		}
+		for(j = 0; j &lt; change.updates.length; j++)
+		{
+			lib.upgradeKeyChanges.updateKey(change.updates[j]);
+		}
+		for(j = 0; j &lt; change.removes.length; j++)
+		{
+			lib.upgradeKeyChanges.removeKey(change.removes[j]);
+		}
+	}
+}
+
+
+/*
+ * these datadict are special, 
+ * need to change unique key of dbdict instead of datadict
+ */
+var excludeDatadictList = ["computerprintersuniq", "outage"];
+
+
+/**
+ * synchronize unique key of datadict
+ */
+function synchronizeDatadictUniqueKey(bUpdate)
+{
+	var count = 0;
+	var fDbdict = new SCFile("dbdict", SCFILE_READONLY);
+  	fDbdict.setFields(["name","key"]);
+	var rc = fDbdict.doSelect("true");
+	
+	while (rc == RC_SUCCESS)
+	{
+		var name = fDbdict.name;
+		
+		// query datadict
+		var fDatadict = new SCFile("datadict");
+		var rc2 = fDatadict.doSelect("name=\"" + name + "\"");
+
+		if (rc2 == RC_SUCCESS)
+		{
+			var key = getUniqueKey(fDbdict);
+			
+			// correct the key value if dbdict and datadict are not same		
+			if (!sameKey(key, fDatadict.unique_key) &amp;&amp; !lib.ArrayUtil.contains(excludeDatadictList, name))
+			{
+				count++;
+				
+				if (bUpdate)
+				{
+					fDatadict.unique_key = key;
+				
+					var rcDatadict = fDatadict.doUpdate();		
+					if (rcDatadict == RC_SUCCESS)
+					{
+						lib.patchrelHelper.info(system.functions.scmsg(201, "object", ["datadict", name]));
+					}
+					else
+					{
+						lib.patchrelHelper.error(system.functions.scmsg(121, "patchrel", ["datadict", name]));
+					}	
+				}
+				else
+				{
+					print(name + ": " + "dbdict key - {" + key.toArray() + "}, datadict key - {" + fDatadict.unique_key.toArray() + "}");					
+				}
+			}
+		}
+		
+		rc = fDbdict.getNext();
+	}
+	
+	return count;
+}
+
+
+/**
+ * synchronize unique key of object
+ */
+function synchronizeObjectUniqueKey(bUpdate)
+{
+	var count = 0;
+	var fObject = new SCFile("Object");
+	var rc = fObject.doSelect("true");
+	
+	while (rc == RC_SUCCESS)
+	{
+		var name = fObject.file_name;
+		
+		// query datadict
+		var fDatadict = new SCFile("datadict", SCFILE_READONLY);
+	  	fDatadict.setFields(["unique.key"]);
+		var rc2 = fDatadict.doSelect("name=\"" + name + "\"");
+
+		if (rc2 == RC_SUCCESS)
+		{
+			var key = fDatadict.unique_key;
+			
+			// correct the key value if Object and datadict are not same		
+			if (!sameKey(fObject.unique_field, key))
+			{
+				// sometimes dbdict/datadict has no unique key
+				if (key != null &amp;&amp; key.length() &gt; 0)
+				{
+					count++;
+					
+					if (bUpdate)
+					{
+						fObject.unique_field = key;
+				
+						var rcObject = fObject.doUpdate();			
+						if (rcObject == RC_SUCCESS)
+						{
+							lib.patchrelHelper.info(system.functions.scmsg(201, "object", ["Object", name]));
+						}
+						else
+						{
+							lib.patchrelHelper.error(system.functions.scmsg(121, "patchrel", ["Object", name]));
+						}	
+					}
+					else
+					{
+						print(name + ": " + "Object key - {" + fObject.unique_field.toArray() + "}, datadict key - {" + key.toArray() + "}");					
+					}
+				}
+			}
+		}
+		
+		rc = fObject.getNext();
+	}
+	
+	return count;
+}
+
+
+/**
+ * get unique key of dbdict
+ */
+function getUniqueKey(dbdict)
+{
+	var keys = dbdict.key;
+	var ukey = null;
+	var length = keys.length(), i;	
+	
+	for (i = 0; i &lt; length; i++)
+	{
+		var key = keys[i];
+		
+		// primary key
+		if (key[0] == 28)
+		{
+			ukey = key[1];
+			break;
+		}
+			
+		// first unique key
+		if (key[0] == 12 &amp;&amp; ukey == null)
+		{
+			ukey = key[1];
+		}
+	}
+	
+	return ukey;
+}
+
+
+/**
+ * determine whether 2 keys are same
+ */
+function sameKey(key1, key2)
+{
+	if (key1 == null &amp;&amp; key2 == null)
+	{
+		return true;
+	}
+
+	if ((key1 == null &amp;&amp; key2.length() == 0) || (key2 == null &amp;&amp; key1.length() == 0))
+	{
+		return true;
+	}
+		
+	if (key1 == null || key2 == null)
+	{
+		return false;
+	}
+		
+	var lng = key1.length();
+	if (lng != key2.length())
+	{
+		return false;
+	}
+
+	var i;		
+	for (i = 0; i &lt; lng; i++)
+	{
+		if (key1[i] != key2[i])
+		{
+			return false;
+		}
+	}
+	
+	return true;
+}</script>
+    <package type="string">Patch Release</package>
+    <sysmodtime type="dateTime">07/16/17 16:56:39</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">5</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

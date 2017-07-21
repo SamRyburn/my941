@@ -1,0 +1,992 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;RestfulMain&quot;" recordid="RestfulMain">
+    <name type="string">RestfulMain</name>
+    <script type="string">var restRC = lib.RestfulConstant.getReturnCode(); //return code
+var restHS = lib.RestfulConstant.getHttpStatus(); //Http Status
+
+var INVALID_FIELD_VALUE = "invalid field value";
+
+/*
+ DAO cpp will call the function for query and actions.
+
+ Input Parameters
+     optionsStr : the json string about the options, include the uri, query, HTTP method, resourceName
+     xml: the input bean data
+ Return
+     JSON string about the result
+ */
+function processResource(opitonsStr, object, attachmentArray)
+{
+    if (log.isDebugEnabled()){
+        log.debug("processResource::opitonsStr="+opitonsStr);
+        if (log.isTraceEnabled()){
+            log.trace("processResource::object="+lib.JSON2.toJSON(object));
+        }
+    }
+
+    var ret = __processResource(opitonsStr, object, attachmentArray);
+
+    if (log.isTraceEnabled()){
+        log.trace("processResource::return="+lib.JSON2.toJSON(ret));
+    }
+
+    return ret;
+
+}
+
+
+function __processResource(opitonsStr, object, attachmentArray)
+{
+
+    try{
+        var options = eval( '(' + opitonsStr + ')' );
+        var uri = eval('('+options.uri+')');
+        log.debug("__processResource::uri="+uri);
+    }catch(ex){
+        return makeErrorMsg(restRC['badval'], system.functions.scmsg('23', 'restful', [opitonsStr]));
+    }
+
+
+
+    if (uri.length == 0){
+        if ('GET' == options.method){
+            return processServiceDocumenet();
+        } else {
+            return makeErrorMsg(restRC['invalid.action'], system.functions.scmsg('1', 'restful'));
+        }
+    }
+
+    var config = getConfigFile(uri[0]);
+
+    if (null == config) {
+        return makeErrorMsg(restRC['no.record'], system.functions.scmsg('2', 'restful', [uri[0]]));
+    }
+
+    var errorURI = checkURI(options.method, uri, config);
+    if (errorURI != null){
+        return errorURI;
+    }
+
+    decodeUri(uri);
+
+
+    if (config['rest.enabled'] != true){
+        return makeErrorMsg(restRC['badval'], system.functions.scmsg('4', 'restful', [uri[0]]));
+    }
+
+    if (uri[config.rest_keys.length() + 1] == 'attachments'){
+        return lib.RestfulAttachment.processAttachment(options, uri, attachmentArray, config);
+    } else {
+
+        if (options.method == 'GET'){
+            return lib.RestfulQuery.processQuery(options, uri, config);
+        }
+
+        return lib.RestfulAction.processAction(options, uri, object, config);
+    }
+}
+
+
+/**
+ * URL Decode %2F %5C, because the characters are double encoded.
+ */
+function decodeUri(uri){
+    for (var i =1;i&lt;uri.length;i++){
+        uri[i] = uri[i].replace(/%2F/g, '/');
+        uri[i] = uri[i].replace(/%5C/g, '\\');
+    }
+
+    return uri;
+}
+
+/**
+* Get extaccess file by rest resource name
+* @param {string} name - rest resource name
+*
+* @return {file} - extaccess file
+**/
+function getConfigFile(name)
+{
+    var file = new SCFile("extaccess");
+    var ret = file.doSelect('rest.list.name="' + name + '"');
+    if (RC_SUCCESS==ret) {
+        return file;
+    } else {
+        return null;
+    }
+}
+
+
+/**
+* build error message to json
+* @param {number} code - return error code number
+* @param {string} msg - return error msg
+* @param {number} code - internal return code
+*
+* @return {string} - json
+**/
+function makeErrorMsg(returnCode, msg, isMultiple){
+    var msgs = (msg == null ? [] : [msg]).concat(getMessages());
+
+    if (msgs.length==0){
+        msgs = getUserMessages();
+    }
+
+    var obj = null;
+
+    if ((restRC['no.record']==returnCode || restRC['no.attachment']==returnCode) &amp;&amp; isMultiple) {
+        obj = {ReturnType:"list", HttpStatus:200, ReturnCode:0, Messages:msgs, "@start":0, "@count":0, "@totalcount":0};
+    } else {
+        var httpStatus = restHS[returnCode];
+        obj = {HttpStatus:httpStatus, ReturnCode:returnCode, Messages:msgs};
+        if (isMultiple){
+            obj["ReturnType"]="list";
+        } else {
+            obj["ReturnType"]="record";
+        }
+    }
+    return lib.JSON2.toJSON(obj);
+}
+
+
+/**
+* convert a file to an object by field name and caption
+* @param {file} file - file of a record in db
+* @param {array} fieldList - file name array
+* @param {array} fieldList - file caption array
+* @param {array} fieldList - resource name defined in extaccess
+*
+* @return {object}
+**/
+function file2Object(file, fieldList, captionList, soaTypeList, resourceName)
+{
+    var obj = {};
+    var structureArray = [];
+    var len = system.functions.lng(fieldList);
+    for ( var k = 0;k &lt; len &amp;&amp; file != null;k++){
+        if (null == fieldList[k]) continue;
+        var fieldName = fieldList[k];
+
+        var soapType = soaTypeList[k];
+        var type = "string";
+
+        var list = getFields(fieldName);
+        log.debug("file2Object::fieldName=", fieldName);
+
+        var nameList  = list.nameList;
+        var indexList = list.indexList;
+
+        var lastName = nameList[nameList.length-1];
+        if (null==captionList[k]){
+            captionList[k]=lastName;
+        }
+
+        var lastName = captionList[k];
+
+        if (indexList.length&gt;0) {
+            var nameStartList = nameList.slice(0, indexList[0]);
+            var nameEndList   = nameList.slice(indexList[0]+1);
+
+            var value1 = getFieldValue(file, nameStartList, null);
+
+            if (value1==null) {
+                continue;
+            }
+
+            var subLng = system.functions.denull(value1).length();
+
+            if (subLng==0) {
+                continue;
+            }
+
+            var obj1 = buildStruct(obj, nameStartList, nameStartList.length-1);
+
+            var arrayName = nameStartList[nameStartList.length-1];
+            if (!obj1[arrayName]) {
+                obj1[arrayName]={"type":'array', "value":[] };
+            }
+
+            var array = obj1[arrayName].value;
+
+            for (var i=0;i&lt;subLng;i++) {
+                var tempFields = [i].concat(nameEndList);
+                var tmpValue = getFieldValue(value1, tempFields);
+
+                var valueTypeMapping = checkSimpleFieldType(tmpValue, soapType);
+
+                var obj2 = array[i];
+
+                if (!obj2){
+                    obj2= {type:'object', value:{}};
+                    array[i] = obj2;
+                }
+
+                obj2.value[lastName] = {"value":valueTypeMapping.value, "type":valueTypeMapping.type};
+            }
+        } else {
+            // build parent
+            
+            var obj1 = buildStruct(obj, nameList, nameList.length-1);
+
+            // Assign Value
+            var value = getFieldValue(file, nameList, null);
+            var valueTypeMapping = checkSimpleFieldType(value, soapType);
+            obj1[lastName]= {"value":valueTypeMapping.value, "type":valueTypeMapping.type};
+        }
+    }
+
+    var result = {};
+    result['value'] = {};
+    result['value'][resourceName] = {type:'object', value: obj};
+    result['type'] = "object";
+
+    return result;
+}
+
+function buildStruct(obj, nameList, size){
+    var obj1 = obj;
+    for ( var i=0;i&lt;size;i++) {
+        if (!obj1[nameList[i]]) {
+            obj1[nameList[i]] = {type:"structure", value: {}};
+        }
+
+        obj1 = obj1[nameList[i]].value;
+    }
+
+    return obj1;
+}
+
+/**
+* Check non-structure field type. If date convert to ISO date format
+* @param {object} value - field value
+
+* @return{value, type} - converted value
+**/
+
+function checkSimpleFieldType(value, soaType){
+
+    var type = "string";
+
+    if (null != value &amp;&amp; value instanceof Date){
+        if (soaType=='DateTimeType'){
+            value = new XMLDate(value).getISODateTimeString();
+            type = "datetime";
+        } else if (soaType=='DateType'){
+            value = new XMLDate(value).getISODateTimeString();
+            var k1 = value.indexOf('T');
+            var k2 = value.indexOf('+');
+            if (k1&gt;0&amp;&amp;k2&gt;0){
+                value = value.substring(0, k1)+value.substring(k2);
+            }
+
+            type = "date";
+        } else if (soaType=='TimeType'){
+            value = new XMLDate(value).getISODateTimeString();
+            var k = value.indexOf('T');
+            if (k&gt;0){
+                value = value.substring(k+1);
+            }
+            type = "time";
+        } else if (soaType=='DurationType'){
+            value = new XMLDate(value).getISODateTimeString();
+            type = "duration";
+        } else {
+            value = new XMLDate(value).getISODateTimeString();
+            type = "datetime";
+        }
+
+
+    }
+
+    if ( null!=value &amp;&amp; null!=value.getType){
+        if ("ARRAY"==value.getType()){
+            type="array";
+        }
+
+        value = dealArrayField(value);
+    }
+
+    if (value!=null &amp;&amp; value.getText){
+        value = value.getText();
+    }
+
+    if (value==null){
+        value = "";
+    }
+
+    if (soaType=="Base64Type"){
+        value = base64Encode(value);
+    }
+
+    return {value:value, type:type};
+}
+
+
+/**
+* convert array field to js array type
+* @param {array} value - field value
+
+* @return{array} - converted value
+**/
+function dealArrayField(value){
+    value = system.functions.denull(value);
+    var value1 = new Array();
+
+    var length = value.length();
+
+    for (var m=0;m&lt;length;m++){
+        if (null != value[m] &amp;&amp; value[m] instanceof Date){
+            value1.push({value:new XMLDate(value[m]).getISODateTimeString(), type:"datetime"});
+        } else {
+            value1.push({value:value[m], type:"string"});
+        }
+    }
+    return value1;
+}
+
+/**
+* convert object to json
+* @param {object} fileObject - file of a record in db or array of list
+* @param {object} returnObj - return object by query or action
+* @param {boolean} isMultiple - is single record or list
+* @param {string} resourceName - resource name in rest in extaccess
+* @param {number} start - the start index
+* @param {array} messages - messages to be returned in json response
+*
+* @return {json}
+**/
+function toJson(fileObject, returnObj, isMultiple, resourceName, start, messages){
+    if(messages == null){
+        messages = [];
+    }
+    var msgs = getMessages().concat(messages);
+
+    if (msgs.length==0){
+        msgs = getUserMessages();
+    }
+
+    var httpStatus = restHS[returnObj.returnCode];
+    if (httpStatus == null){
+        httpStatus = restHS['other'];
+    }
+    if (isMultiple) {
+        var obj = {ReturnCode:returnObj.returnCode,
+                   HttpStatus:httpStatus,
+                   Messages:msgs,
+                   ReturnType:"list",
+                   ResourceName:resourceName,
+                   '@totalcount':returnObj.count}
+        if (fileObject != null){
+            obj['@start'] = start;
+            obj['@count'] = fileObject.length;
+            obj['content'] = {value:fileObject, "type":"array"};
+        }
+
+    } else {
+        var obj = {ReturnCode:returnObj.returnCode,
+                   HttpStatus:httpStatus,
+                   Messages:msgs,
+                   ResourceName:resourceName,
+                   ReturnType:"record",
+                   value: fileObject['value'],
+                   type:"object" };
+    }
+    return lib.JSON2.toJSON(obj);
+}
+
+
+/**
+* convert json to SCFile
+* @param {string} str - json
+* @param {file} config - extacess record
+* @param {object} dbdict - dbdict record
+* @param {file} SCFile - input file to merge
+*
+* @return {file} SCFile
+**/
+function fromJson(str, config, dbdict, file)
+{
+    var obj = eval( '(' + str + ')' );
+
+    if (!obj) {
+        return file;
+    }
+
+    var returnFile = fromJsonObj(obj, config, dbdict, file);
+    if (log.isTraceEnabled()){
+        log.trace("fromJson", "returnFile", system.functions.str(returnFile));
+    }
+
+    return returnFile;
+}
+
+
+/**
+* convert obj to SCFile
+* @param {object} obj - plain js object
+* @param {file} config - extacess record
+* @param {object} dbdict - dbdict record
+* @param {file} SCFile - input file to merge
+*
+* @return {file} new SCFile
+**/
+function fromJsonObj(obj, config, dbdict, file, msgs)
+{
+    log.trace("fromJsonObj::begin, file=", system.functions.str(file));
+    var fileName = config.name;
+
+    var fieldList = config.soafield;
+    var captionList = config.soacaption;
+    var soaptypeList = config.soatype;
+
+    for ( var k = 0;k &lt; fieldList.length();k++){
+        var caption = captionList[k];
+        var field = fieldList[k];
+
+        if (null==field || ''==field) {
+            continue;
+        }
+
+        var type = soaptypeList[k];
+
+        try{
+
+            var backetPos = -1;
+            var commaPos = -1;
+
+            if ((bracketPos = field.indexOf('[')) &gt; 0){ // array structure
+                assignArrayOfStructValue(file, obj, dbdict, field, caption, type)
+            } else {
+                assignSimpleValue(file, obj, dbdict, field, caption, type);
+            }
+        } catch (e) {
+            log.warn(field, e);
+            if (e &amp;&amp; e.error==INVALID_FIELD_VALUE){
+                throw system.functions.scmsg('22', 'restful', [field, e.type, e.value]);
+            }
+
+            throw e;
+        }
+    }
+
+    if (null!=msgs) {
+        var msg = _checkInvalidFields(obj);
+        if (null!=msg) { 
+            msgs.push(msg);
+        }
+    }
+    
+    if(log.isTraceEnabled()){
+        log.trace("fromJsonObj::return", file);
+    }
+    return file;
+}
+
+
+function _checkInvalidFields(obj){
+      
+    for (var attr in obj) {
+        _check2(obj, attr);
+    }
+    
+    
+    var n = 0;
+    for (var k in obj) {
+        n++;
+        break;
+    }
+
+    if (n&gt;0) {
+       var fields = lib.JSON2.toJSON(obj);
+       return system.functions.scmsg('35', 'restful', [fields]);
+    }
+    
+    return null;
+}
+
+function _check2(obj, attr){
+    var value = obj[attr];
+    
+    if (value==null){
+        return;
+    }
+    
+    if (typeof(value)!='object') {
+        return;
+    }
+    for (var k in value) {
+        _check2(value, k);
+    }
+
+    var n = 0;
+    for (var k in value) {
+        n++;
+        break;
+    }
+
+    if (n==0) {
+        if (obj instanceof Array){
+            delete obj[attr];
+        } else {
+            delete obj[attr];
+        }
+    } else {
+        log.warn("value"+value);
+        if (value instanceof Array){
+            for (var m=0;m&lt;value.length;m++){
+                if (value[m]==null) {
+                    value[m] = {};
+                }
+            }
+        }
+    }
+}
+
+
+function getFieldDef(dbdict, field){
+    var obj = dbdict[field];
+    
+    if(!obj){
+        obj = {name:field, type:dbdict.__getFile().getFieldType(field)}
+        
+        if (obj.type==8) {
+        	var parent = obj;
+        	obj = {name:field, type:dbdict.__getFile().getFieldType(field+',1')};
+        	obj.parent = parent;
+        	
+        }
+        
+        dbdict[field]=obj;
+    }
+    
+    return obj;
+}
+
+/**
+Structure, or simple value
+ */
+function assignSimpleValue(file, obj, dbdict, field, caption, soapType){
+    var fields = getFields(field).nameList;
+    var fieldValue = getFieldValue(obj, fields, caption, true);
+    
+    if(fieldValue=='') {
+        fieldValue = null;
+    }
+    
+    if (log.isDebugEnabled()){
+        log.debug("assignSimpleValue::fields=", field);
+        log.trace("assignSimpleValue::fieldValue=", fieldValue);
+    }
+
+    if (isInvalidValue(fieldValue)){
+        return;
+    }
+
+    if (null!=fieldValue) {
+        fieldValue = convertValue(fieldValue, getFieldDef(dbdict, fields[fields.length-1]), soapType);
+    }
+
+    var convertedFieldNames = convertFieldName(file, fields);
+    assignFieldValue(file, convertedFieldNames, fieldValue);
+}
+
+/**
+Array of structure
+*/
+function assignArrayOfStructValue(file, obj, dbdict, field, caption, soapType){
+    var fields = getFields(field);
+    var nameList  = fields.nameList;
+    var indexList = fields.indexList;
+
+    if (log.isDebugEnabled()){
+        log.debug("assignArrayOfStructValue::fields=", field);
+    }
+
+    var nameStartList = nameList.slice(0, indexList[0]);
+    var nameEndList   = nameList.slice(indexList[0]+1);
+
+    var lastName = nameList[nameList.length-1];
+
+    var obj1 = getFieldValue(obj, nameStartList, null);
+    
+    if(''==obj1) {
+        obj1 = null;
+    }
+    
+    if (isInvalidValue(obj1)){ // undefined, ignor and go ahead
+        return;
+    }
+
+    var lng = 0;
+    if (obj1==null){
+        // noop
+    } else {
+        lng = obj1.length;
+        for (var i = 0; i &lt; lng; i++){
+            var tempFields = [i].concat(nameEndList);
+
+            var tmpValue = getFieldValue(obj1, tempFields, caption, true);
+            
+            if(''==tmpValue) {
+                tmpValue = null;
+            }
+            
+            if (null!=tmpValue){
+                tmpValue = convertSimpleValue(tmpValue, getFieldDef(dbdict, lastName), soapType);
+            }
+            nameList[indexList[0]] = i;
+            var convertedFieldNames = convertFieldName(file, nameList);
+
+            assignFieldValue(file, convertedFieldNames, tmpValue);
+        }
+    }
+
+    // cleanup additional values
+    for (var i=lng;i&lt;getFieldValue(file, nameStartList).length();i++){
+        nameList[indexList[0]] = i;
+        var convertedFieldNames = convertFieldName(file, nameList);
+        assignFieldValue(file, convertedFieldNames, null);
+    }
+}
+
+
+function isInvalidValue(value){
+    return undefined===value || typeof(value)=='function';
+}
+
+function assignFieldValue(file, fieldNames, value){
+    if (isInvalidValue(value)){
+        return;
+    }
+
+    if (1==fieldNames.length){
+        file[fieldNames[0]] = value;
+    } else if (2==fieldNames.length){
+        file[fieldNames[0]][fieldNames[1]] = value;
+    } else if (3==fieldNames.length){
+        file[fieldNames[0]][fieldNames[1]][fieldNames[2]] = value;
+    } else if (4==fieldNames.length){
+        file[fieldNames[0]][fieldNames[1]][fieldNames[2]][fieldNames[3]] = value;
+    } else {
+        var str = "file";
+        for (var k=0;k&lt;fieldNames.length;k++) {
+            str = str+"[fieldNames["+k+"]]";
+        }
+        str = str+=" = value";
+        eval(str);
+    }
+}
+
+/**
+* convert a simple type from string by dbdict definition
+* @param {string} value - a string need to be converted
+* @param {object} fieldDef - a field object in dbdict
+* @param {type}  string - soa type
+*
+* @return - converted value related to field type in dbdict
+**/
+function convertSimpleValue(value, fieldDef, type){
+    if (log.isTraceEnabled()){
+        log.trace("convertSimpleValue: value =", value, ", type =", fieldDef.type);
+    }
+
+    if (null==value){
+        return null;
+    }
+
+    var retValue = value;
+    if (type==="Base64Type"){
+        retValue = base64Decode(value);
+    }
+
+
+    if (value != null) {
+
+        if (fieldDef.type == 3) {
+            if (type==="DurationType"){
+                retValue = new XMLDate(value).toSCDuration();
+            } else if (type==null){
+                retValue = new XMLDate(value).getDate();
+                if (retValue == '&lt;null&gt;'){
+                    retValue = new XMLDate(value).toSCDuration();
+                }
+            } else {// datetime, date, time
+                retValue = new XMLDate(value).getDate();
+            }
+
+            if (retValue==="&lt;null&gt;"){
+                throw {error:INVALID_FIELD_VALUE, type:'datetime', value:value};
+            }
+        } else if (fieldDef.type == 1) {
+            if (!isNumber(value)){
+                throw {error:INVALID_FIELD_VALUE, type:'number', value:value};
+            }
+
+            retValue = system.functions.val(value, fieldDef.type);
+        } else if (fieldDef.type != 2){
+            retValue = system.functions.val(value, fieldDef.type);
+        } else {
+            retValue = system.functions.str(value);
+        }
+    }
+
+    if (log.isTraceEnabled()){
+        log.trace("convertSimpleValue: retValue =", retValue);
+    }
+
+    return retValue;
+}
+
+/**
+Convert value as type
+ */
+function convertValue(value, fieldDef, type){
+    if (log.isTraceEnabled()){
+        log.trace("convertValue: value =", value, ", type =", fieldDef.type);
+    }
+    var retValue = value;
+
+    var c1 = fieldDef;
+
+    var isArray =false;
+    if (c1.parent!=null){
+        if (c1.parent.type==8){
+            isArray = true;
+        }
+    }
+
+    if (isArray){
+        if (!(value instanceof Array)){
+            value = [value];
+        }
+
+        retValue = [];
+        for (var k=0;k&lt;value.length;k++){
+            retValue.push(convertSimpleValue(value[k], fieldDef, type));
+        }
+    }else {
+        retValue = convertSimpleValue(value, fieldDef, type)
+    }
+
+    if (log.isTraceEnabled()){
+        log.trace("convertValue::retValue =", retValue);
+    }
+
+    return retValue;
+}
+
+
+
+/*
+Get dbdict definition
+*/
+function getdbdict(fileName){
+    var __file = new SCFile(fileName);
+    return {__getFile:function(){return __file;}};
+}
+
+
+/*
+* Get keys' caption
+*/
+function getCaptions(keys, fields, captions){
+    var keysLen = system.functions.lng(keys);
+    var fieldsLen = system.functions.lng(fields);
+
+    var keyCaptions = [];
+
+    for (var i = 0; i &lt; keysLen; i++){
+        var tmpKey = keys[i];
+        var found = false;
+
+        for (var j = 0; j &lt; fieldsLen; j++){
+            var tmpField = fields[j];
+            if (tmpKey == tmpField &amp;&amp; captions[j] != null) {
+                found = true;
+                keyCaptions.push(captions[j]);
+                break;
+            }
+        }
+        if (!found){
+            keyCaptions.push(tmpKey);
+        }
+    }
+
+    return keyCaptions;
+}
+
+/**
+* Get messages from message queue
+*
+* @return array - message array
+**/
+function getMessages(){
+    var messages = system.functions.messages(5, 0); //5: retrieve messages 0: all levels
+
+    system.functions.messages(3); // clean message queue;
+
+    return messages.toArray();
+}
+
+/**
+ * Is Number
+ * @param {value} string
+ * return boolean
+ */
+function isNumber(value){
+    if (/^[\+\-]?\d+$/.test(value)){
+        return true;
+    }
+
+    if (/^[\+\-]?\d+\.\d+$/.test(value)){
+        return true;
+    }
+
+    return false;
+}
+
+/**
+* Convert a field if it is identical to file method name
+* @param {SCFile} file - a record in file
+* @param {Array} fieldNames - array of field names
+*
+* @return array - converted field names
+**/
+function convertFieldName(file, fieldNames){
+
+    for (var i = 0; i &lt; fieldNames.length; i++){
+        if (typeof file[fieldNames[i]] == 'function') {
+            fieldNames[i] = '_' + fieldNames[i];
+        }
+    }
+    return fieldNames;
+}
+
+
+/**
+* Check uri is correct or not
+* @param {string} method - method of the rest call, Get/Post/Put/Delete
+* @param {Array} uri - array of uri of the rest call
+* @param {SCFile} config - record in extaccess
+*
+* @return string - error message if uri is not correct. otherwise, return null
+**/
+function checkURI(method, uri, config){
+
+    var keyLen = config['rest.keys'].length();
+    if (uri.length &lt;= 1){
+        return; //empty uri was checked before this function.
+    }
+
+    if (uri.length &lt; (keyLen + 1)){ //uri cannot shorter than resource/keys, otherwise keys is not input correctly
+        return; // keys are not set correctly. However it will be checked later, so return true here.
+    } else if (uri.length &gt; (keyLen + 3)){//uri cannot be longer than /resource/keys/attachments(action)/id(actionName)
+        log.debug('RestfulMain::checkURI::uri length ' + uri.length + ' is longer than keyLen + 3:' + (keyLen + 3));
+        return makeErrorMsg(restRC['badval'], system.functions.scmsg('30', 'restful'));
+
+    } else if (method != 'GET' &amp;&amp; uri.length == (keyLen + 2) &amp;&amp; uri[keyLen + 1] == 'action'){//uri cannot be equal to /resource/keys/action without actionName if method is PPD
+        log.debug('checkURI::missing action name');
+        return makeErrorMsg(restRC['badval'], system.functions.scmsg('31', 'restful'));
+
+    } else if (uri.length &gt; (keyLen + 1)){
+        var tmpActionKey = uri[keyLen + 1];
+        if (method == 'GET' &amp;&amp; tmpActionKey != 'attachments'){//if uri matchs /resource/keys/attachments(/id), need check attachments word spelling
+            log.debug('checkURI::key word "attachments" is missing in GET');
+            return makeErrorMsg(restRC['badval'], system.functions.scmsg('32', 'restful', ['"attachments"']));
+
+        } else if (method != 'GET' &amp;&amp; tmpActionKey != 'attachments' &amp;&amp; tmpActionKey != 'action'){//if uri matchs /resource/keys/attachments(action)(/id), need check attachments/action word spelling
+            log.debug('checkURI::key word "attachments" or "action" is missing in PPD');
+            return makeErrorMsg(restRC['badval'], system.functions.scmsg('32', 'restful', ['"attachments" or "action"']));
+        }
+    }
+    return;
+}
+
+/**
+parse str to fields
+@param {str} string - fields string "middle,erp.instances[erp.approver]"
+@return object - {nameList:nameList, indexList:indexList};
+    nameList: fields name list
+    indexList: array index list
+ */
+function getFields(name) {
+
+	var n = 0;
+	var n = n.toString();
+	
+	var list = name.split(',');
+	var length = list.length;
+	var last = list[length-1];
+	var index = last.indexOf('[');
+	
+	var indexArray = [];
+	
+	if(index&gt;0) {
+		list[length-1] = last.substring(0, index);
+		list[length]=0;
+		indexArray.push(length);
+		list[length+1]=last.substring(index+1, last.length-1);
+	}
+	return {nameList:list, indexList:indexArray};
+}
+
+/**
+ * Get field value from obj
+ @param {obj}    object  - the object
+ @param {fields} array   - the list of fields
+ @param {caption} string - the last field's caption, can be the key of field value
+
+ @return fields value
+ */
+function getFieldValue(obj, fields, caption, isDelete){
+    
+    var convertedFieldNames = convertFieldName(obj, fields);
+    
+    var obj1 = obj;
+    var lastIndex = fields.length-1;
+
+    for (var k=0;k&lt;lastIndex;k++) {
+        var value = obj1[fields[k]];
+
+        if (null===value || undefined===value) {
+            if (isDelete) {
+                delete obj1[fields[k]];
+            }
+            return value;
+        }
+
+        obj1 = value;
+    }
+
+    // the last field
+    if (null!=caption){
+        var tempValue = obj1[caption];
+        if( tempValue!==undefined){
+            if (isDelete) {
+              delete obj1[caption];
+            }
+            return tempValue;
+        }
+    }
+
+    var tempValue = obj1[fields[lastIndex]];
+    if (isDelete) {
+        delete obj1[fields[lastIndex]];
+    }
+    
+    return tempValue;
+}
+
+
+var log = getLog("rest.main");
+
+</script>
+    <package type="string">Integration</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:43</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

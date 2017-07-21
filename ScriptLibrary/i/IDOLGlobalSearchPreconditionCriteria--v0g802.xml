@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;IDOLGlobalSearchPreconditionCriteria&quot;" recordid="IDOLGlobalSearchPreconditionCriteria">
+    <name type="string">IDOLGlobalSearchPreconditionCriteria</name>
+    <script type="string">var _ = lib.Underscore.require();
+
+var IDOLGlobalSearchPreconditionCriteria = (function() {
+
+  var OPERATOR_MAPPING = {
+    'and': '$and',
+    'or' : '$or',
+    'not': '$not',
+    '='  : '$eq',
+    '~=' : '$neq',
+    '&gt;'  : '$gt',
+    '&gt;=' : '$gte',
+    '&lt;'  : '$lt',
+    '&lt;=' : '$lte',
+    '#'  : '$sw',
+    '~#' : '$nsw'
+  };
+
+  function compileCriteriaExpression(ast) {
+    var type = ast.NodeType();
+    switch(type) {
+      case 'TIME':
+
+        // throw 'Cannot handle type "' + type + '"(' + ast.NodeValue() + ') in Match Criteria';
+        throw funcs.scmsg('invalid.type', 'idol', [ type, ast.NodeValue() ]);
+      case 'ARRAY' :
+      case 'NUMBER' :
+      case 'STRING2' :
+      case 'BOOLEAN' : return [ '$value', ast.NodeValue() ];
+      case 'FIELD2' :  return [ '$field', ast.NodeValue() ];
+      case 'OPERATOR':
+        var op = _.trim(ast.OP()), 
+            values = ast.NodeValue();
+        switch(op) {
+          case 'and' : 
+          case 'or' :   
+          case 'not' :  
+          case '=' : 
+          case '~=' :
+          case '&gt;' : 
+          case '&gt;=' :
+          case '&lt;' : 
+          case '&lt;=' :
+          case '#' : 
+          case '~#' : 
+            var opname = OPERATOR_MAPPING[op],
+                resolvedValues = _.map(values, compileCriteriaExpression);
+            resolvedValues.unshift(opname);
+            return resolvedValues;
+          default : 
+            // throw 'Cannot handle operator "' + _.trim(ast.OP()) + '" in Match Criteria';
+            throw funcs.scmsg('invalid.operator', 'idol', [ _.trim(ast.OP()) ]);
+        }
+    }
+  }
+
+  return {
+    compile : compileCriteriaExpression
+  };
+
+}());
+
+function require() {
+  return IDOLGlobalSearchPreconditionCriteria;
+}
+
+
+
+// (function() {
+//   var criteria = '(category = "service catalog" or category="support catalog") and open = "Open"';
+//   var ast = parseQuery(criteria);
+//   var json = IDOLGlobalSearchPreconditionCriteria.compile(ast);
+
+//   print(lib.JSON.json().stringify(json, null, ' '));
+// })();</script>
+    <package type="string">IDOL</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:40</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

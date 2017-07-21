@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="displayscreen">
+  <record id="screen.id=&quot;uimcompdefinitions.db.view&quot; and language=&quot;ENG&quot;" recordid="uimcompdefinitions.db.view - ENG">
+    <screen.id type="string">uimcompdefinitions.db.view</screen.id>
+    <screen.id.copy type="string">uimcompdefinitions.db.view</screen.id.copy>
+    <language type="string">ENG</language>
+    <title type="globalVar">$L.title</title>
+    <form type="globalVar">$L.format</form>
+    <io type="boolean">true</io>
+    <time NullValue="1" type="dateTime"/>
+    <initialization sctype="structure">
+      <expressions NullValue="1" sctype="array">
+        <expressions NullValue="1" type="expression"/>
+      </expressions>
+      <msg.condition NullValue="1" type="boolean"/>
+      <message NullValue="1" type="string"/>
+    </initialization>
+    <screen.id.alias type="string">uimcompdefinitions.db.view</screen.id.alias>
+    <on.enter.key type="string">return</on.enter.key>
+    <window.structure sctype="structure">
+      <open.window NullValue="1" type="boolean"/>
+      <parent.name NullValue="1" type="string"/>
+      <window.name NullValue="1" type="string"/>
+      <window.position type="string">left</window.position>
+      <window.percent NullValue="1" type="decimal"/>
+      <window.lines NullValue="1" type="decimal"/>
+    </window.structure>
+    <screen.id.copy.old type="string">uimcompdefinitions.db.view</screen.id.copy.old>
+    <more.window NullValue="1" type="boolean"/>
+    <user.options type="boolean">true</user.options>
+    <sysmodcount type="decimal">3</sysmodcount>
+    <sysmoduser type="string">xingjia</sysmoduser>
+    <sysmodtime type="dateTime">03/30/11 18:38:19</sysmodtime>
+    <object.related NullValue="1" type="boolean"/>
+    <javascript type="string">if (vars.$mysm_editor) {
+
+	var pHandler = new lib.MySMHelper.MySMHelperParaHandler(vars.$L_file);
+	//set value to $L.comp.table
+	vars.$L_comp_table = pHandler.getTable();
+	
+	//set value to $L.chart.type
+	vars.$L_comp_chart_type = pHandler.getCompType();
+	
+	//set value to $L.comp.rad.query
+	vars.$L_comp_rad_query = pHandler.getRadQuery();
+	
+	//set value to $L.comp.filter
+	vars.$L_comp_filter = pHandler.getFilterName();
+	
+	//Set value to $L.comp.category
+	vars.$L_comp_category = pHandler.getCategory();
+	
+	//Set value to $L.comp.group
+	vars.$L_comp_group = pHandler.getGroupedByField();
+
+}</javascript>
+    <search.only NullValue="1" type="boolean"/>
+  </record>
+</recordset>

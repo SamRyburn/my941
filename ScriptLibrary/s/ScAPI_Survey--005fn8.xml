@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;ScAPI_Survey&quot;" recordid="ScAPI_Survey">
+    <name type="string">ScAPI_Survey</name>
+    <script type="string">var select = lib.ScAPI_RAD._select;
+var fun = system.functions;
+var NO_RECORD_EXIT = lib.ScAPI_Constants.NO_RECORD_EXIT();
+var NORMAL_EXIT = lib.ScAPI_Constants.NORMAL_EXIT();
+var BAD_VALIDATION_EXIT = lib.ScAPI_Constants.BAD_VALIDATION_EXIT();
+var setExitType = lib.ScAPI_Util.setExitType;
+var setErrorMsg = lib.ScAPI_Util.setErrorMsg;
+var getCurrentOperator = lib.ScAPI_Util.getCurrentOperator;
+var log = lib.ScAPI_Logger.log("ScAPI_Survey");
+var JSON = system.library.JSON.json();
+
+
+
+// Title and Description configuration for different table
+// However CI related are not here because of CI use join tables which can not enumerates.
+var title_field_map = 
+	{
+		"cm3r" : "brief.description",
+		"incidents" : "title",
+		"rootcause" : "brief.description",
+		"probsummary" : "brief.description",
+		"request" : "brief.description",
+		"ocmq" : "brief.description"
+	};
+	
+var description_field_map = 
+	{
+		"cm3r" : "description",
+		"incidents" : "description",
+		"rootcause" : "root.cause",
+		"probsummary" : "action",
+		"request" : "description",
+		"ocmq" : "description"
+	};
+
+function getSurveyInbox() {
+	setExitType(NORMAL_EXIT);
+	var status = vars.$L_file['status'];
+	var operator = getCurrentOperator();
+	var query = "contact.name=\"" + operator['contact.name'] + "\"";
+	if (status) {
+		query += " and status=\"" + status + "\"";
+	}
+	var fields = ['number', 'file.name', 'field.name', 'reference.number', 'open.time', 'close.time', 'status'];
+	var orderBys = ['open.time'];
+	var orderBysSeq = ['desc'];
+	var pageSize = vars.$L_file['pageSize'] == null ? 10 : vars.$L_file['pageSize'];
+	vars.$L_file['pageSize'] = pageSize;
+	var start = vars.$L_file['start'] == null ? 1 : vars.$L_file['start'];
+	if (start &lt; 1) start = 1;
+	vars.$L_file['start'] = start;
+	var survey = select("SurveyInternal", query, fields, orderBys, orderBysSeq);
+	var recordCount = lib.ScAPI_RAD._count("SurveyInternal", query);
+	vars.$L_file['_count'] = recordCount;
+	if (survey == null) {
+		setExitType(NO_RECORD_EXIT);
+		return;
+	}
+	var i = 0;
+	var count = 0;
+	var titleMap = {};
+	
+	for (count = 0; count &lt; (start - 1); count++) {
+		var rc = survey.getNext();
+	}
+	
+	do 
+	{
+		vars.$L_file['surveys'][i]['number'] = survey['number'];
+		vars.$L_file['surveys'][i]['open.time'] = survey['open.time'];
+		vars.$L_file['surveys'][i]['close.time'] = survey['close.time'];
+		vars.$L_file['surveys'][i]['survey.status'] = survey['status'];
+		vars.$L_file['surveys'][i]['reference.number'] = survey['reference.number'];
+		vars.$L_file['surveys'][i]['file.name'] = survey['file.name'];
+
+		if (!titleMap[survey['file.name']]) {
+			titleMap[survey['file.name']] = {'field.name': survey['field.name'], 'records':{}};
+		}
+		var records = titleMap[survey['file.name']]['records'];
+		records[fun.str(survey['number'])] =
+			{
+				'reference.number' : survey['reference.number']
+			};
+			
+        count++;
+        i++;
+        if (count &gt;= (start + pageSize - 1)){
+         	break;
+        }
+		var result = survey.getNext();
+	} while (result == RC_SUCCESS)
+	
+	var titleMap2 = {};
+	
+	for (var fileName in titleMap) {
+		if (titleMap.hasOwnProperty(fileName)) {
+			var fieldName = titleMap[fileName]['field.name'];
+			var records = titleMap[fileName]['records'];
+			var ids = [];
+			for (var id in records) {
+				if (records.hasOwnProperty(id)) {
+					ids[ids.length] = records[id]['reference.number'];
+				}
+			}
+			var referMap = getReferencedRecordInBatch(fileName, fieldName, ids);
+			for (var id in records) {
+				if (records.hasOwnProperty(id)) {
+					titleMap2[id] = {};
+					titleMap2[id]['title'] = referMap[titleMap[fileName]['records'][id]['reference.number']]['title'];
+					titleMap2[id]['description'] = referMap[titleMap[fileName]['records'][id]['reference.number']]['description'];
+				}
+			}
+		}
+	}
+	for (var i = 0; i&lt;fun.lng(vars.$L_file['surveys']); i++) {
+		var number = vars.$L_file['surveys'][i]['number'];
+		vars.$L_file['surveys'][i]['title'] = titleMap2[fun.str(number)]['title'];
+		vars.$L_file['surveys'][i]['description'] = titleMap2[number]['description'];
+	}	
+}
+
+function getSurveyStatistic() {
+	setExitType(NORMAL_EXIT);
+	var openCount = getSurveyCount("Open");
+	var closedCount = getSurveyCount("Closed");
+	vars.$L_file['open.count'] = openCount;
+	vars.$L_file['closed.count'] = closedCount;
+}
+
+function getSurveyCount(status) {
+	var operator = getCurrentOperator();
+	var query = "contact.name=\"" + operator['contact.name'] + "\" and status=\"" + status + "\"";
+	var recordCount = lib.ScAPI_RAD._count("SurveyInternal", query);
+	return recordCount;
+}
+
+//To get 'title' and 'description' for list.
+function getReferencedRecordInBatch(referFileName, referFieldName, ids) {
+	var query = referFieldName + " isin " + fun.str(ids);
+	
+	var titleField = title_field_map[referFileName];
+	
+	if (!titleField &amp;&amp; lib.DisplayName.hasDisplayName(referFileName)) {
+		titleField = lib.DisplayName.getDisplayLable(referFileName);
+	}
+
+	var descriptionField = fun.nullsub(description_field_map[referFileName], "comments");
+
+	var fields = [referFieldName, descriptionField];
+	if (titleField) {
+		fields[fields.length] = titleField;
+	}
+	
+	var record = select(referFileName, query, fields);
+	
+	var retMap = {};
+	
+	if (record != null) {
+		do {
+			var ret = {
+				"description" : convertDescription(record[descriptionField])
+			};
+			if (titleField) {
+				ret['title'] = record[titleField];
+			}
+			
+			retMap[record[referFieldName]] = ret;
+			var rc = record.getNext();
+		} while (rc == RC_SUCCESS)
+
+	}
+	return retMap;
+}
+
+function getSurveyRecord() {
+	setExitType(NORMAL_EXIT);
+	var number = vars.$L_file['number'];
+	var query = "number=" + number;
+	var operator = getCurrentOperator();
+	query += " and contact.name=\"" + operator['contact.name'] + "\"";
+	var surveyConfig = getSurveyConfiguration();
+	var fields = ['number', 'contact.name', 'reference.number', 'status', 'file.name' , 'field.name', 'open.time', 'support.id'];
+	for (var key in surveyConfig) {
+		if (surveyConfig.hasOwnProperty(key)) {
+			fields[fields.length] = key;
+		}
+	}
+	var survey = select("SurveyInternal", query, fields);
+	if (survey == null) {
+		setExitType(NO_RECORD_EXIT);
+		return;
+	}
+	vars.$L_file['contact.name'] = survey['contact.name'];
+	vars.$L_file['status'] = survey['status'];
+	
+	var referFileName = survey['file.name'];
+	var referFieldName = survey['field.name'];
+	var referId = survey['reference.number'];
+	
+	var referRecord = getReferencedRecord(referFileName, referFieldName, referId);
+	
+	vars.$L_file['reference.number'] = referId;
+	vars.$L_file['title'] = referRecord['title'];
+	vars.$L_file['description'] = referRecord['description'];
+	
+	var supportId = survey['support.id'];
+	if (supportId) {
+		var ticket = getSupportTicket(supportId);
+		if (ticket) {
+			vars.$L_file['support.id'] = supportId;
+			vars.$L_file['callback.support'] = ticket['category'];
+		}
+	}
+	
+	var i = 0;
+	var dbdict = lib.ScAPI_GetOptionsLookup.getDBDICT("SurveyInternal");
+	for (var key in surveyConfig) {
+		if (surveyConfig.hasOwnProperty(key)) {
+			vars.$L_file['questions'][i]['dest.field.name'] = key;
+			
+			var fieldLabel = surveyConfig[key]['question.label'];
+			try {
+				var fieldLabelId = fun.val(fieldLabel, lib.DataTypeConst.typeNumber());
+				fieldLabel = fun.scmsg(fieldLabelId, "srcsurvey");
+			} catch (e) {
+			}
+			vars.$L_file['questions'][i]['question.label'] = fieldLabel;
+			
+			vars.$L_file['questions'][i]['answer.type'] = surveyConfig[key]['answer.type'];
+			vars.$L_file['questions'][i]['global.list'] = surveyConfig[key]['global.list'];
+			vars.$L_file['questions'][i]['custom.answer.allowed'] = surveyConfig[key]['custom.answer.allowed'];
+			vars.$L_file['questions'][i]['mandatory.condition'] = surveyConfig[key]['mandatory.condition'];
+			var fieldType = getFiedType(dbdict, key);
+			vars.$L_file['questions'][i]['dest.field.type'] = fieldType;
+			var value = survey[key];
+			if (value &amp;&amp; "character" == fieldType &amp;&amp; typeof value.join == 'function') {
+				value = value.join("\n");
+			}
+			if (value != null &amp;&amp; "logical" == fieldType) {
+				value = "" + value;
+			}
+			if (value &amp;&amp; "datetime" == fieldType) {
+				value = lib.tzFunctions.convertDatetoString(value, 6, "Greenwich/Universal");
+			}
+			vars.$L_file['questions'][i]['value'] = value;
+			i++;
+		}
+	}
+}
+
+function getFiedType(dbdict, key) {
+	var type;
+	for (var j = 0; j &lt; dbdict.field.length(); j++) {
+			if (dbdict.field[j].name == key) {
+				var fieldType = dbdict.field[j].type;
+				if (fieldType == lib.DataTypeConst.typeCharacter()) {
+					type = "character";
+					break;
+				} else if (fieldType == lib.DataTypeConst.typeDateTime()) {
+					type = "datetime";
+					break;
+				} else if (fieldType == lib.DataTypeConst.typeNumber()) {
+					type = "number";
+					break;
+				} else if (fieldType == lib.DataTypeConst.typeBoolean()) {
+					type = "logical";
+					break;
+				}  else if (fieldType == lib.DataTypeConst.typeArray()) {
+					type = "character";
+					break;
+				}
+			}
+		}
+	return type;
+}
+
+function getSupportTicket(supportId) {
+	var query = "incident.id=\"" + supportId + "\"";
+	var fields = ['category'];
+	var ticket = select("incidents", query, fields);
+	if (ticket) {
+		return {"category":ticket['category']};
+	}
+}
+
+function getReferencedRecord(referFileName, referFieldName, id) {
+	var query = referFieldName + "=\"" + id + "\"";
+	
+	var titleField = title_field_map[referFileName];
+	
+	if (!titleField &amp;&amp; lib.DisplayName.hasDisplayName(referFileName)) {
+		titleField = lib.DisplayName.getDisplayLable(referFileName);
+	}
+	
+	var descriptionField = fun.nullsub(description_field_map[referFileName], "comments");
+	
+	
+	var fields = [referFieldName, descriptionField];
+	if (titleField) {
+		fields[fields.length] = titleField;
+	}
+
+	var record = select(referFileName, query, fields);
+	if (record != null) {
+		var ret = {
+			"description" : convertDescription(record[descriptionField])
+		};
+		if (titleField) {
+			ret['title'] = record[titleField];
+		}
+
+		return ret;
+	}
+	return null;
+}
+
+function convertDescription(description) {
+	var ret;
+	if (description) {
+		var dataType = fun.type(description);
+		if (lib.DataTypeConst.typeArray() == dataType) {
+			ret = description.join("\n");
+		} else {
+			ret = description;
+		}
+	}
+	return ret;	
+}
+
+/**
+ * We don't support multi-company for survey.
+ */
+function getSurveyConfigurationQuery() {
+	//var company = operator['company'];
+	//var query = "company=\"" + company + "\"";
+	var query = "true";
+	return query;
+}
+
+function getSurveyConfiguration() {
+	var operator = getCurrentOperator();
+	var query = getSurveyConfigurationQuery();
+	var fields = ['dest.field.name', 'question.label', 'answer.type', 'global.list', 'custom.answer.allowed', 'mandatory.condition'];
+	var orderByField = ['order'];
+	var orderBySeq = ['asc'];
+	var config = select("svcSrcSurveyConfig", query, fields, orderByField, orderBySeq);
+	var surveyFields = [];
+	if (config) {
+		do {
+			var fieldName = config['dest.field.name'];
+			surveyFields[fieldName] = {
+				'question.label': config['question.label'],
+				'answer.type' : config['answer.type'],
+				'global.list' : config['global.list'],
+				'custom.answer.allowed' : config['custom.answer.allowed'],
+				'mandatory.condition' : config['mandatory.condition']
+			};
+			var rc = config.getNext();
+		} while (rc == RC_SUCCESS)
+		
+	}
+	return surveyFields;
+}
+
+function submitSurveyRecord() {
+	setExitType(NORMAL_EXIT);
+	var number = vars.$L_file['number'];
+	var query = "number=" + number;
+	var operator = getCurrentOperator();
+	query += " and contact.name=\"" + operator['contact.name'] + "\" and status=\"Open\"";
+	var survey = select("SurveyInternal", query);
+	if (survey == null) {
+		setExitType(BAD_VALIDATION_EXIT)
+		return;
+	}
+	var questions = vars.$L_file['questions'];
+	var dbdict = lib.ScAPI_GetOptionsLookup.getDBDICT("SurveyInternal");
+	var isValid = true;
+	var surveyFields = getSurveyConfiguration();
+	for (var i=0; i&lt;fun.lng(questions); i++) {
+		var key = questions[i]['dest.field.name'];
+		var value = questions[i]['value'];
+		var surveyFieldConfig = surveyFields[key];
+		var isMandatory = surveyFieldConfig['mandatory.condition'] == 'true';
+		if (isMandatory &amp;&amp; !value) {
+			isValid = false;
+			break;
+		}
+		for (var j = 0; j &lt; dbdict.field.length(); j++){
+			if (dbdict.field[j].name == key){
+				var fieldType = dbdict.field[j].type;
+				if (fieldType == lib.DataTypeConst.typeCharacter()) {
+					value = lib.StringUtil.escapeStringforXML(value);
+					break;
+				} else if (fieldType == lib.DataTypeConst.typeDateTime()) {
+					value = system.functions.val(value, lib.DataTypeConst.typeDateTime());
+					if (isMandatory &amp;&amp; !value) {
+						isValid = false;
+					}
+					break;
+				} else if (fieldType == lib.DataTypeConst.typeNumber()) {
+					value = system.functions.val(value, lib.DataTypeConst.typeNumber());
+					if (isMandatory &amp;&amp; !value) {
+						isValid = false;
+					}
+					break;
+				} else if (fieldType == lib.DataTypeConst.typeBoolean()) {
+					value =  system.functions.val(value, lib.DataTypeConst.typeBoolean());
+					if (isMandatory &amp;&amp; !value) {
+						isValid = false;
+					}
+					break;
+				}  else if (fieldType == lib.DataTypeConst.typeArray()) {
+					value = [lib.StringUtil.escapeStringforXML(value)];
+					break;
+				}
+			}
+		}
+		survey[key] = value;
+	}
+	if (!isValid) {
+		setExitType(BAD_VALIDATION_EXIT);
+		return;
+	}
+	survey['callback.support'] = vars.$L_file['callback.support'];
+	var ess = vars.$G_ess;
+	vars.$G_ess = true;
+	try {
+		var rc = survey.doAction("submit");
+	} catch (e) {
+	}
+	vars.$G_ess = ess;
+}</script>
+    <package type="string">ScAPI</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:43</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

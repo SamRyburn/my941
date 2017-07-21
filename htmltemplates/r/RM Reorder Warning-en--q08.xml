@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="htmltemplates">
+  <record id="name=&quot;RM Reorder Warning&quot; and language=&quot;en&quot;" recordid="RM Reorder Warning - en">
+    <id type="string">860</id>
+    <type NullValue="1" type="string"/>
+    <name type="string">RM Reorder Warning</name>
+    <expression type="string">//Prepare url for web access
+//#################################################################################################################
+//This is the url for index.do. if you want to generate url for ess.do, please use getESSURLFromQuery instead
+var file_name = system.functions.filename($RECORD);
+var record_name = system.functions.scmsg(file_name,"tablename");
+var record_title = record_name+" "+$RECORD.number;
+var record_query = "number=\""+$RECORD.number+"\"";
+var web_url = lib.urlCreator.getURLFromQuery(file_name,record_query,record_title);
+//var web_url = lib.urlCreator.getESSURLFromQuery(file_name,record_query,record_title);
+//#################################################################################################################
+
+
+//#################################################################################################################
+</expression>
+    <content NullValue="1" sctype="array">
+      <content NullValue="1" type="string"/>
+    </content>
+    <module type="string">request</module>
+    <cap.exec NullValue="1" sctype="array">
+      <cap.exec NullValue="1" type="string"/>
+    </cap.exec>
+    <active type="boolean">true</active>
+    <htmlcode type="string">&lt;table style="WIDTH: 98%"&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;td valign="top" align="left"&gt;
+            &lt;table style="WIDTH: 600px"&gt;
+                &lt;tbody&gt;
+                    &lt;tr&gt;
+                        &lt;td valign="top"&gt;
+                        &lt;table style="FONT-FAMILY: arial" cellspacing="10" cellpadding="10" width="100%"&gt;
+                            &lt;tbody&gt;
+                                &lt;tr&gt;
+                                    &lt;td style="WIDTH: 100%" valign="top" align="left"&gt;
+                                    &lt;h1 style="FONT-SIZE: 24px; COLOR: #036"&gt;HP Service Manager&lt;/h1&gt;
+                                    &lt;table cellspacing="0" cellpadding="0" width="100%" border="0"&gt;
+                                        &lt;tbody&gt;
+                                            &lt;tr&gt;
+                                                &lt;td style="BACKGROUND-COLOR: #cfe0f1" colspan="2" height="10"&gt;&amp;nbsp;&lt;/td&gt;
+                                            &lt;/tr&gt;
+                                            &lt;tr&gt;
+                                                &lt;td style="BACKGROUND-COLOR: #cfe0f1" width="10"&gt;&amp;nbsp;&lt;/td&gt;
+                                                &lt;td style="FONT-FAMILY: arial; BACKGROUND-COLOR: #cfe0f1"&gt;No Vendor avaliable for Product Catalog &lt;a style="COLOR: #00f; FONT-FAMILY: arial" target="_blank" href="{web_url}"&gt;{$RECORD.part_no}&lt;/a&gt;.&lt;/td&gt;
+                                            &lt;/tr&gt;
+                                            &lt;tr&gt;
+                                                &lt;td style="BACKGROUND-COLOR: #cfe0f1" colspan="2" height="10"&gt;&amp;nbsp;&lt;/td&gt;
+                                            &lt;/tr&gt;
+                                        &lt;/tbody&gt;
+                                    &lt;/table&gt;
+                                    &lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr&gt;
+                                    &lt;td style="WIDTH: 100%" valign="top" align="left"&gt;
+                                    &lt;div style="PADDING-RIGHT: 0px; MARGIN-TOP: -24px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; PADDING-TOP: 0px; POSITION: relative"&gt;
+                                    &lt;h2 style="FONT-SIZE: 18px; COLOR: #036"&gt;Details&lt;/h2&gt;
+                                    &lt;/div&gt;
+                                    &lt;/td&gt;
+                                &lt;/tr&gt;
+                            &lt;/tbody&gt;
+                        &lt;/table&gt;
+                        &lt;table style="FONT-SIZE: 11px; FONT-FAMILY: arial" cellspacing="2" cellpadding="6" width="94%" align="center"&gt;
+                            &lt;tbody&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="left" width="20%"&gt;System cannot generate order request for Product Catalog &lt;a style="COLOR: #00f; FONT-FAMILY: arial" target="_blank" href="{web_url}"&gt;{$RECORD.part_no}&lt;/a&gt;&amp;nbsp;since no Vendor avaliable for it. Please create corresponding data.&lt;/td&gt;
+                                &lt;/tr&gt;
+                            &lt;/tbody&gt;
+                        &lt;/table&gt;
+                        &lt;div style="MARGIN-TOP: 20px; FONT-SIZE: 11px; MARGIN-LEFT: 20px; FONT-FAMILY: arial; POSITION: relative"&gt;
+                        &lt;p style="FONT-WEIGHT: bold"&gt;Request&amp;nbsp;Management Team&lt;/p&gt;
+                        &lt;p style="COLOR: #999"&gt;Sent from HP Service Manager. Do not reply to this email.&lt;/p&gt;
+                        &lt;/div&gt;
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                &lt;/tbody&gt;
+            &lt;/table&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;</htmlcode>
+    <language type="string">en</language>
+    <mandant NullValue="1" sctype="array">
+      <mandant NullValue="1" type="string"/>
+    </mandant>
+    <test.record NullValue="1" type="string"/>
+    <mail.title type="string">No Vendor for ProductCatalog {$RECORD.part_no} .</mail.title>
+  </record>
+</recordset>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="displayoption">
+  <record id="id=&quot;uimcompdefinitions.db.view_save&quot;" recordid="uimcompdefinitions.db.view_save">
+    <screen.id type="string">uimcompdefinitions.db.view</screen.id>
+    <language type="string">ENG</language>
+    <gui.option type="decimal">4</gui.option>
+    <txt.option type="decimal">4</txt.option>
+    <txt.bank type="decimal">1</txt.bank>
+    <labels sctype="structure">
+      <default type="string">Save</default>
+      <txt.alternative NullValue="1" type="string"/>
+      <balloon NullValue="1" type="string"/>
+    </labels>
+    <condition type="operator">evaluate(update in $L.env)</condition>
+    <action type="string">save</action>
+    <post.expressions NullValue="1" sctype="array">
+      <post.expressions NullValue="1" type="expression"/>
+    </post.expressions>
+    <rad sctype="structure">
+      <application NullValue="1" type="string"/>
+      <new.thread NullValue="1" type="boolean"/>
+      <names NullValue="1" sctype="array">
+        <names NullValue="1" type="string"/>
+      </names>
+      <values NullValue="1" sctype="array">
+        <values NullValue="1" type="string"/>
+      </values>
+    </rad>
+    <condition.txt type="string">evaluate(update in $L.env)</condition.txt>
+    <post.rad.expressions NullValue="1" sctype="array">
+      <post.rad.expressions NullValue="1" type="expression"/>
+    </post.rad.expressions>
+    <action.conditions NullValue="1" sctype="array">
+      <action.conditions NullValue="1" type="boolean"/>
+    </action.conditions>
+    <user.condition NullValue="1" type="boolean"/>
+    <user.condition.txt NullValue="1" type="string"/>
+    <unique.id type="decimal">16554</unique.id>
+    <gui.sig type="decimal">584839468</gui.sig>
+    <text.sig type="decimal">1781906972</text.sig>
+    <comments NullValue="1" sctype="array">
+      <comments NullValue="1" type="string"/>
+    </comments>
+    <sysmodcount type="decimal">13</sysmodcount>
+    <sysmoduser type="string">xingjia</sysmoduser>
+    <sysmodtime type="dateTime">04/22/11 14:41:33</sysmodtime>
+    <modify.record NullValue="1" type="boolean"/>
+    <javascript.pre type="string">if (vars.$mysm_editor) {
+    
+    //Reset the parameters
+    var handler = new lib.MySMHelper.MySMHelperParaHandler(vars.$L_file);
+    
+    //record the lod values
+    
+    var table = !vars.$L_comp_table ? handler.getTable() : vars.$L_comp_table;
+    var compType = !vars.$L_comp_chart_type ? handler.getCompType() : vars.$L_comp_chart_type;
+    var groupBy = !vars.$L_comp_group ? handler.getGroupedByField() : vars.$L_comp_group;
+    
+    
+    vars.$L_file.view_url = handler.generateViewURL(table,compType,vars.$L_comp_rad_query,groupBy);
+    
+    vars.$L_file.filter_url = handler.generateFilterURL(vars.$L_comp_filter,table,groupBy);
+    
+    
+    //Save component to category
+    var catCom = new SCFile("uimcompdefcatscdefs");
+    var RC = catCom.doSelect("definition.id=\""+vars.$L_file.id+"\"");
+    
+    if (RC == RC_SUCCESS) {
+        if (vars.$L_comp_category) {
+            catCom["category.id"] = parseInt(vars.$L_comp_category);
+            catCom.doUpdate();
+        } else {
+            catCom.doDelete();
+        }
+        
+    } else if (vars.$L_comp_category){
+        catCom["definition.id"] = vars.$L_file.id
+        catCom["category.id"] = parseInt(vars.$L_comp_category);
+        catCom.doInsert();
+    }
+
+}
+
+
+
+</javascript.pre>
+    <javascript.post NullValue="1" type="string"/>
+    <id type="string">uimcompdefinitions.db.view_save</id>
+  </record>
+</recordset>

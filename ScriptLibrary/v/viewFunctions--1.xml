@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;viewFunctions&quot;" recordid="viewFunctions">
+    <name type="string">viewFunctions</name>
+    <script type="string">/**  @fileoverview viewFunctions - A collection of functions that are used when dealing with views.
+*	@author	Pete Budic
+*/
+
+/**  This function is used to determine if a personal view has a corresponding system view.
+*
+*   @param {Record} view	- the current view/inbox record
+*	@return	true if there is a system view, false if not.
+*	@type	Boolean
+*/
+function hasSystemView(  view )
+{
+	var temp = new SCFile("inbox");
+	var sql = "inbox.name=\"" + lib.StringUtil.escapeAllStr(view.inbox_name) + "\" and inbox.type=\"" + view.inbox_type 
+			   + "\" and operator.name=\"%NONE%\"";
+   
+	if ( temp.doSelect( sql ) == RC_SUCCESS )
+		return true;
+	else
+		return false;
+}
+
+/**  This function is used to setup variables used when displaying a view
+*
+*   @param {Record} view	- the current view/inbox record
+*	@return	true if there is a system view, false if not.
+*	@type	Boolean
+*/
+function initVars(  view )
+{
+	var list = lib.convertToCaptions.getFieldCaptions( view.fieldlist, view.inbox_type);
+	var listText;
+
+	if ( list.length() &gt; 0 )
+	{
+		listText = list[0];
+		for (var i = 1, iLoopTimes = list.length(); i &lt; iLoopTimes; i++ )
+		{
+			listText+= "; "+list[i];
+		}
+	}
+	vars.$L_field_list = listText;
+	
+	
+	
+	return true;
+}
+
+function parseQueryString(query)
+{
+	var semicolon = query.indexOf(";");
+    if ( semicolon &lt; 0 )
+	  return query;
+	
+	var index=query.indexOf("\"");
+	var subQuery=query.substring(1,index);
+	
+	var afterQuery=query.substring(index);
+	var aList=subQuery.split(" ");
+	
+	var parsedQuery="";
+	for(var i=0;i&lt;aList.length;++i)
+	{
+		parsedQuery+=aList[i];
+	}
+	parsedQuery=parsedQuery+afterQuery;
+	return parsedQuery;
+}
+
+function isRelatedObjectQuery(query)
+{
+	var semicolon = query.indexOf(";");
+    if ( semicolon &lt; 0 )
+	  return "false";
+	 
+	var quote=query.indexOf(";");
+	if (semicolon&gt;quote)
+		return false;  
+			
+	return "true";
+}
+
+
+
+
+
+/* 
+ * Introduction: create views to show tickets with "Update from Customer" activity type
+ * Date:20140625
+ * Author: Ricky Huang
+ * Param activityTable:  the activity table of module
+ * @return nothing
+*/ 
+function ActivityCustomerUpdated(activityTable)
+
+{
+      var activitySet= new SCFile(activityTable);
+      
+      var  	sql= 'select number, count(number) from '+ 
+      		activityTable  +
+      		' where type="Update from customer" group by number';
+      		
+      var ret = new SCDatum();
+      ret.setType(8);
+      
+            
+     if (activitySet.doSelect(sql)===RC_SUCCESS)
+    {
+            
+      do {
+                    	
+        	ret.push(activitySet.number);
+                        
+      	  }while (activitySet.getNext()===RC_SUCCESS)
+   	}
+
+return ret;
+} 
+
+
+
+
+
+
+
+</script>
+    <package type="string">BaseUtilities</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:45</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

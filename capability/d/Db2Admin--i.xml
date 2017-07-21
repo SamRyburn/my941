@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="capability">
+  <record id="capability=&quot;Db2Admin&quot;" recordid="Db2Admin">
+    <capability type="string">Db2Admin</capability>
+    <description sctype="array">
+      <description sctype="string">DB2 Administrator Capability</description>
+    </description>
+    <sysmodcount type="decimal">6</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">01/04/05 03:02:47</sysmodtime>
+    <parent type="string">SQLAdmin</parent>
+    <parent.tree sctype="array">
+      <parent.tree sctype="string">SQLAdmin</parent.tree>
+    </parent.tree>
+  </record>
+</recordset>

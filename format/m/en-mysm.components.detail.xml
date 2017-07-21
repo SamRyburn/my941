@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;mysm.components.detail&quot;" recordid="en - mysm.components.detail">
+    <name mandatory="true" type="string">mysm.components.detail</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">7</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Name</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Name	Height=2	Name=	Width=13	X=0	Y=0		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">8</column>
+        <length type="decimal">48</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">name</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Height=2	Name=	Mandatory=1	Width=96	X=15	Y=0		Input=name	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">1</column>
+        <length type="decimal">7</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Description</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Description	Justification=	Height=2	Name=	Width=14	X=0	Y=2		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">512</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">8</column>
+        <length type="decimal">48</length>
+        <window type="decimal">2</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">description</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">MultiText;?Caption=	Height=4	Name=	Width=96	X=15	Y=2		Input=description	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">1</column>
+        <length type="decimal">5</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Table</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Table	Height=2	Name=	Width=9	X=0	Y=6		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">8</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$L.comp.table</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;?DisplayList=	Height=2	Name=	Mandatory=1	ReadOnly=0	SelectOnly=1	Width=40	X=15	Y=6		Input=$L.comp.table	DisplayList=Incident;Interaction;Change	ValueList=probsummary;incidents;cm3r	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">29</column>
+        <length type="decimal">7</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Grouped By</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Grouped By	Name=label1301539076031	Height=2	Name=label1301539076031	Width=14	X=56	Y=6		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">36</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$L.comp.group</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=input1301539099157	?ReadOnly=	Height=2	Name=input1301539099157	Mandatory=1	Width=40	X=71	Y=6		Input=$L.comp.group	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">1</column>
+        <length type="decimal">4</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Type</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Type	Height=2	Name=	Width=8	X=0	Y=8		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">8</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$L.comp.chart.type</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;?ValueList=	Height=2	Name=	Mandatory=1	SelectOnly=1	Width=40	X=15	Y=8		Input=$L.comp.chart.type	DisplayList=Pie Chart;Vertical Bar Chart	ValueList=pie;vbar	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">29</column>
+        <length type="decimal">7</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Category</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Category	Name=label1301538963170	Height=2	Name=label1301538963170	Width=14	X=56	Y=8		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">36</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$L.comp.category</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;Name=select1301538986827	?DisplayList=select("name","uimcompdefcategories",true,true)	?ValueList=select("id","uimcompdefcategories",true,true)	Height=2	Name=select1301538986827	Width=40	X=71	Y=8		Input=$L.comp.category	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">1</column>
+        <length type="decimal">7</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Filter Name</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Filter Name	Height=2	Name=	Width=14	X=0	Y=10		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">8</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$L.comp.filter</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Height=2	Name=	Width=40	X=15	Y=10		Input=$L.comp.filter	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">1</column>
+        <length type="decimal">8</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">RAD Query</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=RAD Query	Height=2	Name=	Width=16	X=0	Y=12		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">512</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">8</column>
+        <length type="decimal">48</length>
+        <window type="decimal">5</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$L.comp.rad.query</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">MultiText;Height=9	Name=	Width=96	X=15	Y=12		Input=$L.comp.rad.query	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">xingjia</editor>
+    <last.update type="dateTime">04/22/11 14:39:21</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">4</sysmodcount>
+    <sysmoduser type="string">xingjia</sysmoduser>
+    <sysmodtime type="dateTime">04/22/11 14:39:21</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ModuleStatus">
+  <record id="module=&quot;rootcausetask&quot; and status=&quot;Rejected&quot;" recordid="rootcausetask - Rejected">
+    <status type="string">Rejected</status>
+    <sysmodtime type="dateTime">05/13/11 09:58:11</sysmodtime>
+    <sysmodcount type="decimal">2</sysmodcount>
+    <sysmoduser type="string">snandita</sysmoduser>
+    <module type="string">rootcausetask</module>
+    <tablename type="string">rootcausetask</tablename>
+    <sort.order type="decimal">6</sort.order>
+  </record>
+</recordset>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ModuleStatus">
+  <record id="module=&quot;requesttask&quot; and status=&quot;CMDB Update&quot;" recordid="requesttask - CMDB Update">
+    <status type="string">CMDB Update</status>
+    <sysmodtime type="dateTime">09/28/14 13:08:31</sysmodtime>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">wangxun</sysmoduser>
+    <module type="string">requesttask</module>
+    <tablename type="string">requesttask</tablename>
+    <sort.order NullValue="1" type="decimal"/>
+  </record>
+</recordset>

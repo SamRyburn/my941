@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;htmlenum&quot;" recordid="htmlenum">
+    <name type="string">htmlenum</name>
+    <script type="string">/* 
+{enumfield}-enumfieldname passed to get enum name
+{value}-value of the field in ticket
+{language}-language of email template
+*/
+
+
+function localvalue(enumfield,value,language)
+{
+	var dispLab;
+	var enumDispLab = new SCFile("scmessage");
+ 	var langQuery="class=\"global\" and syslanguage=\""+language+"\" and message.id=\""+enumfield+";"+value+"\"";
+	var defaultLangQuery="class=\"global\" and syslanguage=\"en\" and message.id=\""+enumfield+";"+value+"\"";
+	if (enumDispLab.doSelect(langQuery)==RC_SUCCESS)
+	{
+		dispLab=enumDispLab.message;
+
+	}
+	else if (enumDispLab.doSelect(defaultLangQuery)==RC_SUCCESS)
+	{
+		dispLab=enumDispLab.message;
+	} else
+	{
+	    dispLab=value;
+	}
+ 	return dispLab;
+}
+</script>
+    <package NullValue="1" type="string"/>
+    <sysmodtime type="dateTime">09/18/13 13:20:39</sysmodtime>
+    <sysmoduser type="string">shiji.shu</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

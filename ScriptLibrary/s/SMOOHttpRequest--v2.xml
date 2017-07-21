@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;SMOOHttpRequest&quot;" recordid="SMOOHttpRequest">
+    <name type="string">SMOOHttpRequest</name>
+    <script type="string">/******************************************************
+* Module Name: SMOO
+* Function: RESTful way to execute OO flow
+* Author: Yang, Wen-Ying
+* Version: 1.00
+* Creation Date: May, 2010
+*******************************************************/
+var confItem = lib.smis_ConfigurationManager.getEnabledConfigItem("SMOO");
+
+function getBaseUrl(){	
+	var url = confItem.getConfigParameterValue("oo.server.url");
+	if(lib.SMOOUtil.checkURL(url)){
+		return url;
+	}else {
+		return false;
+	}
+}
+
+function getUUID(name){
+	var file = new SCFile("OOFlow");
+	var uuid;
+	var findUUID = file.doSelect("name=\"" + name + "\"");
+	if ( findUUID == RC_SUCCESS )
+	{
+		uuid = file.uuid;
+		return uuid;
+	}else {
+		var msg = system.functions.scmsg(6,"smoo", [name]);
+		print(msg);
+		return;
+	}
+}
+
+function getDisplayName(uuid){
+	var file = new SCFile("OOFlow");
+	var name;
+	var findUUID = file.doSelect("uuid=\"" + uuid + "\"");
+	if ( findUUID == RC_SUCCESS )
+	{
+		name = file.name;
+		return name;
+	}else {
+		return;
+	}
+}
+
+//return true when the requried fields are filled, return false if not.
+function checkValidation(requiredList,valueList){
+	var i = 0;
+	if(requiredList.length()&gt;0){
+		while( i in requiredList){
+		 	if(requiredList[i] == "true" || requiredList[i] == true){
+				if(valueList!=null &amp;&amp; i in valueList){
+					if(valueList[i] == null || valueList[i] == ""){
+						return false;
+					}
+				}else {
+					return false;
+				}
+			}
+			i++;
+		}
+	}
+	return true;
+}
+
+/*
+des: execute ooflow in restful way, return the response with code and url for popup message usage or error message.
+para: 
+uuid: OO flow uuid
+paralist: OO flow para list
+valuelist: OO flow value list
+fildID: the number of Incident/Change where the report need to be saved
+operator: the operator who execute the oo flow
+async: true to be execute in async way
+       false to be execute in sync way (wait the result of execution)
+*/
+function execute(uuid, paraList, valueList, fileID, operator, async, fileName, activityLogID){
+	/**
+	 * QCCR1E91727 set filename to empty string if fileName is null passed in
+	 */
+	if(!fileName) fileName="";
+	var ooflowDN = getDisplayName(uuid);
+	var url = getBaseUrl();	
+	if(!url){
+		var msg = system.functions.scmsg(15,"smoo");
+		return msg;
+	}else if (async){
+		url = url +"/PAS/services/http/execute_async";
+	}else{
+		url = url +"/PAS/services/http/execute";
+	}
+	if(uuid!=null &amp;&amp; uuid !=""){
+		url = url+"/"+uuid+"?";
+	}else{
+		var errorMsg = system.functions.scmsg(7, "smoo");
+		print(errorMsg);
+		var desarray = new Array();
+		desarray[0] = "OO Flow:"+ ooflowDN + ": " + errorMsg; 
+		desarray[1] = "======================================================================";
+		var activityLogID = updateActivityLog(desarray, fileID, operator, fileName);
+		var res =  new Array();
+		res[0]= activityLogID;
+		return res;
+	}
+	var i = 0;
+	if( paraList!=null &amp;&amp; valueList!=null ){
+		while(i in valueList &amp;&amp; i in paraList){
+			if(paraList[i]!=null&amp;&amp;valueList[i]!=null){
+			    //CR56035:[CCRM]-SMOO The 400 Error will return when execute an OO Flow with input parameters that have spaces in SM Change
+				//fixed by YWY
+				//url format
+				url = url + encodeURIComponent(paraList[i]) + "=" + encodeURIComponent(valueList[i]) + "&amp;";
+			}
+			i++;
+		}
+	}
+	
+	
+	var userName = confItem.getConfigParameterValue("oo.user.name");
+	var password = confItem.getConfigParameterValue("oo.password");
+	var httpHeaders = new Array();
+		var lang = confItem.getConfigParameterValue("Accept-Language");
+		httpHeaders = lib.smis_RestClient.createBasicAuthHttpHeaders(lang, userName, password);
+	var response;
+	try{
+		var connTimeout = confItem.getConfigParameterValue("http.conn.timeout");
+		var recTimeout = confItem.getConfigParameterValue("http.rec.timeout");
+		
+		response = lib.smis_RestClient.doRESTGetRequest(url, httpHeaders, parseInt(connTimeout), 30, parseInt(recTimeout));
+	}catch(ex){
+		
+		var errorMsg = system.functions.scmsg(8, "smoo" ,[ex.toString()]);
+		var desarray = new Array();
+		desarray[0] = "OO Flow:"+ ooflowDN + ": " + errorMsg; 
+		desarray[1] = "======================================================================";
+		var activityLogID = updateActivityLog(desarray, fileID, operator, fileName, activityLogID);
+		var res =  new Array();
+		res[0]=activityLogID;
+		return res;
+	}
+	
+	var xml = new XML();
+	xml.setContent(response);
+	var runid;
+	var flowresult;
+	var reporturl;
+	var response;
+	var startTime;
+	var endTime;
+	var returnCode;
+	var root = xml.getFirstChildElement();
+ 	var child = root.getFirstChildElement()
+ 	while(child!=null){
+	  	var nodeName  = child.getNodeName();
+	  	var nodeValue = child.getNodeValue();
+		if(nodeName=="run-id"){
+			runid = nodeValue;
+		}else if(nodeName=="run-report-url"){
+			reporturl = nodeValue;
+		}else if(nodeName=="flow-result"){
+			flowresult = nodeValue;
+		}else if(nodeName=="flow-response"){
+			response = nodeValue;
+		}else if(nodeName=="run-start-time"){
+			startTime = nodeValue;
+		}else if(nodeName=="run-end-time"){
+			endTime = nodeValue;
+		}else if(nodeName=="flow-return-code"){
+			returnCode = nodeValue;
+		}
+		child = child.getNextSiblingElement();
+	}
+	var desarray=new Array();
+	desarray[0] = "OO Flow:"+ ooflowDN + ". History Id: " + runid 
+	desarray[1] = "Report Link: " + reporturl;
+	desarray[2] = "Start Time: " + startTime;
+	desarray[3] = "End Time: " + endTime;
+	desarray[4] = "Response: " + response;
+	desarray[5] = "Result: " + flowresult;
+	desarray[6] = "Return Code: " + returnCode;
+	desarray[7] = "======================================================================";
+
+	var activityLogID = updateActivityLog(desarray, fileID, operator, fileName, activityLogID);
+		
+	var res =  new Array();
+	res.push(reporturl);
+	res.push(returnCode);
+	res.push(activityLogID);
+	res.push(flowresult);
+	res.push(runid);
+	res.push(async);
+	return res;
+}
+
+function getExecuteStatus(runId)
+{
+    var url = getBaseUrl();
+    url = url +"/oo/rest/executions/"+ runId +"/execution-log";
+    var userName = confItem.getConfigParameterValue("oo.user.name");
+	var password = confItem.getConfigParameterValue("oo.password");
+	var httpHeaders = new Array();
+	var lang = confItem.getConfigParameterValue("Accept-Language");
+    httpHeaders = lib.smis_RestClient.createBasicAuthHttpHeaders(lang, userName, password);
+	var response;
+	try{
+		var connTimeout = confItem.getConfigParameterValue("http.conn.timeout");
+		var recTimeout = confItem.getConfigParameterValue("http.rec.timeout");
+		response = lib.smis_RestClient.doRESTGetRequest(url, httpHeaders, parseInt(connTimeout), 30, parseInt(recTimeout));
+	}catch(ex){
+		
+	}
+	return (response);
+}
+
+
+function getRunID(){
+	return runid;
+}
+
+function getReportURL(){
+	return reporturl;
+}
+
+function getFlowResult(){
+ 	return flowresult;
+}
+
+function getResponse(){
+	return response;
+}
+
+
+function addActivityLogOld(description, fileID, operator, fileName){
+	var activity = new SCFile(getActivityFileName(fileName));
+	activity.type="OO Response";
+	activity.number=fileID;
+	activity.datestamp=new Date();
+	activity.operator=operator;
+	activity.description=description;
+	var intRC = activity.doInsert();
+	return activity.thenumber;
+}
+
+function addActivityLog(description, fileID, operator, fileName){
+	var rteReturnValue = new SCDatum();
+	var rteNames = new SCDatum();
+	var rteValues = new SCDatum();
+	 
+	//Parameter names for RAD app message 
+	rteNames.push("number1"); //number
+	rteNames.push("string1"); //type
+	rteNames.push("names");   // desc
+	rteNames.push("text");    //filename
+	
+	//Parameter values for RAD app message
+	rteValues.push(fileID);
+	rteValues.push("OO Response");
+	rteValues.push(description);
+	rteValues.push(getActivityFileName(fileName));
+	 
+	system.functions.rtecall("callrad", 
+	rteReturnValue, 
+	"write.activity.log", //RAD app name
+	rteNames, 
+	rteValues,
+	false, //false to run in same thread, true to run in new thread
+	true); //condition for executing the rad app
+	
+	return vars.$smradrtemessages;// rad return "thenumber" of activity record
+}
+
+function updateActivityLog(description, fileID, operator, fileName, activityLogID){
+      if(activityLogID!=null){
+            var activity = new SCFile(getActivityFileName(fileName));
+            var rc = activity.doSelect("thenumber=\"" + activityLogID + "\"");
+            if ( rc == RC_SUCCESS ){ 
+                  var oldLog = activity.description.toArray();          
+                  activity.description=oldLog.concat(description);
+                  var intRC = activity.doUpdate();
+                  return activity.thenumber;
+            }else {
+                  return addActivityLog(description, fileID, operator, fileName);
+            }
+      }else{
+            return addActivityLog(description, fileID, operator, fileName); 
+      }
+}
+
+function getActivityFileName(fileName)
+{
+   var tmpfileName = fileName;
+   if (fileName == "request"){tmpfileName = "Request"}
+   else if (fileName == "requestTask"){tmpfileName = "RequestTask"}
+   var activityFileName = "activity"+tmpfileName;
+   return activityFileName;
+}
+</script>
+    <package type="string">SMOO</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:44</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

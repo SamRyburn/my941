@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="triggers">
+  <record id="trigger.name=&quot;trigger.sync.company.with.ucmdb.after.add&quot;" recordid="trigger.sync.company.with.ucmdb.after.add">
+    <trigger.name type="string">trigger.sync.company.with.ucmdb.after.add</trigger.name>
+    <trigger.type type="decimal">2</trigger.type>
+    <table.name type="string">company</table.name>
+    <application.name NullValue="1" type="string"/>
+    <sysmodcount type="decimal">35</sysmodcount>
+    <sysmoduser type="string">zhichao.fei</sysmoduser>
+    <sysmodtime type="dateTime">03/09/11 19:12:31</sysmodtime>
+    <javascript type="string">var isSynced = system.functions.nullsub(record.ucmdb_synced,false);
+
+if (vars.$G_system_info.UCMDB &amp;&amp; vars.$G_multi &amp;&amp; isSynced!=true &amp;&amp; record.show_company != "N") 
+{
+	var hasSchedule = system.library.multiTenantUcmdb.checkExistSchedule(record.ucmdb_customer_id,"add");	
+	if(!hasSchedule)
+		lib.multiTenantUcmdb.syncCompanyAfterAddOrDelete(record,"add");
+}							</javascript>
+  </record>
+</recordset>

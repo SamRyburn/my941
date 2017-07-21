@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;KMCollection_WebCrawl_K2&quot;" recordid="KMCollection_WebCrawl_K2">
+    <name type="string">KMCollection_WebCrawl_K2</name>
+    <script type="string">/**********************************************************************
+ *
+ * K2 specific functions for web and filesystem crawling
+ * 
+ *********************************************************************/
+
+function KMCollection_WebCrawl_K2()
+{
+
+}
+
+function writewebStyleFile()
+{
+	var skipFields = "title;author;date";
+	// Write the style.ufl file first.
+	var strFileContents = "data-table:	  htp\n{\n";
+    	strFileContents += "\tvarwidth:View_URL\t\tddw\n";
+    	strFileContents += "\tconstant:knowledgebase_name\t\ttext\t\""+vars.$L_file.kbname+"\"\n";
+    var numwebfields = vars.$L_file.webfields.length()-1;
+    for( var i = 0; i &lt; numwebfields; i++)
+	{
+	    
+	    if (skipFields.indexOf(vars.$L_file.webfields[i].webfieldname) == -1)
+	    {  
+	  		if (vars.$L_file.webfields[i].webfieldtype == "metatag")
+	  		{
+		        
+				if (vars.$L_file.webfields[i].webfielddatatype == "Date")
+					strFileContents += "\tfixwidth:"+system.library.KMUtils.scToJSName(vars.$L_file.webfields[i].webfieldname)+"\t4 date\t\t\n";
+				else 
+				   	strFileContents += "\tvarwidth:"+system.library.KMUtils.scToJSName(vars.$L_file.webfields[i].webfieldname)+"\t\tddw\n";
+				
+				if (vars.$L_file.webfields[i].webfieldalias != null)
+				{
+					// check for multivalues
+					if (vars.$L_file.webfields[i].webfieldalias.indexOf(";") &gt; -1)
+					{
+						
+					        var aliasarray = vars.$L_file.webfields[i].webfieldvalue.split(";");
+					        var numalias = aliasarray.length;
+					        for (var alias =0; alias &lt; numalias; alias++)
+					        {
+					           strFileContents += "\t\t/alias = "+system.library.KMUtils.scToJSName(aliasarray[alias])+"\n";
+					        }
+					}
+					else
+					strFileContents += "\t\t/alias = "+system.library.KMUtils.scToJSName(vars.$L_file.webfields[i].webfieldalias)+"\n";
+				   }
+				}
+				else // it's a constant...
+				{
+					
+					if (vars.$L_file.webfields[i].webfielddatatype == "Date")
+						strFileContents += "\tconstant:"+system.library.KMUtils.scToJSName(vars.$L_file.webfields[i].webfieldname)+"\t\tdate\t\""+vars.$L_file.webfields[i].webfieldvalue+"\"\n";						   
+					else
+						strFileContents += "\tconstant:"+system.library.KMUtils.scToJSName(vars.$L_file.webfields[i].webfieldname)+"\t\ttext\t\""+vars.$L_file.webfields[i].webfieldvalue+"\"\n";						   
+					if (vars.$L_file.webfields[i].webfieldalias != null)
+					{
+					// check for multivalues
+						if (vars.$L_file.webfields[i].webfieldalias.indexOf(";") &gt; -1)
+						{
+							
+							var aliasarray = vars.$L_file.webfields[i].webfieldvalue.split(";");
+							var numalias = aliasarray.length;
+							for (var alias =0; alias &lt; numalias; alias++)
+							{
+							   strFileContents += "\t\t/alias = "+system.library.KMUtils.scToJSName(aliasarray[alias])+"\n";
+							}
+						}
+						else
+							strFileContents += "\t\t/alias = "+system.library.KMUtils.scToJSName(vars.$L_file.webfields[i].webfieldalias)+"\n";
+					}
+				}
+	     }
+    }
+    strFileContents += "\n}\n";
+    
+    var stylefiledir = vars.$G_km_globalenv.km_stylefilesdrive;
+    
+    
+    if (vars.$L_file.kbtype == "weblib")
+    {
+       writeFile(stylefiledir+"/Def_HTTP/style.ufl", false, strFileContents);   
+    }
+    
+    
+    if (vars.$L_file.kbtype == "fsyslib")
+    {
+       writeFile(stylefiledir+"/Def_FileSystem/style.ufl", false, strFileContents);   
+    }
+    
+}
+
+function webCreateIndex()
+{
+	var params = new Array(3);
+	var strServerAlias = "";
+  	strServerAlias = vars.$G_km_globalenv.km_host;
+  	if (system.functions._null(strServerAlias))
+  	{
+    	system.library.KMUtils.domessageBox(system.functions.scmsg(65, "km"));
+	    system.library.KMCollection_Update_Utils.logUnexpectedError("webCreateIndex 1");			
+    	return -1;
+  	}
+  	if((strServerAlias != null) &amp;&amp; (strServerAlias.length &gt; 0 ))
+	{
+		result = system.library.KMAdmin.kmjvmconnect();
+	  	if (result != 0)
+	  	{
+	    	system.library.KMCollection_Update_Utils.logUnexpectedError("webCreateIndex 2");
+		   	return -1;
+		}
+	   	system.library.KMCollection_WebCrawl_K2.writewebStyleFile();
+	   	result = system.library.KMCollection_Update_Utils_K2.adminConnect(strServerAlias, vars.$G_km_globalenv.km_adminport);
+	   	print("adminConnect = "+result);
+	   	// delete collection if it exists
+	   	result = system.library.KMCollection_Update_Utils_K2.deleteCollection(strServerAlias,system.library.KMUtils.scToJSName(vars.$L_file.kbname));
+	   	print("deleteCollection = "+result);
+	   	// create the web collection using the new style files
+	   	if (vars.$L_file.kbtype == "weblib")
+	   	{
+	     	result = system.library.KMCollection_Update_Utils_K2.createCollection(strServerAlias,system.library.KMUtils.scToJSName(vars.$L_file.kbname),"Def_HTTP","web");
+	   	}
+	   	// create the fsyslib collection using the new style files
+	   	if (vars.$L_file.kbtype == "fsyslib")
+	   	{
+	    	result = system.library.KMCollection_Update_Utils_K2.createCollection(strServerAlias,system.library.KMUtils.scToJSName(vars.$L_file.kbname),"Def_FileSystem","filesys");
+	   	}		  
+	   	print("createCollection = "+result);
+	  
+	   	// done with admin server, disconnect...
+	   	result = system.library.KMCollection_Update_Utils_K2.adminDisconnect();
+	   	print("adminDisconnect = "+result);
+	   	result = system.library.KMAdmin.kmjvmdisconnect();
+	 }
+}		 
+
+function createJob()
+{
+	
+  	var params = new Array(5);
+  	var strServerAlias = "";
+  	var theXMLDate = null;
+  	var strSchedTime = "";
+  	var strSchedYesNo = "";
+  	var strSchedFrequency = "";
+  	var jobstatus="";
+  	var strproxyhost="";
+  	var strproxyport="";
+  	var strproxyuser="";
+  	var strproxypword="";
+  	var result = 0;
+  	strServerAlias = vars.$G_km_globalenv.km_host;
+ 
+  	if (vars.$L_file.kbtype == "sclib")
+   		return 0;
+  	result = system.library.KMAdmin.kmjvmconnect();
+    if (result != 0)
+		return -1;
+  	var status = system.library.KMCollection_Update_Utils_K2.checkIndexStatus(vars.$L_file.kbname);
+  	  if (status == -1)
+  	  {
+  	    system.library.KMAdmin.kmjvmdisconnect();
+    	return -1;
+      }
+  	if( system.library.KMCollection_WebCrawl_K2.getJobStatus()=="running")
+  	{
+    	system.library.KMUtils.domessageBox(system.functions.scmsg(191, "km"));
+    	system.library.KMAdmin.kmjvmdisconnect();
+    	return -1;
+  	}
+      
+    
+    system.library.KMAdmin.kmjvmdisconnect();
+      
+  	if (system.functions._null(strServerAlias))
+  	{
+    	system.library.KMUtils.domessageBox(system.functions.scmsg(65, "km"));
+   		return -1;
+  	}
+  	if((strServerAlias != null) &amp;&amp; (strServerAlias.length &gt; 0 ))
+	{
+		result = system.library.KMAdmin.kmjvmconnect();
+	   	if (result != 0)
+	   	{
+	   		system.library.KMCollection_Update_Utils.logUnexpectedError("kmjvmconnect in createJob 1");				   	
+	     	return -1;
+	    }
+	     
+	    //handle string arrays first...
+	    
+		var strurllist = " ";
+	    if (vars.$L_file.kbtype == "weblib")
+	    {
+		    system.functions.denull(vars.$L_file.urlstartlist);
+		    var numurls = vars.$L_file.urlstartlist.length();
+		    for( var i = 0; i &lt; numurls; i++)
+	        { 	        
+	        	if (vars.$L_file.urlstartlist[i] != null &amp;&amp; vars.$L_file.urlstartlist[i] != "null")
+	         	{
+	            	if (i&gt;0) strurllist += ";";
+        	     		strurllist += vars.$L_file.urlstartlist[i];
+        	    }
+     	  
+            }
+        }
+        else if (vars.$L_file.kbtype == "fsyslib")
+	    {
+	    	var arrayLength = vars.$L_file.fileURLlist.length();
+			var m; 
+			for (m=0; m&lt;arrayLength; m++)
+			{
+				var fileURLlist = vars.$L_file.fileURLlist[m];
+				
+				if ( !system.functions._null(fileURLlist) &amp;&amp; fileURLlist.filestartpath != null &amp;&amp;
+				      fileURLlist.filestartpath != "" &amp;&amp; fileURLlist.filestartpath != "null")
+				{	    
+		            if (m&gt;0) 
+		            	strurllist += ";";
+	        	    strurllist += fileURLlist.filestartpath;
+        	    }
+            }
+        }
+		
+	    print("checking mime list");     
+	    var strMimeList ="";
+	    var strMimeExcludeList ="";
+	    var strMimeIncludeList ="";
+	    var nummimes = vars.$L_file.mimelist.length();
+	    for( var i = 0; i &lt; nummimes; i++)
+        { 
+        	if (vars.$L_file.mimelist[i] != "null" &amp;&amp; vars.$L_file.mimelist[i] != null)
+            {
+	            if (i&gt;0) 
+	            	strMimeList += ";";
+    	    	strMimeList += vars.$L_file.mimelist[i];
+    	    }
+    	  
+        }
+        
+        //assign strMimeList to value of radio button.
+        if (strMimeList != "null")
+	    if (vars.$L_file.mimeproperty == "include")
+	        strMimeIncludeList = strMimeList;
+	    else
+	        strMimeExcludeList = strMimeList;
+	    	   
+	   	result = system.library.KMCollection_Update_Utils_K2.adminConnect(strServerAlias, vars.$G_km_globalenv.km_adminport);
+	   	print("adminConnect = "+result);
+	   	theXMLDate = new XMLDate( vars.$L_file.schedtime );
+       	strSchedTime = theXMLDate.getSCDateTimeString();
+       	system.functions.cleanup(theXMLDate);
+	   	if (vars.$L_file.schedyesno)
+	    	strSchedYesNo = "true";
+	   	else
+	    	strSchedYesNo = "false";
+	   	strSchedFrequency = ""+ vars.$L_file.schedfrequency;
+	   	strwebpathlen = ""+vars.$L_file.webpathlen;
+	   	strwebjumps = ""+vars.$L_file.webjumps;
+	   	strproxyhost = ""+vars.$L_file.proxyhost;
+       	strproxyport = ""+vars.$L_file.proxyport;
+       	strproxyuser = ""+vars.$L_file.proxyuser;
+       	strproxypword = ""+vars.$L_file.proxypword;
+	   	if (vars.$L_file.webhost)
+	    	strwebhost = "true";
+	   	else
+	    	strwebhost = "false";
+	   	if (vars.$L_file.kbtype == "weblib")
+	   	{ 
+         	params[0] = "writeWebJob";
+       	}
+       	else if (vars.$L_file.kbtype == "fsyslib")
+       	{
+         params[0] = "writeFileJob";
+       	}
+       	params[1] = vars.$L_file.kbname;//collAlias
+       	params[2] = strurllist;
+       	params[3] = strSchedYesNo;
+       	params[4] = strSchedTime;
+       	params[5] = strSchedFrequency;
+       	params[6] = strMimeIncludeList;
+       	params[7] = strMimeExcludeList;
+       	params[8] = strwebpathlen;
+       	params[9] = strwebjumps;
+       	params[10]= strwebhost;
+       	params[11]= strproxyhost;
+       	params[12]= strproxyport;
+       	params[13]= strproxyuser;
+       	params[14]= strproxypword;
+       	print("job changed...");
+       	result = system.functions.plugin("KMPLUGIN",params); 
+       	result = system.library.KMCollection_Update_Utils_K2.adminDisconnect();
+	   	print("adminDisconnect = "+result);
+	   	result = system.library.KMAdmin.kmjvmdisconnect();
+	   
+	}	
+	return 0;
+}		   
+
+
+function startwebcrawl(strCollection)
+{
+  	var params = new Array(3);
+  	var strServerAlias = "";
+  	strServerAlias = vars.$G_km_globalenv.km_host;
+  	if (system.functions._null(strServerAlias))
+  	{
+    	system.library.KMUtils.domessageBox(system.functions.scmsg(65, "km"));
+	   	system.library.KMCollection_Update_Utils.logUnexpectedError("startwebcrawl 1");				   	
+    	return -1;
+  	}
+  	if ((strServerAlias != null) &amp;&amp; ( strServerAlias.length &gt; 0 ))
+	{
+		result = system.library.KMAdmin.kmjvmconnect();
+		if (result != 0)
+		     return -1;
+  		var status = system.library.KMCollection_Update_Utils_K2.checkIndexStatus(vars.$L_file.kbname);
+  		if (status == -1)
+  		{
+    		system.library.KMUtils.domessageBox(system.functions.scmsg(190, "km"));
+    		return -1;
+  		}
+		     
+  		result = system.library.KMCollection_Update_Utils_K2.adminConnect(strServerAlias, vars.$G_km_globalenv.km_adminport);
+
+  		params[0]="startJob";
+  		params[1]=strCollection;
+  		result = system.functions.plugin("KMPLUGIN",params);
+  		result = system.library.KMCollection_Update_Utils_K2.adminDisconnect();
+
+  		result = system.library.KMAdmin.kmjvmdisconnect();
+  		print("web crawl started!");
+  		return 0;
+	} 
+}           
+		   
+function stopwebcrawl(strCollection)
+{
+	var params = new Array(3);
+  	var strServerAlias = "";
+  	strServerAlias = vars.$G_km_globalenv.km_host;
+  	if (system.functions._null(strServerAlias))
+  	{
+    	system.library.KMUtils.domessageBox(system.functions.scmsg(65, "km"));
+    	return -1;
+  	}
+  	if ( strServerAlias.length &gt; 0 )
+	{
+	  	result = system.library.KMAdmin.kmjvmconnect();
+	  	if (result != 0)
+	  	   return -1;
+	  	result = system.library.KMCollection_Update_Utils_K2.adminConnect(strServerAlias, vars.$G_km_globalenv.km_adminport);
+
+      	params[0]="stopJob";
+      	params[1]=strCollection;
+      	result = system.functions.plugin("KMPLUGIN",params);
+      	result = system.library.KMCollection_Update_Utils_K2.adminDisconnect();
+
+	  	result = system.library.KMAdmin.kmjvmdisconnect();
+	  	print("web crawl stopped!");
+	  	
+	} 
+}  
+		   
+function getJobStatus()
+{
+	var params = new Array(3);
+	var statsString = new Datum();
+	var status = "";
+	var strServerAlias = "";
+    strServerAlias = vars.$G_km_globalenv.km_host;
+    var strCollectionAlias = system.library.KMUtils.scToJSName(vars.$L_file.kbname);
+    if (system.functions._null(strServerAlias))
+    {
+       system.library.KMUtils.domessageBox(system.functions.scmsg(65, "km"));
+       return -1;
+    }
+	if ((strServerAlias != null) &amp;&amp; ( strServerAlias.length &gt; 0 ))
+	{
+	    result = system.library.KMCollection_Update_Utils_K2.adminConnect(strServerAlias, vars.$G_km_globalenv.km_adminport);
+
+		params[0]="getJobStatus";
+	    params[1]= strCollectionAlias;
+	    result = system.functions.plugin("KMPLUGIN",params,statsString);
+	    status = "" + statsString.getText();
+	    status = status.substring(3);
+	    status = status.replace(/(\n|\r)/g, " ");
+		
+	    result = system.library.KMCollection_Update_Utils_K2.adminDisconnect();
+
+	}
+	return status;
+}		   
+</script>
+    <package type="string">KMAdmin</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:41</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

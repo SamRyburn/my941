@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="htmltemplates">
+  <record id="name=&quot;Interaction Preview&quot; and language=&quot;en&quot;" recordid="Interaction Preview - en">
+    <id type="string">929</id>
+    <type type="string">print</type>
+    <name type="string">Interaction Preview</name>
+    <expression type="string">var emptyStr="";
+ $RECORD.open_time=null;
+ var openTimeStr = system.functions.nullsub(formatJSDateTime($RECORD.open_time),emptyStr);
+
+ if ($RECORD.callback_contact!=null ) {
+    var contact = new SCFile("contacts");
+    var rcSelectContact = contact.doSelect("contact.name=\""+$RECORD.callback_contact+"\"");
+    if ( rcSelectContact == RC_SUCCESS ) {
+       var contactFullName = system.functions.nullsub(contact.last_name, emptyStr) + " " + system.functions.nullsub(contact.first_name, emptyStr);
+       var contactPhone = system.functions.nullsub(contact.contact_phone, emptyStr) + " " + system.functions.nullsub(contact.extension, emptyStr);
+       var contactEmail = system.functions.nullsub(contact.email, emptyStr);
+       var contactLocation = system.functions.nullsub(contact.location, emptyStr);
+    }
+ }
+
+ var deviceName = "";
+ var deviceDispName = "";
+ var deviceSubType = "";
+ if ($RECORD.logical_name!=null ) {
+    deviceDispName = system.functions.get_display_value($RECORD, "logical.name",-1,true);
+    var device = new SCFile("device");
+    var rcSelectDevice= device.doSelect("logical.name=\""+$RECORD.logical_name+"\"");
+    if ( rcSelectDevice == RC_SUCCESS ) {
+       var deviceName = system.functions.nullsub(device.network_name, $RECORD.logical_name);
+       deviceDispName=system.functions.nullsub(device.network_name,deviceDispName);
+       var deviceSubType = system.functions.nullsub(device.subtype, emptyStr);
+    }
+ }
+ var serviceName = "";
+ var serviceDispName= "";
+ var serviceSubType = "";
+ if ($RECORD.affected_item !=null ) {
+    serviceDispName= system.functions.get_display_value($RECORD, "affected.item",-1,true);
+	var fSvc = new SCFile("joinbizservice");
+	var rcSvc = fSvc.doSelect("logical.name=\""+$RECORD.affected_item+"\"");
+	if ( rcSvc == RC_SUCCESS ) {
+		serviceName = system.functions.nullsub(fSvc.network_name, $RECORD.affected_item);
+		serviceDispName = system.functions.nullsub(fSvc.network_name, serviceDispName);
+		serviceSubType = system.functions.nullsub(fSvc.subtype, emptyStr);
+	}
+ }
+
+ var ticketDescription="No Description provided.";
+ if ($RECORD.description!=null &amp;&amp; $RECORD.description.getSize()&gt;0) {
+ 	ticketDescription = $RECORD.description.toArray();
+ 	ticketDescription=ticketDescription.toString();
+ 	ticketDescription=ticketDescription.replace(/,/g,"&lt;br&gt;")
+ }
+  
+  var ticketSolution="No Solution provided.";
+  
+  if ($RECORD.resolution!=null &amp;&amp; $RECORD.resolution.getSize()&gt;0) {
+  	ticketSolution = $RECORD.resolution.toArray();
+ 	ticketSolution=ticketSolution.toString();
+ 	ticketSolution=ticketSolution.replace(/,/g,"&lt;br&gt;") 
+  }</expression>
+    <content NullValue="1" sctype="array">
+      <content NullValue="1" type="string"/>
+    </content>
+    <module type="string">incidents</module>
+    <cap.exec NullValue="1" sctype="array">
+      <cap.exec NullValue="1" type="string"/>
+    </cap.exec>
+    <active type="boolean">true</active>
+    <htmlcode type="string">&lt;!--DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"--&gt;&lt;style type="text/css"&gt;
+.style1 {	font-family: Verdana, Arial, Helvetica, sans-serif;	font-size:10px;}.style2 {	font-family: Verdana, Arial, Helvetica, sans-serif;	font-size:2px;	color:#000;	background-color:#F2F5A9;}.label {	color: #000000;	text-align: left;	background-color: #F0F0F0;	font-weight: bold;	border: 0.5px solid #666666;}.data {	color: #000000;	text-align: left;	background-color: #FFFFFF;	border: 0.5px solid #999999;}&lt;/style&gt;
+&lt;table class="style1" cellpadding="5" width="90%" align="left" border="0"&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;td class="style2" colspan="4"&gt;
+            &lt;h3&gt;HP Service Manager [ &lt;em&gt;Interaction &lt;/em&gt;]&lt;/h3&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td colspan="5"&gt;&amp;nbsp;&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td class="label"&gt;Interaction ID: &lt;/td&gt;
+            &lt;td class="data"&gt;{$RECORD.incident_id}&lt;/td&gt;
+            &lt;td class="label"&gt;Record Status: &lt;/td&gt;
+            &lt;td class="data" colspan="2"&gt;{$RECORD.open}&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td class="label"&gt;Title: &lt;/td&gt;
+            &lt;td class="data" colspan="4"&gt;{$RECORD.title}&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td colspan="5"&gt;&amp;nbsp;&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td class="label"&gt;Open Time: &lt;/td&gt;
+            &lt;td class="data"&gt;{openTimeStr}&lt;/td&gt;
+            &lt;td class="label"&gt;Priority: &lt;/td&gt;
+            &lt;td class="data" colspan="2"&gt;{$RECORD.priority_code}&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td colspan="5"&gt;&amp;nbsp;&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td class="label"&gt;Contact ID: &lt;/td&gt;
+            &lt;td class="data"&gt;{$RECORD.callback_contact}&lt;/td&gt;
+            &lt;td class="label"&gt;Contact Phone:&lt;/td&gt;
+            &lt;td class="data" colspan="2"&gt;{contactPhone}&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td class="label"&gt;Contact Name: &lt;/td&gt;
+            &lt;td class="data"&gt;{contactFullName}&lt;/td&gt;
+            &lt;td class="label"&gt;Contact Location:&lt;/td&gt;
+            &lt;td class="data" colspan="2"&gt;{contactLocation}&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td class="label"&gt;Contact Email:&lt;/td&gt;
+            &lt;td class="data"&gt;{contactEmail}&lt;/td&gt;
+            &lt;td class="label"&gt;&amp;nbsp;&lt;/td&gt;
+            &lt;td class="data" colspan="2"&gt;&amp;nbsp;&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td colspan="5"&gt;&amp;nbsp;&lt;/td&gt;
+            &lt;!--    &lt;/tr&gt;    &lt;tr&gt;      &lt;td class="label"&gt;Affected Contact: &lt;/td&gt;      &lt;td class="data"&gt;{$RECORD.requested_by}&lt;/td&gt;      &lt;td class="label"&gt;Contact Name: &lt;/td&gt;      &lt;td class="data" colspan="2"&gt;{contactFullName}&lt;/td&gt;    &lt;/tr&gt;    &lt;tr&gt;      &lt;td class="label"&gt;Contact Email: &lt;/td&gt;      &lt;td class="data"&gt;{contactEmail}&lt;/td&gt;      &lt;td class="label"&gt;Contact Location: &lt;/td&gt;      &lt;td class="data" colspan="2"&gt;{contactLocation}&lt;/td&gt;    &lt;/tr&gt;    &lt;tr&gt;      &lt;td class="label"&gt;Contact Phone: &lt;/td&gt;      &lt;td class="data"&gt;{contactPhone}&lt;/td&gt;      &lt;td class="label"&gt;&amp;nbsp;&lt;/td&gt;      &lt;td class="data" colspan="2"&gt;&amp;nbsp;&lt;/td&gt;    &lt;/tr&gt; --&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td colspan="5"&gt;&amp;nbsp;&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td class="label"&gt;Service:&lt;/td&gt;
+            &lt;td class="data"&gt;{serviceDispName}&lt;/td&gt;
+            &lt;td class="label"&gt;Service SubType: &lt;/td&gt;
+            &lt;td class="data"&gt;{serviceSubType}&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td class="label"&gt;Device: &lt;/td&gt;
+            &lt;td class="data"&gt;{deviceDispName}&lt;/td&gt;
+            &lt;td class="label"&gt;Device SubType: &lt;/td&gt;
+            &lt;td class="data"&gt;{deviceSubType}&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td colspan="5"&gt;&amp;nbsp;&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td class="label"&gt;Record Description: &lt;/td&gt;
+            &lt;td class="data" colspan="4"&gt;{ticketDescription}&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td class="label"&gt;Record Solution: &lt;/td&gt;
+            &lt;td class="data" colspan="4"&gt;{ticketSolution}&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td colspan="5"&gt;&amp;nbsp;&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td class="style2" colspan="4"&gt;
+            &lt;h3&gt;&amp;nbsp;&lt;/h3&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;</htmlcode>
+    <language type="string">en</language>
+    <mandant NullValue="1" sctype="array">
+      <mandant NullValue="1" type="string"/>
+    </mandant>
+    <test.record type="string">SD10002</test.record>
+    <mail.title type="string">Interaction Preview</mail.title>
+  </record>
+</recordset>

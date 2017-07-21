@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;IDOLServiceCFS&quot;" recordid="IDOLServiceCFS">
+    <name type="string">IDOLServiceCFS</name>
+    <script type="string">/*
+*	Smart Analytics Services for Query/Search functions
+*
+*	author He, Peng-Fei
+*	
+*	var IDOLServiceQuery = lib.IDOLServiceQuery.require();
+*	var result = IDOLServiceQuery.doQuery({outputencoding: 'utf8'});
+*/
+
+var _ = lib.Underscore.require();
+var cfsURL = lib.IDOLConfigure.require().getConfig()['default.cfs.url'];
+
+var logger = getLog('IDOLServiceQuery');
+
+var IDOLServiceCFS = function() {
+	
+	/**
+	*   Call idol query function with additional parameters
+	*	The paramters are passed as js object. Input other params exception action=query. e.g. {outputencoding: 'utf8', maxresults : 300}
+	*
+	*   @param {params} - additonal parameters except action=query to do query in idol.
+	*	@param {language} - Language code
+	*	@return - The query result from idol
+	*   @type - String
+	**/
+	function indexFile(xml) {
+		var params = {action: 'Ingest'};
+		params.adds = xml;
+		var headers = [];
+		result = doHTTPRequest("GET", cfsURL + 'action=Ingest&amp;adds='+ xml ,headers , "", 3, 5, 5);
+		return result
+	}
+	
+	
+	function getIndexStatusByToken(token) {
+		var param = 'action=QueueInfo&amp;QueueAction=getActionParameters&amp;QueueAction=GetStatus&amp;QueueName=Ingest&amp;Token=' + token;
+		var result = lib.jsaci.runIDOLAction(cfsURL + param, false);
+		return result;
+	}
+	
+	return {
+		indexFile: indexFile,
+		getIndexStatus: getIndexStatusByToken
+	}
+	
+}()
+
+function require() {
+	cfsURL = lib.IDOLConfigure.require().getConfig()['default.cfs.url'];
+	return IDOLServiceCFS;
+}</script>
+    <package type="string">IDOLService</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:40</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

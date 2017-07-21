@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;cm3r.sub.workflow.g&quot;" recordid="en - cm3r.sub.workflow.g">
+    <name mandatory="true" type="string">cm3r.sub.workflow.g</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">4100</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">34</length>
+        <window type="decimal">8</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">category</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">OleContainer;Name=XMLChangeViewer	Input=category	X=1	Y=1	Height=15	Width=68	Elastic=3	ReadOnly=1	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">falcon</editor>
+    <last.update type="dateTime">09/03/03 03:16:01</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">1</sysmodcount>
+    <sysmoduser type="string">hanrui</sysmoduser>
+    <sysmodtime type="dateTime">12/16/13 17:37:00</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;upgradeConstants&quot;" recordid="upgradeConstants">
+    <name type="string">upgradeConstants</name>
+    <script type="string">/******************************************************
+* Module Name: upgrade Constants
+* Function: contain global constants can be used across RAD/ScriptLibrary and etc.
+* Author: Upgrade team
+* Version: 2.0
+* Creation Date: Oct, 2011
+* Update Date: Jun, 2015
+*******************************************************/
+/**
+  SM all versions supported in upgrade
+*/
+function FULL_VERSIONS() { 
+   return ["SM7.10", 
+            "7.11.000", "7.11.001", "7.11.002", "7.11.003", 
+            "9.20.000", "9.21.001", "9.21.002", "9.21.003", 
+            "9.30.000", "9.30.000 PDCP2",
+            "9.30.001",
+            "9.30.002", 
+            "9.30.003",
+            "9.31.0022", "9.31.0022 PDCP3", "9.31.0022 PDCP4",
+            "9.32.0016", "9.32.0016 PDCP3", "9.32.0016 PDCP4",
+            "9.33.0035", "9.33.0035 PDCP3", "9.33.0035 PDCP4",
+            "9.34.0032", "9.34.0032 PDCP3", "9.34.0032 PDCP4",
+            "9.35.0012", "9.35.0012 PDCP3", "9.35.0012 PDCP4",
+            TARGET_VERSION()]
+}
+
+/**
+Version to upgrade to. This version number should be changed per release
+*/
+
+function TARGET_VERSION() { 
+   var upgverbldFile = lib.upgradeVersionUtil.getRecord("upgverbld", "true");
+   if(upgverbldFile != null &amp;&amp; upgverbldFile.version != null)
+   {
+       return upgverbldFile.version;
+   }else
+   {
+       return "Unknown";
+   }
+}
+
+function BASELINE_VERSION() {
+    return "SM7.10";
+}
+
+function NEW_PREFIX() {
+	var fullversion=FULL_VERSIONS();
+	var version=fullversion[fullversion.length-1];
+	var pattern=new RegExp("^([0-9]+)\.([0-9]+)");
+	var match=pattern.exec(version);
+	if (match!=null) {
+	    return "NEW"+match[1]+match[2];
+	}
+	return "NEWXXX";
+}
+
+function PATCH_NAME() {
+	var version=TARGET_VERSION();
+	return "SM"+lib.upgradeVersionUtil.getShortMajorMinorVersion(version);
+}
+
+/**
+Build date of the upgrade version.
+TODO: Currently use fixed release date. This build date should be changed in a new field of upgverbld table per each upgrade build.
+*/
+function TARGET_BUILD_DATE() {
+   var upgverbldFile = lib.upgradeVersionUtil.getRecord("upgverbld", "true");
+   if(upgverbldFile != null &amp;&amp; upgverbldFile.application_build_date != null)
+   {
+       return upgverbldFile.application_build_date;
+   }else
+   {
+       var vDate=new Date(2014, 7, 31); // 9.41:2015.8.31
+       return new XMLDate(vDate).getDatum();
+   }
+}</script>
+    <package type="string">Upgrade</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:45</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

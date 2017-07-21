@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;JSCodeChecker&quot;" recordid="JSCodeChecker">
+    <name type="string">JSCodeChecker</name>
+    <script type="string">var $ = lib.c.$;
+var _ = lib.Underscore.require();
+
+var LINE_MAX = 999999;
+
+// predef globals for JSLINT sm
+var predefs_jslint = 
+[
+	// global system objects
+	"lib",
+	"system",
+	"vars",
+	
+	// global methods
+	"base64Decode",
+	"base64Encode",
+	"compile",
+	"doHTTPRequest",
+	"doSOAPRequest",
+	"execute",
+	"getLog",
+	"help",
+	"makeSCWebURL",
+	"print",
+	"Quit",
+	"RCtoString",
+	"readFile",
+	"setAppMessage",
+	"stripHtml",
+	"uncompressFile",
+	"writeAttachmentToFile",
+	"writeFile",
+	"xmlstring",
+	
+	// defined objects
+	"Attachment",
+	"Datum",
+	"SCDatum",
+	"SCFile",
+	"SCRecordList",
+	"Query",
+	"QueryCond",
+	"XML",
+	"XMLDate",
+		
+	// defined constants
+	"RC_SUCCESS",
+	"SCFILE_ASC",
+	"SCFILE_DSC",
+	"SCFILE_READONLY"
+];
+
+// default JSLint options
+var options_jslint = 
+{
+	bitwise: true,
+	'continue': true,
+	eqeq: true, 
+	nomen: true,
+//	maxlen: 10000,
+	regexp: true,
+	todo: true,
+	plusplus: true,
+	predef: predefs_jslint,
+	sm: true,	// sm check mode
+	sloppy: true, 
+	undef: true,
+	vars: true,
+	white: true
+};
+
+
+/**
+ * Check code
+ *
+ * @return String
+ */
+function check(script)
+{
+
+	// 1. check line code first
+	var errors = lib.LineCodeChecker.check(script);
+	
+	// 2. check by 3rd party JSLINT
+	errors = errors.concat(checkJSLINT(script));
+	
+	// no issue found
+	if (errors.length == 0)
+	{
+		return system.functions.scmsg("174", "ScriptLibrary");
+	}
+
+
+	var output = [], i;
+    for (i = 0; i &lt; errors.length; i++) 
+	{
+        var warning = errors[i];
+        if (warning) 
+		{
+            if (isFinite(warning.line) &amp;&amp; warning.line != LINE_MAX) 
+			{
+				if (warning.character)
+				{
+					output.push(system.functions.scmsg("173", "ScriptLibrary", 
+						[String(warning.line), String(warning.character)]) + '\n');
+				}
+				else
+				{
+					output.push(system.functions.scmsg("175", "ScriptLibrary", 
+						[String(warning.line)]) + '\n');
+				}
+            }
+            output.push(warning.reason);
+                
+            var evidence = warning.evidence || '';
+			if (evidence) 
+			{
+                output.push('\n' + evidence);
+            }
+                
+            if (i &lt; errors.length - 1)
+            {
+               	output.push('\n');
+            }
+        }
+    }
+    
+	return output.join('');	
+}
+
+
+/**
+ * Check code by JSLINT
+ *
+ * @return 
+ * It returns a structure with this form:
+ *
+ *     errors: 
+ *	   [
+ *         {
+ *             line: NUMBER,
+ *             character: NUMBER,
+ *             reason: STRING,
+ *             evidence: STRING
+ *         }
+ *     ]
+ */
+function checkJSLINT(script)
+{
+	// check whether ScriptLibrary existed
+	var sl = $("ScriptLibrary", SCFILE_READONLY).setFields(["name"]).select("name=\"JSLINT\"").uniqueResult();
+	if (sl == null) 
+	{
+		return [];
+	}
+	
+	var JSLINT = lib.JSLINT.require();
+	var result = new JSLINT(script, options_jslint);
+
+	return JSLINT.errors;
+}
+
+
+/**
+ * Generate a statistics report for all the ScriptLibrary records.
+ *
+ * @return
+ * It returns a structure with this form:
+ *
+ * 		report: 
+ *	   	[ 
+ *		   	{
+ *				name: 		STRING,
+ *             	lines: 		NUMBER,
+ *             	warnings: 	STRING
+ *         	}
+ *     	]
+ */
+function reportAll()
+{
+	var statistics = {};
+
+	$("ScriptLibrary", SCFILE_READONLY).select("true").iterate(function(script)
+	{
+		var name = script.name;		
+		
+		statistics[name] = 
+		{
+			name: 		name,
+			lines:	 	_.lines(script.script).length,
+			warnings:	lib.LineCodeChecker.check(script.script).length
+		};
+	});
+
+	var report = [];
+
+	var key;
+	for (key in statistics) 
+	{
+		if (Object.prototype.hasOwnProperty.call(statistics, key)) 
+		{
+			report.push(statistics[key]);
+		}
+	}
+
+	return report;
+}
+
+
+/**
+ * Generate a statistics report for all the ScriptLibrary records group by package.
+ *
+ * @return
+ * It returns a structure with this form:
+ *
+ * 		report: 
+ *	   	[ 
+ *		   	{
+ *				name: 		STRING,
+ *             	lines: 		NUMBER,
+ *             	warnings: 	STRING
+ *         	}
+ *     	]
+ */
+function reportByPackage()
+{
+	var statistics = {};
+
+	$("ScriptLibrary", SCFILE_READONLY).select("true").iterate(function(script)
+	{
+		var name = script['package'];		
+		if (!name) 
+		{
+			name = "&lt;Empty&gt;";
+		}
+		
+		// statistics for each script package
+		if (!statistics[name])
+		{
+			statistics[name] = 
+			{
+				name: 		name,
+				lines:	 	0,
+				warnings:	0
+			};
+		}
+	
+		var lines = _.lines(script.script);
+		statistics[name].lines += lines.length;
+		statistics[name].warnings += lib.LineCodeChecker.check(script.script).length;	
+	});
+
+	var report = [];
+
+	var key;
+	for (key in statistics) 
+	{
+		if (Object.prototype.hasOwnProperty.call(statistics, key)) 
+		{
+			report.push(statistics[key]);
+		}
+	}
+
+	return report;
+}</script>
+    <package type="string">Tailoring</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:41</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

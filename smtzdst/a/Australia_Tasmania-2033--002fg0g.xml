@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="smtzdst">
+  <record id="tzname=&quot;Australia/Tasmania&quot; and dstyear=2033" recordid="">
+    <tzname type="string">Australia/Tasmania</tzname>
+    <dstyear type="decimal">2033</dstyear>
+    <dstbegin type="dateTime">04/02/33 21:00:00</dstbegin>
+    <dstend type="dateTime">10/01/33 20:00:00</dstend>
+    <isdst type="decimal">0</isdst>
+  </record>
+</recordset>

@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;IDOLClientFactory&quot;" recordid="IDOLClientFactory">
+    <name type="string">IDOLClientFactory</name>
+    <script type="string">var _ = lib.Underscore.require(),
+    XQuery = lib.XQuery.require(),
+    IDOLRequest = lib.IDOLRequest.require(),
+    IDOLURLParser = lib.IDOLURLParser.require(),
+    IDOLConfigure = lib.IDOLConfigure.require(),
+    IDOLHTTPRequest = lib.IDOLHTTPChannel.require();
+
+var logger = getLog('IDOLClientFactory');
+
+var IDOLClientFactory = (function() {
+  var SMART_SEARCH_ENGINE_NAME = 'SmartSearch';
+
+  function IDOLClientInternal() { }
+
+  IDOLClientInternal.prototype.getEndPoint = function() {
+    // main proxy (default port 9000)
+    var endpoint = IDOLConfigure.getEndPoint();
+    this.getEndPoint = function() { return endpoint; };
+    return endpoint;
+  };
+
+  function getEngines(endpoint) {
+    /*
+    &lt;autnresponse xmlns:autn="http://schemas.autonomy.com/aci/"&gt;
+      &lt;action&gt;ENGINEMANAGEMENT&lt;/action&gt;
+      &lt;response&gt;SUCCESS&lt;/response&gt;
+      &lt;responsedata&gt; 
+        &lt;engines&gt;
+          &lt;num_engines&gt;2&lt;/num_engines&gt;
+          &lt;down_engines&gt;0&lt;/down_engines&gt;
+          &lt;online_engines&gt;2&lt;/online_engines&gt;
+          &lt;offline_engines&gt;0&lt;/offline_engines&gt;
+          &lt;engine aciport="20010" host="127.0.0.1" id="0" name="SmartSearch" status="online" type="IDOL" weight="100"/&gt;
+          &lt;engine aciport="10010" host="127.0.0.1" id="1" name="Content1" status="online" type="IDOL" weight="100"/&gt;
+        &lt;/engines&gt;
+      &lt;/responsedata&gt;
+    &lt;/autnresponse&gt;
+    */
+    var doc = IDOLRequest.doIDOLGet(endpoint, { action : 'EngineManagement', EngineAction : 'ShowStatus' });
+    var enginesCollection = XQuery.query('responsedata/engines/engine', doc);
+
+    var query = IDOLURLParser.parse(endpoint),
+        proxyHost = query.host,
+        protocol = query.protocol;
+
+    return _.chain(enginesCollection).map(function(engine) {
+      var id = engine.getAttributeValue("id"),
+          name = engine.getAttributeValue("name"),
+          host = engine.getAttributeValue("host"),
+          status = engine.getAttributeValue("status"),
+          aciport = engine.getAttributeValue("aciport"),
+          weight = parseInt(engine.getAttributeValue("weight"), 10);
+
+      host = (host === '127.0.0.1' || host === 'localhost') ? proxyHost : host;
+      // TODO: need to consider HTTPs scenario
+      var endpoint = protocol + '://' + host + ':' + aciport + '/';
+      return {
+        id : id,
+        name : name,
+        endpoint : endpoint,
+        status : status,
+        weight : weight
+      };
+    }).filter(function(engine) {
+      // ignore down server for failover reason.
+      // XXX: but the return value was cachec, it may not able to detect down server in one sm session
+      return engine.status === 'online';
+    }).value();
+  }
+
+  var getCachedEngine = _.memoize(getEngines);
+
+  function getComponentEndPoint(endpoint, component) {
+    if (!_.contains(['index', 'service'], component)) {
+      throw new Error('only index/service are allowed');
+    }
+
+    var doc = IDOLRequest.doIDOLGet(endpoint, { action : 'GetStatus' });
+    var comp = XQuery.queryObject({
+      index : 'responsedata/indexport',
+      service : 'responsedata/serviceport',
+      ssl : 'responsedata/indexport_ssl_enabled'
+    }, doc);
+
+    var query = IDOLURLParser.parse(endpoint),
+        host = query.host,
+        protocol = query.protocol;
+
+    var port = comp[component];
+    // TODO: should use http(s) protocal base on 'ssl' flag
+    // but ssl option doesn't work as expected. (IDOL v10.5)
+    // Even index port has configured ssl, the option 'indexport_ssl_enabled' is still false
+    return protocol + '://' + host + ':' + port + '/';
+  }
+
+  var getCachedComponentEndPoint = _.memoize(getComponentEndPoint, function(endpoint, component) {
+    return [endpoint, component].join('-');
+  });
+
+  function executeOEMAction(endpoint, params) {
+    return IDOLRequest.doIDOLPost(endpoint, params);
+  }
+
+  function executeHTTPAction(base, action, params, payload) {
+    action = action || '';
+    var endpoint = base + action;
+
+    if (payload) { 
+      var qs = _.map(params, function(v, k) { return k + '=' + encodeURIComponent(v); }).join('&amp;');
+      endpoint = _.compact([endpoint, qs]).join('?');
+
+      logger.info(endpoint);
+      logger.debug(payload);
+      return doHTTPRequest('POST', endpoint, [], payload);
+    } else {
+      logger.info(endpoint);
+      return IDOLHTTPRequest.doGet(endpoint, params);
+    }
+  }
+
+  IDOLClientInternal.prototype._getEngines = function() {
+    var endpoint = this.getEndPoint();
+    return getCachedEngine(endpoint);
+  };
+
+  IDOLClientInternal.prototype.getComponentEndPoint = getCachedComponentEndPoint;
+
+  IDOLClientInternal.prototype.executeAction = function(params) {
+    return executeOEMAction(this.getEndPoint(), params);
+  };
+
+  IDOLClientInternal.prototype.executeDAHAction = function(params) {
+    return executeOEMAction(this.getDAHEndPoint(), params);
+  };
+
+  IDOLClientInternal.prototype.executeIndexAction = function(action, params, payload) {
+    return executeHTTPAction(this.getIndexEndPoint(), action, params, payload);
+  };
+
+  IDOLClientInternal.prototype.executeDIHAction = function(action, params, payload) {
+    return executeHTTPAction(this.getDIHEndPoint(), action, params, payload);
+  };
+
+  IDOLClientInternal.prototype.executeServiceAction = function(params) {
+    return executeHTTPAction(this.getServiceEndPoint(), '', params);
+  };
+
+  IDOLClientInternal.prototype.isDistributeMode = function() {
+    return this._getEngines().length &gt; 1;
+  };
+
+  IDOLClientInternal.prototype.isVDBExists = function(database) {
+    var doc = this.executeDAHAction({ "action":"VDBManagement", "VDBAction":"ShowStatus" });
+    var vdbs = XQuery.query('responsedata/vdbs/vdb', doc);
+
+    return _.any(vdbs, function(vdb) {
+      return vdb.getAttributeValue('name') === database;
+    });
+  };
+
+  IDOLClientInternal.prototype.setDatabaseRole = function(database, role) {
+    return this.executeDAHAction({
+      "action"    : "RoleSetPrivilegeForRole",
+      "Privilege" : "Databases",
+      "RoleName"  : role,
+      "Value"     : database
+    });
+  };
+
+  IDOLClientInternal.prototype.getDAHEndPoint = function() {
+    return this.getEndPoint();
+  };
+
+  IDOLClientInternal.prototype.getDIHEndPoint = function() {
+    return this.getIndexEndPoint();
+  };
+
+  IDOLClientInternal.prototype.getServiceEndPoint = function() {
+    var endpoint = this.getDAHEndPoint();
+    return this.getComponentEndPoint(endpoint, 'service');
+  };
+
+  //----------------------------------------------------------------------------------------------------------
+
+  function IDOLClientForHotTopic() {}
+
+  IDOLClientForHotTopic.prototype = new IDOLClientInternal();
+
+  IDOLClientForHotTopic.prototype.getIndexEndPoint = function() {
+    var endpoint = IDOLConfigure.getIDOLIndexBaseURL();
+    this.getIndexEndPoint = function() { return endpoint; };
+    return endpoint;
+  };
+
+  IDOLClientForHotTopic.prototype._findEngineID = function(database) {
+    var doc = this.executeDAHAction({ "action":"VDBManagement", "VDBAction":"ShowStatus" });
+    var vdbs = XQuery.query('responsedata/vdbs/vdb', doc);
+    var vdb = _.find(vdbs, function(vdb) {
+      return vdb.getAttributeValue('name') === database;
+    });
+    var mapTo = XQuery.queryOne('mapstos/mapsto', vdb);
+    return mapTo.getAttributeValue('engine');
+  };
+
+  var DISTRIBUTE_FIELDNAME = "ContentStore",
+      DISTRIBUTE_FIELDVALUE_BASE = 'CONTENT';
+
+  IDOLClientForHotTopic.prototype.getDistributeNameAndValue = function(database) {
+    if (this.isDistributeMode() &amp;&amp; !this.isVDBExists(database)) {
+      this.createVDB(database);
+    }
+    var id = this._findEngineID(database);
+    if (!id) {
+      throw new Error('cannot find the engine which contains the data of ' + database);
+    }
+
+    var value = DISTRIBUTE_FIELDVALUE_BASE + id;
+    var pair = {};
+    pair[DISTRIBUTE_FIELDNAME] = value;
+    return pair;
+  };
+
+  IDOLClientForHotTopic.prototype._roundRobinEngine = function() {
+    var engines = this._getEngines();
+    engines = _.filter(engines, function(engine) {
+      return engine.name !== SMART_SEARCH_ENGINE_NAME;
+    });
+
+    if (engines.length === 0) {
+      throw new Error('there is no proper IDOL engine for hot topic/smart ticket');
+    }
+
+    var settings = new SCFile('idolserverinfo');
+    var rc = settings.doSelect(true);
+    if (rc === RC_SUCCESS) {
+      var index = settings.last_index_number || 0;
+      var last = _.find(engines, function(engine) { 
+        return parseInt(engine.id, 10) === index;
+      });
+      var position = _.indexOf(engines, last);
+
+      var next = ((position + 1) &gt; (engines.length - 1)) ? 0 : position + 1;
+      var id = engines[next].id;
+
+      settings.last_index_number = parseInt(id, 10);
+      settings.doSave();
+      return id;
+    } else {
+      throw new Error('IDOL Server settings cannot be found');
+    }
+  };
+
+  IDOLClientForHotTopic.prototype.createVDB = function(database) {
+    var engineId = this._roundRobinEngine(database);
+    this.executeDAHAction({
+      "action"   : "VDBManagement",
+      "VDBAction": "VDBAdd",
+      "VDBName"  : database,
+      "VDBType"  : "Combinator",
+      "VDBMapsTo": engineId + ':' + database
+    });
+
+    this.setDatabaseRole(database, "everyone");
+    return engineId;
+  };
+
+
+  //----------------------------------------------------------------------------------------------------------
+
+  function IDOLClientForGlobalSearch() {}
+
+  IDOLClientForGlobalSearch.prototype = new IDOLClientInternal();
+
+  IDOLClientForGlobalSearch.prototype.getSmartSearchEngine = function() {
+    var engines = this._getEngines() || [];
+    var engine = _.find(engines, function(engine) { return engine.name === SMART_SEARCH_ENGINE_NAME; });
+    return engine;
+  };
+
+  IDOLClientForGlobalSearch.prototype.getIndexEndPoint = function() {
+    var engine = this.getSmartSearchEngine();
+    return engine ? this.getComponentEndPoint(engine.endpoint, 'index') : '';
+  };
+
+  IDOLClientForGlobalSearch.prototype.getServiceEndPoint = function() {
+    var engine = this.getSmartSearchEngine();
+    return engine ? this.getComponentEndPoint(engine.endpoint, 'service') : '';
+  };
+
+  // there is only one "content" for GlobalSearch, which use "virtual node" to build its distribute structure
+  IDOLClientForGlobalSearch.prototype.getDistributeNameAndValue = function() {
+    return { 'ContentStore' : 'GlobalSearch' };
+  };
+
+  IDOLClientForGlobalSearch.prototype.createVDB = function(database) {
+    var engine = this.getSmartSearchEngine();
+    var id = engine.id;
+    this.executeDAHAction({
+      "action"    : "VDBManagement",
+      "VDBAction" : "VDBAdd",
+      "VDBName"   : database,
+      "VDBType"   : "Distributor",
+      "VDBMapsTo" : id + ':' + database
+    });
+    this.setDatabaseRole(database, "everyone");
+  };
+
+
+  //----------------------------------------------------------------------------------------------------------
+  // please don't create this object multiple times
+  // because some time consuming result was cached in this object
+  function createInstance(feature) {
+    switch(feature) {
+      case 'GlobalSearch': 
+        return new IDOLClientForGlobalSearch();
+      // "Hot Topic" and "Smart Ticket" are running in the same content
+      case 'HotTopic' : 
+      case 'SmartTicket': 
+        return new IDOLClientForHotTopic();
+      default : 
+        throw new Error("doesn't recognize feature name " + feature);
+    }
+  }
+
+  var instance = {
+    create : _.memoize(createInstance),
+    invalidCache : function() {
+      instance.create = _.memoize(createInstance);
+    }
+  };
+
+  return instance;
+}());
+
+function require() {
+  return IDOLClientFactory;
+}</script>
+    <package type="string">IDOL</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:40</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

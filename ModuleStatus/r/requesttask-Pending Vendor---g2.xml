@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ModuleStatus">
+  <record id="module=&quot;requesttask&quot; and status=&quot;Pending Vendor&quot;" recordid="requesttask - Pending Vendor">
+    <status type="string">Pending Vendor</status>
+    <sysmodtime type="dateTime">01/16/14 16:41:40</sysmodtime>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">leo.wang</sysmoduser>
+    <module type="string">requesttask</module>
+    <tablename type="string">requesttask</tablename>
+    <sort.order NullValue="1" type="decimal"/>
+  </record>
+</recordset>

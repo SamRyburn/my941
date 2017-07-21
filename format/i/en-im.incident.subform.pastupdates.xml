@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;im.incident.subform.pastupdates&quot;" recordid="en - im.incident.subform.pastupdates">
+    <name mandatory="true" type="string">im.incident.subform.pastupdates</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Group by Activity Type</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Group by Activity Type	Name=	Style=1	ButtonID=904	Height=2	Name=button1355903178428	Width=40	X=1	Y=1		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">68</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">1</column>
+        <length type="decimal">65</length>
+        <window type="decimal">8</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">number.vj</input>
+        <output NullValue="1" type="string"/>
+        <format type="string">activity.list</format>
+        <property type="string">SubFormat;DisplayUsingTable=1	Name=	VirtualJoin=1	Height=16	Name=subview1355903178449	ReadOnly=1	Format=activity.list	Width=130	X=1	Y=4		Input=number.vj	</property>
+      </field>
+    </field>
+    <file.name type="string">probsummary</file.name>
+    <editor type="string">System.Admin</editor>
+    <last.update type="dateTime">12/18/12 10:46:50</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">shiji.shu</sysmoduser>
+    <sysmodtime type="dateTime">09/18/13 13:20:06</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

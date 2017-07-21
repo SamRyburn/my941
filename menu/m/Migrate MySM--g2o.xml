@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="menu">
+  <record id="name=&quot;Migrate MySM&quot;" recordid="Migrate MySM">
+    <name type="string">Migrate MySM</name>
+    <option sctype="array">
+      <option sctype="decimal">1</option>
+    </option>
+    <description sctype="array">
+      <description sctype="string">Migrate MySM</description>
+    </description>
+    <command sctype="array">
+      <command sctype="string">migratemysm</command>
+    </command>
+    <condition sctype="array">
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0 and gui()</condition>
+    </condition>
+    <application sctype="array">
+      <application sctype="string">reporting.migratemysm</application>
+    </application>
+    <pname NullValue="1" sctype="array">
+      <pname NullValue="1" type="string"/>
+    </pname>
+    <pvalue NullValue="1" sctype="array">
+      <pvalue NullValue="1" type="string"/>
+    </pvalue>
+    <system NullValue="1" sctype="array">
+      <system NullValue="1" type="string"/>
+    </system>
+    <format.name NullValue="1" type="string"/>
+    <thread sctype="array">
+      <thread sctype="operator">gui()</thread>
+    </thread>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/27/14 02:54:39</sysmodtime>
+    <group NullValue="1" sctype="array">
+      <group NullValue="1" type="string"/>
+    </group>
+    <icon NullValue="1" sctype="array">
+      <icon NullValue="1" type="string"/>
+    </icon>
+  </record>
+</recordset>

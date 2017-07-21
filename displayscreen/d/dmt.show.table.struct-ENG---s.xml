@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="displayscreen">
+  <record id="screen.id=&quot;dmt.show.table.struct&quot; and language=&quot;ENG&quot;" recordid="dmt.show.table.struct - ENG">
+    <screen.id type="string">dmt.show.table.struct</screen.id>
+    <screen.id.copy type="string">dmt.show.table.struct</screen.id.copy>
+    <language type="string">ENG</language>
+    <title type="globalVar">$L.title</title>
+    <form type="string">dmt.show.table.struct</form>
+    <io type="boolean">true</io>
+    <time NullValue="1" type="dateTime"/>
+    <initialization sctype="structure">
+      <expressions sctype="array">
+        <expressions sctype="operator">$L.prompt="Table structure of xxx"</expressions>
+        <expressions sctype="operator">$L.title="Table structure comparasion"</expressions>
+      </expressions>
+      <msg.condition NullValue="1" type="boolean"/>
+      <message NullValue="1" type="string"/>
+    </initialization>
+    <screen.id.alias type="string">dmt.show.table.struct</screen.id.alias>
+    <on.enter.key NullValue="1" type="string"/>
+    <window.structure sctype="structure">
+      <open.window NullValue="1" type="boolean"/>
+      <parent.name NullValue="1" type="string"/>
+      <window.name NullValue="1" type="string"/>
+      <window.position type="string">left</window.position>
+      <window.percent NullValue="1" type="decimal"/>
+      <window.lines NullValue="1" type="decimal"/>
+    </window.structure>
+    <screen.id.copy.old type="string">dmt.show.table.struct</screen.id.copy.old>
+    <more.window NullValue="1" type="boolean"/>
+    <user.options NullValue="1" type="boolean"/>
+    <sysmodcount type="decimal">3</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">05/29/14 04:06:11</sysmodtime>
+    <object.related NullValue="1" type="boolean"/>
+    <javascript type="string">if((vars.$dmtCurTableName==null || vars.$dmtCurTableName=="")
+	&amp;&amp; vars.$deltaMigrationToolTableName!=null &amp;&amp; system.functions.lng(vars.$deltaMigrationToolTableName)&gt;0
+	&amp;&amp; vars.$deltaMigrationToolTableName[0]!=null){
+
+	vars.$dmtCurTableName=vars.$deltaMigrationToolTableName[0];
+	vars.$dmtCurTableDecision=vars.$deltaMigrationToolDecision[0];
+	vars.$dmtCurTableComment=vars.$deltaMigrationToolComment[0];
+	
+	// find its table structure
+	vars.$dmtOldTableStruct=lib.delta_migration_data_utility.getTableStructureFromStructDescpFile(vars.$unlFilePathName+vars.$dmtCurTableName+"_unload_structure.txt");
+	vars.$dmtCurTableStruct=lib.delta_migration_data_utility.getTableStructureFromStructDescpFile(vars.$unlFilePathName+vars.$dmtCurTableName+"_unload_structure_new.txt");
+
+	// do a auto-compare 
+	vars.$dmtCompareResult=lib.delta_migration_data_utility.getCompareResultOfStructDescpFile(
+	vars.$unlFilePathName+vars.$dmtCurTableName+"_unload_structure.txt",
+	vars.$unlFilePathName+vars.$dmtCurTableName+"_unload_structure_new.txt");
+}
+
+</javascript>
+    <search.only NullValue="1" type="boolean"/>
+  </record>
+</recordset>

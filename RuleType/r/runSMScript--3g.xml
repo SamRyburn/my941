@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="RuleType">
+  <record id="id=&quot;runSMScript&quot;" recordid="runSMScript">
+    <id type="string">runSMScript</id>
+    <name type="string">scmsg(46,"ruleset")</name>
+    <description type="string">scmsg(90,"ruleset")</description>
+    <editWizard type="string">RuleSet.callScript_json</editWizard>
+    <system NullValue="1" type="boolean"/>
+    <executeType type="string">rad</executeType>
+    <executeName type="string">Rule.callScript</executeName>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:01:23</sysmodtime>
+    <sysmodcount type="decimal">0</sysmodcount>
+  </record>
+</recordset>

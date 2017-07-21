@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="unload">
+  <record id="name=&quot;SAP HR&quot;" recordid="SAP HR">
+    <name mandatory="true" type="string">SAP HR</name>
+    <unload type="boolean">true</unload>
+    <purge type="boolean">false</purge>
+    <record sctype="array">
+      <record sctype="structure">
+        <filename type="string">globallists</filename>
+        <query type="string">name="Languages Supported"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">globallists</filename>
+        <query type="string">filename#"saphr"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">language</filename>
+        <query type="string">true</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">saphrarea</filename>
+        <query type="string">true</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">saphrcommunicationtype</filename>
+        <query type="string">true</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">saphrformofaddress</filename>
+        <query type="string">true</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">saphrsubarea</filename>
+        <query type="string">true</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">triggers</filename>
+        <query type="string">table.name="contacts" and application.name="trigger.contacts.sap"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">unload</filename>
+        <query type="string">name="SAP HR"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+    </record>
+    <protected.formats NullValue="1" sctype="array">
+      <protected.formats NullValue="1" type="string"/>
+    </protected.formats>
+    <sysmodcount type="decimal">4</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">04/14/99 05:16:43</sysmodtime>
+  </record>
+</recordset>

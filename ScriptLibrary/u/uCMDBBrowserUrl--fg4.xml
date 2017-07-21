@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;uCMDBBrowserUrl&quot;" recordid="uCMDBBrowserUrl">
+    <name type="string">uCMDBBrowserUrl</name>
+    <script type="string">/******************************************************
+* Module Name: SM and uCMDB Browser Integration
+* Function: Show the embed uCMDB Browser widget for the specific CI
+* Author: Jackey Xue
+* Version: 1.00
+* Creation Date: Jan, 2014
+*/
+
+function getUCMDBUrl(){
+	var uCMDBBrowserURL = vars.$G_system_info.ucmdb_browser;
+	if(uCMDBBrowserURL == null){
+		return null;
+	}
+	var url;	
+	var begin = uCMDBBrowserURL.indexOf("?");
+	url = begin&gt;0?uCMDBBrowserURL.substring(0, begin)+"ucmdb_widget.html":uCMDBBrowserURL+"/ucmdb_widget.html";
+	var lang = vars.$G_my_language;
+	var timezone = vars.$lo_time_zone;
+	url +="?timezone="+timezone.replace("/","%2F");
+	var index = lang.indexOf("-");
+	if(index&gt;0) lang = lang.substring(0,index); 
+	url += "&amp;locale="+lang;
+	url += begin&gt;0?"&amp;"+uCMDBBrowserURL.substring(begin+1):"";
+	url += "#";
+	return url;	
+}
+
+function isShow(file){
+	if( system.functions.sysinfo_get("environment") !="scguiwweb" ||  !system.vars.$G_system_info.UCMDB || vars.$G_system_info.ucmdb_browser==null || file.rcStatus=="Closed"){
+		return false;
+	}
+	var logicalName = file.logical_name;
+	if( logicalName == null ){
+		return false;
+	}else{ // CI should have uCMDB ID and then show embed UI
+		if( getUCMDBId(logicalName)==null ){
+			return false;
+		}else{
+			return true;
+		}
+	}
+}
+
+function getBrowserHistoryUrl(file){
+	var url = getUCMDBUrl();
+	if(url == null){
+		return null;
+	}
+	url= url + "widget=history;refocus-selection=" + getUCMDBId(file.logical_name);
+	return url;
+}
+
+function getUCMDBId(logicalName){
+	var result = null;
+	var device = new SCFile("device",SCFILE_READONLY);
+	device.setFields(["ucmdb.id"])
+	var rc = device.doSelect("logical.name=\""+logicalName+"\"");
+	if( rc == RC_SUCCESS ){
+		result = device.ucmdb_id;
+	}
+	return result;
+}</script>
+    <package type="string">Integration</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:45</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

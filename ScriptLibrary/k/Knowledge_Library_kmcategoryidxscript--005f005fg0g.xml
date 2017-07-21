@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;Knowledge_Library_kmcategoryidxscript&quot;" recordid="Knowledge_Library_kmcategoryidxscript">
+    <name type="string">Knowledge_Library_kmcategoryidxscript</name>
+    <script type="string">function scArrayToString( fField )
+{
+	var strResult = "";
+	if( system.library.KMUtils.isSCArray( fField ) )
+	{
+    	//for(var idx in fField )
+    	for (var idx =0; idx &lt;fField.length(); idx++)
+    	{
+    		if(fField[idx] != null)
+    			strResult += fField[idx];
+    			if (idx != fField.length()-1)
+    			strResult += ";";
+    	}
+    }
+    return strResult;
+}
+
+function getGroupsforCategory( groups ,category )
+{	// From KMDocument_Index, only if SRC mode... split the categories first on ";".  Loop through array elements and call this function.
+	// build a comma seperated list of groups.  Add a new field to schemastub.xml for groups.  Add the final group string to this field during indexing.
+	// SRC will check user's group or groups against this list to find what doc view to load.
+	if (groups==null)
+	{
+		groups = new SCDatum();
+		groups.setType(8);
+	}
+	var catArray = category.split(":");
+	var tempcategory = category;
+	for (var cat = 0; cat &lt; catArray.length; cat++)
+	{
+		var sclibFile = new SCFile("kmcategory");
+		var query = "id = \""+catArray[cat]+"\"";
+		var scFind = sclibFile.doSelect(query);
+		if ( scFind == RC_SUCCESS )
+		{	
+			if (sclibFile.permission != null &amp;&amp; system.functions.lng(sclibFile.permission)!=0) // permissions is an array of structure, get all groups 
+			{
+				for (var i=0; i&lt;system.functions.lng(sclibFile.permission);i++ )
+				{
+					if (sclibFile.permission[i].kmgroup!=null &amp;&amp; !system.functions.index(sclibFile.permission[i].kmgroup, groups))
+					{
+						groups.push(sclibFile.permission[i].kmgroup);
+					}
+				}
+			}
+		}
+		if (cat==catArray.length-1 &amp;&amp; system.functions.lng(groups)==0)
+		{
+			groups.push("KMG01");
+		}
+	}
+	return groups;
+}
+
+function getCategoryStr(record)
+{
+  var categoryStr = null;
+  var fieldValue = null;
+  if (system.library.KMUtils.isSCArray(record.categories))
+  {
+    fieldValue = system.library.Knowledge_Library_kmcategoryidxscript.scArrayToString(record.categories);
+  }
+    categoryStr = fieldValue;
+    
+  return categoryStr;
+}</script>
+    <package type="string">KnowledgeManagement</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:41</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

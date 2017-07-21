@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="wizard">
+  <record id="name=&quot;MySM Component Editor - Finish&quot;" recordid="MySM Component Editor - Finish">
+    <name type="string">MySM Component Editor - Finish</name>
+    <file.selection type="string">passed</file.selection>
+    <create.record.filename NullValue="1" type="string"/>
+    <select.record.filename NullValue="1" type="string"/>
+    <select.query NullValue="1" type="string"/>
+    <resolve.variables NullValue="1" type="boolean"/>
+    <wizard.type type="string">skip</wizard.type>
+    <wizard.variables NullValue="1" sctype="array">
+      <wizard.variables NullValue="1" type="string"/>
+    </wizard.variables>
+    <initial.process NullValue="1" type="string"/>
+    <init.expressions sctype="array">
+      <init.expressions sctype="operator">customer.id in $L.file=1</init.expressions>
+      <init.expressions sctype="operator">built.in in $L.file=0</init.expressions>
+      <init.expressions sctype="operator">unique.id in $L.file=jscall("UUID.generateUUID")</init.expressions>
+      <init.expressions sctype="operator">origin in $L.file=-1</init.expressions>
+      <init.expressions sctype="operator">if ($L.comp.chart.type="pie") then (thumbnail.url in $L.file="imageId=1085")</init.expressions>
+      <init.expressions sctype="operator">if ($L.comp.chart.type="vbar") then (thumbnail.url in $L.file="imageId=1086")</init.expressions>
+      <init.expressions sctype="operator">comp.type in $L.file="INTERNAL"</init.expressions>
+      <init.expressions sctype="operator">pre.wired in $L.file=0</init.expressions>
+      <init.expressions sctype="operator">visible.in.gallery in $L.file=1</init.expressions>
+      <init.expressions sctype="operator">min.height in $L.file=-1</init.expressions>
+      <init.expressions sctype="operator">min.width in $L.file=-1</init.expressions>
+      <init.expressions sctype="operator">owner in $L.file=operator()</init.expressions>
+      <init.expressions sctype="operator">refresh.xml in $L.file="enc3c726566726573682073686f77557064617465643d2266616c7365223e3c72617465733e3c726174652076616c75653d2230222064656661756c74526174653d227472756522202f3e3c726174652076616c75653d2236303022202f3e3c726174652076616c75653d223132303022202f3e3c726174652076616c75653d223138303022202f3e3c2f72617465733e3c2f726566726573683e"</init.expressions>
+    </init.expressions>
+    <run.expressions NullValue="1" type="boolean"/>
+    <expressions NullValue="1" sctype="array">
+      <expressions NullValue="1" type="expression"/>
+    </expressions>
+    <run.process NullValue="1" type="boolean"/>
+    <process.name NullValue="1" type="string"/>
+    <run.format.control NullValue="1" type="boolean"/>
+    <format.control NullValue="1" type="string"/>
+    <format.control.type NullValue="1" type="string"/>
+    <bad.validation.action NullValue="1" type="string"/>
+    <display.when.complete NullValue="1" type="boolean"/>
+    <display.mode NullValue="1" type="string"/>
+    <allow.finish NullValue="1" type="boolean"/>
+    <restart.condition NullValue="1" type="boolean"/>
+    <next.wizard NullValue="1" sctype="array">
+      <next.wizard NullValue="1" type="string"/>
+    </next.wizard>
+    <next.wizard.cond NullValue="1" sctype="array">
+      <next.wizard.cond NullValue="1" type="boolean"/>
+    </next.wizard.cond>
+    <link.record NullValue="1" type="string"/>
+    <prompt NullValue="1" type="string"/>
+    <message sctype="array">
+      <message sctype="string">scmsg(7,"mysm")</message>
+    </message>
+    <message.cond sctype="array">
+      <message.cond sctype="boolean">true</message.cond>
+    </message.cond>
+    <message.type sctype="array">
+      <message.type sctype="string">popup</message.type>
+    </message.type>
+    <sub.format NullValue="1" type="string"/>
+    <use.file.as.selection NullValue="1" type="boolean"/>
+    <query.for.records NullValue="1" type="boolean"/>
+    <query.for.records.filename NullValue="1" type="string"/>
+    <query.for.records.query NullValue="1" type="string"/>
+    <title NullValue="1" type="string"/>
+    <select.no.records NullValue="1" type="string"/>
+    <bitmap NullValue="1" type="string"/>
+    <perform.action.on type="string">file</perform.action.on>
+    <reset.to.selections NullValue="1" type="boolean"/>
+    <window.title NullValue="1" type="string"/>
+    <display.screen NullValue="1" type="string"/>
+    <mult.field.name NullValue="1" type="string"/>
+    <message.level sctype="array">
+      <message.level sctype="decimal">1</message.level>
+    </message.level>
+    <start NullValue="1" type="boolean"/>
+    <usage NullValue="1" sctype="array">
+      <usage NullValue="1" type="string"/>
+    </usage>
+    <query.for.records.sort NullValue="1" sctype="array">
+      <query.for.records.sort NullValue="1" type="string"/>
+    </query.for.records.sort>
+    <allow.skip NullValue="1" type="boolean"/>
+    <query.select.one.record NullValue="1" type="string"/>
+    <comments NullValue="1" sctype="array">
+      <comments NullValue="1" type="string"/>
+    </comments>
+    <query.select.no.records NullValue="1" type="string"/>
+    <query.no.records.msg NullValue="1" type="string"/>
+    <brief.description type="string">MySM Component Editor - Finish</brief.description>
+    <cancel.expressions NullValue="1" sctype="array">
+      <cancel.expressions NullValue="1" type="expression"/>
+    </cancel.expressions>
+    <global.lists NullValue="1" sctype="array">
+      <global.lists NullValue="1" type="string"/>
+    </global.lists>
+    <javascript.actions NullValue="1" type="string"/>
+    <javascript.init type="string">//Set the view.url and filter url.
+var handler = new lib.MySMHelper.MySMHelperParaHandler();
+vars.$L_file.view_url = handler.generateViewURL(vars.$L_comp_table,vars.$L_comp_chart_type,vars.$L_comp_rad_query,vars.$L_comp_group);
+vars.$L_file.filter_url = handler.generateFilterURL(vars.$L_comp_filter,vars.$L_comp_table,vars.$L_comp_group);
+
+vars.$L_file.doInsert();
+
+//Add the current component to a category.
+if (vars.$L_comp_category) {
+
+	var catCom = new SCFile("uimcompdefcatscdefs");
+	catCom["category.id"]=parseInt(vars.$L_comp_category);
+	catCom["definition.id"]=vars.$L_file.id;
+	catCom.doAction("add");
+}
+</javascript.init>
+    <javascript.cancel NullValue="1" type="string"/>
+    <disable.next.previous NullValue="1" type="boolean"/>
+    <sysmodtime type="dateTime">04/01/11 13:40:00</sysmodtime>
+    <sysmoduser type="string">xingjia</sysmoduser>
+    <sysmodcount type="decimal">5</sysmodcount>
+    <disable.next NullValue="1" type="boolean"/>
+    <reset.current.file type="boolean">false</reset.current.file>
+    <disable.previous NullValue="1" type="boolean"/>
+    <formName NullValue="1" type="string"/>
+    <noPromptOnCancel NullValue="1" type="boolean"/>
+    <prev.wizard NullValue="1" sctype="array">
+      <prev.wizard NullValue="1" type="string"/>
+    </prev.wizard>
+    <prev.wizard.cond NullValue="1" sctype="array">
+      <prev.wizard.cond NullValue="1" type="boolean"/>
+    </prev.wizard.cond>
+    <previous.cond NullValue="1" type="boolean"/>
+  </record>
+</recordset>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="scmessage">
+  <record id="syslanguage=&quot;en&quot; and class=&quot;ruleset&quot; and message.id=&quot;logicalname.validation.all&quot;" recordid="en - ruleset - logicalname.validation.all">
+    <syslanguage type="string">en</syslanguage>
+    <message.id type="string">logicalname.validation.all</message.id>
+    <severity type="decimal">1</severity>
+    <message type="string">Value for %S fields are not valid. Please select correct ones.</message>
+    <class type="string">ruleset</class>
+    <comments NullValue="1" sctype="array">
+      <comments NullValue="1" type="string"/>
+    </comments>
+    <sysmodtime type="dateTime">07/16/17 17:01:33</sysmodtime>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+  </record>
+</recordset>

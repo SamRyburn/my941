@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="htmltemplates">
+  <record id="name=&quot;sd.steamlined.cancel&quot; and language=&quot;en&quot;" recordid="sd.steamlined.cancel - en">
+    <id type="string">933</id>
+    <type NullValue="1" type="string"/>
+    <name type="string">sd.steamlined.cancel</name>
+    <expression type="string">var web_url = lib.streamlined_sd_utilities.getESSWebURL($RECORD.incident_id);
+
+//var priority = lib.streamlined_sd_utilities.getPriorityLabel($RECORD.priority_code);</expression>
+    <content NullValue="1" sctype="array">
+      <content NullValue="1" type="string"/>
+    </content>
+    <module type="string">incidents</module>
+    <cap.exec NullValue="1" sctype="array">
+      <cap.exec NullValue="1" type="string"/>
+    </cap.exec>
+    <active type="boolean">true</active>
+    <htmlcode type="string">&lt;table style="WIDTH: 98%"&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;td valign="top" align="left"&gt;
+            &lt;table style="WIDTH: 600px"&gt;
+                &lt;tbody&gt;
+                    &lt;tr&gt;
+                        &lt;td valign="top"&gt;
+                        &lt;table style="HEIGHT: 267px; FONT-FAMILY: arial; WIDTH: 462px" cellspacing="10" cellpadding="10" width="462"&gt;
+                            &lt;tbody&gt;
+                                &lt;tr&gt;
+                                    &lt;td style="WIDTH: 100%" valign="top" align="left"&gt;
+                                    &lt;h1 style="FONT-SIZE: 24px; COLOR: rgb(0,51,102)"&gt;HP Service Manager&lt;/h1&gt;
+                                    &lt;table cellspacing="0" cellpadding="0" width="100%" border="0"&gt;
+                                        &lt;tbody&gt;
+                                            &lt;tr&gt;
+                                                &lt;td style="BACKGROUND-COLOR: rgb(207,224,241)" height="10" colspan="2"&gt;&amp;nbsp;&lt;/td&gt;
+                                            &lt;/tr&gt;
+                                            &lt;tr&gt;
+                                                &lt;td style="BACKGROUND-COLOR: rgb(207,224,241)" width="10"&gt;&amp;nbsp;&lt;/td&gt;
+                                                &lt;td style="FONT-FAMILY: arial; BACKGROUND-COLOR: rgb(207,224,241)"&gt;Interaction &lt;a style="FONT-FAMILY: arial; COLOR: rgb(0,0,255)" target="_blank" href="{web_url}"&gt;{$RECORD.incident_id}&lt;/a&gt; has been cancelled.&lt;/td&gt;
+                                            &lt;/tr&gt;
+                                            &lt;tr&gt;
+                                                &lt;td style="BACKGROUND-COLOR: rgb(207,224,241)" height="10" colspan="2"&gt;&amp;nbsp;&lt;/td&gt;
+                                            &lt;/tr&gt;
+                                        &lt;/tbody&gt;
+                                    &lt;/table&gt;
+                                    &lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr&gt;
+                                    &lt;td style="WIDTH: 100%" valign="top" align="left"&gt;
+                                    &lt;div style="POSITION: relative; PADDING-BOTTOM: 0px; PADDING-TOP: 0px; PADDING-LEFT: 0px; MARGIN-TOP: -24px; PADDING-RIGHT: 0px"&gt;
+                                    &lt;h2 style="FONT-SIZE: 18px; COLOR: rgb(0,51,102)"&gt;Details&lt;/h2&gt;
+                                    &lt;table style="FONT-SIZE: 11px; FONT-FAMILY: arial" cellspacing="2" cellpadding="6" width="94%" align="center"&gt;
+                                        &lt;tbody&gt;
+                                            &lt;tr bgcolor="#f8f9f9"&gt;
+                                                &lt;td width="20%" align="right"&gt;Description&lt;/td&gt;
+                                                &lt;td&gt;{$RECORD.description}&lt;/td&gt;
+                                            &lt;/tr&gt;
+                                            &lt;tr bgcolor="#eaeff3"&gt;
+                                                &lt;td align="right"&gt;Status&lt;/td&gt;
+                                                &lt;td&gt;{$RECORD.open} &lt;/td&gt;
+                                            &lt;/tr&gt;
+                                        &lt;/tbody&gt;
+                                    &lt;/table&gt;
+                                    &lt;/div&gt;
+                                    &lt;/td&gt;
+                                &lt;/tr&gt;
+                            &lt;/tbody&gt;
+                        &lt;/table&gt;
+                        &lt;div style="FONT-SIZE: 11px; FONT-FAMILY: arial; POSITION: relative; MARGIN-LEFT: 20px; MARGIN-TOP: 20px"&gt;
+                        &lt;p style="FONT-WEIGHT: bold"&gt;Service Desk Team&lt;/p&gt;
+                        &lt;p style="COLOR: rgb(153,153,153)"&gt;Sent from HP Service Manager. Do not reply to this email.&lt;/p&gt;
+                        &lt;/div&gt;
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                &lt;/tbody&gt;
+            &lt;/table&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;</htmlcode>
+    <language type="string">en</language>
+    <mandant NullValue="1" sctype="array">
+      <mandant NullValue="1" type="string"/>
+    </mandant>
+    <test.record NullValue="1" type="string"/>
+    <mail.title type="string">Interaction {$RECORD.incident_id} has been cancelled.</mail.title>
+  </record>
+</recordset>

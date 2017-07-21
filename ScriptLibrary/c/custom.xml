@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;custom&quot;" recordid="custom">
+    <name type="string">custom</name>
+    <script type="string">//Calculate Priority based on Impact and Urgency value
+   //It is called by related Rule Sets
+
+  function setPriority(impact, urgency) {
+  	var impactValue = parseInt(impact);
+  	var urgencyValue = parseInt(urgency);
+
+  	var priority = Math.floor((impactValue + urgencyValue) / 2);
+
+  	return priority.toString();
+  }
+
+   //Initialize Incident Module status dropdown list for workflow transition
+   //It is called by related Rule Sets
+
+  function INM_setStateList(WorkflowState) {
+  	var allowStatus = lib.security.getRights("Incident", "allowedStatus");
+  	if (WorkflowState == "Categorization" || WorkflowState == "Investigation")
+  		vars.$Incident_StatusValueList = ["Categorize", "Assign", "Work In Progress", "Pending Customer", "Pending Evidence", "Pending Vendor", "Pending Other", "Resolved", "Suspended"];
+  	else if (WorkflowState == "Recovery")
+  		vars.$Incident_StatusValueList = ["Work In Progress", "Pending Customer", "Pending Evidence", "Pending Vendor", "Pending Other", "Resolved", "Suspended"];
+  	else if (WorkflowState == "Review")
+  		vars.$Incident_StatusValueList = ["Work In Progress", "Resolved"];
+	else if (WorkflowState == "Closure")
+  		vars.$Incident_StatusValueList = ["Closed"];  
+  	intersect(vars.$Incident_StatusValueList, allowStatus);
+  	vars.$Incident_StatusValueList = vars.$L_tmp;
+  	vars.$Incident_StatusDisplayList= getDisplayList("probsummary",vars.$L_tmp);
+  }
+
+   //Initialize Service Desk status dropdown list for workflow transition
+   //It is called by related Rule Sets
+
+function SD_setStateList(WorkflowState, Category)
+{
+    var allowStatus=lib.security.getRights("Service Desk", "allowedStatus");
+	if(WorkflowState=="Categorization"){
+                if(Category =="service catalog")
+                        vars.$Interaction_statusValueList=["Categorize","Assign","Dispatched","Resolved","Suspended"];
+                else
+                        vars.$Interaction_statusValueList=["Categorize","Assign","In Progress","Resolved","Suspended"];
+	}		
+	else if(WorkflowState=="Work In Progress"){
+        if (Category == "incident" || Category == "request for change")
+            vars.$Interaction_statusValueList = ["Categorize", "Assign", "In Progress","Dispatched", "Resolved", "Suspended"];
+        else if (Category == "service catalog")
+            vars.$Interaction_statusValueList = ["Categorize", "Assign", "Dispatched", "Resolved", "Suspended"];
+        else
+            vars.$Interaction_statusValueList = ["Categorize", "Assign", "In Progress", "Resolved", "Suspended"];
+	}
+	else if(WorkflowState=="Review"){
+        if (Category == "incident" || Category == "request for change")
+            vars.$Interaction_statusValueList = ["Dispatched", "In Progress", "Resolved"];
+        else if (Category == "service catalog")
+            vars.$Interaction_statusValueList = ["Dispatched", "Resolved"];
+        else
+            vars.$Interaction_statusValueList = ["In Progress", "Resolved"];
+	}
+	else if(WorkflowState=="Withdrawal"){
+        if (Category == "incident" || Category == "request for change")
+            vars.$Interaction_statusValueList = ["Dispatched", "In Progress", "Withdrawal Requested"];
+        else if (Category == "service catalog")
+            vars.$Interaction_statusValueList = ["Dispatched", "Withdrawal Requested"];
+        else
+            vars.$Interaction_statusValueList = ["In Progress", "Withdrawal Requested"];
+	}
+ 
+  	else if (WorkflowState == "Logging") {
+  		vars.$Interaction_statusValueList = ["Open"];
+  	}
+  	else if (WorkflowState == "Closure") {
+  		vars.$Interaction_statusValueList = ["Closed"];
+  	}
+  	
+  	intersect(vars.$Interaction_statusValueList, allowStatus);
+  	vars.$Interaction_statusValueList = vars.$L_tmp;
+  	vars.$Interaction_statusDisplayList =getDisplayList("incidents",vars.$L_tmp);
+  }
+
+   //Initialize Problem Module status dropdown list for workflow transition
+   //It is called by related Rule Sets
+
+  function PBM_setStateList(WorkflowState, Status) {
+  	var allowStatus = lib.security.getRights("Problem", "allowedStatus");
+  	if (WorkflowState == "Logging")
+  		vars.$Problem_StatusValueList = ["Open"];
+  	else if (WorkflowState == "Categorization" &amp;&amp; Status != "Deferred")
+  		vars.$Problem_StatusValueList = ["Categorize", "Assign", "Work In Progress", "Deferred"];
+  	else if (WorkflowState == "Categorization" &amp;&amp; Status == "Deferred")
+  		vars.$Problem_StatusValueList = ["Categorize", "Assign", "Deferred"];
+  	else if (WorkflowState == "Investigation" &amp;&amp; Status != "Deferred")
+  		vars.$Problem_StatusValueList = ["Work In Progress", "Categorize", "Assign", "Deferred"];
+  	else if (WorkflowState == "Investigation" &amp;&amp; Status == "Deferred")
+  		vars.$Problem_StatusValueList = ["Work In Progress", "Deferred"];
+  	else if (WorkflowState == "Resolution" &amp;&amp; Status != "Deferred")
+  		vars.$Problem_StatusValueList = ["Work In Progress", "Pending", "Deferred", "Resolved"];
+  	else if (WorkflowState == "Resolution" &amp;&amp; Status == "Deferred")
+  		vars.$Problem_StatusValueList = ["Work In Progress", "Pending", "Deferred"];
+  	else if (WorkflowState == "Review")
+  		vars.$Problem_StatusValueList = ["Work In Progress", "Resolved"];
+  	else if (WorkflowState == "Closure")
+  		vars.$Problem_StatusValueList = ["Closed"];
+  	intersect(vars.$Problem_StatusValueList, allowStatus);
+  	vars.$Problem_StatusValueList = vars.$L_tmp;
+  	vars.$Problem_StatusDisplayList=getDisplayList("rootcause",vars.$L_tmp);
+  	
+  }
+
+   //Initialize Problem Task status dropdown list for workflow transition
+   //It is called by related Rule Sets
+
+  function PBMTask_setStateList(WorkflowState, Priority) {
+  	var allowStatus = lib.security.getRights("Problem Tasks", "allowedStatus");
+  	if (WorkflowState == "Waiting")
+  		vars.$ProblemTask_StatusValueList = ["Planned"];
+  	else if (WorkflowState == "Active" &amp;&amp; Priority &lt; 3)
+  		vars.$ProblemTask_StatusValueList = ["Ready", "Assigned", "Work In Progress", "Pending", "Pending Review"];
+  	else if (WorkflowState == "Active" &amp;&amp; Priority &gt; 2)
+  		vars.$ProblemTask_StatusValueList = ["Ready", "Assigned", "Work In Progress", "Pending"];
+  	else if (WorkflowState == "Review")
+  		vars.$ProblemTask_StatusValueList = ["Pending Review", "Work In Progress"];
+  	else if (WorkflowState == "Closure")
+  		vars.$ProblemTask_StatusValueList = ["Closed"];
+  	intersect(vars.$ProblemTask_StatusValueList, allowStatus);
+  	vars.$ProblemTask_StatusValueList = vars.$L_tmp;
+  	vars.$ProblemTask_StatusDisplayList=getDisplayList("rootcausetask",vars.$L_tmp);
+
+  }
+
+   //Initialize Incident Task status dropdown list for workflow transition
+   //It is called by related Rule Sets
+
+  function IMTask_setStateList(WorkflowState, Priority) {
+  	var allowStatus = lib.security.getRights("Incident Tasks", "allowedStatus");
+  	if (WorkflowState == "Waiting")
+  		vars.$IncidentTask_StatusValueList = ["Planned"];
+  	else if (WorkflowState == "Active" &amp;&amp; Priority &lt; 3)
+  		vars.$IncidentTask_StatusValueList = ["Ready", "Assigned", "Work In Progress", "Pending", "Pending Review"];
+  	else if (WorkflowState == "Active" &amp;&amp; Priority &gt; 2)
+  		vars.$IncidentTask_StatusValueList = ["Ready", "Assigned", "Work In Progress", "Pending"];
+  	else if (WorkflowState == "Review")
+  		vars.$IncidentTask_StatusValueList = ["Pending Review", "Work In Progress"];
+  	else if (WorkflowState == "Cancelled")
+  	    vars.$IncidentTask_StatusValueList = ["Cancelled"];
+  	else if (WorkflowState == "Closure")
+  	    vars.$IncidentTask_StatusValueList = ["Closed"];
+  	intersect(vars.$IncidentTask_StatusValueList, allowStatus);
+  	vars.$IncidentTask_StatusValueList = vars.$L_tmp;
+  	vars.$IncidentTask_StatusDisplayList = getDisplayList("imTask",vars.$L_tmp);
+
+  }
+
+  function intersect(status, allowstatus) {
+  	var intersectstatus = new SCDatum();
+  	intersectstatus.setType(lib.DataTypeConst.typeArray())
+  	if (system.functions._null(allowstatus)) {
+  		vars.$L_tmp = status;
+  		return;
+  	}
+  	vars.$L_sf = system.functions.rtecall("intersect", vars.$L_err, intersectstatus, status, allowstatus);
+  	vars.$L_tmp = intersectstatus;
+  }
+  
+  function getDisplayList(enumfield,valuelist)
+  {
+  	var language=vars.$G_my_language
+  	var displaylist=new Array();
+  	var status;
+  	if (valuelist != null) {
+  		for (i = 0, iLoopTimes = valuelist.length();i &lt; iLoopTimes;i++)
+  		{
+  	   		status=localvalue(enumfield,valuelist[i],language);
+  	   		displaylist.push(status);
+  		}
+  	}
+  	return displaylist;
+  
+  }
+  
+  
+ function localvalue(enumfield,value,language)
+ {
+	var dispLab;
+	var enumDispLab = new SCFile("scmessage");
+ 	var langQuery="class=\"local:ModuleStatus\" and syslanguage=\""+language+"\" and message.id=\""+enumfield+";"+value+"\"";
+	var defaultLangQuery="class=\"local:ModuleStatus\" and syslanguage=\"en\" and message.id=\""+enumfield+";"+value+"\"";
+	if (enumDispLab.doSelect(langQuery)==RC_SUCCESS)
+	{
+		dispLab=enumDispLab.message;
+
+	}
+	else if (enumDispLab.doSelect(defaultLangQuery)==RC_SUCCESS)
+	{
+		dispLab=enumDispLab.message;
+	} else
+	{
+	    dispLab=value;
+	}
+ 	return dispLab;
+ }</script>
+    <package type="string">BaseUtilities</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:39</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

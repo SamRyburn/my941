@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="htmltemplates">
+  <record id="name=&quot;ChM Task Pending Approval&quot; and language=&quot;en&quot;" recordid="ChM Task Pending Approval - en">
+    <id type="string">902</id>
+    <type NullValue="1" type="string"/>
+    <name type="string">ChM Task Pending Approval</name>
+    <expression type="string">//Prepare url for web access
+//#################################################################################################################
+//This is the url for index.do. if you want to generate url for ess.do, please use $L_ess_url instead
+if(vars.$L_web_url) var web_url = vars.$L_web_url;
+else var web_url = "http://test";
+
+
+//#################################################################################################################
+
+
+//#################################################################################################################
+//Generate Impact, Urgency, and Priority readable label
+
+var _priority = $RECORD.priority_code;
+var _severity = $RECORD.severity;
+var _impact = $RECORD.initial_impact;
+var _risk = $RECORD.risk_assessment;
+
+var priority="";
+var severity="";
+
+var impact="";
+var risk = "";
+
+
+switch(true)
+{
+  case _severity==1:
+        severity = "1 - Critical"; break;
+  case _severity==2:
+        severity = "2 - High"; break;
+  case _severity==3:
+        severity = "3 - Average"; break;
+  case _severity==4:
+        severity = "4 - Low"; break; 
+}
+
+
+switch(true)
+{
+  case _priority==1:
+        priority = "1 - Critical"; break;
+  case _priority==2:
+        priority = "2 - High"; break;
+  case _priority==3:
+        priority = "3 - Average"; break;
+  case _priority==4:
+        priority = "4 - Low"; break;                
+}
+
+
+
+switch(true)
+{
+  case _impact==1:
+        impact = "1 - Enterprise"; break;
+  case _impact==2:
+        impact = "2 - Site/Dept"; break;
+  case _impact==3:
+        impact = "3 - Multiple Users"; break;
+  case _impact==4:
+        impact = "4 - User"; break;         
+}
+
+switch(true)
+{
+  case _risk==0:
+        risk = "0 - No Risk"; break;
+  case _risk==1:
+        risk = "1 - Low Risk"; break;
+  case _impact==2:
+        risk = "2 - Some Risk"; break;
+  case _impact==3:
+        risk = "3 - Moderate Risk"; break;
+  case _impact==4:
+        risk = "4 - High Risk"; break;
+  case _impact==5:
+        risk = "5 - Very High Risk"; break;
+}
+
+//#################################################################################################################
+//#################################################################################################################
+//Check if system require fulll operator name.
+if( !system.functions._null( vars.$lo_ufname) ) var operator = system.vars.$lo_ufname;
+else var operator = system.vars.$lo_user_name;
+//#################################################################################################################
+
+ 
+var logical_name_disp_new= system.functions.get_display_value($RECORD, "logical.name",-1,true);</expression>
+    <content NullValue="1" sctype="array">
+      <content NullValue="1" type="string"/>
+    </content>
+    <module type="string">cm3t</module>
+    <cap.exec NullValue="1" sctype="array">
+      <cap.exec NullValue="1" type="string"/>
+    </cap.exec>
+    <active type="boolean">true</active>
+    <htmlcode type="string">&lt;table style="WIDTH: 98%"&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;td valign="top" align="left"&gt;
+            &lt;table style="WIDTH: 600px"&gt;
+                &lt;tbody&gt;
+                    &lt;tr&gt;
+                        &lt;td valign="top"&gt;
+                        &lt;table style="FONT-FAMILY: arial" cellspacing="10" cellpadding="10" width="100%"&gt;
+                            &lt;tbody&gt;
+                                &lt;tr&gt;
+                                    &lt;td style="WIDTH: 100%" valign="top" align="left"&gt;
+                                    &lt;h1 style="FONT-SIZE: 24px; COLOR: #036"&gt;HP Service Manager&lt;/h1&gt;
+                                    &lt;table cellspacing="0" cellpadding="0" width="100%" border="0"&gt;
+                                        &lt;tbody&gt;
+                                            &lt;tr&gt;
+                                                &lt;td style="BACKGROUND-COLOR: #cfe0f1" colspan="2" height="10"&gt;&amp;nbsp;&lt;/td&gt;
+                                            &lt;/tr&gt;
+                                            &lt;tr&gt;
+                                                &lt;td style="BACKGROUND-COLOR: #cfe0f1" width="10"&gt;&amp;nbsp;&lt;/td&gt;
+                                                &lt;td style="FONT-FAMILY: arial; BACKGROUND-COLOR: #cfe0f1"&gt;Task&amp;nbsp;&lt;a style="COLOR: #00f; FONT-FAMILY: arial" target="_blank" href="{web_url}"&gt;{$RECORD.number}&lt;/a&gt; phase {$RECORD.current_phase}  is pending your approval. &lt;/td&gt;
+                                            &lt;/tr&gt;
+                                            &lt;tr&gt;
+                                                &lt;td style="BACKGROUND-COLOR: #cfe0f1" colspan="2" height="10"&gt;&amp;nbsp;&lt;/td&gt;
+                                            &lt;/tr&gt;
+                                        &lt;/tbody&gt;
+                                    &lt;/table&gt;
+                                    &lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr&gt;
+                                    &lt;td style="WIDTH: 100%" valign="top" align="left"&gt;
+                                    &lt;div style="PADDING-RIGHT: 0px; MARGIN-TOP: -24px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; PADDING-TOP: 0px; POSITION: relative"&gt;
+                                    &lt;h2 style="FONT-SIZE: 18px; COLOR: #036"&gt;Details&lt;/h2&gt;
+                                    &lt;/div&gt;
+                                    &lt;/td&gt;
+                                &lt;/tr&gt;
+                            &lt;/tbody&gt;
+                        &lt;/table&gt;
+                        &lt;table style="FONT-SIZE: 11px; FONT-FAMILY: arial" cellspacing="2" cellpadding="6" width="94%" align="center"&gt;
+                            &lt;tbody&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right" width="20%"&gt;Title&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.brief_desc} &lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Description&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.description} &lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right" width="20%"&gt;Category&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.category} &lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Phase&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.current_phase} &lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;Parent Change&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.parent_change}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Parent Change Sponsor&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.coordinator}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;Task Owner&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.assigned_to}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Parent Change Initiator&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.requested_by}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;Impact Level&lt;/td&gt;
+                                    &lt;td&gt;{risk}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Priority&lt;/td&gt;
+                                    &lt;td&gt;{priority}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;Status&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.status}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Approval Status&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.approval_status}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;Alert Stage&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.alert_stage}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Planned Start&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.planned_start}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;Planned End&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.planned_end}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Configuration Item&lt;/td&gt;
+                                    &lt;td&gt;{logical_name_disp_new}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;Location&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.location}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Reference No.&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.product_no_}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;Estimated Price&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.estimate_price}&lt;/td&gt;
+                                &lt;/tr&gt;
+                            &lt;/tbody&gt;
+                        &lt;/table&gt;
+                        &lt;div style="MARGIN-TOP: 20px; FONT-SIZE: 11px; MARGIN-LEFT: 20px; FONT-FAMILY: arial; POSITION: relative"&gt;
+                        &lt;p style="FONT-WEIGHT: bold"&gt;Change Management Team&lt;/p&gt;
+                        &lt;p style="COLOR: #999"&gt;Sent from HP Service Manager. Do not reply to this email.&lt;/p&gt;
+                        &lt;/div&gt;
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                &lt;/tbody&gt;
+            &lt;/table&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;</htmlcode>
+    <language type="string">en</language>
+    <mandant NullValue="1" sctype="array">
+      <mandant NullValue="1" type="string"/>
+    </mandant>
+    <test.record type="string">T18</test.record>
+    <mail.title type="string">Task {$RECORD.number} phase {$RECORD.current_phase} is pending your approval.</mail.title>
+  </record>
+</recordset>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="eventmap">
+  <record id="evmap=&quot;icm softwarelicense&quot; and evtype=&quot;input&quot; and evseq=1 and evindex=45" recordid="icm softwarelicense - input - 1 - 45">
+    <evmap type="string">icm softwarelicense</evmap>
+    <evindex type="decimal">45</evindex>
+    <evnullsub NullValue="1" type="string"/>
+    <evmaptyp NullValue="1" type="string"/>
+    <evfile type="string">joinsoftwarelicense</evfile>
+    <evfield type="string">mtbf</evfield>
+    <evcalc NullValue="1" sctype="array">
+      <evcalc NullValue="1" type="expression"/>
+    </evcalc>
+    <evtype type="string">input</evtype>
+    <evsepchar NullValue="1" type="string"/>
+    <evdtype type="decimal">1</evdtype>
+    <evquery NullValue="1" type="boolean"/>
+    <evxlate NullValue="1" type="string"/>
+    <evinit NullValue="1" sctype="array">
+      <evinit NullValue="1" type="expression"/>
+    </evinit>
+    <evseq type="decimal">1</evseq>
+    <evlength NullValue="1" type="decimal"/>
+    <evitmlng NullValue="1" type="decimal"/>
+    <evmapcond NullValue="1" type="boolean"/>
+    <eveltype NullValue="1" type="decimal"/>
+    <sysmodcount type="decimal">7</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/01/03 09:17:51</sysmodtime>
+    <evsepchar.struc NullValue="1" type="string"/>
+  </record>
+</recordset>

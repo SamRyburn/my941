@@ -1,0 +1,785 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;changeManagement&quot;" recordid="changeManagement">
+    <name type="string">changeManagement</name>
+    <script type="string">var $ = lib.c.$;
+
+function updateRelatedErrors( record )
+{
+	var changeID = record.number;
+	var rc;
+	var relation = new SCFile("screlation");
+	
+	vars.$L_mode = "save";
+	
+	if ( relation.doSelect( "source=\"" + changeID + "\" and " +
+	                      "source.filename=\"cm3r\" and "+
+	                      "depend.filename=\"knownerror\" and "+
+	                      "depend.active = true" ) == RC_SUCCESS )
+	{
+		var errorID = relation.depend;
+		if (system.library.problemManagement.checkOpenChanges( errorID ) == false )
+		{
+			var errorRec = new SCFile("knownerror");
+			if ( errorRec.doSelect("id=\"" + errorID + "\"" ) == RC_SUCCESS )
+			{   
+			    do
+			    {
+			    	var phase = new SCFile("knownerrorphase");
+			    	if (phase.doSelect("name=\"" + errorRec.current_phase +"\"") == RC_SUCCESS )
+			    	{
+			    		if ( phase.phasechg_rfc_close == true )
+			    		{
+			    			var nextPhase = system.library.problemManagement.getNextPhase( errorRec.current_phase ,
+			    												errorRec.category, "knownerrorcat");
+			    			if ( nextPhase == errorRec.current_phase )
+			    			{
+			    				rc = errorRec.doAction("closeme");			    					
+			    			}
+			    			else
+			    			{
+			    				errorRec.resolution=system.functions.denull(errorRec.resolution);
+			    				if ( system.functions.lng(errorRec.resolution) == 0 )
+			    				{
+			    					var msg = system.functions.scmsg(162, "ScriptLibrary")
+			    					errorRec.resolution.push(msg);
+			    				}
+								rc = errorRec.doAction("nextphase");	
+							}
+								
+							if (rc == RC_CANT_HAVE || rc == 51 )
+			    					system.library.interoperabilityHelpers.rescheduleAction( record, "PM.rfc.check" )
+						}
+					}
+				}
+				while (errorRec.getNext() == RC_SUCCESS);
+	
+			}
+		};
+	}
+}
+
+//this function returns current phase sequence nmuber
+function getCurrentChangePhaseSeq(fileName, categoryName,phaseName)
+{
+	//get category
+	var category = new SCFile(fileName);
+	var queryStr = "name=\""+categoryName+"\"";
+	var returnCode = category.doSelect(queryStr);
+	var phaseList = category.phases;
+	var i=0;
+	for ( i in phaseList ) 
+	{
+		if(phaseList[i] != null &amp;&amp; phaseList[i] == phaseName)
+		{
+			return eval(i)+2;
+		}
+	}
+	//if no match, default to 1st phase
+	return 1;
+}
+
+
+//get next phase name, based on current phase
+function getNextPhaseName(fileName, categoryName, phaseName)
+{
+	var category = new SCFile(fileName);
+	var queryStr = "name=\""+categoryName+"\"";
+	var returnCode = category.doSelect(queryStr);
+	var phaseList = category.phases;
+	var i=0;
+	for ( i in phaseList ) 
+	{
+		if(phaseList[i] != null &amp;&amp; phaseList[i] == phaseName)
+		{
+			return phaseList[i+1];
+		}
+	}
+	//if no match, default to 1st phase
+	return phaseList[0];
+}
+
+//find changes that are currently in verification phase
+//whose device id is same as the one passed in
+function checkChangesForVerification()
+{
+
+	var deviceId = vars.$L_file.logical_name;
+	var cm3rSql="logical.name=\""+deviceId+"\" and current.phase=\"Verification\"";
+	var changes = new SCFile("cm3r");
+	var rc = changes.doSelect(cm3rSql);
+
+	if (rc == RC_SUCCESS)
+	{
+		do
+		{
+			var verify = verifyChange(changes);
+			rc = changes.getNext();
+		}while (rc == RC_SUCCESS);
+	}
+}
+
+function verifyChange(aChange)
+{
+	var expectedFieldNames = aChange.expected_state_field_names;
+	var expectedFieldValues = aChange.expected_state_field_values;
+	var verified = "passed";
+	for (var i=0;i&lt;expectedFieldNames.length();++i)
+	{
+		var reg = /\./g;
+		var actualValue = vars.$L_file[expectedFieldNames[i]].replace( reg, "_" );
+		if (actualValue ==  null || expectedFieldValues[i] != actualValue)
+		{
+			verified = "failed";
+			break;
+		}
+	}	
+	updateChangeVerifyStatus(aChange,verified);		
+				
+} 
+
+function updateChangeVerifyStatus(aChange,verified)
+{
+	aChange.verification = verified;
+	var rc = aChange.doUpdate(); 
+}
+
+function retrieveState(changeId, ciList )
+{
+	var ddmEvent = new SCFile("dataModEvent");
+	
+	// split to multiple arrays to avoid performance issue in case there is large number of ci list
+	var subCiList = lib.ArrayUtil.split(ciList.toArray(), 1000);
+	
+	var fieldNameArray = new Array();
+	
+	var fieldValueArray = new Array();	
+	
+	var obj = {};
+	
+	var ciLengthObj = {};
+	
+	var ddmSql="";
+	
+	for (var i = 0; i &lt; subCiList.length; i++)
+	{
+	
+		ddmSql = "linkedRecordId=\""+changeId+"\" and recordId isin {";
+		
+		var sub = subCiList[i];
+		
+		for (var j = 0; j &lt; sub.length; j++)
+		{
+			if (j &gt; 0) ddmSql += ",";
+			ddmSql += "\"" + sub[j] + "\"";					
+		}
+		ddmSql += "} and status=\"proposed\"";
+				
+		var rc = ddmEvent.doSelect(ddmSql);
+	
+		var hasState = false;
+		if (rc == RC_SUCCESS)
+		{
+			hasState = true;
+			do
+			{
+				
+				var newValue = ddmEvent.newValue;
+				
+				var fieldtype = lib.tableFunctions.getFieldType(ddmEvent.fieldName,ddmEvent.tableName);
+				
+				if(fieldtype==3){
+				
+					  newValue = system.functions.str(lib.dmeTimeConvert.formatFromISODate(newValue)) ;
+					  
+				}
+				
+				//if different values are planned for ocmmon field for multiple CIs , this field will not be loaded. 
+				if(obj[ddmEvent.fieldName]!=null &amp;&amp; obj[ddmEvent.fieldName] != newValue){
+				    rc = ddmEvent.getNext();
+					continue;		
+				 }
+				
+				obj[ddmEvent.fieldName] = newValue;
+				
+				
+				if(ciLengthObj[ddmEvent.fieldName] ==null){
+					ciLengthObj[ddmEvent.fieldName] = 1;
+				}else{
+					 
+				    ciLengthObj[ddmEvent.fieldName] = ciLengthObj[ddmEvent.fieldName] + 1;	
+				}			
+				 
+				rc = ddmEvent.getNext();
+				
+			}while (rc == RC_SUCCESS);
+		}
+	}
+	
+	
+
+	for (var i in obj) {
+	
+		fieldNameArray.push(i);
+		fieldValueArray.push(obj[i]);	
+	}
+	
+	var commonFieldNameList = lib.GetFieldNames.getAllFieldsForExpState(system.vars.$this_filename)[0].toArray(); 
+	
+	for (var i = 0 ; i &lt;fieldNameArray.length; i++ ){
+	
+		 if(lib.ArrayUtil.contains(commonFieldNameList,fieldNameArray[i]) &amp;&amp; ciLengthObj[fieldNameArray[i]]&gt;=ciList.length()){
+     	 	system.vars.$field_name=system.functions.insert(system.vars.$field_name,1,1,fieldNameArray[i]);
+	 	 	system.vars.$field_value=system.functions.insert(system.vars.$field_value,1,1,fieldValueArray[i]);
+	 	 	
+	 	 }
+	}
+			
+	return hasState;	
+}
+
+function getCloseLabel(filename, currentPhase, file)
+{
+	var catName = "cm3rcategory";
+	if(filename == "cm3t")
+		catName = "cm3tcategory";
+	var categoryFile = new SCFile(catName);
+	var rc = categoryFile.doSelect("name =  \"" + vars.$L_file.category.toString() + "\"");
+	
+	var isLastPhase = false;
+	var fLastPhase = categoryFile.phases.pop();		
+	if (fLastPhase != null &amp;&amp; currentPhase == fLastPhase.toString())
+		isLastPhase = true;
+		
+	var msgClosePhase =getEngCloseLabel(852,"cm3","Close Phase;")+ getBalloonHelp(852, "cm3");
+	var msgCloseTask = getEngCloseLabel(851,"cm3","Close Task;")+ getBalloonHelp(851, "cm3");
+	var msgCloseChange =getEngCloseLabel(850,"cm3","Close Change;")+getBalloonHelp(850, "cm3");
+	var closeLabel;
+	
+	if(isLastPhase)
+	{
+		if (filename == "cm3r")
+			closeLabel=msgCloseChange;
+		else closeLabel=msgCloseTask;
+	}
+	else closeLabel = msgClosePhase;
+	
+	//special case for Unplanned Change, phase Discovery Assessment
+	if (currentPhase == "Discovery Assessment" &amp;&amp; filename=="cm3r")
+	{
+		if (file!= null &amp;&amp; file.approval_status!=null &amp;&amp;  file.approval_status== "approved")
+			closeLabel=msgCloseChange;
+		else closeLabel=msgClosePhase;	
+	}
+	return 	closeLabel;	 
+}
+
+function getBalloonHelp(messageNumb,messageClass)
+{
+	var ret="";
+	var tempstr=system.functions.scmsg( messageNumb, messageClass);
+	if(tempstr.indexOf(";")&gt;=0)
+	{
+		ret= tempstr.split(";")[1];
+	}
+	return ret;
+}
+
+function getEngCloseLabel(messageNumb,messageClass,defaultvalue)
+{
+	var ret="";
+	var messFile = new SCFile("scmessage");
+	var rc = messFile.doSelect("class=\"" + messageClass + "\" and message.id=" + messageNumb + " and syslanguage=\"en\"");
+	if (rc == RC_SUCCESS)
+	{
+		var tmpstr = messFile.message;
+		if(tmpstr.indexOf(";")&gt;0)
+		{
+			ret = tmpstr.split(";")[0]+";";
+		}
+		else
+		{
+			ret = tmpstr;
+		}
+	}
+	else
+	{
+		ret=defaultvalue;
+	}
+	return ret;
+}
+
+function checkTaskAvailChangePhase(taskCategory,changeNumber){
+	var rtv=false;
+	var availPhases=taskCategory['request.phases'];
+	if(null===availPhases || system.functions._null(availPhases) ||system.functions._null(changeNumber)){
+		rtv=true;
+	}
+	else{
+		var chg=new SCFile("cm3r");
+		var sql="number=\""+changeNumber+"\"";
+		if (chg.doSelect(sql)== RC_SUCCESS){
+			var currentPhase=chg['current.phase'];
+			for(var i=0;i&lt;availPhases.length();i++){
+				if(currentPhase===availPhases[i]){
+					rtv=true;
+					break;
+				}
+			}
+		}
+		
+	}
+	return rtv;
+}
+
+function verifyChangeCategory(change)
+{
+    if (change.category == null)
+    {
+        return false;
+    }
+
+    var category = new SCFile("cm3rcategory");
+	//add for QCCR1E112452, Cannot open new Change Task via SOAP request
+	if ( system.functions.filename(  change) ==  "cm3t"  ) {
+		category = new SCFile ("cm3tcategory" );
+	}
+    var rc = category.doSelect("name=\""+change.category+"\"");
+    
+    if (rc == RC_SUCCESS)
+    {
+        // add for QCDefect 99137 to check task's Available change phase
+		if ( system.functions.filename( change) ==  "cm3t"  ) {
+			if(!checkTaskAvailChangePhase(category,change['parent.change'])){
+				return false;
+			}
+		}
+		
+        if (system.functions.index("SysAdmin", vars.$lo_ucapex)&gt;0 || system.functions.index("ChMAdmin", vars.$lo_ucapex)&gt;0 || system.functions.evaluate(system.functions.nullsub(category.avail_cond, false)))
+        {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+function createRecord()
+{
+	var argNames = new SCDatum();
+	var argVals = new SCDatum();
+	var argTypes = new SCDatum();
+	var results = new SCDatum();
+	
+	
+	if (!verifyChangeCategory(vars.$L_file))
+	{
+		vars.$L_exit="normal";
+		if(system.functions.filename(vars.$L_file)==="cm3t"){
+			system.functions.msg(system.functions.scmsg(1002, "cm3"));
+		}
+		else{
+			system.functions.msg(system.functions.scmsg(1001, "cm3"));
+		}
+	    return;
+	}
+
+
+	argNames.setType(8); 
+	argVals.setType(8);      
+	argTypes.setType(8);
+	results.setType(8);
+ 
+	argNames.push("file");     
+	argNames.push("name");     
+	argNames.push("boolean1");  
+	argNames.push("names");
+	argNames.push("values");
+
+	argVals.push(vars.$L_file);
+	argVals.push("cm.open");
+	argVals.push("true");
+	argVals.push("{$L.exit}");
+	argVals.push("{}");
+
+	argTypes.push(6);
+	argTypes.push(2);
+	argTypes.push(4);
+	argTypes.push(8);
+	argTypes.push(8);
+
+	results.push("values");
+
+	var radResults = system.library.RAD.run( "se.call.process", argNames, argVals, argTypes, results );
+	vars.$L_exit = radResults.results[0].pop();
+
+	if ( vars.$L_exit == "bg" )
+		vars.$L_exit="normal"
+}
+
+/**
+ * check if current phase is the last phase
+ */
+function isInLastPhase(change)
+{
+	var filename = system.functions.filename(change);
+
+	if (filename == "cm3r" &amp;&amp; change.category == "Unplanned Change" &amp;&amp; change.current_phase == "Discovery Assessment" &amp;&amp; change.approval_status == "approved")
+		return true;
+				
+	var category = null;
+	if (filename == "cm3r")
+		category = new SCFile("cm3rcategory");
+	else if (filename == "cm3t")
+		category = new SCFile("cm3tcategory");
+		
+	var sql = "name = \"" + change.category + "\"";	
+	var rc = category.doSelect(sql);
+	
+	if (rc != RC_SUCCESS)
+		return false;
+		
+	var phases = category.phases;
+	if (phases == null || phases.length()==0)
+		return true;
+		
+	return (phases[phases.length()-1] == change.current_phase);
+
+}
+/**
+ * check if current phase is the last phase in workflow
+ */
+function isInLastWfPhase(change)
+{
+	 var category="";
+	 var workflow="";
+	 var nextPhase="";	 	
+	 var catRec = new SCFile("cm3rcategory");		
+	 catRec.doSelect("name=\""+change.category+"\"");
+ 	 workflow=catRec.workflow;
+	 var wfPhase = new SCFile("WorkflowPhase");
+	 wfPhase.doSelect("workflowName=\""+workflow+"\" and tableName=\"cm3r\" and phaseName=\""+change.current_phase+"\"");
+	 var len=system.functions.lng(system.functions.denull(wfPhase.manualTransition));
+	 if(len&gt;0){
+	 	return false;
+	 }
+	 
+	 return true;
+}
+
+/**
+ * check if given change is closed
+ */
+function isChangeClosed(changeNum)
+{
+	var change = new SCFile("cm3r", SCFILE_READONLY);
+	change.setFields("status open");
+	var sql = "number = \"" + changeNum + "\"";
+	var rc = change.doSelect(sql);
+	if (rc != RC_SUCCESS)
+		return false;
+	else {
+		/* Closed Change: status=="closed", open==false */
+		return change.status=="closed" &amp;&amp; !change.open;
+	}
+}
+
+/**
+ * check if current change phase matches the task category
+ */
+function isPhaseMatched(changeNum, taskCategory)
+{
+	var change = new SCFile("cm3r", SCFILE_READONLY);
+	change.setFields("current_phase");
+	var sql = "number = \"" + changeNum + "\"";
+	var rc = change.doSelect(sql);
+	if (rc != RC_SUCCESS)
+		return false;
+	var changePhase = change.current_phase;
+	
+	var taskCat = new SCFile("cm3tcategory", SCFILE_READONLY);
+	taskCat.setFields("request_phases");
+	sql = "name = \"" + taskCategory + "\"";
+	rc = taskCat.doSelect(sql);
+	if (rc != RC_SUCCESS)
+		return false;
+	var phases = taskCat.request_phases;
+	for (var i = 0; i &lt; phases.length(); ++i)
+		if (changePhase == phases[i])
+			return true;
+	return false;
+}
+
+
+/**
+ * Return the phase record for the passed phase name
+ */
+function getPhaseRecord( name, type )
+{
+	if ( type != "cm3t" )
+		type = "cm3r";
+	var filename = type+"catphase";
+	
+	var phase = new SCFile( filename );
+	var sql = "name=\""+name+"\"";
+	var rc = phase.doSelect( sql );
+	
+	return phase;
+
+}	
+
+/*******************************************************************************************************************************************
+function closeChange(): This function would close a change if there is a transition available from a particular phase to Closure/Closed phase.
+If there is a transition available to Abandoned phase and not Closure phase, then the change would be moved to Abandoned phase. If a change
+phase has a transition to both Abandoned phase as well as Closure phase, then the transition to Closure phase would be taken.
+
+*******************************************************************************************************************************************/
+
+
+function closeChange()
+{
+	if (vars.$L_file!=null)
+	{	     
+		 var category="";
+		 var workflow="";
+		 var nextPhase="";	 	
+	 	  	 	 	 	 
+	 	 	
+	 	 var catRec = new SCFile("cm3rcategory");		
+	 	 catRec.doSelect("name=\""+vars.$L_file.category+"\"");
+	 
+	 	 workflow=catRec.workflow;
+	 	  	
+		 var wfPhase = new SCFile("WorkflowPhase");
+		 wfPhase.doSelect("workflowName=\""+workflow+"\" and tableName=\"cm3r\" and phaseName=\""+vars.$L_file.current_phase+"\"");
+	    
+		 for(i=0;i&lt;wfPhase.manualTransition.length();i++)
+		 {
+			if(wfPhase.manualTransition[i].mtToPhase!=null &amp;&amp; wfPhase.manualTransition[i].mtToPhase!="")
+			{		
+		 		if(wfPhase.manualTransition[i].mtToPhase.toUpperCase()=="ABANDONED") 	
+		 		{		 		
+		 	 		action=wfPhase.manualTransition[i].mtOptionName;	
+		 		}
+		 		if(wfPhase.manualTransition[i].mtToPhase.toUpperCase()=="CLOSURE" || wfPhase.manualTransition[i].mtToPhase.toUpperCase()=="CLOSED" )
+		 		{
+		 	 		action=wfPhase.manualTransition[i].mtOptionName;
+		 	 		break;
+		 		}  		 
+		 	}
+		 }
+		 if(action!="" &amp;&amp; action!=null)
+		 {
+		   	/*
+		   	 * QCCR75860:
+		   	 *   Get unreasonable SOAP response in API 'CloseChange' webservice
+		   	 * QCCR75495: 
+		   	 *   In web service,when 'closeChange',the response's status will return 'success' even if there're error mesaage in the reponse and not really close it
+		   	 * 
+		   	 */
+		 	var file = new SCFile();
+		 	
+		 	system.functions.fduplicate( file, vars.$L_file );
+		 	
+		 	switch( file.doAction( action ) ) {
+		 	
+		   	case RC_VALIDATION_FAILED: case 71:
+		   	
+		   		vars.$L_exit="badval";
+		   		break;
+		   		
+		   	case RC_MODIFIED: case 51:
+		   	
+		   		vars.$L_exit = "changed";
+		   		break;
+		   		
+		   	case RC_CANT_HAVE: case 3:
+		   	
+		   		vars.$L_exit = "locked";
+		   		break;
+		   		
+		   	case RC_ERROR:
+		   	
+		   		vars.$L_exit = "error";
+		   		break;
+		   		
+		   	default:
+		   		// copy the state back into $L.file
+		   		var fields = lib.FileUtil._field( system.functions.filename( vars.$L_file ) ).getFirstLevelFieldNames();	
+		   		system.functions.recordcopy( file, fields, vars.$L_file, fields ); 		
+		   		vars.$L_exit = "normal";
+		   		
+		   	}
+
+
+		 }
+		 
+	}
+
+}
+
+/*******************************************************************************************************************************************
+function nextChangePhase(): This function would move a change to next available phase. The exceptions are Abandoned, Backout and Closure/Closed 
+phases.
+*******************************************************************************************************************************************/
+
+
+function nextChangePhase()
+{
+
+
+	if (vars.$L_file!=null)
+	{	     
+		 var category="";
+		 var workflow="";
+		 var nextPhase="";
+	 	 
+	 	  	 	 	 	 
+	 	 	
+	 	 var catRec = new SCFile("cm3rcategory");		
+	 	 catRec.doSelect("name=\""+vars.$L_file.category+"\"");
+	 
+	 	 workflow=catRec.workflow;
+	 	  	
+		 var wfPhase = new SCFile("WorkflowPhase");
+		 wfPhase.doSelect("workflowName=\""+workflow+"\" and tableName=\"cm3r\" and phaseName=\""+vars.$L_file.current_phase+"\"");
+	     
+		 for(i=0;i&lt;wfPhase.manualTransition.length();i++)
+		 {
+		 	if(wfPhase.manualTransition[i].mtToPhase!=null &amp;&amp; wfPhase.manualTransition[i].mtToPhase!="")
+		 	{
+		  		if(wfPhase.manualTransition[i].mtToPhase.toUpperCase()!="ABANDONED" &amp;&amp; wfPhase.manualTransition[i].mtToPhase.toUpperCase()!="BACKOUT" &amp;&amp; wfPhase.manualTransition[i].mtToPhase.toUpperCase()!="CLOSURE" &amp;&amp; wfPhase.manualTransition[i].mtToPhase.toUpperCase()!="CLOSED")
+		 		{
+		 			vars.$L_file.doAction(wfPhase.manualTransition[i].mtOptionName);
+		  			break;
+		 		}  		 
+		 	}
+		 }
+		 
+	}	 	
+
+	vars.$L_exit="normal";
+	
+}	
+
+
+/*******************************************************************************************************************************************
+function closeTask(): This function would close a task if there is a transition available from a particular phase to Closed phase. If 
+there is a transition available to Cancelled phase and not Closed phase, then the task would be moved to Cancelled phase. If a task
+phase has a transition to both Cancelled phase as well as Closed phase, then the transition to Closed phase would be taken.
+
+*******************************************************************************************************************************************/
+
+
+function closeTask()
+{
+	if (vars.$L_file!=null)
+	{	     
+		 var category="";
+		 var workflow="";
+		 var nextPhase="";	 	
+	 	  	 	 	 	 
+	 	 	
+	 	 var catRec = new SCFile("cm3tcategory");		
+	 	 catRec.doSelect("name=\""+vars.$L_file.category+"\"");
+	 
+	 	 workflow=catRec.workflow;
+	 	  	
+		 var wfPhase = new SCFile("WorkflowPhase");
+		 wfPhase.doSelect("workflowName=\""+workflow+"\" and tableName=\"cm3t\" and phaseName=\""+vars.$L_file.current_phase+"\"");
+	    
+		 for(i=0;i&lt;wfPhase.manualTransition.length();i++)
+		 {
+			if(wfPhase.manualTransition[i].mtToPhase!=null &amp;&amp; wfPhase.manualTransition[i].mtToPhase!="")
+			{
+		 		if(wfPhase.manualTransition[i].mtToPhase.toUpperCase()=="CANCELLED") 	
+		 		{		 		
+		 	 		action=wfPhase.manualTransition[i].mtOptionName;	
+		 		}
+		 		if(wfPhase.manualTransition[i].mtToPhase.toUpperCase()=="CLOSED")
+		 		{
+		 	 		action=wfPhase.manualTransition[i].mtOptionName;
+		 	 		break;
+		 		}  		 
+		 	}
+		 }
+		 if(action!="" &amp;&amp; action!=null)
+		 {
+		   	vars.$L_file.doAction(action);
+		 }
+		 
+	}
+	vars.$L_exit="normal";	 	
+
+}
+
+
+/*******************************************************************************************************************************************
+function nextTaskPhase(): This function would move a task to next available phase. The exceptions are Cancelled and Closed phases.
+*******************************************************************************************************************************************/
+
+
+
+function nextTaskPhase()
+{
+
+
+	if (vars.$L_file!=null)
+	{	     
+		 var category="";
+		 var workflow="";
+	 	 var nextPhase="";
+	 	 	
+	 	 var catRec = new SCFile("cm3tcategory");		
+	 	 catRec.doSelect("name=\""+vars.$L_file.category+"\"");
+	 
+	 	 workflow=catRec.workflow;
+	 	  	
+		 var wfPhase = new SCFile("WorkflowPhase");
+		 wfPhase.doSelect("workflowName=\""+workflow+"\" and tableName=\"cm3t\" and phaseName=\""+vars.$L_file.current_phase+"\"");
+	     
+		 for(i=0;i&lt;wfPhase.manualTransition.length();i++)
+		 {
+		 	if(wfPhase.manualTransition[i].mtToPhase!=null &amp;&amp; wfPhase.manualTransition[i].mtToPhase!="")
+		 	{
+		  		if(wfPhase.manualTransition[i].mtToPhase.toUpperCase()!="CANCELLED" &amp;&amp; wfPhase.manualTransition[i].mtToPhase.toUpperCase()!="CLOSED")
+		 		{
+		 	
+		 		   vars.$L_file.doAction(wfPhase.manualTransition[i].mtOptionName);
+		  			break;
+		 		}  		 
+		 	}
+		 }
+		 
+	}	 	
+
+	vars.$L_exit="normal";
+	
+}
+
+
+/**
+ * This function is used to transform legacy OOB view format to new OOB PD view format.
+ * @param  {String} format The format name
+ * @return {String}        format name
+ */
+function transDispFmt(format){
+	return (format === "sc.manage.cmr" || format === "sc.manage.cmr.g")?"sc.manage.chm":format
+}
+
+/**
+ * This function is used to get phase display value.
+ * @param  {SCFile} record change record
+ * @return {String}        display value
+ */
+function phaseName(record){
+	return $("#datadictService").displayValue(record,"current.phase");
+}</script>
+    <package type="string">ChangeManagement</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:38</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

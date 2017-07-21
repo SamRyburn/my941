@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;IDOLRequest&quot;" recordid="IDOLRequest">
+    <name type="string">IDOLRequest</name>
+    <script type="string">/**
+ * This script is used for sm-idol integration communication
+ * 
+ * it will send http request to idol server
+ * when response status is not 'SUCCESS', it will treat it as a error response,
+ * write log and throw exceptions
+ * 
+ * recommend to use doPost, because idol get and post are doing the same thing
+ * and post doesn't have size limitation
+ */
+var _ = lib.Underscore.require(),
+    XQuery = lib.XQuery.require(),
+    scmsg = system.functions.scmsg;
+
+var logger = getLog('IDOLRequest');
+
+var ChannelFactory = (function() {
+  function createChannel() {
+    var Config = lib.IDOLConfigure.require();
+    var type = Config.getAPIChannel();
+    return type === 'oem' ?
+      lib.IDOLOEMAPIChannel.require():
+      lib.IDOLHTTPChannel.require();
+  }
+  return {
+    create : createChannel
+  };
+})();
+
+var IDOLRequest = (function() {
+  
+  function doRequest(method, endpoint, params) {
+    try {
+      var channel = ChannelFactory.create();      
+      var handler = channel[method],
+          response = handler(endpoint, params);
+      return handleResponse(response);
+    } catch (e) {
+      logger.error(e);
+      throw e;
+    }
+  }
+
+  function doGet(endpoint, params) {
+    return doRequest('doGet', endpoint, params);
+  }
+
+  function doPost(endpoint, params) {
+    return doRequest('doPost', endpoint, params);
+  }
+
+  /*
+   * The IDOL response message format is like: 
+   * 
+   * &lt;autnresponse xmlns:autn="http://schemas.autonomy.com/aci/"&gt;
+   * &lt;action&gt;XXXXX&lt;/action&gt;
+   * &lt;response&gt;XXXXX&lt;/response&gt;
+   * &lt;responsedata&gt;
+   *  ......
+   * &lt;/responsedata&gt;
+   * &lt;/autnresponse&gt;
+   */
+  function handleResponse(response) {
+    var doc = new XML();
+    doc.setContent(response);
+    
+    var status = XQuery.queryText('response', doc);
+    if (status === 'ERROR') {
+      logger.error(response);
+      var obj = XQuery.queryOne('responsedata/error', doc),
+          errorstring = XQuery.queryText('errorstring', obj),
+          errordescription = XQuery.queryText('errordescription', obj);
+      var msg = [errorstring, errordescription].join('\n');
+      var error = new Error(msg);
+      error.xml = doc;
+      throw error;      
+    } else if (status !== 'SUCCESS') {
+      logger.error(response);
+      // scmsg: Invalid status: "%S". Please refer log for details
+      var failure = new Error(scmsg(1003, 'idol', [status]));
+      failure.xml = doc;
+      throw failure;
+    }
+    return doc;
+  }
+  
+  // In fact, in IDOL get and post are doing the same thing.
+  return {
+    doIDOLGet : doGet,
+    doIDOLPost : doPost
+  };
+})();
+
+function require() {
+  return IDOLRequest;
+}
+</script>
+    <package type="string">IDOL</package>
+    <sysmodtime type="dateTime">11/12/14 15:39:15</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">31</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

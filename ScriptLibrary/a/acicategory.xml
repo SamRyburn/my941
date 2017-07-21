@@ -1,0 +1,6289 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;acicategory&quot;" recordid="acicategory">
+    <name type="string">acicategory</name>
+    <script type="string">var CONSTANT = lib.IDOL_Constant,
+  ExceptionLib = lib.IDOLCategoryException,
+  CategoryUtilLib = lib.IDOLCategoryUtil;
+
+/*
+* This function is to do the auto fill by a text and existed level1 field value and level2 field value
+*/
+function getCategoryByText(adapterid, numresult, text, level1Value, level2Value, company)
+{
+  var result = new Array();
+  ExceptionLib.setLastSuggestException(null);
+  
+  if (text == null || text == "") {
+    print("input parameter text is empty!");
+    return result;
+  }
+  
+  var adapter = new SCFile(CONSTANT.getCategoryConfigFileName());
+  rc = adapter.doSelect("adapter.id="+adapterid);
+  if (rc != RC_SUCCESS ) {
+    print("Can't find any category configuration");
+    return result;
+  }
+   
+  if (adapter.is_active == null || adapter.is_active == false) {
+    print("Category configuration " +adapterid+" is inactive now.");
+    return result;
+  }
+  
+  var inc_ar = getDataCleanPattens(adapter.table_name, "Include");
+  var exc_ar = getDataCleanPattens(adapter.table_name, "Exclude");
+  var rm_ar = getDataCleanPattens(adapter.table_name, "Remove");
+  text = lib.IDOLDataCleansing.require().cleanData(text, inc_ar, exc_ar, rm_ar);
+  
+  result = getCategory(adapter, null,  text, numresult, level1Value, level2Value, company);
+  
+  return result;
+}
+
+
+/*
+* This function is to do the auto fill by a scfile record.
+*/
+function getCategoryByContent(file,adapterid,numresult,company)
+{
+  var result = [];
+  ExceptionLib.setLastSuggestException(null);
+  
+  var adapter = new SCFile(CONSTANT.getCategoryConfigFileName());
+  rc = adapter.doSelect("adapter.id=" + adapterid);
+  if (rc != RC_SUCCESS ) {
+    print(system.functions.scmsg("getCategoryByContent_4","acicategory"));
+    return result;
+  }
+  if (adapter.is_active == null || adapter.is_active == false) {
+    print(system.functions.scmsg("getCategoryByContent_5","acicategory",[adapterid]));
+    return result;
+  }
+   
+    //try to get the source fields
+  var sourcefields = [];
+  if (adapter.content_fields != null) {
+    sourcefields = adapter.content_fields.toArray();
+  }
+  var content ="";
+  // get data cleansing config
+  var inc_ar = getDataCleanPattens(adapter.table_name, "Include");
+  var exc_ar = getDataCleanPattens(adapter.table_name, "Exclude");
+  var rm_ar = getDataCleanPattens(adapter.table_name, "Remove");
+  
+  if (adapter.title_field != null &amp;&amp; adapter.title_field != ""  &amp;&amp; false == lib.jsaci.isExistingInArray(sourcefields,adapter.title_field) ){
+    sourcefields.unshift(adapter.title_field);
+  }
+  
+  //Composite content
+  for (var i = 0; i &lt; sourcefields.length; i++) {
+    if(content != "") {
+      content += "\n";
+    }
+    var nm = sourcefields[i].replace(/\./g,"_");
+    content += lib.IDOLDataCleansing.require().cleanData(CategoryUtilLib.getObjectString(file[nm]), inc_ar, exc_ar, rm_ar);
+   }
+   
+  if (adapter.rule_field != null &amp;&amp; adapter.rule_field!="") {
+    content += " "+ lib.IDOLCategoryRuleBase.getRuleBaseValue(file,adapter.rule_field);
+  }
+  
+  if (content == "") {
+    print(system.functions.scmsg("getCategoryByContent_6","acicategory",[adapterid]));
+    return result;
+  }
+  // get given category if existing
+  
+  //get level1fielvalue and level2fieldvalue
+  var categroyfield = adapter.level1_field;
+  categroyfield = categroyfield.replace(/\./g,"_");
+  var strcategory = file[categroyfield];
+  var strsubcategory = null;
+
+  if (strcategory != null &amp;&amp; strcategory !="" &amp;&amp; adapter.level2_field != null &amp;&amp; adapter.level2_field != "" ) {
+    if (adapter.level3_field != null &amp;&amp; adapter.level3_field !="") {
+      var subfield = adapter.level2_field;
+      subfield = subfield.replace(/\./g,"_");
+      strsubcategory = file[subfield];
+    }
+    }
+  
+  result = getCategory(adapter, file, content, numresult, strcategory, strsubcategory, company);
+
+  return result;
+}
+
+/*
+* Call IDOL to do Auto fill
+*/
+function getCategory(adapter, file,  content, numresult, level1Value, level2Value, company){
+  var result = [];
+  
+  var schema = -1;
+  var taxonomy ="";
+  var adapterid = adapter.adapter_id;
+  
+  var fcate = new SCFile(CONSTANT.getCategoryFileName());
+  var subgroup = 0;
+  var rc = fcate.doSelect("parentid=0 and groupid=" + adapterid); // already index finish
+  if (rc == RC_SUCCESS) {
+    schema = fcate.id;
+    taxonomy = fcate.name;
+  } else {
+    print(system.functions.scmsg("getCategoryByContent_1","acicategory")); //No suggestion due to not training yet
+    return result;
+  }
+  
+  // validate mutilcompany
+  var ismulticompany = false;
+  if (fcate.subgroup &gt; 0) {
+    ismulticompany = true;
+  }
+  if (company &amp;&amp; company != "") {
+    if (ismulticompany) {
+      taxonomy = fcate.name + "_" + company;
+    } else {
+      print(system.functions.scmsg("getCategoryByContent_2","acicategory")); //Can't find any category training information for special company!
+      return result;
+    }
+  } else if (ismulticompany) {
+    print(system.functions.scmsg("getCategoryByContent_3","acicategory")); //Can't find any category training informaion due to miss parameter company!
+    return result;
+  }
+  
+  // validate numresult
+  var nresult = numresult;
+  if (numresult &lt;= 0) {
+    nresult = 1;
+  }
+  
+  // get subgroup and schema
+  var givenschema = -1;
+  if (level1Value != null &amp;&amp; level1Value != "" &amp;&amp; adapter.level2_field != null &amp;&amp; adapter.level2_field != "" ) {
+    if (company != null &amp;&amp; company != "" ) {
+      subgroup = findSubGroupByName(adapterid, company);
+    }
+    givenschema = findSchemaByName(level1Value, level2Value, adapter.adapter_id, subgroup);
+  }
+
+  //call query category
+  var ar = new Array();
+  var catenames  = new Array();
+  var ids = lib.jsaci.queryCategory(content, ar, givenschema, taxonomy, nresult, catenames);
+  
+  if (ids == null) {
+    print(system.functions.scmsg("getCategoryByContent_7","acicategory")); //Fail to connect to IDOL server!
+    ExceptionLib.setLastSuggestException(system.functions.scmsg("getCategoryByContent_7","acicategory"));
+    return result;
+  } else if (ids.length == 1 &amp;&amp; ids[0]==0) {
+    print(system.functions.scmsg("getCategoryByContent_8","acicategory",[adapterid])); //No suggestion due to wrong parameter or configuration!
+    return result;
+  }
+  
+  //if no category found, call suggest category
+  if (ids.length == 0) {
+    var suggestar = lib.jsaci.suggestCategory(content,taxonomy,getCategoryIDOLDatabase(adapter.table_name, adapter.category_group_name, company), adapter.level1_field, adapter.level2_field, adapter.level3_field, nresult);
+    if (suggestar == null) {
+      print(system.functions.scmsg("getCategoryByContent_7","acicategory")); //Fail to connect to IDOL server!
+      ExceptionLib.setLastSuggestException(system.functions.scmsg("getCategoryByContent_7","acicategory"));
+      return result;
+    }
+    result = suggestar;
+    if (suggestar.length == 0) {
+      var mysql = "traincount &gt;0 and groupid=" + adapterid;
+      if (givenschema != -1 &amp;&amp; level1Value != null &amp;&amp; level1Value != "" ) {
+        mysql += " and category=\"" + level1Value + "\"";
+      }
+      if (givenschema != -1 &amp;&amp; level2Value != null &amp;&amp; level2Value != "" ) {
+        mysql += " and subcategory=\"" + level2Value + "\"";
+      }
+      if (company != null &amp;&amp; company != "" ) {
+        subgroup = findSubGroupByName(adapterid,company);
+        mysql +=" and subgroup=" + subgroup;
+      }
+      
+      var sortOrder = new Array(SCFILE_DSC,SCFILE_DSC);
+      var sortFields = new Array("sourcecount", "id");
+      fcate.setOrderBy(sortFields, sortOrder);
+      rc = fcate.doSelect(mysql);
+      var quar=[];
+      if (rc == 0) {
+        quar.push(fcate.category);
+        if (adapter.level2_field != null &amp;&amp; adapter.level2_field != "") {
+          quar.push(fcate.subcategory);
+        }
+        if(adapter.level3_field != null || adapter.level3_field != "") {
+          quar.push(fcate.product_type);
+        }
+        result.push(quar);
+      }
+    }
+    
+    if (result == null || result.length==0) {
+      print(system.functions.scmsg("getCategoryByContent_9","acicategory",[adapterid])); //No suggestion due to no category matched
+    }
+    
+    return result;
+  }
+  
+  if ((adapter.level2_field == null || adapter.level2_field == "") &amp;&amp; (adapter.level3_field == null || adapter.level3_field == "")) {
+    //is only one field
+    for (var i = 0; i &lt; catenames.length; i++) {
+      var a_ar = new Array();
+      a_ar.push( lib.jsaci.decodeStringForCategory(catenames[i]));
+      result.push(a_ar);
+    }
+    return result;
+  }
+  
+  for (var i = 0; i &lt; ids.length &amp;&amp; i &lt; nresult; i++) {
+    var cntar = queryCategoryDetail(ids[i]);
+    result.push(cntar);
+  }
+  return result;
+}
+
+
+function removeTrainingData(fadapter,company)
+{
+    myPrint("Warning: all old data will be removed!!!");
+    if(company != null &amp;&amp; company !="" &amp;&amp; company != undefined)
+    {
+       cleanSubGroupTraining(fadapter.adapter_id,company)
+    }
+    else
+    {
+       removeOneCategoryGroup(fadapter.adapter_id);
+      
+    }
+    fadapter.status = -1;
+    
+    fadapter.doUpdate();
+}
+function cleanOldData(fadapter,company)
+{
+   var fcategory = new SCFile(CONSTANT.getCategoryFileName());
+   var rc = fcategory.doSelect("groupid="+fadapter.adapter_id +" and parentid=0");
+   var status = -1;
+   var needclean = false;
+   if( rc == RC_SUCCESS)
+   {
+     var sql ="";
+     if(company != null &amp;&amp; company !="" &amp;&amp; company != undefined)
+     {
+       sql = "groupid="+fadapter.adapter_id+" and parentid="+fcategory.id+ " and name=\""+company+"\"";
+       var hs = fcategory.doSelect(sql);
+       if(hs == RC_SUCCESS)
+       {
+         status = fcategory.status;
+       }
+     }
+     else
+     {
+       status = fcategory.status;
+     }
+     
+     if(status ==4)
+     {
+       needclean = true;
+     }
+     else if( status == 2 &amp;&amp; (fadapter.rm_low_weight==null || fadapter.rm_low_weight != true) 
+              &amp;&amp; (fadapter.adjust_term ==null || fadapter.adjust_term != true) )
+     {
+       needclean = true;
+     }
+     else if(status ==3 &amp;&amp; (fadapter.adjust_term ==null || fadapter.adjust_term != true) )
+     {
+       needclean = true;
+     }
+  }
+  if(needclean)
+  {
+    myPrint("Warning: training already finished, but launch it again, it will cause a full re-training, all old data will be removed!!!");
+    if(company != null &amp;&amp; company !="" &amp;&amp; company != undefined)
+    {
+       cleanSubGroupTraining(fadapter.adapter_id,company)
+    }
+    else
+    {
+       removeOneCategoryGroup(fadapter.adapter_id);
+      
+    }
+    fadapter.status = -1;
+    
+    fadapter.doUpdate();
+  }
+}
+
+function cleanSubGroupTraining(groupid,subgroupname)
+{
+  lib.jsaci.setIDOLServer(null);
+  var subgroup= findSubGroupByName(groupid,subgroupname);
+  if(subgroup&gt;0)
+  {
+    if(removeOneCategorySubGroup2(groupid,subgroup))
+    {
+    
+     
+    }
+  }
+  
+  var f = new SCFile(CONSTANT.getSubGroupStatusFileName());
+  rc = f.doSelect("adapter.id="+groupid+" and security.id=\""+subgroupname+"\"");
+  if(rc == RC_SUCCESS)
+  {
+    f.subgroup_id = null;
+    f.testing_status = -1;
+    f.testing_status_desc="Not start yet";
+    f.training_status = -1;
+    f.training_status_desc = "Not start yet";
+    f.first_accuracy = null;
+    f.total_three_accuracy = null;
+    f.doUpdate();
+  }
+}
+
+
+//strcompanies is string contain "," 
+function createAndTrainingOneCategoryGroup(groupid,strcompanies)
+{
+  myPrint("calling createAndTrainingOneCategoryGroup with "+ groupid + " compnaies:"+strcompanies);
+  ExceptionLib.setLastTrainingException(null);
+  var f = new SCFile(CONSTANT.getCategoryConfigFileName());
+  var rc = f.doSelect("adapter.id="+groupid);
+  if(rc != RC_SUCCESS)
+  {
+    myPrint("No such configuration for "+groupid+", nothing to do...");
+    ExceptionLib.setLastTrainingException("Configuration revcord was removed");
+    return -1;
+  }
+  
+  if( f.content_fields == null || f.table_name == null || f.table_name=="" || f.level1_field==null || f.level1_field=="" ||
+      f.category_group_name == null || f.training_doc_number == null || f.training_doc_number&lt;1)
+  {
+    myPrint("miss information,no content fields, no training document,or no file name or all category fields is empty, ignore auto categorization for adapter id "+groupid);
+    ExceptionLib.setLastTrainingException("Wrong configuration for adapter id "+groupid);
+    return -2;
+      
+  }
+  var idoldb = "";
+  var sourcefields = f.content_fields.toArray();
+  var testpercentage = parseInt(f.test_sample_percentage);
+    
+  if( CONSTANT.getCategoryFileName() == "cate2idol2")
+  {
+    lib.jsaci.setIDOLIndexServer("");
+    lib.jsaci.setIDOLServer("");
+    setDataCleanPattens(null);
+  }
+  var isserverokay = lib.jsaci.checkCategoryStatus(0);
+  var iwait = 0;
+  while(isserverokay == false &amp;&amp; iwait &lt; 3)
+  {
+    myPrint("IDOL server is not ready,  please check the server url :" + lib.jsaci.getIDOLServerUrl());
+    system.functions.sleep(3);
+    isserverokay = lib.jsaci.checkCategoryStatus(0);
+    iwait++;
+  }
+  if(iwait &gt;=3 &amp;&amp; isserverokay == false)
+  {
+    myPrint("IDOL server is not ready, exit now");
+    ExceptionLib.setLastTrainingException("IDOL server is not ready,fail to connect IDOL server or IDOL server is busy now!");
+    return -3;
+  }
+  if(strcompanies != null &amp;&amp; strcompanies != "" &amp;&amp; strcompanies != undefined)
+  {
+    var companies = lib.jsaci.stringToArray(strcompanies);
+    for(var i=0;i&lt;companies.length;i++)
+    {
+       cleanOldData(f,companies[i]);
+    }
+  }
+  else
+  {
+    cleanOldData(f,"");
+  }
+  var fcategory = new SCFile(CONSTANT.getCategoryFileName());
+  rc = fcategory.doSelect("groupid="+f.adapter_id +" and parentid=0");
+    
+  if(strcompanies != null &amp;&amp; strcompanies != "" &amp;&amp; strcompanies != undefined)
+  {
+  
+    if(rc == RC_SUCCESS &amp;&amp; fcategory.subgroup == 0)
+    {
+      myPrint("warning this task already run as none multi-tenency mode!");
+      removeOneCategoryGroup(f.adapter_id);
+    }
+    
+     //create parent records.
+    var currentid = getNextCategoryID(getMaxCategoryID(-1));
+    var parentid = currentid;
+    
+   
+    //root record
+    var rf = new SCFile(CONSTANT.getCategoryFileName());
+    rc = rf.doSelect("parentid=0 and groupid="+groupid);
+    if(rc != RC_SUCCESS)
+    {
+    
+       var existid = lib.jsaci.getCategoryIDByName(f.category_group_name,0);
+    
+       //first clean it if already existing
+       if(existid &gt; 0)
+      {
+        lib.jsaci.DeleteOneCategory(existid);
+      }
+    
+      rf.sourcecount=0;
+      rf.groupid=groupid;
+      rf.name = f.category_group_name;
+      rf.status=0;
+      rf.sourcecount=0;
+      rf.indexcount=0;
+      rf.traincount=0;
+      rf.id=currentid;
+      rf.testflag=0;
+      rf.parentid=0;
+      rf.subgroup=1;
+     
+      rf.category=f.level1_field;
+      rf.subcategory=f.level2_field;
+      rf.product_type=f.level3_field;
+     var isokay =lib.jsaci.createOneCategory(f.category_group_name, currentid, rf.parentid);
+     if(isokay==false &amp;&amp; readCategoryStatus(currentid) == false)
+     {
+        myPrint("Create root category fail, exit now");
+        ExceptionLib.setLastTrainingException("Fail to create root category, IDOL server is busy or component is down!");
+        return -4;
+      }
+    
+      rf.doInsert();
+    }
+    else
+    {
+      parentid = rf.id;
+    }
+    var fieldname = getMandantField(f.table_name);
+    if(fieldname == null || fieldname == "")
+    {
+      myPrint("try to train one compnay, but mandant field is empty!");
+      ExceptionLib.setLastTrainingException("mandant field is empty, when try to run in multi-company mode!");
+      return -6 ;
+    }
+    var companies = lib.jsaci.stringToArray(strcompanies);
+    var i=0;
+    for(i=0;i&lt;companies.length;i++)
+    {
+      startTrainingTask(f.adapter_id,companies[i]);
+    }
+    for(i=0;i&lt;companies.length;i++)
+    {
+       if(checkTaskIsStoped(true))
+       {
+         for(var j=0;j&lt;companies.length;j++)
+         {
+           finishTrainingTask(f.adapter_id,companies[j]); 
+         }
+         break;
+       }
+       idoldb = getCategoryIDOLDatabase(f.table_name,f.category_group_name,companies[i]);
+       var strquery = makeSecurityGroupQuery(companies[i],fieldname);
+       createAndTrainingOneCategory(f.adapter_id,f.category_group_name ,f.table_name,idoldb,f.level1_field,f.level2_field ,f.level3_field,
+                                          sourcefields,f.training_doc_number,f.rm_low_weight,f.doc_lowest_number,f.weight_threshhold,
+                                          f.adjust_term,f.training_condition,testpercentage,parentid,strquery,fieldname,companies[i],f.src_data_coverage,f.training_method );
+       finishTrainingTask(f.adapter_id,companies[i]);
+       if(companies.length&gt;1)
+       {
+         ExceptionLib.setLastTrainingException(null);
+       }                                     
+    }
+    var finishcount = getAutoCategorizationFinishCount(f.adapter_id);
+    var rc = f.doSelect("adapter.id="+groupid);
+    if(rc == RC_SUCCESS )
+    {
+      if( f.is_active == true &amp;&amp; finishcount == 0)
+      {
+         f.is_active = false;
+         f.doUpdate();
+      }
+      else if(f.is_active == false &amp;&amp; finishcount &gt;0 )
+      {
+        f.is_active = true;
+        f.doUpdate();
+      }
+    }
+   
+  }
+  else
+  {
+    // not many company
+    idoldb = getCategoryIDOLDatabase(f.table_name,f.category_group_name,"");
+    if(rc == RC_SUCCESS &amp;&amp; fcategory.subgroup &gt; 0)
+    {
+      myPrint("this group is configed as multi-company mode, you must choose at least one company!");
+      ExceptionLib.setLastTrainingException("miss paramter company,this group is configed as multi-company mode, you must give at least one company!");
+      return -5 ;
+    }
+    startTrainingTask(f.adapter_id,"");
+    createAndTrainingOneCategory(f.adapter_id,f.category_group_name,f.table_name,idoldb,f.level1_field,f.level2_field ,f.level3_field,
+                                          sourcefields,f.training_doc_number,f.rm_low_weight,f.doc_lowest_number,f.weight_threshhold,
+                                          f.adjust_term,f.training_condition,testpercentage,-1,"" ,"","",f.src_data_coverage,f.training_method);
+    finishTrainingTask(f.adapter_id,"");
+    checkTaskIsStoped(true);
+  }
+ 
+}
+
+
+function getAutoCategorizationFinishCount(groupid)
+{
+   var f = new SCFile(CONSTANT.getCategoryConfigFileName());
+   var fcate = new SCFile(CONSTANT.getCategoryFileName());
+   var ar = new Array();
+    if(f.doSelect("adapter.id="+groupid) != RC_SUCCESS)
+    {
+      return 0;
+    }
+    var finished = 0;
+    if(isGroupConfigAsMultiCompany(groupid))
+    {
+      var fsec = new SCFile(CONSTANT.getSubGroupStatusFileName());
+      var myrc = fsec.doSelect("adapter.id="+groupid);
+      while(myrc == RC_SUCCESS)
+      {
+        var subgroupname = fsec.security_id;
+      var subar= getSubGroupRunningStatus(groupid,subgroupname);
+      if(subar != null &amp;&amp; subar.length &gt; 1 &amp;&amp; subar[0] &gt; 1)
+      {
+        finished++;
+      }
+      myrc= fsec.getNext();
+      }
+    }
+  return finished;
+}
+function getAutoCategorizationRunningStatus(groupid)
+{
+   var f = new SCFile(CONSTANT.getCategoryConfigFileName());
+  
+   var fcate = new SCFile(CONSTANT.getCategoryFileName());
+   var ar = new Array();
+    if(f.doSelect("adapter.id="+groupid) != RC_SUCCESS)
+    {
+      return ar;
+    }
+    
+    if(isGroupConfigAsMultiCompany(groupid))
+    {
+       var allsubgroups = 0;
+       var finished = 0;
+       var notstart=0;
+       var inprocess=0;
+       var fsec = new SCFile(CONSTANT.getSubGroupStatusFileName());
+       var myrc = fsec.doSelect("adapter.id="+groupid);
+       while(myrc == RC_SUCCESS)
+      {
+        var subgroupname = fsec.security_id;
+        var trainstatus =fsec.training_status;
+      var subar= getSubGroupRunningStatus(groupid,subgroupname);
+      myrc= fsec.getNext();
+      var testar =getCategoryGroupTestRunningStatus(groupid,subgroupname);
+      updateSubGroupStatus(groupid,subgroupname,-1,subar[0],subar[1], testar[0],testar[1]);
+      allsubgroups++;
+      if(autoCategorizationTaskIsRunning(groupid,subgroupname) == true)
+      {
+        inprocess++;
+      }
+      else if(trainstatus == -1)
+      {
+        notstart++;
+      }
+      else
+      {
+        finished++;
+      }
+      }
+      if(inprocess+finished == 0)
+      {
+        ar.push(-1);
+        ar.push(system.functions.scmsg("RunningStatus_1","acicategory"));
+      }
+      else if(inprocess== 0 &amp;&amp; notstart==0)
+      {
+         ar.push(11);
+         ar.push(system.functions.scmsg("RunningStatus_2","acicategory"));
+      }
+      else
+      {
+        ar.push(0);
+        ar.push(system.functions.scmsg("RunningStatus_3","acicategory",[inprocess ,finished, allsubgroups]) );
+      }
+      return ar;
+    }
+   var categorycount = fcate.doCount("groupid="+groupid)
+    if(f.status == null || categorycount == 0)
+    {
+      ar.push(-1);
+      ar.push(system.functions.scmsg("RunningStatus_1","acicategory"));
+    }
+    if(f.status == -2)
+     {
+       //failed during create
+      ar.push(-2);
+      ar.push(system.functions.scmsg("RunningStatus_4","acicategory"));
+       
+     }
+      else if(f.status == -22)
+     {
+       //failed during create
+      ar.push(-22);
+      ar.push(system.functions.scmsg("RunningStatus_4_1","acicategory"));
+       
+     }
+     else if(f.status == -3)
+     {
+        ar.push(-3);
+        ar.push(system.functions.scmsg("RunningStatus_5","acicategory"));
+        ar.push(system.functions.scmsg("RunningStatus_5_1","acicategory"));
+     }
+     else if(f.status == -4)
+     {
+        ar.push(-4);
+        ar.push(system.functions.scmsg("RunningStatus_6","acicategory"));
+        ar.push(system.functions.scmsg("RunningStatus_6_1","acicategory"));
+     }
+     else if(f.status == -5)
+     {
+        ar.push(-5);
+        ar.push(system.functions.scmsg("RunningStatus_7","acicategory"));
+        ar.push(system.functions.scmsg("RunningStatus_7_1","acicategory"));
+     }
+      else if(f.status == -6 )
+     {
+        ar.push(-6);
+        ar.push(system.functions.scmsg("RunningStatus_8","acicategory"));
+        ar.push(system.functions.scmsg("RunningStatus_8_1","acicategory"));
+     }
+     else if( f.status == -7 )
+     {
+        ar.push(-7);
+        ar.push(system.functions.scmsg("RunningStatus_9","acicategory"));
+        ar.push(system.functions.scmsg("RunningStatus_9_1","acicategory"));
+     }
+     else if(f.status == -8)
+     {
+        ar.push(-8);
+        ar.push(system.functions.scmsg("RunningStatus_10","acicategory"));
+        ar.push(system.functions.scmsg("RunningStatus_10_1","acicategory"));
+     }
+     else if(f.status == -9)
+     {
+        ar.push(-9);
+        ar.push(system.functions.scmsg("RunningStatus_11","acicategory"));
+        ar.push(system.functions.scmsg("RunningStatus_11_1","acicategory"));
+     }
+      else if(f.status == -10)
+     {
+        ar.push(-10);
+        ar.push(system.functions.scmsg("RunningStatus_12","acicategory"));
+        ar.push(ystem.functions.scmsg("RunningStatus_12_1","acicategory"));
+     }
+     else if(f.status == -11)
+     {
+        ar.push(-11);
+        ar.push(system.functions.scmsg("RunningStatus_13","acicategory"));
+        ar.push(system.functions.scmsg("RunningStatus_13_1","acicategory"));
+     }
+    if(RC_SUCCESS != fcate.doSelect("groupid="+groupid +" and parentid=0"))
+    {
+      return ar;
+    }
+    
+    var fcurrent = new SCFile(CONSTANT.getCategoryFileName());
+    
+    
+    if(f.status == 0)
+    {
+      ar.push(0);
+      if(categorycount ==1)
+      {
+        ar.push(system.functions.scmsg("RunningStatus_14","acicategory"));
+        ar.push(system.functions.scmsg("RunningStatus_14_1","acicategory",[fcate.name]));
+      }
+      else 
+      {
+        
+        var sortOrder = new Array(SCFILE_DSC,SCFILE_DSC);
+      var sortFields = new Array("id","sourcecount");
+       fcurrent.setOrderBy(sortFields,sortOrder);
+        fcurrent.doSelect(" groupid="+groupid);
+        ar.push(system.functions.scmsg("RunningStatus_15","acicategory",[fcurrent.name]));
+        ar.push(system.functions.scmsg("RunningStatus_15_1","acicategory",[fcurrent.id,fcurrent.name]));
+      }
+    }
+    else if(f.status == 1)
+    {
+      ar.push(1);
+      var catecount =  fcurrent.doCount("groupid="+groupid + " and sourcecount&gt;0 and parentid&gt;0");
+      var indexcount = fcurrent.doCount("groupid="+groupid +" and sourcecount&gt;0 and parentid&gt;0 and status=1");
+      if(indexcount &lt; catecount)
+      {
+        indexcount++;
+      }
+      else
+      {
+        indexcount = catecount;
+      }
+       var sortOrder = new Array(SCFILE_ASC,SCFILE_ASC);
+      var sortFields = new Array("id","sourcecount");
+       fcurrent.setOrderBy(sortFields,sortOrder);
+      fcurrent.doSelect("groupid="+groupid +" and sourcecount&gt;0 and status=0");
+      ar.push(system.functions.scmsg("RunningStatus_16","acicategory",[indexcount,catecount]));
+      ar.push(system.functions.scmsg("RunningStatus_16_1","acicategory",[indexcount,catecount,fcurrent.name]));
+      
+    }
+    else if(f.status == 2)
+    {
+      ar.push(2);
+      var catecount =  fcurrent.doCount("indexcount&gt;0 and groupid="+groupid);
+      var traincount = fcurrent.doCount("groupid="+groupid +" and indexcount&gt;0 and parentid&gt;0 and status=2");
+      var sortOrder = new Array(SCFILE_ASC,SCFILE_ASC);
+      var sortFields = new Array("id","sourcecount");
+      if(traincount &lt; catecount)
+      {
+        traincount++;
+        fcurrent.setOrderBy(sortFields,sortOrder);
+        fcurrent.doSelect("groupid="+groupid +" and indexcount&gt;0 and status=1");
+        ar.push(system.functions.scmsg("RunningStatus_17","acicategory",[traincount,catecount]));
+        ar.push(system.functions.scmsg("RunningStatus_17_1","acicategory",[traincount,catecount,fcurrent.name]));
+      }
+      else
+      {
+        traincount = catecount;
+        
+        if(autoCategorizationTaskIsRunning(groupid,"") == false)
+          {
+             ar.push(system.functions.scmsg("RunningStatus_18","acicategory",[catecount]));
+             ar.push(system.functions.scmsg("RunningStatus_18_1","acicategory",[catecount]));
+          }
+          else
+          {
+          
+            fcurrent.setOrderBy(sortFields,sortOrder);
+            fcurrent.doSelect("groupid="+groupid +" and indexcount&gt;0 and status=1");
+            ar.push(system.functions.scmsg("RunningStatus_17","acicategory",[traincount,catecount]));
+            ar.push(system.functions.scmsg("RunningStatus_17_1","acicategory",[traincount,catecount,fcurrent.name]));
+          }
+      }
+     
+    }
+    else if(f.status == 3)
+    {
+      ar.push(3);
+      if( (f.rm_low_weight == null ||f.rm_low_weight== false)
+          &amp;&amp; (f.adjust_term == null || f.adjust_term==false))
+          {
+             var catecount =  fcurrent.doCount("indexcount&gt;0 and groupid="+groupid);
+             ar.push(system.functions.scmsg("RunningStatus_18","acicategory",[catecount]));
+             ar.push(system.functions.scmsg("RunningStatus_18_1","acicategory",[catecount]));
+          }
+       else if( f.rm_low_weight != null &amp;&amp; f.rm_low_weight )
+       {
+           
+           var rcsum =fcurrent.doSelect("select sum(indexcount) from "+CONSTANT.getCategoryFileName()+" where indexcount&gt;0 and groupid="+groupid+" and parentid&gt;0");
+           if(rcsum == RC_SUCCESS)
+           {
+             var allindexed = fcurrent[0];
+             fcurrent.doSelect("select sum(indexcount) from "+CONSTANT.getCategoryFileName()+" where status=3 and indexcount&gt;0 and groupid="+groupid+" and parentid&gt;0");
+             var handled = fcurrent[0];
+             if(handled &lt;allindexed)
+             {
+               handled++;
+             }
+             else
+             {
+               handled = allindexed;
+             }
+             ar.push(system.functions.scmsg("RunningStatus_19","acicategory",[handled,allindexed]));
+             ar.push(system.functions.scmsg("RunningStatus_19_1","acicategory",[handled,allindexed]));
+           }
+           else
+           {
+           ar.push(system.functions.scmsg("RunningStatus_20","acicategory"));
+           ar.push(system.functions.scmsg("RunningStatus_20_1","acicategory"));
+           }
+       }
+       else
+       {
+         ar.push(system.functions.scmsg("RunningStatus_21","acicategory"));
+         ar.push(system.functions.scmsg("RunningStatus_21_1","acicategory"));
+       }                         
+     
+    }
+    else if(f.status == 4)
+    {
+      ar.push(4);
+      ar.push(system.functions.scmsg("RunningStatus_22","acicategory"));
+      ar.push(system.functions.scmsg("RunningStatus_22_1","acicategory"));
+    }
+    else if(f.status == 5)
+    {
+      ar.push(5);
+      var catecount =  fcurrent.doCount("indexcount&gt;0 and parentid&gt;0 and groupid="+groupid);
+      var traincount = fcurrent.doCount("indexcount&gt;0 and parentid&gt;0 and groupid="+groupid+" and status=4");
+      if(traincount &lt; catecount)
+      {
+        traincount++;
+      }
+      else
+      {
+        traincount=catecount;
+      }
+      fcurrent.doSelect("indexcount&gt;0 and parentid&gt;0 and groupid="+groupid+" and status&lt;4");
+      ar.push(system.functions.scmsg("RunningStatus_23","acicategory",[traincount,catecount]));
+      ar.push(system.functions.scmsg("RunningStatus_23_1","acicategory",[traincount,catecount,fcurrent.name]));
+    }
+    else if(f.status == 6)
+    {
+      ar.push(6);
+      if(f.adjust_term == null || f.adjust_term==false)
+      {
+        ar.push(system.functions.scmsg("RunningStatus_24","acicategory"));
+        ar.push(system.functions.scmsg("RunningStatus_24_1","acicategory"));
+      }
+      else
+      {
+        ar.push(system.functions.scmsg("RunningStatus_25","acicategory"));
+        ar.push(system.functions.scmsg("RunningStatus_25_1","acicategory"));
+      }
+    }
+    else if(f.status == 7)
+    {
+      ar.push(7);
+      var testfile = new SCFile(CONSTANT.getCategoryTestFileName());
+      var testcount= testfile.doCount("groupid="+groupid);
+      var sourcefile = new SCFile(f.test_file_name);
+      var condition = true;
+      if(f.query_condition!=null &amp;&amp; "" !=f.query_condition)
+      {
+        condition = f.query_condition;
+      }
+      var all = sourcefile.doCount(condition);
+      ar.push(system.functions.scmsg("RunningStatus_26","acicategory",[testcount,all]));
+      ar.push(system.functions.scmsg("RunningStatus_26_1","acicategory",[all,testcount]));
+    }
+    else if(f.status == 8)
+    {
+      ar.push(8);
+      var catecount =  fcurrent.doCount("traincount&gt;0 and parentid&gt;0 and groupid="+groupid);
+      var didcount = fcurrent.doCount("traincount&gt;0 and parentid&gt;0 and groupid="+groupid+" and status=6");
+      if(didcount&lt;catecount)
+      {
+        didcount++;
+      }
+      else
+      {
+        didcount = catecount;
+      }
+      fcurrent.doSelect("traincount&gt;0 and parentid&gt;0 and groupid="+groupid+" and status&lt;6");
+      ar.push(system.functions.scmsg("RunningStatus_27","acicategory",[didcount,catecount]));
+      ar.push(system.functions.scmsg("RunningStatus_27_1","acicategory",[didcount,catecount,fcurrent.name]));
+      
+    }
+    else if(f.status == 9)
+    {
+      ar.push(9);
+      var catecount =  fcurrent.doCount("traincount&gt;0 and parentid&gt;0 and groupid="+groupid);
+      var didcount = fcurrent.doCount("traincount&gt;0 and parentid&gt;0 and groupid="+groupid+" and status=7");
+      if(didcount &lt; catecount)
+      {
+        didcount++;
+      }
+      else
+      {
+        didcount = catecount;
+        
+      }
+      fcurrent.doSelect("traincount&gt;0 and parentid&gt;0 and groupid="+groupid+" and status=6");
+      ar.push(system.functions.scmsg("RunningStatus_28","acicategory",[didcount,catecount]));
+      ar.push(system.functions.scmsg("RunningStatus_28_1","acicategory",[didcount,catecount,fcurrent.name]));
+    }
+    else if(f.status == 10)
+    {
+      ar.push(10);
+      var catecount =  fcurrent.doCount("traincount&gt;0 and parentid&gt;0 and groupid="+groupid);
+      var didcount = fcurrent.doCount("traincount&gt;0 and parentid&gt;0 and groupid="+groupid+" and status=8");
+      if(didcount &lt; catecount)
+      {
+        didcount++;
+      }
+      else
+      {
+        didcount = catecount;
+        
+      }
+      
+      fcurrent.doSelect("traincount&gt;0 and parentid&gt;0 and groupid="+groupid+" and status=7");
+      ar.push(system.functions.scmsg("RunningStatus_29","acicategory",[didcount,catecount]));
+      ar.push(system.functions.scmsg("RunningStatus_29_1","acicategory",[didcount,catecount,fcurrent.name]));
+    }
+    else if(f.status == 11)
+    {
+      ar.push(11);
+      var catecount =  fcurrent.doCount("indexcount&gt;0 and groupid="+groupid);
+      ar.push(system.functions.scmsg("RunningStatus_30","acicategory",[catecount]) );
+      ar.push(system.functions.scmsg("RunningStatus_30_1","acicategory",[catecount]));
+    }
+    return ar;
+}
+
+
+
+function testOneCategoryGroup(groupid,strcompanies)
+{
+  myPrint("Now start runnnig the testing for adapter id "+groupid+", companies:"+strcompanies);
+  lib.jsaci.setIDOLServer(null);
+  ExceptionLib.setLastTestException(null);
+  setDataCleanPattens(null);
+  if(strcompanies != null &amp;&amp; strcompanies != "" &amp;&amp; strcompanies !=undefined )
+  { 
+     var subgroupnames = lib.jsaci.stringToArray(strcompanies);
+     for(var i=0;i&lt;subgroupnames.length;i++)
+     {
+       testOneCategoryGroup2(groupid,subgroupnames[i]);
+     }
+  }
+  else
+  {
+    testOneCategoryGroup2(groupid,"");
+  }
+}
+
+function insertTestSample(fcate,company)
+{
+  var strquery = "groupid="+fcate.groupid +" and category=\""+fcate.category+"\"";
+ 
+  if(fcate.subcategory != null &amp;&amp; fcate.subcategory!="")
+  {
+    strquery += " and subcategory=\""+fcate.subcategory+"\"";
+  }
+  if(fcate.product_type != null &amp;&amp; fcate.product_type !="" )
+  {
+    strquery += " and producttype=\""+fcate.product_type+"\"";
+  }
+  if( company != null &amp;&amp; company != "" )
+  {
+    strquery += " and company=\""+company+"\"";
+  }
+  var f = new SCFile(CONSTANT.getIdolTestSampleFileName());
+  var rc = f.doSelect(strquery);
+  if(rc == RC_SUCCESS )
+  {
+    f.currentid=fcate.id;
+    f.subgroup=fcate.subgroup;
+    f.doUpdate();    
+  }
+  else
+  {
+    f.groupid=fcate.groupid;
+    f.subgroup=fcate.subgroup;
+    f.category=fcate.category;
+    f.subcategory=fcate.subcategory;
+    f.producttype=fcate.product_type;
+    f.testdocs[0]=fcate.testdocs[0] ;
+    f.sourcecount=fcate.sourcecount;
+    f.currentid=fcate.id;
+    f.company = company;
+    f.doInsert();
+  }
+  
+}
+
+function getFieldType(filename,fields)
+{
+   
+   var ret = new Array();
+   var f= new SCFile("dbdict");
+   var rc= f.doSelect("name=\""+filename+"\"");
+   print(rc);
+   if(rc == RC_SUCCESS)
+   {
+
+     for(var i=0;i&lt;fields.length;i++)
+     {
+       for(var j=0;j&lt;f.field.length();j++)
+       {
+         if(fields[i] == f.field[j].name)
+         {
+           ret.push(f.field[j].type);
+           break;
+         }
+       }
+     }
+   }
+   return ret;
+}
+function makeQueryFromReference(strref,keys,types)
+{
+  var ar = strref.split("-");
+  var strquery = "";
+  for(var i=0; i &lt; keys.length ;i++)
+  {
+   
+    if( strquery != "")
+    {
+      strquery += " and ";
+    }
+    if(ar[i] == null || ar[i] == "")
+    {
+       strquery += keys[i] + "= NULL ";
+    }
+    else if(types[i] == 1 )
+    {
+      strquery += keys[i] + "=" + ar[i];
+    }
+    else if(types[i] == 3 )
+    {
+      strquery += keys[i] + "='" + ar[i]+"'";
+    }
+    else
+    {
+       strquery += keys[i] + "=\""+ ar[i]+"\"";
+    }
+  }
+  return strquery;
+}
+function testOneRecord(file,fadapter,numresult,company,inc_ar,exc_ar,rm_ar)
+{
+  var schema = -1;
+  var taxonomy =fadapter.category_group_name;
+  var outar = new Array();
+
+  var subgroup = 0;
+  if(company != null &amp;&amp; company != "" &amp;&amp; company != undefined)
+  {
+     taxonomy +="_" + company;
+   
+  }
+ 
+   var sourcefields =[];
+   if(fadapter.content_fields != null)
+   {
+     sourcefields = fadapter.content_fields.toArray();
+   }
+   if(fadapter.title_field != null &amp;&amp; fadapter.title_field != ""  &amp;&amp; false == lib.jsaci.isExistingInArray(sourcefields,fadapter.title_field) )
+   {
+      sourcefields.unshift(fadapter.title_field);
+   }
+   var content ="";
+ 
+   for(var i=0;i&lt;sourcefields.length;i++)
+   {
+     if(content != "")
+     {
+        content +="\n";
+     }
+     var nm = sourcefields[i].replace(/\./g,"_");
+          
+     content+= lib.IDOLDataCleansing.require().cleanData(CategoryUtilLib.getObjectString(file[nm]),inc_ar,exc_ar,rm_ar);
+   }
+   
+   if( fadapter.rule_field != null &amp;&amp; fadapter.rule_field!="")
+   {
+     content += lib.IDOLCategoryRuleBase.getRuleBaseValue(file,fadapter.rule_field);
+   }
+   if(content == "")
+   {
+      return outar;
+   }
+  
+  // get given category if existing
+  var givenschema = -1;
+  
+  var ar = new Array();
+  var catenames  = new Array();
+  var ids = lib.jsaci.queryCategory(content,ar,-1,taxonomy,numresult,catenames);
+  if(ids == null)
+  {
+    return outar;
+  }
+  else if(ids.length == 1 &amp;&amp; ids[0]==0)
+  {
+    return outar;
+  }
+  else if(ids.length &gt; 0)
+  {
+    return ids;
+  }
+  if(ids.length == 0)
+  {
+    var myoutar = lib.jsaci.suggestCategory(content,taxonomy,getCategoryIDOLDatabase(fadapter.table_name,fadapter.category_group_name,company),fadapter.level1_field, fadapter.level2_field,fadapter.level3_field,3);
+    if(myoutar == null)
+    {
+      return outar;
+    }
+    if( myoutar.length ==0)
+    {
+      var mysql ="traincount &gt; 0 and groupid="+fadapter.adapter_id;
+     
+      if( company != null &amp;&amp; company != "" )
+      {
+        subgroup= findSubGroupByName(fadapter.adapter_id,company);
+        mysql +=" and subgroup="+subgroup;
+      }
+      var fcate = new SCFile(CONSTANT.getCategoryFileName());
+      var sortOrder = new Array(SCFILE_DSC,SCFILE_DSC);
+      var sortFields = new Array("sourcecount","id");
+      fcate.setOrderBy(sortFields,sortOrder);
+      rc =fcate.doSelect(mysql);
+      if(rc == 0)
+      {
+        
+        outar.push(fcate.id);
+      }
+    }
+   
+  }
+
+  return outar;
+}
+
+function insertTestResult(first,second,third,miss,invalid,source,starttime,testid)
+{
+  var f = new SCFile(CONSTANT.getIdolTestResultFileName());
+  f.firstcount = first;
+  f.secondcount=second;
+  f.thirdcount=third;
+  f.misscount=miss;
+  f.invalidcount=invalid;
+  f.sourcecount=source;
+  f.testtime=starttime;
+  f.testsampleid=testid;
+  f.doInsert();
+}
+function testOneCategoryGroup2(groupid,subgroupname)
+{
+   myPrint("Start running testing for adapter id "+groupid+", company:"+subgroupname);
+   var dateObj = new Date();
+   var startTime = dateObj.getTime();
+  
+   if(autoCategorizationTaskIsRunning(groupid,subgroupname) == true)
+    {
+      myPrint("training didn't finish yet, can't run the testing for adapter id "+groupid);
+      ExceptionLib.setLastTestException("training didn't finish yet, can't run the testing");
+     
+      return;
+    }
+    var f = new SCFile(CONSTANT.getCategoryFileName());
+    var sql = "parentid=0 and groupid="+groupid;
+    var rc = f.doSelect(sql); // already index finish
+    
+    if(rc != RC_SUCCESS)
+    {
+      myPrint("can't find training information, can't run the testing for adapter id "+groupid);
+      ExceptionLib.setLastTestException("can't find training information, can't run the testing for adapter id "+groupid);
+      return;
+    }
+    var taxtonomy = f.name;
+    
+    var subgroup=0;
+    var fadapter = new SCFile(CONSTANT.getCategoryConfigFileName(),SCFILE_READONLY);
+    fadapter.doSelect("adapter.id="+groupid);
+    var dbname = getCategoryIDOLDatabase(fadapter.table_name,fadapter.category_group_name,subgroupname);
+    if(subgroupname != null&amp;&amp; subgroupname!="" &amp;&amp; subgroupname!= undefined)
+    {
+      taxtonomy = taxtonomy+"_"+subgroupname;
+      
+      subgroup=findSubGroupByName(groupid,subgroupname);
+      
+      if(subgroup&gt;0)
+      {
+        sql = "id="+subgroup;
+      }
+      rc = f.doSelect(sql);
+      if(rc != RC_SUCCESS)
+      {
+        myPrint("can't find training information, can't run the testing for adapter id "+groupid);
+        ExceptionLib.setLastTestException("can't find training information, can't run the testing for adapter id "+groupid);
+        return;
+      }
+    }
+   
+    var currenttestfalg = f.testflag;
+    
+   
+
+     var firstCount_all = 0, secondCount_all = 0, thirdCount_all = 0, notEqualAnyCount_all = 0,invalidCount_all=0
+     
+     f.testflag = 2;
+     f.firstcount = firstCount_all;
+     f.secondcount=secondCount_all;
+     f.thirdcount = thirdCount_all;
+     f.misscount=notEqualAnyCount_all;
+     f.invalidcount=invalidCount_all;
+     f.doUpdate();
+     
+     var fcate = new SCFile(CONSTANT.getCategoryFileName());
+     var sqlcondition = "traincount&gt;0 and parentid&gt;0 and groupid="+groupid;
+     if(subgroup&gt;0)
+     {
+       sqlcondition = "traincount&gt;0  and subgroup="+subgroup+" and groupid="+groupid;
+     }
+     if(currenttestfalg == 2)
+     {
+       sqlcondition += " and (testflag=0 or testflag=2) ";
+     }
+   
+     var noerror = true;
+     var keys = getFileReferenceFields(fadapter.table_name);
+     var types = getFieldType(fadapter.table_name,keys);
+     var ftest = new SCFile(fadapter.table_name);
+     var inc_ar = getDataCleanPattens(fadapter.table_name,"Include");
+     var exc_ar = getDataCleanPattens(fadapter.table_name,"Exclude");
+     var rm_ar = getDataCleanPattens(fadapter.table_name,"Remove");
+     var ftestsample = new SCFile(CONSTANT.getIdolTestSampleFileName());
+
+     rc = fcate.doSelect(sqlcondition); // already index finish
+     while(rc == RC_SUCCESS &amp;&amp; noerror)
+     {
+       var icount =0;
+       var testrc = ftestsample.doSelect("currentid="+fcate.id);
+
+       if(testrc !=  RC_SUCCESS || ftestsample.testdocs == null)
+       {
+         myPrint("no record find in idoltestsample for category id "+fcate.id);
+         rc = fcate.getNext();
+         continue;
+       }
+       var docrefs = ftestsample.testdocs[0];
+       if(docrefs == null || ftest.testdocs == "")
+       {
+         myPrint("test document is empty in idoltestsample for category id "+fcate.id);
+         rc = fcate.getNext();
+         continue;
+       }
+       var firstCount = 0, secondCount = 0, thirdCount = 0, notEqualAnyCount = 0,invalidCount=0
+       if(fcate.testflag ==2)
+       {
+         firstCount = fcate.firstcount;
+         secondCount = fcate.secondcount;
+         thirdCount = fcate.thirdCount;
+         notEqualAnyCount = fcate.misscount;
+         invalidCount= fcate.invalidcount;
+         icount = firstCount + secondCount + thirdCount + notEqualAnyCount+invalidCount;
+       }
+       else
+       {
+          fcate.testflag = 2;
+          fcate.firstcount = 0;
+          fcate.secondcount=0;
+          fcate.thirdCount = 0;
+          fcate.misscount=0;
+          fcate.invalidcount=0;
+          fcate.doUpdate();
+       }
+       
+       var ar = lib.jsaci.stringToArray(docrefs);
+       
+       for(var i=icount;i&lt;ar.length;i++)
+       {
+
+          if(checkTestIsStoped())
+          {
+            ExceptionLib.setLastTestException("User ask to stop the testing task!" );
+            noerror = false;
+            break;
+          }
+          var strquery = makeQueryFromReference(ar[i],keys,types);
+          var myrc = ftest.doSelect(strquery);
+          if(myrc != RC_SUCCESS)
+          {
+            myPrint("can't find source record by "+strquery);
+            continue;
+          }
+        
+          var cid = testOneRecord(ftest,fadapter,3,subgroupname,inc_ar,exc_ar,rm_ar);
+          if(cid == null)
+          {
+            ExceptionLib.setLastTestException("can't get any results due to fail to connect IDOL server or wrong configuration" );
+            noerror = false;
+            break;
+          }
+          var isfind = false;
+     
+          var clength = cid.length;
+         
+          for (var n = 0; n &lt; clength &amp;&amp; n&lt; 3; n++) 
+          {
+            if (cid[n]==fcate.id) 
+            {
+                isfind = true;
+                if (n === 0) {
+                    firstCount++;
+                   
+                }
+                else if (n === 1) 
+                {
+                    secondCount++;
+               
+                }
+                else
+                {
+                    thirdCount++;
+                    
+                }
+                break;
+            }
+         }
+        
+         if (clength==0) 
+         {
+            invalidCount++;
+          
+         }
+         else if(isfind == false &amp;&amp; clength&gt;0)
+         {
+           notEqualAnyCount++;
+         }
+         
+         icount++;
+         if(icount %100 ==0)
+         {
+            fcate.firstcount = firstCount;
+            fcate.secondcount=secondCount;
+            fcate.thirdCount = thirdCount;
+            fcate.misscount=notEqualAnyCount;
+            fcate.invalidcount=invalidCount;
+            fcate.doUpdate();
+         }
+         if(icount %1000 ==0)
+         {
+           myPrint("Already handled "+icount);
+         }
+       }
+       
+            fcate.firstcount = firstCount;
+            fcate.secondcount=secondCount;
+            fcate.thirdcount = thirdCount;
+            fcate.misscount=notEqualAnyCount;
+            fcate.invalidcount=invalidCount;
+            fcate.testflag=1;
+            fcate.doUpdate();
+            insertTestResult(firstCount,secondCount,thirdCount,notEqualAnyCount,invalidCount,fcate.sourcecount,dateObj,ftestsample.id);
+            firstCount_all +=firstCount;
+            secondCount_all +=secondCount;
+            thirdCount_all+=thirdCount;
+            notEqualAnyCount_all+=notEqualAnyCount;
+            invalidCount_all +=invalidCount;
+            
+            f.firstcount = firstCount_all;
+            f.secondcount=secondCount_all;
+            f.thirdcount = thirdCount_all;
+            f.misscount=notEqualAnyCount_all;
+            f.invalidcount=invalidCount_all;
+            f.doUpdate();
+            
+            
+     var totelCount = firstCount + secondCount + thirdCount + notEqualAnyCount+invalidCount;
+     myPrint("*******category :"+fcate.id+"Total test count:" + totelCount + " ********");
+     var firstRate = Number(100 * firstCount / totelCount);
+     var secondRate = Number(100 * (firstCount + secondCount) / totelCount);
+     var thirdRate = Number(100 * (firstCount + secondCount + thirdCount) / totelCount);
+     var notEqualRate = Number(100 * notEqualAnyCount / totelCount);
+     var invalidRate = Number(100 * invalidCount / totelCount);
+
+    myPrint("Invalid count is: " + invalidCount + ", hit rate: " + invalidRate.toFixed(2) +"%");
+    myPrint("First count is: " + firstCount + ", hit rate: " + firstRate.toFixed(2) + "%");
+    myPrint("Second count is: " + secondCount + ", hit rate: " + secondRate.toFixed(2) + "%");
+    myPrint("Third count is: " + thirdCount + ", hit rate: " + thirdRate.toFixed(2) + "%");
+
+     myPrint("Missed count is: " + notEqualAnyCount + ", hit rate: " + notEqualRate.toFixed(2) + "%");
+    
+    myPrint("*******category :"+fcate.id+" name:" + fcate.name + " test results ********");
+   
+    
+    var totelCount_all = firstCount_all + secondCount_all + thirdCount_all + notEqualAnyCount_all+invalidCount_all;
+     myPrint("*******Current total test count:" + totelCount_all + " ********");
+     var firstRate_all = Number(100 * firstCount_all / totelCount_all);
+     var secondRate_all = Number(100 * (firstCount_all + secondCount_all) / totelCount_all);
+     var thirdRate_all = Number(100 * (firstCount_all + secondCount_all + thirdCount_all) / totelCount_all);
+     var notEqualRate_all = Number(100 * notEqualAnyCount_all / totelCount_all);
+     var invalidRate_all = Number(100 * invalidCount_all / totelCount_all);
+
+
+    myPrint("Now invalid count is: " + invalidCount_all + ", hit rate: " + invalidRate_all.toFixed(2) +"%");
+    myPrint("Now first count is: " + firstCount_all + ", hit rate: " + firstRate_all.toFixed(2) + "%");
+    myPrint("Now second count is: " + secondCount_all + ", hit rate: " + secondRate_all.toFixed(2) + "%");
+    myPrint("Now third count is: " + thirdCount_all + ", hit rate: " + thirdRate_all.toFixed(2) + "%");
+
+    myPrint("Missed count is: " + notEqualAnyCount_all + ", hit rate: " + notEqualRate_all.toFixed(2) + "%");
+    
+    myPrint("*******Current test results ********");
+       
+       rc = fcate.getNext();
+     }
+  
+   var endTime = new Date().getTime();
+    myPrint("*******Elapsed time: " + ((endTime - startTime) / 1000).toFixed() + "  Seconds. ********");
+    if(noerror)
+    {
+      f.testflag = 1;
+    }
+    else
+    {
+      f.testflag = 3;
+    }
+    f.doUpdate();
+    myPrint("*******The End.*********");
+  
+}
+
+
+function getCategoryGroupTestRunningStatus(groupid,subgroupname)
+{
+  var f = new SCFile(CONSTANT.getCategoryFileName());
+ 
+  var sql = "parentid=0 and groupid="+groupid;
+  var subgroup=0;
+  var ar = new Array();
+  if( subgroupname != null &amp;&amp; subgroupname != "" &amp;&amp; subgroupname != undefined)
+  {
+    subgroup=findSubGroupByName(groupid,subgroupname);
+    if(subgroup&gt;0)
+    {
+      sql = "id="+subgroup;
+    }
+    else
+    {
+      ar.push(-1);
+      ar.push(system.functions.scmsg("TestingStatus_1","acicategory"));
+      return ar;
+    }
+  }
+ 
+  var rc = f.doSelect(sql); // already index finish
+ 
+  
+  if(rc != RC_SUCCESS)
+  {
+    ar.push(-1);
+    ar.push(system.functions.scmsg("TestingStatus_1","acicategory"));
+    return ar;
+  }
+  if(isGroupConfigAsMultiCompany(groupid) &amp;&amp; subgroup == 0)
+  {
+    
+    var myrc =  f.doSelect("parentid="+f.id+ "and groupid="+groupid);
+    var inprocess =0;
+    var finished =0;
+    var notstart=0;
+    var failed =0;
+    while(RC_SUCCESS == myrc)
+    {
+       if(f.testflag==2)
+       {
+         inprocess++;
+       }
+       else if(f.testflag == 1)
+       {
+         finished++;
+       }
+       else if(f.testflag == 3)
+       {
+         failed++;
+       }
+       else
+       {
+         notstart++;
+       }
+       
+       myrc =f.getNext();
+    }
+    if(finished+inprocess == 0)
+    {
+      ar.push(0);
+      ar.push(system.functions.scmsg("TestingStatus_1","acicategory"));
+    }
+    else if(inprocess==0 &amp;&amp; notstart==0)
+    {
+      ar.push(1);
+      ar.push(system.functions.scmsg("TestingStatus_2","acicategory"));
+    }
+    else
+    {
+      ar.push(2);
+      if(failed &gt;0)
+      {
+        ar.push(system.functions.scmsg("TestingStatus_3","acicategory",[finished,inprocess,notstart,failed]));
+      }
+      else
+      {
+        ar.push(system.functions.scmsg("TestingStatus_4","acicategory",[finished,inprocess,notstart]));
+      }
+      
+    }
+    return ar;
+  }
+  
+  if(f.testflag == null || f.testflag == 0)
+  {
+    ar.push(0);
+    ar.push(system.functions.scmsg("TestingStatus_1","acicategory"));
+  }
+  else if(f.testflag == 3)
+  {
+    ar.push(3);
+    ar.push(system.functions.scmsg("TestingStatus_5","acicategory"));
+  }
+  else if(f.testflag == 2)
+  {
+    ar.push(2);
+    var fcate = new SCFile(CONSTANT.getCategoryFileName());
+    rc = fcate.doSelect("testflag=2 and traincount&gt;0 and parentid="+f.id +" and groupid="+groupid );
+    var tested = f.firstcount+f.secondcount+f.thirdcount+f.misscount+f.invalidcount;
+    if(rc == RC_SUCCESS)
+    {
+      tested += fcate.firstcount+fcate.secondcount+fcate.thirdcount+fcate.misscount+fcate.invalidcount;
+    }
+    if(tested == 0)
+    {
+      ar.push(system.functions.scmsg("TestingStatus_6","acicategory"));
+    }
+    else
+    {
+      ar.push(system.functions.scmsg("TestingStatus_7","acicategory",[tested,f.sourcecount]));
+    }
+  }
+  else if(f.testflag == 1)
+  {
+    ar.push(1);
+    var tested = f.firstcount+f.secondcount+f.thirdcount+f.misscount+f.invalidcount;
+    ar.push(system.functions.scmsg("TestingStatus_8","acicategory",[tested]));
+  }
+  return ar;
+}
+
+function getCategorySubGroupTestResult(groupid,subgroupname)
+{
+  var f = new SCFile(CONSTANT.getCategoryFileName());
+  var sql = "parentid=0 and groupid="+groupid;
+  var subgroup=0;
+  var retar = [];
+  if( subgroupname != null &amp;&amp; subgroupname != "" &amp;&amp; subgroupname != undefined)
+  {
+    subgroup=findSubGroupByName(groupid,subgroupname);
+    if(subgroup&gt;0)
+    {
+      sql = "id="+subgroup;
+    }
+  }
+  var rc = f.doSelect(sql); // already index finish
+  
+  var report="";
+  if(rc != RC_SUCCESS)
+  {
+
+    return retar;
+  }
+  var firstcount=0;
+  var secondcount=0;
+  var thirdcount=0;
+  var misscount=0;
+  var invalidcount=0;
+  var isrunning =0;
+  var finished=0;
+  var notstart =0;
+  while(RC_SUCCESS == rc)
+  {
+    if(f.testflag == 2)
+    {
+      isrunning++;
+    }
+    else if(f.testflag == 1)
+    {
+      finished++;
+    }
+    else
+    {
+      notstart++;
+    }
+    
+    if(f.testflag == null || f.testflag == 0)
+    {
+      rc = f.getNext();
+      continue;
+    }
+   
+    firstcount+=f.firstcount;
+    secondcount+= f.secondcount;
+    thirdcount+=f.thirdcount;
+    misscount+=f.misscount;
+    invalidcount+=f.invalidcount;
+    
+    rc = f.getNext();
+  }
+  
+  
+   var totelCount = firstcount + secondcount + thirdcount + misscount+invalidcount;
+   
+   if(totelCount &gt; 0)
+   {
+
+    var firstRate = Number(100 * firstcount / totelCount);
+    var secondRate = Number(100 * (firstcount + secondcount) / totelCount);
+    var thirdRate = Number(100 * (firstcount + secondcount + thirdcount) / totelCount);
+    var notEqualRate = Number(100 * misscount / totelCount);
+    var invalidRate = Number(100 * invalidcount / totelCount);
+    retar.push(firstRate.toFixed(2)+"%");
+    retar.push(secondRate.toFixed(2)+"%");
+    retar.push(thirdRate.toFixed(2)+"%");
+    retar.push(invalidRate.toFixed(2)+"%");
+    retar.push(notEqualRate.toFixed(2)+"%");
+    
+   }
+   else
+   {
+     retar.push("");
+     retar.push("");
+     retar.push("");
+     retar.push("");
+     retar.push("");
+   }
+  
+  return retar;
+}
+function getCategoryGroupTestReport(groupid,subgroupname)
+{
+  var f = new SCFile(CONSTANT.getCategoryFileName());
+  var sql = "parentid=0 and groupid="+groupid;
+  var subgroup=0;
+ 
+  if( subgroupname != null &amp;&amp; subgroupname != "" &amp;&amp; subgroupname != undefined)
+  {
+    subgroup=findSubGroupByName(groupid,subgroupname);
+    if(subgroup&gt;0)
+    {
+      sql = "id="+subgroup;
+    }
+  }
+  var rc = f.doSelect(sql); // already index finish
+  var ismulticompnay = false;
+  if(isGroupConfigAsMultiCompany(groupid) &amp;&amp; rc == RC_SUCCESS &amp;&amp; (subgroupname == undefined || subgroupname== null || subgroupname==""))
+  {
+    
+    sql = "parentid="+f.id+" and groupid="+groupid;
+    rc = f.doSelect(sql);
+    ismulticompnay = true;
+  }
+  var report="";
+  if(rc != RC_SUCCESS)
+  {
+    report = system.functions.scmsg("TestReport_1","acicategory");
+    return report
+  }
+  var firstcount=0;
+  var secondcount=0;
+  var thirdcount=0;
+  var misscount=0;
+  var invalidcount=0;
+  var isrunning =0;
+  var finished=0;
+  var notstart =0;
+  var failed =0;
+  while(RC_SUCCESS == rc)
+  {
+    if(f.testflag == 2)
+    {
+      isrunning++;
+    }
+    else if(f.testflag == 1)
+    {
+      finished++;
+    }
+    else if(f.testflag == 3)
+    {
+      failed++;
+    }
+    else
+    {
+      notstart++;
+    }
+    
+    if(f.testflag == null || f.testflag == 0)
+    {
+      rc = f.getNext();
+      continue;
+    }
+   
+    firstcount+=f.firstcount;
+    secondcount+= f.secondcount;
+    thirdcount+=f.thirdcount;
+    misscount+=f.misscount;
+    invalidcount+=f.invalidcount;
+    
+    rc = f.getNext();
+  }
+  
+  if(ismulticompnay == false)
+  {
+     if(f.testflag == null || f.testflag == 0)
+    {
+      report =system.functions.scmsg("TestReport_2","acicategory"); 
+      return report;
+    }
+    else if(f.testflag == 3)
+    {
+      report = system.functions.scmsg("TestReport_3","acicategory");
+    }
+    else if(f.testflag == 2)
+    {
+      report = system.functions.scmsg("TestReport_4","acicategory") + "\n";
+    }
+    else if(f.testflag == 1)
+    {
+      report =system.functions.scmsg("TestReport_5","acicategory") + "\n";
+    }
+  }
+  else
+  {
+     if(isrunning + finished == 0)
+     {
+       report =system.functions.scmsg("TestReport_2","acicategory");
+       return;
+     }
+     else if(isrunning==0 &amp;&amp; notstart==0&amp;&amp;failed==0)
+     {
+       report =system.functions.scmsg("TestReport_5","acicategory")+ "\n";
+     }
+     else
+     {
+       report =system.functions.scmsg("TestReport_6","acicategory",[finished,isrunning,notstart,failed])+ "\n";
+     }
+  }
+   var totelCount = firstcount + secondcount + thirdcount + misscount+invalidcount;
+   
+   if(totelCount &gt; 0)
+   {
+
+    var firstRate = Number(100 * firstcount / totelCount);
+    var secondRate = Number(100 * (firstcount + secondcount) / totelCount);
+    var thirdRate = Number(100 * (firstcount + secondcount + thirdcount) / totelCount);
+    var notEqualRate = Number(100 * misscount / totelCount);
+    var invalidRate = Number(100 * invalidcount / totelCount);
+
+   
+    report+=system.functions.scmsg("TestReport_7","acicategory",[firstcount , firstRate.toFixed(2) ])+"%\n";
+    report+=system.functions.scmsg("TestReport_8","acicategory",[secondcount , secondRate.toFixed(2) ])+"%\n";
+    report+=system.functions.scmsg("TestReport_9","acicategory",[thirdcount , thirdRate.toFixed(2) ])+"%\n";
+    report+=system.functions.scmsg("TestReport_10","acicategory",[invalidcount , invalidRate.toFixed(2) ])+"%\n";
+    report+=system.functions.scmsg("TestReport_11","acicategory",[misscount , notEqualRate.toFixed(2) ])+"%\n";
+    }
+    report+=system.functions.scmsg("TestReport_12","acicategory",[totelCount]) ;
+    
+  
+  return report;
+}
+
+function removeOneCategoryGroup(groupid)
+{
+   lib.jsaci.setIDOLServer(null);
+   var f = new SCFile(CONSTANT.getCategoryFileName());
+   if(f.doSelect("parentid=0 and groupid="+groupid) != RC_SUCCESS)
+    {
+      myPrint("Can't find category record, the category group may not exsiting");
+      return ;
+    }
+       
+  /// force delete ignore the server status
+  lib.jsaci.DeleteOneCategory(f.id);
+  var rc =f.doSelect("groupid="+groupid);
+  while(rc == RC_SUCCESS)
+  {
+    f.doDelete();
+    rc = f.getNext();
+  }
+
+  
+  var f1 = new SCFile(CONSTANT.getCategoryTestFileName());
+  rc = f1.doPurge("groupid="+groupid);
+ 
+  var f2 = new SCFile(CONSTANT.getSubGroupStatusFileName());
+  rc = f2.doPurge("adapter.id="+groupid);
+
+    
+  var f3 = new SCFile(CONSTANT.getIdolTestSampleFileName());
+  rc = f3.doSelect("groupid="+groupid);
+  var f4 = new SCFile(CONSTANT.getIdolTestResultFileName());
+  while(rc == RC_SUCCESS)
+  {
+    f4.doPurge("testsampleid="+f3.id);
+    rc=f3.getNext();
+  }
+  f3.doPurge("groupid="+groupid);
+      
+  
+}
+
+function removeOneCategorySubGroup(groupid,subgroupname)
+{
+  lib.jsaci.setIDOLServer(null);
+  var subgroup= findSubGroupByName(groupid,subgroupname);
+  if(subgroup&gt;0)
+  {
+    if(removeOneCategorySubGroup2(groupid,subgroup))
+    {
+    
+     
+    }
+  }
+  
+  var f = new SCFile(CONSTANT.getSubGroupStatusFileName());
+  rc = f.doSelect("adapter.id="+groupid+" and security.id=\""+subgroupname+"\"");
+  if(rc == RC_SUCCESS)
+  {
+    f.doRemove();
+  }
+  
+  var f3 = new SCFile(CONSTANT.getIdolTestSampleFileName());
+  rc = f3.doSelect("groupid="+groupid +" and subgroup="+subgroup);
+  var f4 = new SCFile(CONSTANT.getIdolTestResultFileName());
+  while(rc == RC_SUCCESS)
+  {
+    f4.doPurge("testsampleid="+f3.id);
+    rc=f3.getNext();
+  }
+  f3.doPurge("groupid="+groupid +" and subgroup="+subgroup);
+}
+
+
+// true is running, false already over or exit
+function autoCategorizationTaskIsRunning(groupid,subgroupname)
+{
+  var f = new SCFile(CONSTANT.getCategoryFileName());
+  var rc = f.doSelect("id=0");
+  if(rc == RC_SUCCESS)
+  {
+    var ar = new Array();
+    if(f.traindocs != null)
+    {
+      ar = f.traindocs.toArray();
+    }
+    else
+    {
+      return false;
+    }
+    var str ="";
+    if(ar.length&gt;0)
+    {
+      str = ar[0].toString();
+    }
+    else
+    {
+       return false;
+    }
+    var mystr = groupid+",";
+    if(subgroupname!= undefined &amp;&amp; subgroupname!=null &amp;&amp; subgroupname != "")
+    {
+      mystr = groupid + "["+subgroupname+"],";
+      if(str.indexOf(mystr)!=-1)
+      {
+        return true;
+      }
+    }
+    else
+    {
+      if(str.indexOf(mystr)!=-1)
+      {
+        return true;
+      }
+      else if(str.indexOf(groupid+"[") != -1)
+      {
+        return true;
+      }
+    }
+    
+  } 
+  
+  return false; 
+}
+
+function refreshSubGroupTrainingAndTestStatus(groupid)
+{
+   if(isGroupConfigAsMultiCompany(groupid))
+    {
+       var allsubgroups = 0;
+       var finished = 0;
+       var notstart=0;
+       var inprocess=0;
+       var fsec = new SCFile(CONSTANT.getSubGroupStatusFileName());
+       var myrc = fsec.doSelect("adapter.id="+groupid);
+       while(myrc == RC_SUCCESS)
+      {
+      var subar= getSubGroupRunningStatus(groupid,fsec.security_id);
+      var testar = getCategoryGroupTestRunningStatus(groupid,fsec.security_id);
+      var testresults =getCategorySubGroupTestResult(groupid,fsec.security_id);
+      var first = null;
+      var totalthree = null;
+      if(testresults.length &gt;= 3)
+      {
+        first = testresults[0];
+        totalthree=testresults[2];
+      }
+      updateSubGroupStatus(groupid,fsec.security_id,-1,10000,subar[1], 10000,testar[1],first,totalthree);
+      myrc= fsec.getNext();
+      }
+      
+    }
+ 
+}
+
+//*****************tools function*******************
+
+function getCategoryFilter()
+{
+  var f = vars.$G_IDOL_CATEGORY_FILTER;
+  if(f == null )
+  {
+    return null;
+  }
+  return f;
+}
+function setCategoryFilter(afilter)
+{
+  vars.$G_IDOL_CATEGORY_FILTER=afilter;
+ 
+}
+function setDataCleanPattens(p)
+{
+  vars.$G_IDOL_PATTEN_MODULES = p;
+  vars.$G_IDOL_PATTEN_VALUES=p;
+}
+function getDataCleanPattens(filename,type)
+{
+  var fixname = filename+"__"+type;
+  var modu = [];
+  var av  = [];
+  var patters = [];
+  if(vars.$G_IDOL_PATTEN_MODULES != null)
+  {
+    modu = vars.$G_IDOL_PATTEN_MODULES.toArray();
+  }
+  var idx=-1
+  for(var i=0; i &lt; modu.length &amp;&amp; vars.$G_IDOL_PATTEN_VALUES[i] != null; i++)
+  {
+    var onetype = vars.$G_IDOL_PATTEN_VALUES[i].toArray();
+    av.push(onetype);
+    if(modu[i] == fixname)
+    {
+      idx=i;
+      break;
+    }
+  }
+  if(idx == -1)
+  {
+    modu.push(fixname);
+    patters = lib.IDOLDataCleansing.require().getDataCleanPatterns(type,filename);
+    var mypatters = [];
+    for(var m=0; m &lt; patters.length; m++)
+    {
+       var onepatter = patters[m];
+       for(var n=0; n&lt;onepatter.length;n++)
+       {
+         mypatters.push(onepatter[n]);
+       }
+    }
+    av.push(mypatters);
+    vars.$G_IDOL_PATTEN_MODULES= modu;
+    vars.$G_IDOL_PATTEN_VALUES= av;
+    
+  }
+  else
+  {
+    var allpatter = av[idx];
+    for(var k=0;k &lt; allpatter.length;k=k+4)
+    {
+       patters.push([allpatter[k],allpatter[k+1],allpatter[k+2],allpatter[k+3]]);
+    }
+  }
+  
+  return patters;
+}
+
+
+function getCategoryIDOLDatabase(filename,group,subgroup)
+{
+  var db="";
+  var realgroup = group.substring(0,32);
+  if(subgroup != null &amp;&amp; subgroup!="")
+  {
+    db=filename + "_" + realgroup+"_"+subgroup;
+  }
+  else
+  {
+   db=filename+ "_" + realgroup;
+  }
+  db=db.replace(/ /g,"_");
+  db=db.replace(/&amp;/g,"_");
+  db=db.replace(/\t/g,"_");
+  db = encodeURIComponent(db);
+  if(db.length &gt; 64)
+  {
+    db = db.substring(0,64);
+  }
+  return db;
+}
+
+function isNeedToCreateThisCategory(category,subcategory,producttype)
+{
+  var ar =getCategoryFilter();
+  if(ar == null )
+  {
+    //no filter
+    return true;
+  }
+  var afilter=ar.toArray();
+  if(category == null || category=="")
+  {
+    return false;
+  }
+  //make key string
+  var key = category;
+  if(subcategory != null &amp;&amp; subcategory !="")
+  {
+    key +="=&gt;"+subcategory;
+  }
+  if(producttype != null &amp;&amp; producttype !="")
+  {
+    key +="=&gt;"+producttype;
+  }
+  if(CategoryUtilLib.stringAleadyInArray(key,afilter))
+  {
+    myPrint("find category "+ key +"in filter,ignore this category.. ");
+    return false;
+  }
+  return true;
+}
+
+
+function myPrint(str)
+{
+  lib.jsaci.myPrint(str);
+}
+
+
+function checkCategoryModuleStatus()
+{
+    var isokay = lib.jsaci.checkCategoryStatus(0);
+    var itryed =0;
+     while(isokay ==false &amp;&amp; itryed &lt;140 )
+     {
+       myPrint("waiting for category module is ready");
+       system.functions.sleep(5);
+       isokay=lib.jsaci.checkCategoryStatus(0);
+       itryed++;
+     }
+     if(itryed &gt;=140)
+     {
+       myPrint("category module is not ready in a long time, please check the IDOL server and try again");
+ 
+     }
+    return isokay;
+}
+
+
+function readCategoryStatus(id)
+{
+    var isokay = lib.jsaci.checkCategoryStatus(id);
+    var itryed =0;
+     while(isokay ==false &amp;&amp; itryed &lt;3 )
+     {
+       myPrint("waiting for get the status for category "+id);
+       system.functions.sleep(5);
+       isokay=lib.jsaci.checkCategoryStatus(id);
+       itryed++;
+     }
+     if(itryed &gt;=3)
+     {
+       myPrint("can't read the status for category "+id+" IDOL server or network is offline? please check that and try again");
+ 
+     }
+    return isokay;
+}
+
+
+function getAllCategoryFields(filename)
+{
+  var f = new SCFile(CONSTANT.getCategoryConfigFileName());
+  var ar = new Array();
+  var rc = f.doSelect("table.name=\""+filename+"\"");
+  while(rc == RC_SUCCESS)
+  {
+    if(f.level1_field!=null &amp;&amp; f.level1_field!="")
+    {
+      if(false == CategoryUtilLib.stringAleadyInArray(f.level1_field.toString(),ar))
+      {
+        ar.push(f.level1_field.toString());
+      }
+    }
+    
+    if(f.level2_field!=null &amp;&amp; f.level2_field!="")
+    {
+      if(false == CategoryUtilLib.stringAleadyInArray(f.level2_field.toString(),ar))
+      {
+        ar.push(f.level2_field.toString());
+      }
+    }
+    
+    if(f.level3_field!=null &amp;&amp; f.level3_field!="")
+    {
+      if(false == CategoryUtilLib.stringAleadyInArray(f.level3_field.toString(),ar))
+      {
+        ar.push(f.level3_field.toString());
+      }
+    }
+    
+    rc = f.getNext();
+    
+  }
+  
+  return ar;
+}
+
+function getFileReferenceFields(filename)
+{
+   //find first unique key
+  var ret = null;
+  var f= new SCFile("dbdict");
+  var rc= f.doSelect("name=\""+filename+"\"");
+  if(rc == RC_SUCCESS)
+  {
+    var keys = f.key.toArray();
+    for(var i=0;i&lt;keys.length;i++)
+    {
+      if(f.key[i].flags == 12 || f.key[i].flags === 28)
+      {
+        ret = f.key[i].name.toArray();
+        break;
+      }
+    }
+  }
+   
+  if (ret &amp;&amp; ret.length &gt; 0) {
+      for (var i = 0, length = ret.length; i &lt; length; i++) {
+        var field = ret[i] || "";
+        var parts = field.split(',');
+        ret[i] = parts[parts.length - 1];
+      }
+  }
+  return ret;
+}
+
+function indexOneCategory(filename,idoldatabase,keys,title,timefield,categoryfields,sourcefields,catefield,subcatefield,
+                             earafield,buserandom,wantfetchcount,packetsize,bindex,id,catename,subcatename,earaname,query,
+                             testnum,multi_query,include_ar,exclude_ar,remove_ar,taxtonomy,dis_field,dis_value,company)
+{
+  //first query the data 
+  var logname = catename;
+  if(subcatename != null &amp;&amp; subcatename !="")
+  {
+   logname +="=&gt;"+subcatename;
+  }
+  if(earaname!=null &amp;&amp; earaname !="")
+  {
+   logname +="=&gt;"+earaname;
+  }
+  myPrint("start to index category [id:"+id+"] [name :"+ logname + "] with random :"+ buserandom +" fetchcount :"+wantfetchcount);
+  var f = new SCFile(filename,SCFILE_READONLY);
+
+ 
+  
+  var querycondition = "";
+  if(catefield!=null &amp;&amp; catefield!="")
+  {
+   querycondition +=catefield+"=\""+catename+"\"" ;
+  }
+  if(subcatefield!=null &amp;&amp; subcatefield !="")
+  {
+    querycondition += " and "+subcatefield+"=\""+subcatename+"\"";
+   
+  }
+  
+  if(  earafield!=null &amp;&amp; earafield !="")
+  {
+    querycondition += " and "+earafield+"=\""+earaname+"\"";
+   
+  }
+  if(query !=null &amp;&amp; query !="" &amp;&amp; query.toString() != "true" )
+  {
+    querycondition += " and "+query;
+  }
+  if(multi_query != null &amp;&amp; multi_query !="")
+  {
+    querycondition += " and "+multi_query;
+  }
+  
+  var arnum = null;
+  var testtotalcount = 0;
+  var fetchcount=wantfetchcount;
+  if(buserandom)
+  {
+    var f2 = new SCFile(filename,SCFILE_READONLY);
+  var num = f2.doCount(querycondition);
+  
+  if(num &gt; fetchcount*3) // only this situation, random is reasonable
+  {
+    var dn = new Date();
+    myPrint(dn);
+    myPrint("start ot generate the random array");
+    var ranmax = num / 10;
+    if(fetchcount *5 &gt; ranmax &amp;&amp; fetchcount *5 &lt; num )
+    {
+      ranmax =fetchcount *5 ;
+    }
+    else if(fetchcount *3 &gt; ranmax )
+    {
+      ranmax =fetchcount *3 ;
+    }
+    arnum = lib.jsaci.generateRandomArray(ranmax,fetchcount);
+    dn = new Date();
+    myPrint(dn +"\n" + arnum);
+  }
+  else
+  {
+     myPrint("this category only include "+num+ " is too less, ignore  random")
+  }
+    f2=null;
+    
+    testtotalcount = parseInt(num * testnum /100);
+    if(testtotalcount &lt;1)
+    {
+      testtotalcount =1;
+    }
+    if((testtotalcount + fetchcount) &gt; num)
+    {
+      fetchcount = num-testtotalcount;
+      
+      if(fetchcount&lt;testtotalcount)
+     {
+      fetchcount = testtotalcount;
+      testtotalcount = num - fetchcount;
+     }
+    }
+    
+  }
+  myPrint("Now is start to fetch records...for training document:" +fetchcount+" test document: "+testtotalcount + " from "+num);
+  var fields = new Array();
+  for(var i=0;i&lt;keys.length;i++)
+  {
+    fields.push(keys[i]);
+  }
+  if(timefield != null &amp;&amp; timefield !="")
+  {
+     var sortOrder = new Array(SCFILE_DSC,SCFILE_DSC);
+     var sortFields = new Array(timefield,keys[0]);
+     rc =f.setOrderBy(sortFields,sortOrder);
+     myPrint("setorderby return "+rc);
+     fields.push(timefield);
+     
+  }
+  if(title != null &amp;&amp; title != "")
+  {
+    fields.push(title);
+  }
+  for(var i=0;i&lt;categoryfields.length;i++)
+  {
+    fields.push(categoryfields[i]);
+  }
+  for(var i=0;i&lt;sourcefields.length;i++)
+  {
+    if(CategoryUtilLib.stringAleadyInArray(sourcefields[i],fields) == false)
+    {
+      fields.push(sourcefields[i]);
+    }
+  }
+ 
+  rc = f.setFields( fields );
+  rc = f.doSelect(querycondition);
+  var icount =0;
+  var ar = new Array();
+  var ialreadyindex =0;
+  var strdata ="";
+  var ireadcount = 0;
+  var alreadyindex = 0;
+  var docref="";
+  var testref="";
+  var testgotcount =0;
+  while(rc == RC_SUCCESS )
+  {
+    icount++;
+    var busetotraining = false;
+    if(fetchcount &gt; ireadcount )
+    {
+      busetotraining = true;
+    }
+    else if(testgotcount&gt;=testtotalcount &amp;&amp; fetchcount &lt;= ireadcount)
+    {
+      break;
+    }
+   
+      if( arnum != null &amp;&amp; busetotraining &amp;&amp; arnum[ireadcount] &gt; icount )
+      {
+         busetotraining = false;
+     
+      }
+    
+   
+    if(bindex)
+    {
+      strdata +=generateIdxDataForIDOL(f,keys,timefield,title,categoryfields,sourcefields,include_ar,exclude_ar,remove_ar,taxtonomy,
+                                         busetotraining, dis_field, dis_value);
+    }
+   
+    var ref="";
+    for(var i=0;i&lt;keys.length;i++)
+    {
+     if(ref !="")
+     {
+       ref +="-";
+     }
+     var keyname = keys[i].toString().replace(/\./g,"_");
+     keyname =keyname.replace(/,/g,".");
+     ref+=f[keyname];
+    }
+    
+    if(busetotraining)
+    {
+      if(docref !="")
+     {
+      docref +=",";
+     }
+      docref +=ref;
+      ireadcount++;
+    }
+    else if(testgotcount &lt; testtotalcount)
+    {
+       
+       if(testref !="")
+       {
+        testref +=",";
+       }
+       testref +=ref;
+       testgotcount++;
+    }
+    if(icount %500 == 0 )
+    {
+      myPrint("already generate training documents :" +ireadcount +",test documents:"+testgotcount+" with fetch "+icount);
+    }
+    // 50 record pertime
+    if(bindex &amp;&amp; ireadcount&gt;=0 &amp;&amp; (icount % packetsize==0))
+    {
+      strdata += "#DREENDDATAREFERENCE\n\n";
+      myPrint("start to index data for "+icount);
+      if(null == lib.jsaci.IndexDataToIdol(idoldatabase,strdata) &amp;&amp; false == readCategoryStatus(id))
+      {
+        return -1;
+      }
+      // we need to wait the index finish or we will get all fail due to server is busy...
+      alreadyindex += packetsize;
+      strdata ="";
+    
+      
+       
+         
+      
+     }
+    if(testgotcount&gt;=testtotalcount &amp;&amp; fetchcount &lt;= ireadcount)
+    {
+      break;
+    } 
+
+    rc = f.getNext();
+  }
+  
+  
+   if(bindex &amp;&amp; strdata!="")
+    {
+      strdata += "#DREENDDATAREFERENCE\n\n";
+      myPrint("start to index data for "+(icount-alreadyindex));
+      if(null == lib.jsaci.IndexDataToIdol(idoldatabase,strdata) &amp;&amp; false == readCategoryStatus(id))
+      {
+        return -1;
+      }
+      // we need to wait the index finish or we will get all fail due to server is busy...
+      
+     
+      strdata ="";
+   
+      
+    }
+    var fcate = new SCFile(CONSTANT.getCategoryFileName());
+    fcate.doSelect("id="+id)
+    fcate.indexdocs[0] = docref;
+    fcate.testdocs[0]=testref;
+    fcate.status=1;
+    fcate.traincount = ireadcount;
+    fcate.indexcount=icount;
+    fcate.doUpdate();
+    insertTestSample(fcate,company);    
+    
+    if(ireadcount &lt;fetchcount)
+    {
+      var strmsg = "source data for training category ["+id+"-"+catename+"-"+subcatename+"-"+earaname+"] is not enough, expect at least "+fetchcount+" but only get "+ireadcount
+      myPrint(strmsg);
+     
+    }
+    if(bindex)
+    {
+      myPrint("already index category "+ id+ " for " + icount +" documents.");
+    }
+    return testgotcount;
+}
+
+function indexDataForAllCategory(groupid,filename,idoldatabase,keys,title,timefield,categoryfields,sourcefields,catefield,
+                                    subcatefield,earafield,buserandom,fetchcount,packetsize,bindex,query,testnum,subgroup,multi_query,taxtonomy,company)
+{
+  try
+  {
+    lib.jsaci.removeAllDataFromDatabase(idoldatabase);
+    lib.jsaci.compactData();
+    var f = new SCFile(CONSTANT.getCategoryFileName());
+    var strsql = "groupid="+groupid +" and sourcecount&gt;0 and status=0 and parentid&gt;0";
+    if(subgroup&gt;0)
+    {
+      strsql += " and subgroup="+subgroup;
+    }
+    var rc = f.doSelect(strsql);
+    var inc_ar = getDataCleanPattens(filename,"Include");
+    var exc_ar = getDataCleanPattens(filename,"Exclude");
+    var rm_ar = getDataCleanPattens(filename,"Remove");
+    var testsource =0;
+    var dis = lib.jsaci.getDistributeNameAndValue(idoldatabase);
+    
+    while(rc == RC_SUCCESS)
+   {
+   
+     var testgot =indexOneCategory(filename,idoldatabase,keys,title,timefield,categoryfields,sourcefields,catefield,subcatefield,
+                                     earafield,buserandom,fetchcount,packetsize,bindex,f.id,f.category,f.subcategory,f.product_type,
+                                     query,testnum,multi_query,inc_ar,exc_ar,rm_ar,taxtonomy,dis[0],dis[1],company);
+     if(testgot == -1)
+     {
+       return -1;
+     }
+     testsource+=testgot;
+     checkTaskIsStoped();
+     rc = f.getNext();
+   }
+   lib.jsaci.flushIndexData();
+   return testsource;
+  }
+  catch(e)
+  {
+    ExceptionLib.setLastTrainingException(e);
+    myPrint("indexDataForAllCategory meet exception:"+e);
+    return -1;
+  }
+}
+function getNextPossibleID(curentid)
+{
+  var rteReturnValue = new SCDatum();
+  var rteNumber = new SCDatum();
+ try
+ { 
+  system.functions.rtecall( "getnumber", rteReturnValue, rteNumber, "cate2idolid", null );
+ }
+ catch(e)
+ {
+   return curentid+1;
+ }
+  var nextid= parseInt(rteNumber.getText());
+  if(nextid.toString()== "NaN" || nextid&lt;=curentid)
+  {
+    nextid = curentid+1;
+  }
+  return nextid;
+}
+function getNextCategoryID(curentid)
+{
+
+  var nextid = getNextPossibleID(curentid);
+   var isokay = lib.jsaci.checkCategoryStatus(nextid);
+   while(isokay )
+   {
+      
+       nextid =getNextPossibleID(nextid);
+       isokay = lib.jsaci.checkCategoryStatus(nextid);
+   }
+ return nextid;
+}
+
+function stopTrainingTask()
+{
+  var f = new SCFile(CONSTANT.getCategoryFileName());
+  var rc = f.doSelect("id=0");
+  if(rc == RC_SUCCESS)
+  {
+    f.status=1;
+    f.doUpdate();
+  }
+  else
+  {
+    f.id=0;
+    f.parentid=-1;
+    f.status=1;
+    f.testflag=0;
+    f.doInsert();
+  }
+}
+
+function finishTrainingTask(groupid,subgroupname)
+{
+  var f = new SCFile(CONSTANT.getCategoryFileName());
+  var rc = f.doSelect("id=0");
+  if(rc == RC_SUCCESS)
+  {
+    var ar = f.traindocs.toArray();
+    var str = ar[0].toString();
+    var mystr = groupid+",";
+    if(subgroupname != undefined &amp;&amp; subgroupname!=null &amp;&amp; subgroupname!= "")
+    {
+      mystr = groupid+"["+subgroupname+"],";
+    }
+    f.traindocs[0]=str.replace(mystr,"");
+    f.doUpdate();
+  }
+ 
+}
+function startTrainingTask(groupid,subgroupname)
+{
+  var f = new SCFile(CONSTANT.getCategoryFileName());
+  var rc = f.doSelect("id=0");
+  var mystr = groupid+",";
+  if(subgroupname != undefined &amp;&amp; subgroupname!=null &amp;&amp; subgroupname!= "")
+  {
+    mystr = groupid+"["+subgroupname+"],";
+  }
+  if(rc == RC_SUCCESS)
+  {
+    var ar = new Array();
+    if(f.traindocs != null)
+    {
+      ar = f.traindocs.toArray();
+    }
+    var str ="";
+    
+   
+    
+    if(ar.length&gt;0)
+    {
+      str = ar[0].toString();
+    }
+    if( str.indexOf(mystr) != -1)
+    {
+    }
+    else
+    {
+      str += mystr;
+    }
+ 
+     f.traindocs[0] = str;
+     f.status=0;
+     f.testflag=0;
+     f.doUpdate();
+  }
+  else
+  {
+    f.id=0;
+    f.parentid=-1;
+    f.traindocs[0]=mystr;
+    f.status=0;
+    f.testflag=0;
+    f.doInsert();
+  }
+}
+
+
+function checkTaskIsStoped(bupdate)
+{
+  var f = new SCFile(CONSTANT.getCategoryFileName());
+  var rc = f.doSelect("id=0 and status=1");
+  if(rc == RC_SUCCESS)
+  {
+    if(bupdate != undefined &amp;&amp; bupdate ==  true)
+    {
+      f.status=0;
+      f.doUpdate();
+      return true;
+    }
+    else
+    {
+      throw "User ask to stop task";
+    }
+  }
+  return false;
+}
+function stopTestTask()
+{
+  var f = new SCFile(CONSTANT.getCategoryFileName());
+  var rc = f.doSelect("id=0");
+  if(rc == RC_SUCCESS)
+  {
+    f.testflag=1;
+    f.doUpdate();
+  }
+  else
+  {
+    f.id=0;
+    f.parentid=-1;
+    f.testflag=1;
+    f.status=0;
+    f.doInsert();
+  }
+}
+function checkTestIsStoped()
+{
+  var f = new SCFile(CONSTANT.getCategoryFileName());
+  var rc = f.doSelect("id=0 and testflag=1");
+  if(rc == RC_SUCCESS)
+  {
+    f.testflag=0;
+    f.doUpdate();
+    return true;
+  }
+  return false;
+}
+
+function getMaxCategoryID(groupid)
+{
+   var f = new SCFile(CONSTANT.getCategoryFileName());
+   var str = "select max(id) from "+CONSTANT.getCategoryFileName();
+   if(groupid &gt; 0)
+   {
+     str += " where groupid="+groupid;
+   }
+   var rc = f.doSelect(str);
+   var id =0;
+   if(rc == RC_SUCCESS &amp;&amp; f[0]!=null )
+   {
+     myPrint(f);
+     id = parseInt(f[0]);
+   }
+   return id;
+}
+
+var IDOLCommon = lib.IDOLCommon.require();
+
+function findTitleAndTimeField(filename,categoryfields)
+{
+  var outar = new Array();
+  outar.push("");
+  outar.push("");
+  var f = new SCFile(CONSTANT.getIDOLIndexConfigFileName());
+  var feature = IDOLCommon.FEATURES.SC;
+  var rc = f.doSelect("table.name=\""+filename+"\" and feature=\"" + feature + "\"");
+  if(rc == RC_SUCCESS)
+  {
+     var ar = f.fields.toArray();
+    for(var i=0;i&lt;ar.length;i++)
+    {
+      if(f.fields[i].type =="content")
+      {
+      }
+      else if(f.fields[i].type =="property")
+      {
+        categoryfields.push(f.fields[i].name);
+      }
+      else if(f.fields[i].type =="title")
+      {
+        outar[0]=f.fields[i].name;
+      }
+      else if(f.fields[i].type =="timestamp")
+      {
+         outar[1]=f.fields[i].name;
+      }
+    }
+  }
+  
+  return outar;
+}
+function getSecurityGroupQuery(incs,fieldname,isnot)
+{
+   var inc_query ="";
+   var byisin="";
+   var bylike="";
+   for(var i=0;i&lt;incs.length;i++)
+   {
+     if(incs[i].indexOf("*") !=-1)
+     {
+       if(bylike != "")
+       {
+         bylike +=" or ";
+       }
+         bylike += fieldname+" like \""+incs[i]+"\" ";
+      }
+      else
+      {
+        if(byisin !="")
+        {
+          byisin +=",";
+        }
+          
+        byisin +="\""+incs[i]+"\"";
+      }
+   }
+   if(byisin !="")
+   {
+     
+     if(isnot)
+     {
+       inc_query =" not ("+fieldname+" isin {"+byisin+"}) ";
+     }
+     else
+     {
+       inc_query =fieldname+" isin {"+byisin+"} ";
+     }
+   }
+   if(isnot == false &amp;&amp; bylike !="")
+   {
+     if(inc_query != "")
+     {
+       inc_query+=" or (";
+     }
+     inc_query+=bylike+" ) ";
+    }
+     
+   return  inc_query;
+}
+function makeSecurityGroupQuery(securitygroup, fieldname)
+{
+  //first, find the mandant field
+  var busesecuritygroup = false;
+  if(busesecuritygroup)
+  {
+    var fs = new SCFile("scsecuritygroup");
+    var rc = fs.doSelect("security.id=\""+securitygroup+"\"");
+    var inc_query ="";
+    var exc_query="";
+    if(rc == RC_SUCCESS)
+    {
+ 
+      var incs = null;
+      var excs = null;
+      if(fs.include != null)
+      {
+        incs = fs.include.toArray();
+      }
+      else
+      {
+        incs = new Array();
+      }
+      if(fs.exclude != null)
+      {
+        excs = fs.exclude.toArray();
+      }
+      else
+      {
+        excs = new Array();
+      }
+      inc_query = "("+getSecurityGroupQuery(incs,fieldname,false)+")";
+      exc_query=getSecurityGroupQuery(excs,fieldname,true);
+    }
+    if( exc_query != "")
+    {
+      inc_query += " and ("+ exc_query+")";
+    }
+  
+    return inc_query;
+  }
+  else
+  {
+    return fieldname+"=\""+securitygroup+"\"";
+  }
+}
+function getMandantField(filename)
+{
+  var fm = new SCFile("scmandant");
+  var rc = fm.doSelect("filename=\""+filename+"\"");
+  if(rc == RC_SUCCESS)
+  {
+    return fm.fieldname;
+  }
+  return "";
+}
+function isGroupConfigAsMultiCompany(groupid)
+{
+    var f = new SCFile(CONSTANT.getCategoryFileName());
+    var rc = f.doSelect("parentid=0 and groupid="+groupid);
+    if(rc == RC_SUCCESS &amp;&amp; f.subgroup &gt; 0)
+    {
+      return true;
+    }
+    
+    return false;
+}
+
+function findSubGroupByName(groupid,subgroupname)
+{
+   var fcate = new SCFile(CONSTANT.getCategoryFileName());
+   var rc = fcate.doSelect("parentid=0 and groupid="+groupid);
+   if(RC_SUCCESS == rc)
+   {
+      var parent =fcate.id;
+      var groupname= fcate.name;
+     
+      rc = fcate.doSelect("parentid="+parent+" and groupid="+groupid+" and name=\""+subgroupname+"\"");
+      
+      if(RC_SUCCESS == rc)
+      {
+        return fcate.subgroup;
+      }
+   }
+   
+   return 0;
+}
+function updateSubGroupStatus(groupid,subgroupname,subgroup,ntrainingstatus,traindesc, teststatus,testdesc,firstrate,firstthreerate)
+{
+   var f = new SCFile(CONSTANT.getSubGroupStatusFileName());
+   rc = f.doSelect("adapter.id="+groupid+" and security.id=\""+subgroupname+"\"");
+   if(rc == RC_SUCCESS)
+   {
+     if(ntrainingstatus != 10000)
+     {
+       f.training_status=ntrainingstatus;
+       
+     }
+     if(traindesc!="")
+     {
+       f.training_status_desc=traindesc;
+     }
+     if(teststatus!= 10000)
+     {
+       f.testing_status=teststatus;
+      
+     }
+     if(testdesc !="")
+     {
+        f.testing_status_desc=testdesc;
+     }
+     if(subgroup&gt;-1)
+     {
+       f.subgroup_id=subgroup;
+     }
+     if(firstrate != null &amp;&amp; firstrate != undefined )
+     {
+       f.first_accuracy = firstrate;
+       f.total_three_accuracy=firstthreerate;
+     }
+     f.doUpdate();
+   }
+}
+
+
+function removeOneCategorySubGroup2(groupid,subgroup)
+{
+   var f = new SCFile(CONSTANT.getCategoryFileName());
+   var rc = f.doSelect("groupid="+groupid + " and subgroup="+subgroup);
+   if( rc != RC_SUCCESS)
+    {
+      myPrint("Can't find category record, the category group may not exsiting");
+      return true;
+    }
+
+  lib.jsaci.DeleteOneCategory(subgroup);
+  var ar = new Array();
+  while(rc == RC_SUCCESS)
+  {
+    ar.push(f.id);
+    rc = f.getNext();
+  }
+  
+  for(var i=0;i&lt;ar.length;i++)
+  {
+    rc = f.doSelect("id="+ar[i]);
+    if(rc == RC_SUCCESS)
+    {
+      f.doRemove();
+    }
+  }
+  
+  f = new SCFile(CONSTANT.getCategoryTestFileName());
+  rc = f.doPurge("groupid="+groupid + " and subgroup="+subgroup);
+  
+    
+  return true;
+}
+
+
+function getSubGroupRunningStatus(groupid,subgroupname)
+{
+   var f = new SCFile(CONSTANT.getSubGroupStatusFileName());
+  
+   var fcate = new SCFile(CONSTANT.getCategoryFileName());
+   var ar = new Array();
+    if( f.doSelect("security.id=\""+subgroupname+"\" and adapter.id="+groupid) != RC_SUCCESS)
+    {
+      
+      return ar;
+    }
+   var status = f.training_status
+   var subgroup = findSubGroupByName(groupid,subgroupname);
+   var categorycount = fcate.doCount("groupid="+groupid+" and subgroup="+subgroup);
+    if(status == null || categorycount == 0)
+    {
+      ar.push(-1);
+      ar.push(system.functions.scmsg("RunningStatus_1","acicategory"));
+    }
+    if(status == -2)
+     {
+       //failed during create
+      ar.push(-2);
+      ar.push(system.functions.scmsg("RunningStatus_4","acicategory"));
+       
+     }
+     else if(status == -22)
+     {
+      ar.push(-22);
+       ar.push(system.functions.scmsg("RunningStatus_4_1","acicategory"));
+     }
+     else if(status == -3)
+     {
+        ar.push(-3);
+        ar.push(system.functions.scmsg("RunningStatus_5","acicategory"));
+        ar.push(system.functions.scmsg("RunningStatus_5_1","acicategory"));
+     }
+     else if(status == -4)
+     {
+        ar.push(-4);
+        ar.push(system.functions.scmsg("RunningStatus_6","acicategory"));
+        ar.push(system.functions.scmsg("RunningStatus_6_1","acicategory"));
+     }
+     else if(status == -5)
+     {
+        ar.push(-5);
+        ar.push(system.functions.scmsg("RunningStatus_7","acicategory"));
+        ar.push(system.functions.scmsg("RunningStatus_7_1","acicategory"));
+     }
+      else if(status == -6 )
+     {
+        ar.push(-6);
+        ar.push(system.functions.scmsg("RunningStatus_8","acicategory"));
+        ar.push(system.functions.scmsg("RunningStatus_8_1","acicategory"));
+     }
+     else if( status == -7 )
+     {
+        ar.push(-7);
+        ar.push(system.functions.scmsg("RunningStatus_9","acicategory"));
+        ar.push(system.functions.scmsg("RunningStatus_9_1","acicategory"));
+     }
+     else if(status == -8)
+     {
+        ar.push(-8);
+        ar.push(system.functions.scmsg("RunningStatus_10","acicategory"));
+        ar.push(system.functions.scmsg("RunningStatus_10_1","acicategory"));
+     }
+     else if(status == -9)
+     {
+        ar.push(-9);
+        ar.push(system.functions.scmsg("RunningStatus_11","acicategory"));
+        ar.push(system.functions.scmsg("RunningStatus_11_1","acicategory"));
+     }
+      else if(status == -10)
+     {
+        ar.push(-10);
+        ar.push(system.functions.scmsg("RunningStatus_12","acicategory"));
+        ar.push(ystem.functions.scmsg("RunningStatus_12_1","acicategory"));
+     }
+     else if(status == -11)
+     {
+        ar.push(-11);
+        ar.push(system.functions.scmsg("RunningStatus_13","acicategory"));
+        ar.push(system.functions.scmsg("RunningStatus_13_1","acicategory"));
+     }
+    if(RC_SUCCESS != fcate.doSelect("id="+subgroup))
+    {
+      return ar;
+    }
+    
+    var fcurrent = new SCFile(CONSTANT.getCategoryFileName());
+    
+    
+    if(status == 0)
+    {
+      ar.push(0);
+      if(categorycount ==1)
+      {
+         ar.push(system.functions.scmsg("RunningStatus_14","acicategory"));
+        ar.push(system.functions.scmsg("RunningStatus_14_1","acicategory",[fcate.name]));
+      }
+      else 
+      {
+        
+        var sortOrder = new Array(SCFILE_DSC,SCFILE_DSC);
+      var sortFields = new Array("id","sourcecount");
+       fcurrent.setOrderBy(sortFields,sortOrder);
+        fcurrent.doSelect("subgroup="+subgroup+" and groupid="+groupid);
+        ar.push(system.functions.scmsg("RunningStatus_15","acicategory",[fcurrent.name]));
+        ar.push(system.functions.scmsg("RunningStatus_15_1","acicategory",[fcurrent.id,fcurrent.name]));
+      }
+    }
+    else if(status == 1)
+    {
+      ar.push(1);
+      var catecount =  fcurrent.doCount("subgroup="+subgroup+" and groupid="+groupid + " and sourcecount&gt;0 ");
+      var indexcount = fcurrent.doCount("subgroup="+subgroup+" and groupid="+groupid +" and sourcecount&gt;0 and status=1");
+      if(indexcount&lt;catecount)
+      {
+        indexcount++;
+      }
+      else
+      {
+        indexcount=catecount;
+      }
+      var sortOrder = new Array(SCFILE_ASC,SCFILE_ASC);
+      var sortFields = new Array("id","sourcecount");
+      fcurrent.setOrderBy(sortFields,sortOrder);
+      fcurrent.doSelect("subgroup="+subgroup+" and groupid="+groupid +" and sourcecount&gt;0 and status=0");
+      ar.push(system.functions.scmsg("RunningStatus_16","acicategory",[indexcount,catecount]));
+      ar.push(system.functions.scmsg("RunningStatus_16_1","acicategory",[indexcount,catecount,fcurrent.name]));
+      
+    }
+    else if(status == 2)
+    {
+      ar.push(2);
+      var catecount =  fcurrent.doCount("subgroup="+subgroup+" and indexcount&gt;0 and groupid="+groupid);
+      var traincount = fcurrent.doCount("subgroup="+subgroup+" and groupid="+groupid +" and indexcount&gt;0 and status=2");
+      if(traincount&lt;catecount)
+      {
+        traincount++;
+      }
+      else
+      {
+        traincount = catecount;
+        if(autoCategorizationTaskIsRunning(groupid,subgroupname) == false)
+        {
+            ar.push(system.functions.scmsg("RunningStatus_18","acicategory",[catecount]));
+            ar.push(system.functions.scmsg("RunningStatus_18_1","acicategory",[catecount]));
+            return ar;
+         }
+      }
+      var sortOrder = new Array(SCFILE_ASC,SCFILE_ASC);
+      var sortFields = new Array("id","sourcecount");
+      fcurrent.setOrderBy(sortFields,sortOrder);
+      fcurrent.doSelect("subgroup="+subgroup+" and groupid="+groupid +" and indexcount&gt;0 and status=1");
+      ar.push(system.functions.scmsg("RunningStatus_17","acicategory",[traincount,catecount]));
+      ar.push(system.functions.scmsg("RunningStatus_17_1","acicategory",[traincount,catecount,fcurrent.name]));
+    }
+    else if(status == 3)
+    {
+      ar.push(3);
+      if( (f.rm_low_weight == null ||f.rm_low_weight== false)
+          &amp;&amp; (f.adjust_term == null || f.adjust_term==false))
+          {
+             var catecount =  fcurrent.doCount("subgroup="+subgroup+" and indexcount&gt;0 and groupid="+groupid);
+             ar.push(system.functions.scmsg("RunningStatus_18","acicategory",[catecount]));
+             ar.push(system.functions.scmsg("RunningStatus_18_1","acicategory",[catecount]));
+          }
+       else if( f.rm_low_weight != null &amp;&amp; f.rm_low_weight )
+       {
+           
+           var rcsum =fcurrent.doSelect("select sum(indexcount) from "+CONSTANT.getCategoryFileName()+" where indexcount&gt;0 and groupid="+groupid+" and subgroup="+subgroup);
+           if(rcsum == RC_SUCCESS)
+           {
+             var allindexed = fcurrent[0];
+             fcurrent.doSelect("select sum(indexcount) from "+CONSTANT.getCategoryFileName()+" where status=3 and indexcount&gt;0 and groupid="+groupid+" and subgroup="+subgroup);
+             var handled = fcurrent[0];
+             if(handled&lt;allindexed)
+             {
+               handled++;
+             }
+             else
+             {
+               handled = allindexed;
+             }
+             ar.push(system.functions.scmsg("RunningStatus_19","acicategory",[handled,allindexed]));
+             ar.push(system.functions.scmsg("RunningStatus_19_1","acicategory",[handled,allindexed]));
+           }
+           else
+           {
+             ar.push(system.functions.scmsg("RunningStatus_20","acicategory"));
+             ar.push(system.functions.scmsg("RunningStatus_20_1","acicategory"));
+           }
+       }
+       else
+       {
+         ar.push(system.functions.scmsg("RunningStatus_21","acicategory"));
+         ar.push(system.functions.scmsg("RunningStatus_21_1","acicategory"));
+       }                         
+     
+    }
+    else if(status == 4)
+    {
+      ar.push(4);
+      ar.push(system.functions.scmsg("RunningStatus_22","acicategory"));
+      ar.push(system.functions.scmsg("RunningStatus_22_1","acicategory"));
+    }
+    else if(status == 5)
+    {
+      ar.push(5);
+      var catecount =  fcurrent.doCount("subgroup="+subgroup+" and indexcount&gt;0 and groupid="+groupid);
+      var traincount = fcurrent.doCount("subgroup="+subgroup+" and indexcount&gt;0 and groupid="+groupid+" and status=4");
+      if(traincount&lt;catecount)
+      {
+        traincount++;
+      }
+      else
+      {
+        traincount=catecount;
+      }
+      fcurrent.doSelect("subgroup="+subgroup+" and indexcount&gt;0 and groupid="+groupid+" and status&lt;4");
+      ar.push(system.functions.scmsg("RunningStatus_23","acicategory",[traincount,catecount]));
+      ar.push(system.functions.scmsg("RunningStatus_23_1","acicategory",[traincount,catecount,fcurrent.name]));
+    }
+    else if(status == 6)
+    {
+      ar.push(6);
+      if(f.adjust_term == null || f.adjust_term==false)
+      {
+        ar.push(system.functions.scmsg("RunningStatus_24","acicategory"));
+        ar.push(system.functions.scmsg("RunningStatus_24_1","acicategory"));
+      }
+      else
+      {
+        ar.push(system.functions.scmsg("RunningStatus_25","acicategory"));
+        ar.push(system.functions.scmsg("RunningStatus_25_1","acicategory"));
+      }
+    }
+    else if(status == 7)
+    {
+      ar.push(7);
+      var testfile = new SCFile(CONSTANT.getCategoryTestFileName());
+      var testcount= testfile.doCount("subgroup="+subgroup+" and groupid="+groupid);
+      var sourcefile = new SCFile(f.test_file_name);
+      var condition = true;
+      if(f.query_condition!=null &amp;&amp; "" !=f.query_condition)
+      {
+        condition = f.query_condition;
+      }
+      var all = sourcefile.doCount(condition);
+      ar.push(system.functions.scmsg("RunningStatus_26","acicategory",[testcount,all]));
+      ar.push(system.functions.scmsg("RunningStatus_26_1","acicategory",[all,testcount]));
+    }
+    else if(status == 8)
+    {
+      ar.push(8);
+      var catecount =  fcurrent.doCount("subgroup="+subgroup+" and traincount&gt;0 andgroupid="+groupid);
+      var didcount = fcurrent.doCount("subgroup="+subgroup+" and traincount&gt;0 and groupid="+groupid+" and status=6");
+      if(didcount&lt;catecount)
+      {
+        didcount++;
+      }
+      else
+      {
+        didcount= catecount;
+      }
+      fcurrent.doSelect("subgroup="+subgroup+" and traincount&gt;0 and groupid="+groupid+" and status&lt;6");
+      ar.push(system.functions.scmsg("RunningStatus_27","acicategory",[didcount,catecount]));
+      ar.push(system.functions.scmsg("RunningStatus_27_1","acicategory",[didcount,catecount,fcurrent.name]));
+      
+    }
+    else if(status == 9)
+    {
+      ar.push(9);
+      var catecount =  fcurrent.doCount("subgroup="+subgroup+" and traincount&gt;0 and groupid="+groupid);
+      var didcount = fcurrent.doCount("subgroup="+subgroup+" and traincount&gt;0 and groupid="+groupid+" and status=7");
+      if(didcount&lt;catecount)
+      {
+        didcount++;
+      }
+      else
+      {
+        didcount= catecount;
+      }
+      fcurrent.doSelect("subgroup="+subgroup+" and traincount&gt;0 and groupid="+groupid+" and status=6");
+      ar.push(system.functions.scmsg("RunningStatus_28","acicategory",[didcount,catecount]));
+      ar.push(system.functions.scmsg("RunningStatus_28_1","acicategory",[didcount,catecount,fcurrent.name]));
+    }
+    else if(status == 10)
+    {
+      ar.push(10);
+      var catecount =  fcurrent.doCount("subgroup="+subgroup+" and traincount&gt;0 and groupid="+groupid);
+      var didcount = fcurrent.doCount("subgroup="+subgroup+" and traincount&gt;0 and groupid="+groupid+" and status=8");
+      if(didcount&lt;catecount)
+      {
+        didcount++;
+      }
+      else
+      {
+        didcount= catecount;
+      }
+      fcurrent.doSelect("subgroup="+subgroup+" and traincount&gt;0 and groupid="+groupid+" and status=7");
+      ar.push(system.functions.scmsg("RunningStatus_29","acicategory",[didcount,catecount]));
+      ar.push(system.functions.scmsg("RunningStatus_29_1","acicategory",[didcount,catecount,fcurrent.name]));
+    }
+    else if(status == 11)
+    {
+      ar.push(11);
+      var catecount =  fcurrent.doCount("subgroup="+subgroup+" and traincount&gt;0 and groupid="+groupid);
+      ar.push(system.functions.scmsg("RunningStatus_30","acicategory",[catecount]) );
+      ar.push(system.functions.scmsg("RunningStatus_30_1","acicategory",[catecount]));
+    }
+    return ar;
+}
+
+// Major method to implement the logic
+//end with s is array, 
+//end with id and num is number, 
+//start with is is bool other is a string
+function createAndTrainingOneCategory(groupid,groupname,filename,idoldbname,categoryfield,subcategoryfield,producttypefield,
+                                          sourcefields,traindocnum,isremovelowweight,categorykeepnum,categorywieghtnum,
+                                          isadjustterm,trainingquery,testnum,wantparentid,query,mandantfield,subgroupname,sourcecoverage,trainmethod)
+{
+
+  if(idoldbname == null || idoldbname==""|| sourcefields == null ||sourcefields.length == 0|| filename == null || filename=="" 
+  || categoryfield==null || categoryfield=="" ||    groupname == null || groupname == ""|| traindocnum == null 
+  || traindocnum&lt;1)
+    {
+      myPrint("miss information,no content fields, no training document,or no file name or all category fields is empty, ignore auto categorization for "+groupname);
+      return -1;
+      
+    }
+
+    myPrint("Now is starting to handle auto categorization for [" +groupname+"] id is "+groupid+" idoldatabase :"+idoldbname);
+    myPrint("filename: "+filename +" category fields:"+categoryfield +"=&gt;"+subcategoryfield+"=&gt;"+producttypefield);
+    myPrint("source fields is:"+sourcefields);
+    myPrint("training document number is:"+traindocnum +" training query:"+trainingquery+" test percentage:"+testnum);
+    myPrint("suggest parentis is:"+wantparentid + " multi-tenency query:" + query);
+    myPrint("remove lower weight:"+isremovelowweight +" ,adjust terms:"+isadjustterm+" source coverage:"+sourcecoverage+",training method:"+trainmethod);
+    if(isremovelowweight!=null &amp;&amp; isremovelowweight)
+    {
+      myPrint("training optimizing(remove bad training documents): the lower document weight is :"+categorywieghtnum +" at least training documents to keep is:"+categorykeepnum);
+    }
+    else
+    {
+     myPrint("training optimizing(remove bad training documents) is not enabled");
+    }
+    if(isadjustterm != null  &amp;&amp; isadjustterm)
+    {
+      myPrint("training optimizing(adjust terms weight) is enabled");
+    }
+    else
+    {
+      myPrint("training optimizing(adjust terms weight) is not enabled");
+    }
+    var dt = new Date();
+    var startTime = dt.getTime();
+    var fcate = new SCFile(CONSTANT.getCategoryFileName());
+    var status = -1;
+    var sql = "";
+    if(wantparentid&gt;0)
+    {
+      sql = "groupid="+groupid+" and parentid="+wantparentid+ " and name=\""+subgroupname+"\"";
+    }
+    else
+    {
+      sql = "groupid="+groupid+" and parentid=0";
+    }
+    var hs = fcate.doSelect(sql);
+    if(hs == RC_SUCCESS)
+    {
+      status = fcate.status;
+    }
+    myPrint("current task status is :"+status);
+    if(status ==4)
+    {
+      //already finish, nothing to do
+      myPrint("already finished,nothing to do");
+      return 0;
+    }
+    var fadapter = new SCFile(CONSTANT.getCategoryConfigFileName());
+    if(fadapter.doSelect("adapter.id="+groupid) != RC_SUCCESS)
+    {
+      myPrint("Can't find category configuraion record, exit.");
+      return -1;
+    }
+    var adapterstatus = -1;
+    
+    if(wantparentid&gt;0)
+    {
+       var f = new SCFile(CONSTANT.getSubGroupStatusFileName());
+       var rc = f.doSelect("adapter.id="+groupid+" and security.id=\""+subgroupname+"\"");
+       adapterstatus = f.training_status;
+    }
+    else
+    {
+    
+      adapterstatus = fadapter.status ;
+    }
+    if(rc == RC_SUCCESS)
+   
+     myPrint("local group status is:"+fadapter.status +", adapterstatus:"+adapterstatus);
+     //remove the old training if existing
+     var rte = new Datum();
+     system.functions.rtecall("trigger", rte, 0);
+     if(status ==-1)
+     {
+     }
+     else if(adapterstatus == -2 || adapterstatus == -22)
+     {
+       //failed during create
+       if(wantparentid&gt;0)
+       {
+         cleanSubGroupTraining(groupid,subgroupname);
+       }
+       else
+       {
+         removeOneCategoryGroup(groupid);
+       }
+       status =-1;
+       
+     }
+     else if(adapterstatus == -3)
+     {
+       status = 0;
+     }
+     else if(adapterstatus == -4)
+     {
+       status =1;
+     }
+     else if(adapterstatus == -5)
+     {
+       status =2;
+     }
+      else if(adapterstatus == -6 || adapterstatus == -7 )
+     {
+       if(wantparentid&gt;0)
+       {
+        updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,4,"start to remove old", 10000,"");
+       }
+       else
+       {
+        fadapter.status=4;
+        fadapter.doUpdate();     
+       }
+
+      if(false == removeCategoryInIDOLByGroupid(groupid,fcate.subgroup))
+      {
+         system.functions.rtecall("trigger", rte, 1);
+         myPrint("fail to remove old category when optimize the training, please check the IDOL sever and try again...");
+         ExceptionLib.setLastTrainingException("fail to remove old category when optimize the training, fail to connecto IDOL server or server is busy!");
+         if(wantparentid&gt;0)
+         {
+           updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,-6,"fail to remove old", 10000,"");
+         }
+         else
+         {
+          fadapter.status=-6;
+          fadapter.last_training_time = new Date();
+          fadapter.doUpdate();  
+         }
+
+         return -6;
+      }
+      if(false == createCategoryInIDOLByGroupid(groupid,fcate.subgroup))
+      {
+         system.functions.rtecall("trigger", rte, 1);
+         myPrint("fail to re-build category when optimize the training, please check the IDOL sever and try again...");
+         ExceptionLib.setLastTrainingException("fail to re-build category when optimize the training, fail to connecto IDOL server or server is busy!");
+         if(wantparentid&gt;0)
+         {
+           updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,-7,"fail to re-build", 10000,"");
+         }
+         else
+         {
+          fadapter.status=-7;
+          fadapter.last_training_time = new Date();
+          fadapter.doUpdate();
+         }
+
+         return -7;
+        
+      }
+      if(wantparentid&gt;0)
+      {
+          updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,5,"start to re-training", 10000,"");
+      }
+      else
+      {
+         fadapter.status=5;
+         fadapter.last_training_time = new Date();
+         fadapter.doUpdate();
+      }
+
+      if(false == trainingCategoryFromDatabase(groupid,fcate.subgroup,trainmethod))
+      {
+         system.functions.rtecall("trigger", rte, 1);
+         if(ExceptionLib.getLastTrainingException() == null)
+         {
+           myPrint("fail to re-training category when optimize the training, please check the IDOL sever and try again...");
+           ExceptionLib.setLastTrainingException("fail to re-training category when optimize the training, fail to connecto IDOL server or server is busy!");
+         }
+         if(wantparentid&gt;0)
+         {
+           updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,-8,"fail to re-training", 10000,"");
+         }
+         else
+         {
+          fadapter.status=-8;
+          fadapter.last_training_time = new Date();
+          fadapter.doUpdate();
+         }         
+
+         return -8;
+      }
+      if(wantparentid&gt;0)
+      {
+         updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,6,"re-training okay", 10000,"");
+      }
+      {
+        fadapter.status=6;
+        fadapter.is_active=true;
+        fadapter.last_training_time = new Date();
+        fadapter.doUpdate();
+      }      
+
+      fcate.status =3;
+      fcate.doUpdate();
+      status =3;
+     }
+     else if(adapterstatus == -8)
+     {
+      if(wantparentid&gt;0)
+      {
+         updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,5,"start to re-training", 10000,"");
+      }
+      else
+      {
+        fadapter.status=5;
+        fadapter.last_training_time = new Date();
+        fadapter.doUpdate();
+      }      
+      
+
+      if(false == trainingCategoryFromDatabase(groupid,fcate.subgroup,trainmethod))
+      {
+         system.functions.rtecall("trigger", rte, 1);
+         if(ExceptionLib.getLastTrainingException() == null)
+         {
+           myPrint("fail to re-training category when optimize the training, please check the IDOL sever and try again...");
+           ExceptionLib.setLastTrainingException("fail to re-training category when optimize the training, fail to connecto IDOL server or server is busy!");
+         }
+          if(wantparentid&gt;0)
+         {
+           updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,-8,"fail to re-training", 10000,"");
+         }
+         else
+         {
+          fadapter.status=-8;
+          fadapter.last_training_time = new Date();
+          fadapter.doUpdate();
+         }         
+
+         return -8;
+      }
+      fadapter.status=6;
+      fadapter.is_active=true;
+      fadapter.last_training_time = new Date();
+      fadapter.doUpdate();
+      fcate.status =3;
+      fcate.doUpdate();
+      status =3;
+     }
+     else if(adapterstatus == -9)
+     {
+       status =3;
+     }
+      else if(adapterstatus == -10)
+     {
+       if(wantparentid&gt;0)
+       {
+          updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,9,"start to find terms", 10000,"");
+       }
+       else
+       {
+         fadapter.status=9;
+         fadapter.last_training_time = new Date();
+         fadapter.doUpdate();
+       }      
+      
+
+      if(false == getAdjustTermsWeightFromTestResult(groupid,categoryfield,subcategoryfield,producttypefield,idoldbname,fcate.subgroup))
+      {
+         system.functions.rtecall("trigger", rte, 1);
+         if(ExceptionLib.getLastTrainingException() == null)
+         {
+            myPrint("fail to get good terms when optimize the training, please check the IDOL sever and try again...");
+            ExceptionLib.setLastTrainingException("fail to get good terms when optimize the training, fail to connecto IDOL server or server is busy!");
+          }
+         if(wantparentid&gt;0)
+         {
+           updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,-10,"fail to find terms", 10000,"");
+         }
+         else
+         {
+           fadapter.status=-10;
+           fadapter.last_training_time = new Date();
+           fadapter.doUpdate();
+         }      
+       
+
+         return -10;
+      }
+      if(wantparentid&gt;0)
+      {
+        updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,10,"okay to find terms", 10000,"");
+       }
+       else
+       {
+         fadapter.status=10;
+         fadapter.last_training_time = new Date();
+         fadapter.doUpdate();
+       }      
+      if(false == adjustTermsWeightFromTestResult(groupid,fcate.subgroup))
+      {
+         system.functions.rtecall("trigger", rte, 1);
+         if(ExceptionLib.getLastTrainingException() == null)
+         {
+           myPrint("fail to get adjust terms weight when optimize the training, please check the IDOL sever and try again...");
+           ExceptionLib.setLastTrainingException("fail to get adjust terms weight when optimize the training, fail to connecto IDOL server or server is busy!");
+         }
+         if(wantparentid&gt;0)
+         {
+           updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,-11,"fail to adjust terms", 10000,"");
+         }
+         else
+         {
+           fadapter.status=-11;
+           fadapter.last_training_time = new Date();
+           fadapter.doUpdate();
+         }      
+
+         return -11;
+      }
+      if(wantparentid&gt;0)
+      {
+         updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,11,"okay to adjust terms", 10000,"");
+      }
+      {
+        fadapter.status=11;
+        fadapter.is_active=true;
+        fadapter.last_training_time = new Date();
+        fadapter.doUpdate();
+      }      
+
+      fcate.status =4;
+      fcate.doUpdate();
+      status =4;
+     }
+     else if(adapterstatus == -11)
+     {
+     
+       if(wantparentid&gt;0)
+      {
+        updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,10,"okay to find terms", 10000,"");
+       }
+       else
+       {
+         fadapter.status=10;
+         fadapter.last_training_time = new Date();
+         fadapter.doUpdate();
+       }      
+       
+      if(false == adjustTermsWeightFromTestResult(groupid,fcate.subgroup))
+      {
+         system.functions.rtecall("trigger", rte, 1);
+         if(ExceptionLib.getLastTrainingException() == null)
+         {
+           myPrint("fail to get adjust terms weight when optimize the training, please check the IDOL sever and try again...");
+           ExceptionLib.setLastTrainingException("fail to get adjust terms weight when optimize the training, fail to connecto IDOL server or server is busy!");
+         }
+         if(wantparentid&gt;0)
+         {
+           updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,-11,"fail to adjust terms", 10000,"");
+         }
+         else
+         {
+           fadapter.status=-11;
+           fadapter.last_training_time = new Date();
+           fadapter.doUpdate();
+         }      
+         
+         return -11;
+      }
+       if(wantparentid&gt;0)
+      {
+         updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,11,"okay to adjust terms", 10000,"");
+      }
+      {
+        fadapter.status=11;
+        fadapter.is_active=true;
+        fadapter.last_training_time = new Date();
+        fadapter.doUpdate();
+      }      
+      fcate.status =4;
+      fcate.doUpdate();
+      status =4;
+     }
+    if(status == -1)
+    {
+      myPrint("now is starting to create all the category in IDOL");
+      if(wantparentid&gt;0)
+      {
+        updateSubGroupStatus(groupid,subgroupname,0,0,"start", 10000,"");
+      }
+      else
+      {
+        fadapter.is_active=false;
+      }
+      fadapter.status=0;
+      
+      fadapter.last_training_time = new Date();
+      fadapter.doUpdate();   
+
+      var ar = createAllcategoryFromDatabase(filename,categoryfield,subcategoryfield,producttypefield,groupid,groupname,wantparentid,query,mandantfield,subgroupname,sourcecoverage);
+      if(false == ar[0])
+      {
+        if(wantparentid&gt;0)
+        {
+           if(ar[1] &gt;0)
+          {
+             updateSubGroupStatus(groupid,subgroupname,0,-2,"Create category failed", 10000,"");
+          }
+          else
+          {
+            updateSubGroupStatus(groupid,subgroupname,0,-22,"No Category found", 10000,"");
+          }
+        }
+        else
+        {
+          if(ar[1] &gt;0)
+          {
+            fadapter.status=-2;
+          }
+          else
+          {
+            fadapter.status=-22;
+          }
+          fadapter.last_training_time = new Date();
+          fadapter.doUpdate();
+        }
+        if(ar[1] &gt; 0)
+        {
+          ExceptionLib.setLastTrainingException("Create category failed, fail to connecto IDOL server or server is busy!");
+        }
+        myPrint("Create category failed, exit...");
+        system.functions.rtecall("trigger", rte, 1);
+        return -2;
+      }
+      else
+      {
+        status =0;
+      }
+    }
+    if(hs != RC_SUCCESS)
+    {
+      
+      hs =fcate.doSelect(sql);
+      if(hs != RC_SUCCESS)
+      {
+        system.functions.rtecall("trigger", rte, 1);
+        return -1;
+      }
+    }
+    if(status == 0)
+    {
+      myPrint("Now is finding training document for every category");
+      
+      if(wantparentid&gt;0)
+        {
+          updateSubGroupStatus(groupid,subgroupname,0,1,"Create category failed", 10000,"");
+        }
+        else
+        {
+          fadapter.status=1;
+          fadapter.last_training_time = new Date();
+          fadapter.doUpdate();
+        }
+
+      var keys = getFileReferenceFields(filename);
+     var categoryfields = new Array();
+      var ar = findTitleAndTimeField(filename,categoryfields);
+      var  timefield= "";
+      var title =fadapter.title_field;
+      if(ar.length==2)
+      {
+        if(title == null || title == "")
+        {
+          title =ar[0];
+        }
+        timefield=ar[1];
+      }
+      var fetchcount = 300;
+      if(traindocnum&gt;0)
+      {
+        fetchcount = traindocnum;
+      }
+      myPrint("title:"+title+",source fields:"+sourcefields);
+      var taxtonomy = groupname;
+      if(subgroupname != null &amp;&amp; subgroupname !="")
+      {
+        taxtonomy = groupname+"_"+subgroupname;
+      }
+      var testsource =indexDataForAllCategory(groupid,filename,idoldbname,keys,title,timefield,categoryfields,sourcefields,
+      categoryfield,subcategoryfield,producttypefield,true,fetchcount,2000,true,trainingquery,testnum,fcate.subgroup,query,taxtonomy,subgroupname);
+      if(testsource == -1)
+      {
+        if(wantparentid&gt;0)
+        {
+          updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,-3,"Index sample failed", 10000,"");
+        }
+        else
+        {
+          fadapter.status=-3;
+          fadapter.last_training_time = new Date();
+          fadapter.doUpdate();
+        }
+        if(ExceptionLib.getLastTrainingException() == null)
+        {
+          ExceptionLib.setLastTrainingException("index training samples failed, fail to connecto IDOL server or server is busy!");
+          myPrint("index training samples failed, please check the IDOL sever and try again...");
+        }
+        system.functions.rtecall("trigger", rte, 1);
+        return -3;
+      }
+      fcate.status =1;
+      fcate.traindocs[0]=lib.jsaci.arrayToString(sourcefields);
+      fcate.sourcecount=testsource;
+      fcate.doUpdate();
+      status =1;
+    }
+    if(status == 1)
+    {
+      
+       myPrint("Now is training category group "+groupname );
+       if(wantparentid&gt;0)
+        {
+          myPrint("subgroup :"+subgroupname);
+          updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,2,"Index finished", 10000,"");
+        }
+        else
+        {
+          fadapter.status=2;
+          fadapter.last_training_time = new Date();
+          fadapter.doUpdate();
+        }
+
+       if(false ==trainingCategoryFromIndexRef(groupid,fcate.subgroup,trainmethod))
+       {
+         system.functions.rtecall("trigger", rte, 1);
+         if(ExceptionLib.getLastTrainingException() == null)
+         {
+           myPrint("training failed due to can't get the category module status, please check the IDOL sever and try again...");
+           ExceptionLib.setLastTrainingException("training failed due to can't get the category module status, fail to connecto IDOL server or server is busy!");
+         }
+         if(wantparentid&gt;0)
+         {
+           updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,-4,"Training fail", 10000,"");
+         }
+         else
+         {
+           fadapter.status=-4;
+           fadapter.last_training_time = new Date();
+           fadapter.doUpdate();
+         }
+
+         return -4;
+       }
+        if(wantparentid&gt;0)
+        {
+          updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,3,"Finished", 10000,"");
+        }
+        {
+          fadapter.status=3;
+          fadapter.is_active=true;
+          fadapter.last_training_time = new Date();
+          fadapter.doUpdate();
+        }
+        
+
+      fcate.status =2;
+      fcate.doUpdate();
+      status =2;
+    }
+    if(status ==2 &amp;&amp; isremovelowweight!=null &amp;&amp; isremovelowweight &amp;&amp; categorykeepnum != null &amp;&amp; categorykeepnum&gt;0)
+    {
+      //optimize  1
+      
+      myPrint("Now is doing training optimize, remove lower weight document for every category");
+       if(wantparentid&gt;0)
+        {
+          updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,3,"start optimize training", 10000,"");
+        }
+        else
+        {
+          fadapter.status=3;
+          fadapter.is_active=false;
+          fadapter.last_training_time = new Date();
+          fadapter.doUpdate();
+        }
+
+      if(false == saveAllGoodTrainingDocs(groupid,categorykeepnum,categorywieghtnum,fcate.name,fcate.subgroup))
+      {
+         system.functions.rtecall("trigger", rte, 1);
+         myPrint("fail to get the document training weight, please check the IDOL sever and try again...");
+         if(wantparentid&gt;0)
+         {
+           updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,-5,"fail to get weights", 10000,"");
+         }
+         else
+         {
+           fadapter.status=-5;
+           fadapter.last_training_time = new Date();
+           fadapter.doUpdate();
+         }
+        
+         return -5;
+      }
+       if(wantparentid&gt;0)
+       {
+           updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,4,"save training results", 10000,"");
+       }
+       else
+       {
+           fadapter.status=4;
+           fadapter.last_training_time = new Date();
+           fadapter.doUpdate();
+       }
+      if(false == removeCategoryInIDOLByGroupid(groupid,fcate.subgroup))
+      {
+         system.functions.rtecall("trigger", rte, 1);
+         myPrint("fail to remove old category when optimize the training, please check the IDOL sever and try again...");
+         ExceptionLib.setLastTrainingException("fail to remove old category when optimize the training, fail to connecto IDOL server or server is busy!");
+         if(wantparentid&gt;0)
+         {
+           updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,-6,"remove category fail", 10000,"");
+         }
+         else
+         {
+           fadapter.status=-6;
+           fadapter.last_training_time = new Date();
+           fadapter.doUpdate();
+         }
+         return -6;
+      }
+      if(false == createCategoryInIDOLByGroupid(groupid,fcate.subgroup))
+      {
+         system.functions.rtecall("trigger", rte, 1);
+         myPrint("fail to re-build category when optimize the training, please check the IDOL sever and try again...");
+         ExceptionLib.setLastTrainingException("fail to re-build category when optimize the training, fail to connecto IDOL server or server is busy!");
+         if(wantparentid&gt;0)
+         {
+           updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,-7,"re-build category fail", 10000,"");
+         }
+         else
+         {
+           fadapter.status=-7;
+           fadapter.last_training_time = new Date();
+           fadapter.doUpdate();
+         }
+         return -7;
+        
+      }
+      if(wantparentid&gt;0)
+      {
+        updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,5,"re-build category okay", 10000,"");
+      }
+      else
+      {
+        fadapter.status=5;
+        fadapter.last_training_time = new Date();
+        fadapter.doUpdate();
+      }
+      if(false == trainingCategoryFromDatabase(groupid,fcate.subgroup,trainmethod))
+      {
+         system.functions.rtecall("trigger", rte, 1);
+         if(ExceptionLib.getLastTrainingException() == null)
+         {
+           myPrint("fail to re-training category when optimize the training, please check the IDOL sever and try again...");
+           ExceptionLib.setLastTrainingException("fail to re-training category when optimize the training, fail to connecto IDOL server or server is busy!");
+         }
+         if(wantparentid&gt;0)
+         {
+           updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,-8,"re-training category fail", 10000,"");
+         }
+         else
+         {
+           fadapter.status=-8;
+           fadapter.last_training_time = new Date();
+           fadapter.doUpdate();
+         }
+         return -8;
+      }
+      if(wantparentid&gt;0)
+      {
+         updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,6,"re-training category ok", 10000,"");
+      }
+      {
+        fadapter.status=6;
+        fadapter.is_active=true;
+        fadapter.last_training_time = new Date();
+        fadapter.doUpdate();
+      }
+
+      fcate.status =3;
+      fcate.doUpdate();
+      status =3;
+    }
+     if((status ==2||status ==3) &amp;&amp; isadjustterm!=null &amp;&amp; isadjustterm) 
+    {
+    
+      if(false == checkAlreadyHaveTestResult(groupid,fcate.subgroup))
+      {
+         if(false == saveAllGoodTrainingDocs(groupid,categorykeepnum,categorywieghtnum,fcate.name,fcate.subgroup))
+        {
+         system.functions.rtecall("trigger", rte, 1);
+         if(ExceptionLib.getLastTrainingException() == null)
+         {
+           myPrint("fail to get the document training weight, please check the IDOL sever and try again...");
+           ExceptionLib.setLastTrainingException("fail to get the document training weight, fail to connecto IDOL server or server is busy!");
+          }
+         if(wantparentid&gt;0)
+         {
+           updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,-5,"fail to get weights", 10000,"");
+         }
+         else
+         {
+           fadapter.status=-9;
+           fadapter.last_training_time = new Date();
+           fadapter.doUpdate();
+         }
+        
+         return -9;
+       }
+      }
+      //optimize  2
+      myPrint("Now is doing training optimize, adjust term weight");
+      if(wantparentid&gt;0)
+      {
+         updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,6,"start to adjust term", 10000,"");
+      }
+      {
+        fadapter.status=6;
+        fadapter.is_active=true;
+        fadapter.last_training_time = new Date();
+        fadapter.doUpdate();
+      }
+      if(false == updateAllGeneratedTerms(groupid,fcate.subgroup))
+      {
+         system.functions.rtecall("trigger", rte, 1);
+         myPrint("fail to get terms  when optimize the training, please check the IDOL sever and try again...");
+         if(wantparentid&gt;0)
+         {
+          updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,-9,"fail to update term", 10000,"");
+         }
+         else
+        {
+         fadapter.status=-9;
+         fadapter.last_training_time = new Date();
+         fadapter.doUpdate();
+        }
+
+         return -9;
+      }
+      
+      myPrint("Now is finding the best terms, please wait.....");
+      if(wantparentid&gt;0)
+      {
+         updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,8,"find best term", 10000,"");
+      }
+      else
+      {
+        fadapter.status=8;
+        fadapter.last_training_time = new Date();
+        fadapter.doUpdate();
+      }
+
+      getPossibleTermsFromTestResult(groupid,categoryfield,subcategoryfield,producttypefield,fcate.subgroup);
+      if(wantparentid&gt;0)
+      {
+         updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,9,"save best terms okay", 10000,"");
+      }
+      else
+      {
+        fadapter.status=9;
+        fadapter.last_training_time = new Date();
+        fadapter.doUpdate();
+      }
+      
+
+      if(false == getAdjustTermsWeightFromTestResult(groupid,categoryfield,subcategoryfield,producttypefield,idoldbname,fcate.subgroup))
+      {
+         system.functions.rtecall("trigger", rte, 1);
+         if(ExceptionLib.getLastTrainingException() == null)
+         {
+           myPrint("fail to get good terms when optimize the training, please check the IDOL sever and try again...");
+           ExceptionLib.setLastTrainingException("fail to get good terms when optimize the training, fail to connecto IDOL server or server is busy!");
+         }
+         if(wantparentid&gt;0)
+         {
+           updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,-10,"fail to get good terms", 10000,"");
+         }
+         else
+         {
+           fadapter.status=-10;
+           fadapter.last_training_time = new Date();
+           fadapter.doUpdate();
+         }
+
+        return -10;
+      }
+       if(wantparentid&gt;0)
+        {
+         updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,10,"start to adjust terms", 10000,"");
+        }
+        else
+        {
+         fadapter.status=10;
+         fadapter.last_training_time = new Date();
+         fadapter.doUpdate();
+        }
+        
+
+      if(false == adjustTermsWeightFromTestResult(groupid,fcate.subgroup))
+      {
+        system.functions.rtecall("trigger", rte, 1);
+        if(ExceptionLib.getLastTrainingException() == null)
+        {
+          myPrint("fail to get adjust terms weight when optimize the training, please check the IDOL sever and try again...");
+          ExceptionLib.setLastTrainingException("fail to get adjust terms weight when optimize the training, fail to connecto IDOL server or server is busy!");
+         }
+        if(wantparentid&gt;0)
+        {
+         updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,-11,"fail to adjust terms", 10000,"");
+        }
+        else
+        {
+         fadapter.status=-11;
+         fadapter.last_training_time = new Date();
+         fadapter.doUpdate();
+        }
+
+         return -11;
+      }
+
+       if(wantparentid&gt;0)
+        {
+         updateSubGroupStatus(groupid,subgroupname,fcate.subgroup,11,"finished", 10000,"");
+        }
+        {
+          fadapter.status=11;
+          fadapter.is_active=true;
+          fadapter.last_training_time = new Date();
+          fadapter.doUpdate();
+        }
+        
+
+      fcate.status =4;
+      fcate.doUpdate();
+      status =4;
+    }
+    
+   
+    var endTime = new Date().getTime();
+    
+    if(status &gt;0)
+    {
+      myPrint("Successfully create and training categroy group for "+groupname +" by using "+((endTime - startTime) / 1000).toFixed() + "  Seconds");
+    }
+    system.functions.rtecall("trigger", rte, 1);
+    return 0;
+}
+function syncCreateAndTrainingAllCategory()
+{
+
+  myPrint("syncCreateAndTrainingAllCategory is not supported now");
+  
+}
+
+
+function createAllcategoryFromDatabase(filename,categoryfield,subcategoryfield,producttypefield,groupid,groupname, 
+                                            wantparentid,query,mandantfield,subgroupname,sourcecoverage)
+{
+  var isokay = false;
+  try
+  {
+    if(categoryfield =="")
+    {
+      myPrint("no category field, nothing to do");
+      return isokay;
+    }
+    var newsubgroup = 0;
+    //check idol server first ,if wrong, exist directly
+    var itimes =0;
+    var isidolready = lib.jsaci.checkCategoryStatus(0);
+    while(isidolready ==false &amp;&amp; itimes &lt;3)
+    {
+       myPrint("IDOL server is not ready now, wait 5 seconds to continue ");
+       system.functions.sleep(5);
+       isidolready=lib.jsaci.checkCategoryStatus(0);
+       itimes++;
+    }
+    if(itimes &gt;=3)
+    {
+       myPrint("We are sorry, please IDOL server is not ready or not");
+       return isokay;
+    }
+    var bindexcategory = false;
+    if((subcategoryfield==null || subcategoryfield =="") &amp;&amp; (producttypefield==null || producttypefield==""))
+    {
+      bindexcategory = true;
+    }
+    var ret=0;
+    var f = new SCFile(filename,SCFILE_READONLY);
+    var index = -1;
+    var currentid = getNextCategoryID(getMaxCategoryID(-1));
+    var parentid = currentid;
+    var checkparent =0;
+    
+    if(wantparentid&gt;0)
+    {
+      checkparent = wantparentid;
+    }
+    var catename = groupname;
+    if(subgroupname!= null&amp;&amp; subgroupname!="")
+    {
+       catename = groupname + "_" + subgroupname;
+    }
+    var existid = lib.jsaci.getCategoryIDByName(catename,checkparent);
+    
+    //first clean it if already existing
+    if(existid &gt; 0)
+    {
+      lib.jsaci.DeleteOneCategory(existid);
+    }
+    //root record
+    var rf = new SCFile(CONSTANT.getCategoryFileName());
+    var mygroupname = groupname;
+      rf.sourcecount=0;
+      rf.groupid=groupid;
+     
+      rf.status=0;
+      rf.sourcecount=0;
+      rf.indexcount=0;
+      rf.traincount=0;
+      rf.id=currentid;
+      rf.testflag=0;
+      if(wantparentid&lt;=0  )
+      {
+        rf.name = groupname;
+        rf.parentid=0;
+        rf.subgroup=0;
+      }
+      else 
+      {
+        newsubgroup = currentid;
+        rf.parentid=wantparentid;
+        rf.subgroup=currentid;
+        rf.name = subgroupname;
+        mygroupname = groupname+"_"+subgroupname;
+      }
+      rf.category=categoryfield;
+      rf.subcategory=subcategoryfield;
+      rf.product_type=producttypefield;
+      
+     isokay =lib.jsaci.createOneCategory(mygroupname, currentid, rf.parentid);
+     if(isokay==false &amp;&amp; readCategoryStatus(currentid) == false)
+     {
+        return isokay;
+     }
+     isokay = lib.jsaci.setRootTaxonomy(currentid);
+     if(isokay==false &amp;&amp; readCategoryStatus(currentid) == false)
+     {
+   
+       return isokay;
+     }
+   rf.doInsert();
+   currentid = getNextCategoryID(currentid);
+   var categorynum = CONSTANT.getCategoryQuality();
+   if(parseInt(categorynum)&lt;=0)
+   {
+     categorynum =0;
+   }
+  
+  var strsql = "select "+categoryfield+",count(*) as datacount from "+filename;
+  if(query!=null &amp;&amp; query != "")
+  {
+    strsql += " where "+query;
+  }
+  strsql += " group by "+categoryfield+" having count(*) &gt;"+categorynum+" order by datacount desc";
+  myPrint("please wait, I never die, analyse the data to find category....");
+  var rc = f.doSelect(strsql);
+  while( rc == RC_SUCCESS  )
+  {
+    var catename = f[0];
+    if(f[0] == null || false == isNeedToCreateThisCategory(catename,null,null))
+    {
+      rc=f.getNext();
+      continue;
+    }
+    if(CONSTANT.getCategoryLimitation()!=-1 &amp;&amp; ret &gt;= CONSTANT.getCategoryLimitation())
+    {
+      myPrint("for test time, stop create the other category.....");
+      break;
+    }
+    var fcate = new SCFile(CONSTANT.getCategoryFileName());
+    fcate.status = 0; //create
+    fcate.sourcecount=0;
+    fcate.groupid=groupid;
+    if(wantparentid&gt;0)
+    {
+      fcate.subgroup=rf.id;
+    }
+    else
+    {
+      fcate.subgroup=0;
+    }
+
+    isokay = lib.jsaci.createOneCategory(catename,currentid,parentid);
+    if(isokay==false &amp;&amp; readCategoryStatus(currentid) == false)
+    {
+   
+       return isokay;
+     }
+     
+    fcate.id=currentid;
+    fcate.parentid=parentid;
+    fcate.name=catename;
+    fcate.category=catename;
+    if(bindexcategory)
+    {
+      fcate.sourcecount=f[1];
+      ret++;
+    }
+    fcate.subcategory="";
+    fcate.product_type="";
+    fcate.testflag =0;
+    fcate.doInsert();
+    
+    var subparentid =currentid;
+       currentid = getNextCategoryID(currentid);
+       if(subcategoryfield==null || subcategoryfield == "")
+       {
+         rc = f.getNext();
+         continue;
+       }
+       var bindexsubcategory = false;
+       if(producttypefield=="" || producttypefield == null)
+       {
+         bindexsubcategory = true;
+       }
+       
+       var subcatfile = new SCFile(filename);
+       var strsubcatesql = "select "+subcategoryfield+",count(*) as datacount from "+filename+" where " ;
+       if(query!=null &amp;&amp; query != "")
+       {
+          strsubcatesql += query + " and ";
+       }
+       strsubcatesql += categoryfield+"=\""+catename+"\"  group by "+subcategoryfield+" having count(*) &gt;"+categorynum;
+       var rc2 = subcatfile.doSelect(strsubcatesql);
+       while(rc2 == RC_SUCCESS )
+       {
+         var subcatename = subcatfile[0];
+         if(subcatfile[0] ==null || false == isNeedToCreateThisCategory(catename,subcatename,null))
+         {
+           rc2 = subcatfile.getNext();
+           continue;
+         }
+         fcate.sourcecount=0;
+         if(CONSTANT.getCategoryLimitation()!=-1 &amp;&amp; ret &gt;= CONSTANT.getCategoryLimitation())
+         {
+            myPrint("for test time, stop create the other category.....");
+            break;
+         }
+    
+         
+  
+           isokay = lib.jsaci.createOneCategory(subcatename,currentid,subparentid);
+           if(isokay==false &amp;&amp; readCategoryStatus(currentid) == false)
+           {
+   
+             return isokay;
+           }
+            fcate.id=currentid;
+            fcate.parentid=subparentid;
+            fcate.name=subcatename;
+            fcate.category=catename;
+            fcate.subcategory=subcatename;
+            if(bindexsubcategory)
+            {
+               fcate.sourcecount=subcatfile[1];
+               ret++;
+            }
+            fcate.product_type="";
+            fcate.testflag =0;
+            fcate.doInsert();
+     
+
+         var earaparent = currentid;
+         currentid = getNextCategoryID(currentid);
+         if(bindexsubcategory)
+         {
+           rc2 = subcatfile.getNext();
+           continue;
+         }
+         
+         //we are now try to get the eara
+         
+         var earasql = "select "+producttypefield+",count(*) as datacount from "+filename+" where ";
+         if(query!=null &amp;&amp; query != "")
+         {
+          earasql += query + " and ";
+         }
+         earasql +=categoryfield+"=\""+catename+"\" and "+subcategoryfield+"=\""+subcatename+"\"  group by "+producttypefield+" having count(*) &gt;"+categorynum;
+         var earafile = new SCFile(filename);
+         var rc3 = earafile.doSelect(earasql);
+         while(rc3 == RC_SUCCESS )
+         {
+           var earaname = earafile[0];
+           if(earafile[0] == null || false == isNeedToCreateThisCategory(catename,subcatename,earaname))
+           {
+             rc3 = earafile.getNext();
+             continue;
+           }
+           fcate.sourcecount=0;
+           if(CONSTANT.getCategoryLimitation()!=-1 &amp;&amp; ret &gt;= CONSTANT.getCategoryLimitation())
+           {
+             myPrint("for test time, stop create the other category.....");
+             break;
+           }
+
+           
+           isokay = lib.jsaci.createOneCategory(earaname,currentid,earaparent);
+           if(isokay==false &amp;&amp; readCategoryStatus(currentid) == false)
+           {
+             return isokay;
+           }
+            ret++;
+           fcate.id=currentid;
+           fcate.parentid=earaparent;
+           fcate.name=earaname;
+           fcate.category=catename;
+           fcate.subcategory=subcatename;
+           fcate.sourcecount=earafile[1]
+           fcate.product_type=earaname;
+           fcate.testflag =0;
+           fcate.doInsert();
+           currentid = getNextCategoryID(currentid);
+           rc3 = earafile.getNext();
+         }
+     
+        rc2=subcatfile.getNext();
+       }
+      rc=f.getNext();
+      
+    }
+    if(sourcecoverage != null &amp;&amp; sourcecoverage&gt;0 &amp;&amp; sourcecoverage&lt;100)
+    {
+      removeRubbishCategory(groupid,newsubgroup,sourcecoverage);
+    }
+  }
+  catch(e)
+  {
+    isokay = false;
+    myPrint("exception found in createAllcategoryFromDatabase:"+e);
+  }
+  if(isokay &amp;&amp; ret == 0)
+  {
+    myPrint("No category was found in source data, configure error!");
+    isokay = false;
+  }
+  var ar =[];
+  ar.push(isokay);
+  ar.push(ret);
+  return ar; 
+}
+
+function removeRubbishCategory(groupid,subgroup,sourcecoverage)
+{
+  var f = new SCFile(CONSTANT.getCategoryFileName());
+  var strwhere = "sourcecount&gt;0 and groupid="+groupid;
+  if(subgroup&gt;0)
+  {
+     strwhere += " and subgroup="+subgroup;
+  }
+  var categorycount = f.doCount(strwhere);
+  print(categorycount);
+  var rc = f.doSelect("select sum(sourcecount) from "+CONSTANT.getCategoryFileName()+" where "+strwhere);
+  var allsource =0;
+  if(rc == RC_SUCCESS)
+  {
+    allsource=f[0];
+  }
+  print(allsource);
+  
+  var f2 = new SCFile(CONSTANT.getCategoryFileName());
+  var sortOrder = new Array(SCFILE_DSC,SCFILE_DSC);
+  var sortFields = new Array("sourcecount","indexcount");
+  print(f2.setOrderBy(sortFields,sortOrder));
+  rc = f2.doSelect(strwhere);
+  var goodnum =0;
+  var itemnum=0;
+  var todelete=false;
+  while(rc == RC_SUCCESS)
+  {
+    if(todelete)
+    {
+      lib.jsaci.DeleteOneCategory(f2.id);
+      f2.sourcecount =0-f2.sourcecount;
+      f2.doUpdate();
+    }
+    else
+    {
+      goodnum +=f2.sourcecount;
+      itemnum++;
+      if((goodnum/allsource) *100&gt; sourcecoverage )
+      {
+        myPrint("now cover source data "+goodnum+"/"+allsource+", and meet the requirement "+sourcecoverage+"%, remove the rest categories");
+        todelete = true;
+      } 
+      
+     
+    }
+    rc = f2.getNext();
+  }
+
+}
+function saveAllGoodTrainingDocs(groupid,onecatekeepsize,categorywieghtnum,taxtonomy,subgroup)
+{
+  try
+  {
+    var f = new SCFile(CONSTANT.getCategoryFileName());
+    var isokay=false
+    var sql = "traincount&gt;0 and status&gt;=2 and groupid="+groupid;
+    if(subgroup &gt; 0)
+    {
+      sql += " and subgroup="+subgroup;
+    }
+    var rc = f.doSelect(sql); // already index finish
+    while(rc==0)
+    {
+      checkTaskIsStoped();
+      if(checkCategoryModuleStatus() == false)
+      {
+        return false;
+      }
+      var ar = f.indexdocs.toArray();
+      if(ar==null || ar.length == 0|| ar[0] =="")
+      {
+     
+        rc = f.getNext();
+        continue;
+      }
+     
+      var doccount = f.indexcount;
+      myPrint("Now is start to get good training document for category "+f.id+"  "+f.name+" total documents:"+
+               doccount+" compare weight :"+categorywieghtnum +" at least keep size :"+onecatekeepsize);
+       if(doccount &gt; onecatekeepsize &amp;&amp; onecatekeepsize&gt;0)
+       {
+         myPrint("Now is start to check category "+f.id+"  "+f.name);
+         //we are here to remove some bad training
+         var istrainokay = lib.jsaci.getCategoryTraining(f.id);
+         var itryed =0;
+         while(istrainokay == false &amp;&amp; itryed&lt;5)
+         {
+           myPrint("wait current training to finish for category "+f.id);
+           system.functions.sleep(5);
+           istrainokay = lib.jsaci.getCategoryTraining(f.id);
+           itryed++;
+         }
+         if( false == istrainokay )
+         {
+           if( readCategoryStatus(f.id) )
+           {
+             istrainokay = lib.jsaci.getCategoryTraining(f.id);
+           }
+           if(false == istrainokay)
+           {
+             return false;
+           }
+         }
+         var keeped = generateGoodTrainingDocs(f.id,ar[0],onecatekeepsize,categorywieghtnum,groupid,taxtonomy,subgroup);
+         if(keeped == null || keeped.length == 0)
+         {
+           return false;
+         }
+         var strkeep="";
+         var strlog ="";
+         for(var i=0;i&lt;keeped.length;i++)
+         {
+           if(strkeep !="")
+           {
+             strkeep += ",";
+             strlog+=",";
+           }
+           strlog +=keeped[i].name+"["+parseFloat(keeped[i].value)/100+"]";
+           strkeep += keeped[i].name;
+         }
+         myPrint("find "+ keeped.length+" good training documents for category "+f.id + " are "+strlog);
+         f.status=3;
+         f.traindocs[1]=strkeep;
+         f.traincount = keeped.length;
+         f.doUpdate();
+       }
+       else
+       {
+         f.traincount = doccount;
+         f.status=3;
+         f.doUpdate();
+       }
+       
+       rc = f.getNext();
+    }
+     return true;
+  }
+   catch(e)
+  {
+    ExceptionLib.setLastTrainingException(e);
+    myPrint("saveAllGoodTrainingDocs meet exception:"+e);
+    return false;
+  }
+}
+function trainingCategoryFromIndexRef(groupid,subgroup,traintype)
+{
+  try
+  {
+    myPrint("Check IDOL server status to start training");
+    var indexok = lib.jsaci.checkIndexStatus(-1);
+    var itry = 0;
+    while(indexok &gt; 0)
+    {
+       checkTaskIsStoped();
+       myPrint("Wait for IDOL server to finish current task......");
+       system.functions.sleep(5);
+       indexok = lib.jsaci.checkIndexStatus(-1);
+       itry ++;
+       if(indexok == 1 &amp;&amp; itry &gt;= 120)
+       {
+          myPrint("can't get response from IDOL server for a long time, exit now...");
+          return false;
+       }
+    }
+    var f = new SCFile(CONSTANT.getCategoryFileName());
+    var sql = "indexcount&gt;0 and status=1 and groupid="+groupid;
+    if(subgroup &gt;0)
+    {
+       sql +=" and subgroup="+subgroup;
+    }
+    var rc = f.doSelect(sql); // already index finish
+    while(rc==0)
+    {
+     checkTaskIsStoped();
+     var ar = f.indexdocs.toArray();
+     if(ar==null || ar.length == 0|| ar[0] =="")
+     {
+     
+       rc = f.getNext();
+       continue;
+     }
+     myPrint("Now is start to training category ["+f.id+"]  ["+f.name+"]");
+     if(checkCategoryModuleStatus() == false &amp;&amp; false == readCategoryStatus(f.id))
+     {
+       return false;
+     }
+     if(traintype != null &amp;&amp; traintype == 1)
+     {
+        var docref = ar[0].toString().replace(/,/g,"+");
+        //now 
+        var terms = lib.jsaci.getBestTerms(docref,CONSTANT.getBestTermsCount());
+        if(terms != "")
+        {
+          lib.jsaci.trainingCategoryByTerms(f.id,terms);
+        }
+     }
+     else
+     {
+        lib.jsaci.trainingCategoryByPost(f.id,"",ar[0]); 
+     }
+      myPrint("end to training category ["+f.id+"]  ["+f.name+"]");
+     f.status=2;
+     f.traindocs[0]=ar[0];
+     f.doUpdate();
+     
+       
+     rc = f.getNext();
+   }  
+   return true;
+  }
+  catch(e)
+  {
+    ExceptionLib.setLastTrainingException(e);
+    myPrint("trainingCategoryFromIndexRef meet exception:"+e);
+    return false;
+  }
+}
+
+function removeCategoryInIDOLByGroupid(groupid,subgroup)
+{
+  try
+  {
+    myPrint("Now is remove category group "+groupid+" subgroup "+subgroup+" to re-build category");
+    
+    var todel_id = subgroup;
+    if(subgroup&lt;=0)
+    {
+      var f = new SCFile(CONSTANT.getCategoryFileName());
+      var rc = f.doSelect("parentid=0 and groupid="+groupid);
+      if(rc==RC_SUCCESS)
+      {
+        todel_id = f.id;
+      }
+      else
+      {
+        return false;
+      }
+    }
+    
+    if(checkCategoryModuleStatus() == false)
+      {
+       return false;
+      }
+      var itryed = 0;
+      var isokay = lib.jsaci.DeleteOneCategory(todel_id);
+      while(false == isokay  &amp;&amp; itryed &lt; 3)
+      {
+       system.functions.sleep(3);
+       isokay = lib.jsaci.DeleteOneCategory(todel_id);
+       itryed++;
+      }
+      if(isokay == false)
+      {
+       if(true == readCategoryStatus(0) &amp;&amp; false == readCategoryStatus(todel_id))
+       {
+         isokay = true;
+       }
+       else 
+       {
+         return false;
+       }
+       
+      }
+    
+   return true;
+  }
+  catch(e)
+  {
+    myPrint("meet exception in removeCategoryInIDOLByGroupid"+e);
+    return false;
+  }
+}
+function createCategoryInIDOLByGroupid(groupid,subgroup)
+{
+  try
+  {
+    myPrint("Now is re-build category group "+groupid +" subgroup "+subgroup);
+    var f = new SCFile(CONSTANT.getCategoryFileName());
+    var taxonomy = "";
+    var rootid =0;
+    var rc = f.doSelect("parentid=0 and groupid="+groupid);
+    if(RC_SUCCESS == rc)
+    {
+      taxonomy = f.name;
+      rootid = f.id;
+    }
+    else
+    {
+      return false;
+    }
+    if(subgroup &gt;0)
+    {
+       rc = f.doSelect("groupid="+groupid+" and parentid="+rootid + " and  subgroup="+subgroup);
+       if(RC_SUCCESS == rc)
+       {
+         taxonomy = taxonomy+"_"+f.name;
+       }
+    }
+    var sql = "parentid&gt;=0 and groupid="+groupid;
+    if(subgroup&gt;0)
+    {
+      sql = "groupid="+groupid+ " and subgroup="+subgroup;
+    }
+    var rc = f.doSelect(sql); // already index finish
+    while(rc==RC_SUCCESS)
+    {
+     if(checkCategoryModuleStatus() == false)
+     {
+       return false;
+     }
+     var isokay = true;
+     if(f.parentid == 0 &amp;&amp; subgroup&gt;0)
+     {
+       rc = f.getNext();
+       continue;
+     }
+     
+     if(subgroup&gt;0 &amp;&amp; f.id == subgroup)
+     {
+       isokay = lib.jsaci.createOneCategory(taxonomy,f.id,f.parentid);
+     }
+     else
+     {
+       isokay = lib.jsaci.createOneCategory(f.name.toString(),f.id,f.parentid);
+     }
+     if(isokay == false &amp;&amp; false == readCategoryStatus(f.id))
+     {
+       return false;
+     }
+     if((subgroup&lt;=0 &amp;&amp; f.parentid == 0) || (subgroup&gt;0 &amp;&amp; f.id==subgroup))
+     {
+       if(false == lib.jsaci.setRootTaxonomy(f.id) &amp;&amp; false == readCategoryStatus(f.id))
+       {
+         return false;
+       }
+     }
+     rc = f.getNext();
+    }
+  
+   return true;
+  }
+  catch(e)
+  {
+     myPrint("createCategoryInIDOLByGroupid meet exception :"+e);
+     return false;
+  }
+}
+function trainingCategoryFromDatabase(groupid,subgroup,traintype)
+{
+  try
+  {
+    myPrint("Now is re-training category group "+groupid);
+    var f = new SCFile(CONSTANT.getCategoryFileName());
+    var sql = "status =3 and indexcount&gt;0 and parentid&gt;0 and groupid="+groupid;
+    if(subgroup&gt;0)
+    {
+      sql += " and subgroup="+subgroup;
+    }
+    var rc = f.doSelect(sql); // already index finish
+  
+    while(rc==RC_SUCCESS)
+    {
+     
+     checkTaskIsStoped();
+     if(checkCategoryModuleStatus() == false &amp;&amp; false == readCategoryStatus(f.id) )
+     {
+       return false;;
+     }
+     myPrint("Now is ready to re-training category "+f.id+"  "+f.name );
+     var str="";
+     var trainar = f.traindocs.toArray();
+     if(trainar.length &gt; 0)
+     {
+       str = trainar[trainar.length -1];
+     }
+     else
+     {
+       trainar = f.indexdocs.toArray();
+       if(trainar.length&gt;0)
+       {
+         str = trainar[0];
+       }
+     }
+     if(str == "")
+     {
+       myPrint("can't find and information to train category "+f.id +"  "+f.name);
+     }
+     else
+     {
+        
+       if(traintype != null &amp;&amp; traintype == 1)
+       {
+         var docref = str.replace(/,/g,"+");
+         var terms = lib.jsaci.getBestTerms(docref,CONSTANT.getBestTermsCount());
+         if(terms != "")
+         {
+           lib.jsaci.trainingCategoryByTerms(f.id,terms);
+         }
+      }
+      else
+      {
+        lib.jsaci.trainingCategoryByPost(f.id,"",str); 
+      }
+        
+     }
+     f.status=4;
+     f.doUpdate();
+     rc = f.getNext();
+   }
+  
+   return true;
+  }
+  catch(e)
+  {
+    ExceptionLib.setLastTrainingException(e);
+    myPrint("trainingCategoryFromDatabase meet exception:"+e);
+    return false;
+  }
+}
+
+function checkAlreadyHaveTestResult(groupid,subgroup)
+{
+  var f = new SCFile(CONSTANT.getCategoryTestFileName());
+  var count = f.doCount("groupid="+groupid+" and subgroup="+subgroup);
+  if(count == 0)
+  {
+    return false;
+  }
+  return true;
+}
+
+function saveTrainingSampleTestResult(groupid,id,ref,results,maxid,subgroup)
+{
+    var f= new SCFile(CONSTANT.getCategoryTestFileName());
+      f.id =maxid;
+      f.sourceid=ref;
+      f.category = id;
+      f.groupid=groupid;
+      f.subgroup=subgroup
+      f.find=-1;
+      f.status=0;
+      
+      if(results!=null &amp;&amp; results.length == 3)
+      {
+        f.suggestcategory = parseInt(results[0]);
+        f.weight=parseInt(results[2].toString());
+        f.terms=results[1];
+        if(parseInt(results[0]) == id)
+        {
+          f.find= 1;
+        }
+        else
+        {
+          f.find =0;
+        }
+      }
+      f.doInsert();
+}
+function generateGoodTrainingDocs(id,docrefers,nkeep,nweight,groupid,taxtonomy,subgroup)
+{
+     var trainarray = new Array();
+     if(checkCategoryModuleStatus() == false)
+     {
+       return trainarray;
+     }
+      var basevalue = parseInt(nweight) * 100;
+      var icount=0;
+      var traindocs ="";
+      var refers = lib.jsaci.stringToArray(docrefers); 
+      
+      var ardel = new Array();
+      var arzero = new Array();
+      var maxid=getNextCategoryTestID(getMaxTestedID());
+      for(var n=0; n&lt;refers.length; n++)
+      {
+        var outar = new Array();
+        var weight= lib.jsaci.getTrainingWeightForDoc(id,"",refers[n],outar,taxtonomy);
+        var itryed =0;
+        while(weight == -1 &amp;&amp; itryed&lt;3 )
+       {
+         system.functions.sleep(5);
+         weight= lib.jsaci.getTrainingWeightForDoc(id,"",refers[n],outar,taxtonomy);
+         itryed++;
+       }
+       if(weight == -1 &amp;&amp; false == readCategoryStatus(id) )
+       {
+         var a = new Array();
+         return a;
+       }
+       saveTrainingSampleTestResult(groupid,id,refers[n],outar,maxid,subgroup);
+       maxid=getNextCategoryTestID(maxid);
+       icount++;
+       var hd = new Header();
+       hd.name=refers[n];
+       hd.value=weight;
+       if(icount % 50 == 0)
+       {
+        myPrint("Already checked " + icount+"documents, document "+refers[n] +" weight is: "+weight);
+       } 
+       if(weight &gt; basevalue )
+       {
+        lib.jsaci.checkMaxValueForArray(hd, trainarray,refers.length );
+       }
+       else if(weight &gt;0)
+       {
+         lib.jsaci.checkMaxValueForArray(hd, ardel,refers.length+1 );
+       }
+       else
+       {
+         arzero.push(hd);
+       }
+       
+      
+      }
+    
+     if(trainarray.length &lt; nkeep )
+       {
+         for(var i=0;i&lt;ardel.length &amp;&amp; trainarray.length&lt;nkeep;i++)
+         {
+           trainarray.push(ardel[i]);
+         }
+         for(var i=0;i&lt;arzero.length &amp;&amp; trainarray.length&lt;nkeep;i++)
+         {
+           trainarray.push(arzero[i]);
+         }
+       }
+       
+     
+   return trainarray;
+}
+function generateSchemaForGroup(groupid)
+{
+   var schema =-1;
+   var f = new SCFile(CONSTANT.getCategoryFileName());
+  var rc = f.doSelect("parentid=0 and groupid="+groupid); // already index finish
+  if(rc==RC_SUCCESS)
+  {
+   
+    schema =f.id;
+   
+   }
+   
+   return schema;
+}
+function generateTaxonomyForGroup(groupid)
+{
+   var Taxonomy ="";
+   var f = new SCFile(CONSTANT.getCategoryFileName());
+  var rc = f.doSelect("parentid=0 and groupid="+groupid); // already index finish
+  if(rc==RC_SUCCESS)
+  {
+   
+    Taxonomy =f.name;
+   
+   }
+   
+   return Taxonomy;
+}
+//**************************************for test category********************
+function getMaxTestedID()
+{
+   var f = new SCFile(CONSTANT.getCategoryTestFileName());
+   var str = "select max(id) from "+CONSTANT.getCategoryTestFileName();
+   
+   var rc = f.doSelect(str);
+   var id =0;
+   if(rc == RC_SUCCESS &amp;&amp; f[0]!=null )
+   {
+     
+     id = parseInt(f[0]);
+   }
+   return id;
+}
+
+function getNextCategoryTestID(curentid)
+{
+
+  var rteReturnValue = new SCDatum();
+  var rteNumber = new SCDatum();
+ try
+ { 
+  system.functions.rtecall( "getnumber", rteReturnValue, rteNumber, "cate2idoltestid", null );
+ }
+ catch(e)
+ {
+   return curentid+1;
+ }
+  var nextid= parseInt(rteNumber.getText());
+  if(nextid.toString() == "NaN" || nextid&lt;=curentid)
+  {
+    nextid = curentid+1;
+  }
+ return nextid;
+}
+
+
+function testAllCategory(groupid,sourcefilename,sourcekeys,sourcefields,categoryfield,subcategoryfield,producttypefield,condition,bsave,securitygroup)
+ {
+ //frist do purge,
+  var testfile = new SCFile(CONSTANT.getCategoryTestFileName());
+  var rc = testfile.doPurge("groupid="+groupid);
+  if(rc != 0)
+  {
+    myPrint("do purge fail for test file");
+    return;
+  }
+  var froot = new SCFile(CONSTANT.getCategoryFileName());
+  var sql = "parentid=0 and groupid="+groupid;
+  var subgroup=0;
+  if(securitygroup !=null &amp;&amp; securitygroup!="")
+  {
+     subgroup= findSubGroupByName(groupid,securitygroup);
+     if(subgroup&gt;0)
+     {
+       sql = "id="+subgroup;
+     }
+  }
+  if(froot.doSelect(sql) != 0)
+  {
+    myPrint("No category parent information!");
+    return;
+  }
+  froot.testflag = 2;
+  var query = condition;
+  if(query == null || query == "")
+  {
+    query = true;
+  }
+  var ftest = new SCFile(sourcefilename);
+  froot.sourcecount=ftest.doCount(query);
+  froot.doUpdate();
+  var dateObj = new Date();
+  var startTime = dateObj.getTime();
+  var maxid= getMaxTestedID();
+  var f = new SCFile(CONSTANT.getCategoryFileName());
+  
+  var rc  = -1;
+  if(securitygroup !=null &amp;&amp; securitygroup!="")
+  {
+     f.doSelect("traincount&gt;0 and groupid="+groupid+" and subgroup="+subgroup);
+  }
+  else
+  {
+    f.doSelect("traincount&gt;0 and groupid="+groupid);
+  }
+  var firstCount = 0, secondCount = 0, thirdCount = 0, notEqualAnyCount = 0,invalidCount=0;
+  var fadapter = new SCFile(CONSTANT.getCategoryConfigFileName(),SCFILE_ERADONLY);
+  var modulename = sourcefilename;
+  if(fadapter.doSelect("adapter.id"==groupid) == 0)
+  {
+    modulename = fadapter.table_name;
+  }
+  var dbname = getCategoryIDOLDatabase(modulename,fadapter.category_group_name,securitygroup);
+  fadapter =null;
+  var inc_ar = getDataCleanPattens(modulename,"Include");
+  var exc_ar = getDataCleanPattens(modulename,"Exclude");
+  var rm_ar = getDataCleanPattens(modulename,"Remove");
+  while(rc == 0)
+  {
+
+  var strcondition = categoryfield+"=\""+f.category+"\"";
+  if(subcategoryfield!=null &amp;&amp; subcategoryfield!="")
+  {
+     strcondition +=" and "+subcategoryfield+"=\""+f.subcategory+"\"";
+  }
+   if(producttypefield!=null &amp;&amp; producttypefield !="")
+   {
+     strcondition +=" and "+producttypefield+"=\""+f.product_type+"\"";
+   }
+  if(condition!=null &amp;&amp; condition !="" &amp;&amp; condition !="true")
+  {
+    strcondition += " and "+condition;
+  }
+  myPrint("now is handing "+f.id +"=&gt;"+f.category+"=&gt;"+f.subcategory+"=&gt;"+f.product_type);
+                             //sourcefile,sourcekeys,condition,id,sourcefields,categoryfield,subcategoryfield,producttyepfield,maxid
+  var rt = verifyCategory(sourcefilename,sourcekeys,strcondition,f.id,sourcefields,categoryfield,subcategoryfield,
+                            producttypefield,maxid,f.groupid,bsave,froot,inc_ar,exc_ar,rm_ar,dbname);
+  firstCount += rt[0];
+  secondCount+= rt[1];
+  thirdCount+= rt[2];
+  notEqualAnyCount+= rt[3];
+  invalidCount += rt[4];
+  // save category test results temply
+  f.firstcount = rt[0];
+  f.secondcount=rt[1];
+  f.thirdcount=rt[2];
+  f.misscount=rt[3];
+  f.invalidcount=rt[4];
+  f.testflag=1;
+  f.doUpdate();
+  
+   var totelCount = firstCount + secondCount + thirdCount + notEqualAnyCount+invalidCount;
+   maxid=getMaxTestedID();
+   if(totelCount &gt; 0)
+   {
+    froot.firstcount = firstCount;
+    froot.secondcount=secondCount;
+    froot.thirdCount = thirdCount;
+    froot.misscount=notEqualAnyCount;
+    froot.invalidcount=invalidCount;
+    froot.doUpdate();
+    var firstRate = Number(100 * firstCount / totelCount);
+    var secondRate = Number(100 * (firstCount + secondCount) / totelCount);
+    var thirdRate = Number(100 * (firstCount + secondCount + thirdCount) / totelCount);
+    var notEqualRate = Number(100 * notEqualAnyCount / totelCount);
+    var invalidRate = Number(100 * invalidCount / totelCount);
+
+   
+    myPrint("Now First count is: " + firstCount + ", hit rate: " + firstRate.toFixed(2) + "%");
+    myPrint("Now Second count is: " + secondCount + ", hit rate: " + secondRate.toFixed(2) + "%");
+    myPrint("Now Third count is: " + thirdCount + ", hit rate: " + thirdRate.toFixed(2) + "%");
+    myPrint("Now Invalid count is: " + invalidCount + ", hit rate: " + invalidRate.toFixed(2) +"%");
+    myPrint("Now Missed count is: " + notEqualAnyCount + ", hit rate: " + notEqualRate.toFixed(2) + "%");
+    }
+    myPrint("*******Now Total checked:" + totelCount + " ********");
+  
+  rc= f.getNext();
+}
+
+
+    var endTime = new Date().getTime();
+    myPrint("*******Elapsed time: " + ((endTime - startTime) / 1000).toFixed() + "  Seconds. ********");
+    froot.testflag = 1;
+    froot.doUpdate();
+    myPrint("*******The End.*********");
+}
+
+function verifyCategory(sourcefile,sourcekeys,condition,id,sourcefields,categoryfield,subcategoryfield,
+                           producttyepfield,maxid,groupid,bsave,froot,incar,excar,rmar,dbname) {
+   
+    var schema = generateSchemaForGroup(groupid);
+    var taxonomy =generateTaxonomyForGroup(groupid);
+   var relation = new SCFile(sourcefile, SCFILE_READONLY);
+    
+    var rc =relation.doSelect(condition);
+    myPrint("condition: "+condition + " return :"+rc);
+    var currentid = getNextCategoryTestID(maxid);
+    
+     var nowfirstcount =froot.firstcount;
+     var nowsecondcount=froot.secondcount;
+     var nowthirdcount =froot.thirdCount;
+     var nowmisscount = froot.misscount;
+     var nowinvalidcount =froot.invalidcount;
+    var i = 0;
+    var firstCount = 0, secondCount = 0, thirdCount = 0, notEqualAnyCount = 0,invalidCount=0;
+    var categoryNames = [];
+    var f= new SCFile(CONSTANT.getCategoryTestFileName());
+    while (rc == 0) 
+    {
+      f.id = currentid;
+      var key="";
+      for(var h=0;h&lt;sourcekeys.length;h++)
+      {
+        if(key!="")
+        {
+          key +="-";
+         }
+         var realkey= sourcekeys[h].replace(/\./g,"_");
+         key +=relation[realkey];
+      }
+      f.sourceid=key;
+      f.category = id;
+      f.groupid=groupid;
+      f.find=0;
+      f.status=0;
+    
+
+       categoryfield = categoryfield.toString().replace(/\./g,"_");
+        var exceptCategory = relation[categoryfield];
+        if (exceptCategory === null || exceptCategory === "" )
+        {
+        exceptCategory = exceptCategory.toString().replace(/\./g,"_");
+           rc= relation.getNext();
+            continue;
+        }
+        var exceptSubCategory ="";
+        if(subcategoryfield!="")
+        {
+        subcategoryfield = subcategoryfield.toString().replace(/\./g,"_");
+        exceptSubCategory = relation[subcategoryfield];
+          if(exceptSubCategory === null || exceptSubCategory === "") 
+          {
+            rc= relation.getNext();
+            continue;
+          }
+        }
+         var exceptSubArea="";
+        if(producttyepfield!="")
+        {
+        producttyepfield = producttyepfield.toString().replace(/\./g,"_");
+        exceptSubArea = relation[producttyepfield];
+       
+          if (exceptSubArea === null || exceptSubArea === "" ) {
+            rc= relation.getNext();
+            continue;
+         }
+        }
+        var content = "";
+        for(var k=0;k&lt;sourcefields.length;k++)
+        {
+          if(content != "")
+          {
+             content +="\n";
+          }
+          var nm = sourcefields[k].replace(/\./g,"_");
+         content+= lib.IDOLDataCleansing.require().cleanData(CategoryUtilLib.getObjectString(relation[nm]),incar,excar,rmar);
+        }
+        
+       
+      
+        var outar = new Array();
+        var catenames = new Array();
+        var cid = lib.jsaci.queryCategory(content,outar,-1,taxonomy,3,catenames);//getCategoryId(rtitle, strdesc,outar);
+        
+        var isfind = false;
+        var strmsg = "";
+        var clength = 0;
+        if(cid == null || cid.length == 1 &amp;&amp; ids[0]==0)
+        {
+           
+        }
+        else if(cid != null)
+        {
+          clength = cid.length;
+        }
+        f.suggestcategory =-1;
+        f.weight=0;
+        f.terms="";
+        for (var n = 0; n &lt; clength; n++) {
+           if(n === 0)
+           {
+             f.suggestcategory = cid[0];
+             f.weight=parseInt(outar[0].toString());
+             f.terms=outar[1];
+           }
+           
+            if (cid[n]==id) 
+            {
+                isfind = true;
+                if (n === 0) {
+                    firstCount++;
+                    f.find=1;
+                }
+                else if (n === 1) {
+                    secondCount++;
+                    f.find=2;
+                }
+                else {
+                    thirdCount++;
+                    f.find=3;
+                }
+                break;
+            }
+        }
+        
+        if (clength==0) 
+        {
+        var mycates =lib.jsaci.suggestCategory(content,taxonomy,dbname,categoryfield, subcategoryfield,producttyepfield,3);
+         
+         isfind = false;
+        for(var m=0;mycates !=null &amp;&amp; m&lt;mycates.length;m++)
+        {
+         
+          if(mycates[m].length ==1 &amp;&amp; mycates[m][0]== exceptCategory )
+          {
+            isfind = true;
+          }
+          else if(mycates[m].length ==2 &amp;&amp; mycates[m][0]== exceptCategory &amp;&amp; exceptSubCategory==mycates[m][1])
+          {
+            isfind = true;
+          }
+          else if(mycates[m].length ==3 &amp;&amp; mycates[m][0]== exceptCategory &amp;&amp; exceptSubCategory==mycates[m][1] &amp;&amp; exceptSubArea==mycates[m][2])
+          {
+            isfind = true;
+          }
+          if(isfind)
+          {
+            if (m === 0) {
+                    firstCount++;
+                    f.find=1;
+                }
+                else if (m === 1) {
+                    secondCount++;
+                    f.find=2;
+                }
+                else {
+                    thirdCount++;
+                    f.find=3;
+                }
+                break;
+          }
+        }
+           if(isfind ==false)
+           {
+            notEqualAnyCount++;
+            }
+        }
+        else if(isfind == false &amp;&amp; clength&gt;0)
+        {
+          notEqualAnyCount++;
+        }
+        if(bsave)
+        {
+          f.doInsert();
+        }
+
+        rc = relation.getNext();
+        i++;
+        currentid=getNextCategoryTestID(currentid);
+        if (rc != 0 || rc == null) {
+            break;
+        }
+        if (i % 1000 == 0) {
+            myPrint("already handle " + i);
+            
+            froot.firstcount = nowfirstcount+firstCount;
+            froot.secondcount=nowsecondcount+secondCount;
+            froot.thirdCount = nowthirdCount+thirdCount;
+            froot.misscount= nowmisscount+notEqualAnyCount;
+            froot.invalidcount=nowinvalidcount+invalidCount;
+            froot.doUpdate();
+         
+        }
+
+    }
+
+
+    var totelCount = firstCount + secondCount + thirdCount + notEqualAnyCount+invalidCount;
+    if(totelCount &gt;0)
+    {
+     var firstRate = Number(100 * firstCount / totelCount);
+     var secondRate = Number(100 * (firstCount + secondCount) / totelCount);
+     var thirdRate = Number(100 * (firstCount + secondCount + thirdCount) / totelCount);
+     var notEqualRate = Number(100 * notEqualAnyCount / totelCount);
+     var invalidRate = Number(100 * invalidCount / totelCount);
+
+    myPrint("Invalid count is: " + invalidCount + ", hit rate: " + invalidRate.toFixed(2) +"%");
+    myPrint("First count is: " + firstCount + ", hit rate: " + firstRate.toFixed(2) + "%");
+    myPrint("Second count is: " + secondCount + ", hit rate: " + secondRate.toFixed(2) + "%");
+    myPrint("Third count is: " + thirdCount + ", hit rate: " + thirdRate.toFixed(2) + "%");
+
+     myPrint("Missed count is: " + notEqualAnyCount + ", hit rate: " + notEqualRate.toFixed(2) + "%");
+    }
+    myPrint("*******category :"+id+"Total test count:" + totelCount + " ********");
+   
+    var ar = new Array(firstCount, secondCount , thirdCount , notEqualAnyCount,invalidCount);
+    return ar;
+}
+
+//end with s, mean may have more than one,it's a array
+// no s mean, only has one, it's a string
+function generateIdxDataForIDOL(f,keys,timefield,titlefield,propertyfields,sourcefields,inc_ar,exc_ar,rm_ar,taxtonomy,btain,disname,disvalue)
+{
+  
+  if(sourcefields==null || sourcefields.length==0)
+  {
+    return "";
+  }
+  var strDoc = "";
+  var strkey = "";
+  for(var i=0;i&lt;keys.length;i++)
+  {
+    if(strkey != "")
+    {
+      strkey +="-";
+    }
+    var jsname = keys[i].replace(/\./g,"_");
+    jsname = jsname.replace(/,/g,".");
+    
+    strkey += f[jsname];
+  }
+  strDoc = "#DREREFERENCE " + strkey + "\n";
+  for(var i=0;propertyfields !=null &amp;&amp; i&lt;propertyfields.length;i++)
+  {
+    if(propertyfields[i] == null || propertyfields[i] == "")
+    {
+      continue;
+    }
+    var value = propertyfields[i].replace(/\./g,"_");
+    var fieldname = value.toUpperCase();
+    strDoc += "#DREFIELD "+fieldname+"=\""+f[value]+"\"\n";
+  }
+  if(btain &amp;&amp; taxtonomy != undefined &amp;&amp; taxtonomy != null &amp;&amp; taxtonomy!="")
+  {
+    strDoc += "#DREFIELD SRCTAXONOMY=\""+taxtonomy+"\"\n";
+  }
+  if(disname != "" &amp;&amp; disvalue != "")
+  {
+    strDoc += "#DREFIELD "+disname+"=\""+disvalue+"\"\n";
+  }
+  if(timefield!=null &amp;&amp; timefield!= "")
+  {
+  
+    var td = new Date();
+    var relname = timefield.toString().replace(/\./g,"_");
+    var opentime = f[relname];
+   if(opentime != null)
+   {
+     td = f.open_time;
+     strDoc += "#DREDATE  " + CategoryUtilLib.getDateString(td)+"\n";
+   }
+    
+  }
+  strDoc += "#DRETITLE \n";
+  if(titlefield !=null &amp;&amp; titlefield!="")
+  {
+    var value = titlefield.replace(/\./g,"_");
+    strDoc += lib.IDOLDataCleansing.require().cleanData(CategoryUtilLib.getObjectString(f[value]),inc_ar,exc_ar,rm_ar);
+  }
+
+  
+  strDoc += "\n#DRECONTENT\n";
+  var strcontent ="";
+  
+  for(var i=0;sourcefields !=null &amp;&amp; i&lt;sourcefields.length;i++)
+  {
+    
+    if(sourcefields[i] == null || sourcefields[i] =="" || titlefield == sourcefields[i])
+    {
+      continue;
+    }
+    var nm = sourcefields[i].replace(/\./g,"_");
+    strcontent += lib.IDOLDataCleansing.require().cleanData(CategoryUtilLib.getObjectString(f[nm]),inc_ar,exc_ar,rm_ar);
+  }
+  if(strcontent!= "")
+  {
+    strDoc +=strcontent;
+  }
+   strDoc += "\n#DREENDDOC\n\n";
+   return strDoc;
+  
+}
+
+
+function findSchemaByName(category,subcategory,groupid,subgroup)
+{
+   var strcondition = "groupid="+groupid;
+   if(category != null &amp;&amp; category !="")
+   {
+     strcondition += " and  category=\""+category+"\"";
+     
+   }
+   if(subcategory != null &amp;&amp; subcategory != "")
+   {
+      strcondition += " and subcategory=\""+subcategory+"\" and name=\""+subcategory+"\"";
+   }
+   else
+   {
+      strcondition += " and  name=\""+category+"\"";
+   }
+   
+   if(subgroup&gt;0)
+   {
+      strcondition += " and subgroup="+subgroup;
+   }
+   var fcate = new SCFile(CONSTANT.getCategoryFileName(), SCFILE_READONLY);
+    var rc = fcate.doSelect(strcondition); // already index finish
+  if(rc==RC_SUCCESS)
+  {
+    return fcate.id;
+  }
+  return -1;
+}
+
+function getHPEventService()
+{
+
+  var f= new SCFile("device",SCFILE_READONLY);
+  var rc =f.doSelect("logical.name like \"*event\"");
+  var ar = new Array();
+  while(rc ==0)
+  {
+    ar.push(f.logical_name.toString());
+    rc = f.getNext();
+  }
+  myPrint("get HP-IT event service "+ar.length);
+  return ar;
+}
+
+
+function queryCategoryDetail(cateid) {
+
+    var ret = [];
+    var f = new SCFile(CONSTANT.getCategoryFileName(),SCFILE_READONLY);
+    if (f.doSelect("id=" + cateid) === 0) {
+        ret.push(f.category);
+        ret.push(f.subcategory);
+        ret.push(f.product_type);
+    }
+    else
+    {
+      print("Category ["+cateid+"] in local database is not existing!");
+    }
+
+    return ret;
+}
+//*************************************interface for learn from test result*************************
+function getDocumentCountIDOLServer()
+{
+  var url = vars.$G_DOCUMENT_COUNT_IDOL_SERVER;
+  if(url ==null || url =="")
+  {
+     url = lib.jsaci.getIDOLServerUrl();
+  }
+  return url;
+}
+function setDocumentCountIDOLServer(url)
+{
+  vars.$G_DOCUMENT_COUNT_IDOL_SERVER = url
+}
+
+function getDocumentCountForTerm(id,term,categoryfield,subcategoryfield,productfield,database)
+{
+  var f2 = new SCFile(CONSTANT.getCategoryFileName(),SCFILE_READONLY);
+  var rc = f2.doSelect("id="+id);
+  if(rc !=0)
+  {
+    return -1;
+  }
+  var headers = new Array();
+   var ret = -1;
+   var result =  null;
+   var strcategory = lib.jsaci.encodeStringForFieldText(f2.category.toString());
+   var strdata = "action=query";
+   var strcategory = categoryfield.replace(/\./g,"_");
+   strcategory = strcategory.toUpperCase();
+   if(database!="")
+   {
+    strdata +="&amp;DatabaseMatch="+database;
+   }
+   var encodestr = lib.jsaci.encodeStringForText(term);
+   strdata +="&amp;text="+encodestr+"&amp;FieldText=MATCH{"+f2.category+"}:"+strcategory;
+   var strsubcategory="";
+   if(subcategoryfield!=null &amp;&amp; subcategoryfield!="")
+   {
+    strsubcategory=lib.jsaci.encodeStringForFieldText(f2.subcategory.toString());
+    strdata +="+AND+MATCH{"+strsubcategory+"}:";
+    strsubcategory = subcategoryfield.replace(/\./g,"_");
+    strdata+= strsubcategory.toUpperCase();
+   }
+   var strproducttype="";
+   if(productfield!=null &amp;&amp; productfield!="")
+   {
+     strproducttype=lib.jsaci.encodeStringForFieldText(f2.product_type.toString());
+     strdata +="+AND+MATCH{"+strproducttype+"}:";
+     strproducttype = productfield.replace(/\./g,"_");
+      strdata += strproducttype.toUpperCase();
+   }
+   strdata+="&amp;totalresults=true&amp;myPrint=NoResults";
+   var result =  lib.jsaci.sendRequestToIDOL(getDocumentCountIDOLServer(),strdata);
+   if(result == null)
+   {
+     myPrint("getDocumentCountForTerm for  ["+term+"] timeout, wait 3 seconds to continue");
+     system.functions.sleep(3);
+     return -1;
+   }
+
+
+    var xml = new XML();
+    xml.setContent(result);
+    if(lib.jsaci.getFirstNamedItemValue(xml,"response") != "SUCCESS")
+    {
+      return -1;
+    }
+    var child = lib.jsaci.getResponsedata(xml);
+    
+    if(child != null)
+    {
+       
+       var item = lib.jsaci.findFirstNamedItem(child,"totalhits");
+       if(item != null)
+       {
+       
+         return parseInt(item.getNodeValue());
+
+       }
+    }
+    
+   return 0;
+  
+  
+}
+
+
+function findTermWeight(id,term)
+{
+   var ar = new Array();
+   var f2 = new SCFile(CONSTANT.getCategoryFileName(),SCFILE_READONLY);
+   var rc =f2.doSelect("id="+id);
+   if(rc!=0)
+   {
+     return 0;
+   }
+   var t = f2.genterms.toArray();
+   if(t.lentgh&lt;2 || t[0] == null || t[0]=="")
+   {
+      return 0;
+   }
+   var genterms = lib.jsaci.stringToArray(t[0].toString());
+   var genweights = lib.jsaci.stringToArray(t[1].toString());
+   for(var i=0; i&lt; genterms.length; i++)
+   {
+    if(genterms[i] == term)
+    {
+      return parseInt(genweights[i]);
+    }
+   }
+  return 0;
+}
+
+function findTermWeights(id,terms)
+{
+   var ar = new Array();
+   var f2 = new SCFile(CONSTANT.getCategoryFileName(),SCFILE_READONLY);
+   var rc =f2.doSelect("id="+id);
+   if(rc!=0)
+   {
+     myPrint(rc);
+     return ar;
+   }
+   var t = f2.genterms.toArray();
+   if(t.lentgh&lt;2 || t[0] == null || t[0]=="")
+   {
+      return ar;
+   }
+   var genterms = lib.jsaci.stringToArray(t[0].toString());
+   var genweights = lib.jsaci.stringToArray(t[1].toString());
+   for(var i=0; i&lt; terms.length; i++)
+   {
+     for(var n=0;n&lt;genterms.length;n++)
+     {
+       if(terms[i] == genterms[n])
+       {
+         ar.push(parseInt(genweights[n]));
+         break;
+       }
+     }
+   }
+   
+   var termar = f2.terms.toArray();
+   if(termar.length&gt;=2 &amp;&amp; f2.terms[0] != null &amp;&amp; f2.terms[0] !="")
+   {
+   // update the value from modify terms
+    var modterms = lib.jsaci.stringToArray(f2.terms[0].toString());
+    var modweights = lib.jsaci.stringToArray(f2.terms[1].toString());
+     for(var k=0; k&lt; terms.length; k++)
+     {
+       for(var m=0;m&lt;modterms.length;m++)
+       {
+        if(terms[k] == modterms[m])
+        {
+         ar[k] = parseInt(modweights[m]);
+         break;
+        }
+      }
+    }
+    
+   }
+   
+   return ar;
+}
+
+function updateAllGeneratedTerms(groupid,subgroup)
+{
+  try
+  {
+     myPrint("now is ready to save all generated terms for category group "+groupid);
+     var f = new SCFile(CONSTANT.getCategoryFileName());
+     var sql = "traincount&gt;0 and status &gt;=2 and groupid="+groupid;
+     if(subgroup&gt;0)
+     {
+       sql += " and subgroup="+subgroup;
+     }
+     var rc = f.doSelect(sql);
+     var icount =0;
+     while(rc ==0 )
+     {
+      checkTaskIsStoped();
+      var hd = lib.jsaci.getCategoryTermWeight(f.id);
+      if(hd == null &amp;&amp; false == readCategoryStatus(f.id))
+      {
+        return false;
+      }
+      f.genterms[0]=hd.name;
+      f.genterms[1]=hd.value;
+      f.status=5;
+      f.doUpdate();
+      icount++;
+      rc= f.getNext();
+    }
+    myPrint("already save terms for "+icount+" categories for category group "+groupid);
+    return true;
+  }
+  catch(e)
+  {
+    myPrint("catch exception in updateAllGeneratedTerms:"+e);
+    return false;
+  }
+}
+
+function getPossibleTermsFromTestResult(groupid,categoryfield,subcategoryfield,productfield,subgroup)
+{
+  var f = new SCFile(CONSTANT.getCategoryFileName());
+  var sortOrder = new Array(SCFILE_ASC,SCFILE_ASC);
+  var sortFields = new Array("id","traincount");
+  f.setOrderBy(sortFields,sortOrder);
+  var sql = "traincount&gt;0 and groupid="+groupid;
+  if(subgroup&gt;0)
+  {
+    sql += " and subgroup="+subgroup;
+  }
+  var rc = f.doSelect(sql);
+  while(rc ==0 )
+  {
+    var ar =findPossibleTermFromTestResults(f.id,categoryfield,subcategoryfield,productfield,subgroup);
+    f.terms[0]= ar[0];
+    f.terms[1]=ar[1];
+    f.status=6;
+    f.doUpdate();
+    rc= f.getNext();
+  }
+}
+
+function getAdjustTermsWeightFromTestResult(groupid,categoryfield,subcategoryfield,productfield,database,subgroup)
+{
+  try
+  {
+     var f = new SCFile(CONSTANT.getCategoryFileName());
+     var sortOrder = new Array(SCFILE_ASC,SCFILE_ASC);
+     var sortFields = new Array("id","traincount");
+     f.setOrderBy(sortFields,sortOrder);
+     var sql = "status &lt;7 and traincount&gt;0 and groupid="+groupid;
+     if(subgroup&gt;0)
+     {
+       sql += " and subgroup="+subgroup;
+     }
+     var rc = f.doSelect(sql);
+     while(rc ==0 )
+    {
+       checkTaskIsStoped();
+       myPrint("now is handling "+f.id +":"+f.name+"  "+f.category+"=&gt;"+f.subcategory+"=&gt;"+f.product_type +"  training count:"+f.traincount);
+       if(f.terms == null)
+       {
+         rc = f.getNext();
+         continue;
+      
+       }
+       var terms = f.terms.toArray();
+       if(terms.length&lt;2 || terms[0] == "")
+      {
+        rc = f.getNext();
+        continue;
+      }
+    
+     
+      var updateterms = "";
+      var updateweights = "";
+      var lastterm = lib.jsaci.stringToArray(terms[0]);
+      var currentcategory = lib.jsaci.stringToArray(terms[1]);
+    //check the terms docs to make decision belong to who is better
+      for(var i=0;i &lt; lastterm.length;i++)
+      {
+      
+        var currentcount = getDocumentCountForTerm(currentcategory[i],lastterm[i],categoryfield,subcategoryfield,productfield,database);
+      
+        var expectcount =getDocumentCountForTerm(f.id,lastterm[i],categoryfield,subcategoryfield,productfield,database);
+        if(currentcount == -1 &amp;&amp; expectcount == -1 &amp;&amp; false == readCategoryStatus(f.id) )
+        {
+          return false;
+        }
+      
+        if(expectcount &gt; currentcount)
+        {
+          if(updateterms !="")
+          {
+            updateterms +=",";
+            updateweights+=",";
+          }
+          updateterms+=lastterm[i];
+          updateweights+= findTermWeight(currentcategory[i],lastterm[i])+10;
+        }
+      }
+      myPrint("for category "+f.id + " "+f.name+" get adjust "+updateterms);
+      f.terms[2] =updateterms;
+      f.terms[3]=updateweights;
+      f.status=7;
+      f.doUpdate();
+      rc= f.getNext();
+    }
+    return true;
+  }
+  catch(e)
+  {
+    ExceptionLib.setLastTrainingException(e);
+    myPrint("meet exception in  getAdjustTermsWeightFromTestResult :"+e);
+    return false;
+  }
+}
+function removeTermsWeightChange(groupid,subgroup)
+{
+  var f = new SCFile(CONSTANT.getCategoryFileName());
+  var sortOrder = new Array(SCFILE_ASC,SCFILE_ASC);
+  var sortFields = new Array("id","traincount");
+  f.setOrderBy(sortFields,sortOrder);
+  var sql = "traincount&gt;0 and groupid="+groupid;
+  if(subgroup&gt;0)
+  {
+    sql += " and subgroup="+subgroup;
+  }
+  var rc = f.doSelect(sql);
+  while(rc ==0 )
+  {
+    var ar = f.terms.toArray();
+    if(ar.length &lt;4 || ar[2]=="")
+    {
+      f.status=7;
+      f.doUpdate();
+      rc = f.getNext();
+      continue;
+    }
+     if(checkCategoryModuleStatus() == false)
+     {
+       break;
+     }
+    lib.jsaci.setCategoryTermWeight(f.id,"","");
+    f.status=7;
+    f.doUpdate();
+    rc= f.getNext();
+  }
+}
+function adjustTermsWeightFromTestResult(groupid,subgroup)
+{
+  try
+  {
+    myPrint("now is ready to adjust terms weight for category group "+groupid + " subgroup "+subgroup);
+    if(false == readCategoryStatus(0))
+    {
+      return false;
+    }
+    var f = new SCFile(CONSTANT.getCategoryFileName());
+    var sortOrder = new Array(SCFILE_ASC,SCFILE_ASC);
+    var sortFields = new Array("id","traincount");
+    f.setOrderBy(sortFields,sortOrder);
+    var sql = "status =7 and traincount&gt;0 and groupid="+groupid;
+    if(subgroup&gt;0)
+    {
+      sql += " and subgroup="+subgroup;
+    }
+    var rc = f.doSelect(sql);
+    var icount=0;
+    var ihandled =0;
+    while(rc ==0 )
+    {
+      checkTaskIsStoped();
+      icount++;
+      var ar = f.terms.toArray();
+      if(ar.length &lt;4 || ar[2]=="")
+      {
+        f.status=8;
+        f.doUpdate();
+        rc = f.getNext();
+        continue;
+      }
+     
+      if(false == lib.jsaci.setCategoryTermWeight(f.id,ar[2],ar[3]) &amp;&amp; false == readCategoryStatus(f.id))
+      {
+        return false;
+      }
+      ihandled++;
+      f.status=8;
+      f.doUpdate();
+      rc= f.getNext();
+    }
+    myPrint("finish adjusting terms weight for "+ihandled+" categories ,total checked category "+icount);
+    return true;
+  }
+  catch(e)
+  {
+    ExceptionLib.setLastTrainingException(e);
+    myPrint("meet exception in adjustTermsWeightFromTestResult:"+e);
+    return false;
+  }
+}
+
+function findPossibleTermFromTestResults(id,categoryfield,subcategoryfield,productfield,subgroup)
+{
+
+  var f=  new SCFile(CONSTANT.getCategoryTestFileName());
+  var sortOrder = new Array(SCFILE_ASC,SCFILE_ASC);
+  var sortFields = new Array("id","category");
+  f.setOrderBy(sortFields,sortOrder);
+  var sql = "find=0 and status=0 and category="+id;
+  if(subgroup&gt;0)
+  {
+    sql += " and subgroup="+subgroup;
+  }
+  
+  var rc= f.doSelect( sql);
+  var icount =0;
+  var getar = new Array();
+  var possibleterms ="";
+  var suggestcategory="";
+  var retar = new Array();
+  while(rc ==0)
+  {
+ 
+     
+    var lastterm = new Array();
+    if(f.terms==null || f.terms=="")
+    {
+       f.status=1;
+    f.doUpdate();
+     icount++;
+     if(icount % 1000 ==0)
+     {
+       myPrint("already handle " +icount +" records");
+     }
+     rc = f.getNext();
+     continue;
+    }
+    var terms = lib.jsaci.stringToArray(f.terms.toString());
+    for(var n=0;n&lt;terms.length;n++)
+    {
+      var isfind = false;
+      for(var k=0;k&lt;lastterm.length;k++)
+      {
+         if(terms[n]==lastterm[k])
+         {
+           isfind = true;
+           break;
+         }
+      }
+      if(isfind == false)
+      {
+        lastterm.push(terms[n]);
+      }
+    }
+
+    for(var i=0;i &lt; lastterm.length;i++)
+    {
+      if(false == CategoryUtilLib.stringAleadyInArray(lastterm[i],getar))
+      {
+        getar.push(lastterm[i]);
+        if(possibleterms!="")
+        {
+           possibleterms +=",";
+           suggestcategory+=",";
+        }
+        possibleterms+=lastterm[i];
+        suggestcategory+=f.suggestcategory;
+      }
+    }
+
+    f.status=1;
+    f.doUpdate();
+    icount++;
+     if(icount % 1000 ==0)
+     {
+       myPrint("already handle " +icount +" records");
+
+     }
+     rc = f.getNext();
+
+  }
+  retar.push(possibleterms);
+  retar.push(suggestcategory);
+  return retar;
+}
+
+function addIDOLSecGroup(sub_group_name,groupid)
+{
+  
+    var f = new SCFile(CONSTANT.getSubGroupStatusFileName());
+    var rc = f.doSelect("security.id=\""+sub_group_name+"\" and adapter.id="+groupid);
+    if(rc == RC_SUCCESS)
+    {
+    }
+    else
+    {
+      var rteReturnValue = new SCDatum();
+      var rteNumber = new SCDatum();
+      try
+     { 
+       system.functions.rtecall( "getnumber", rteReturnValue, rteNumber, "idolsecgroupid", null );
+     }
+     catch(e)
+    {
+    }
+     f.id=rteNumber.getText();
+     f.security_id = sub_group_name;
+     f.adapter_id = groupid;
+     f.testing_status = -1;
+     f.testing_status_desc=system.functions.scmsg("TestingStatus_1","acicategory");
+     f.training_status=-1;
+     f.training_status_desc=system.functions.scmsg("RunningStatus_1","acicategory")
+     
+     f.doInsert();
+      
+    }
+}
+// id =&gt;category id in idol
+// groupid adapter.id
+// subgroupname the company name, must existing at idolsecgroup first if run in multi-company
+// this function will sync all the cateory with belong to id to localdatabase
+function syncIDOLCategory(id,groupid,subgroupname)
+{
+   var f = new SCFile(CONSTANT.getCategoryConfigFileName());
+   rc = f.doSelect("adapter.id="+groupid);
+   if(rc != RC_SUCCESS )
+   {
+     print("Can't find any category configuration for adapter id "+groupid);
+     return false;
+   }
+   var tax = lib.jsaci.getCategoryDetail(id);
+   if(tax == null || tax.length !=2 || tax[1].toUpperCase() != "TRUE")
+   {
+     print("request the special category is category Taxonomy, but ["+id+"] is not meet the condition!");
+     return false;
+   }
+   
+   var mcompany =false;
+   var taxonomy =  tax[0];
+   var fsec = new SCFile(CONSTANT.getSubGroupStatusFileName());
+   if(subgroupname != undefined &amp;&amp; subgroupname != null &amp;&amp; subgroupname !="")
+   {
+      var npos = taxonomy.indexOf("_"+subgroupname);
+      if( npos == -1 || npos + subgroupname.length+1 != taxonomy.length )
+      {
+         print("request the special category name ["+tax[0]+"] is not end with the company name ["+subgroupname+"]");
+         return false;
+      }
+      taxonomy = taxonomy.substring(0,npos);
+      
+      var rc = fsec.doSelect("security.id=\""+subgroupname+"\" and adapter.id="+groupid);
+      if(rc != RC_SUCCESS)
+      {
+      print("you didn't add this company ["+subgroupname+"] into the adapter "+groupid);
+      return false;
+      }
+      mcompany = true;
+      taxonomy += "_"+subgroupname;
+   }
+   var url = lib.jsaci.getIDOLServerUrl()+"action=CategoryGetHierDetails&amp;category="+id+"&amp;expand=all";
+   var result = lib.jsaci.sendRequestToIDOL(url,"");
+   if(result == null)
+   {
+     print("don't get any response from IDOL for query cateory  "+id);
+     return false;
+   }
+   
+    var xml = new XML();
+    xml.setContent(result);
+    var ret = lib.jsaci.getFirstNamedItemValue(xml,"response");
+    if(ret != "SUCCESS")
+    {
+       print("don't find such cateory in IDOL for id is "+id);
+       return false;
+    }
+    var response = lib.jsaci.getResponsedata(xml);
+    var cate = lib.jsaci.findFirstNamedItem(response,"category");
+    var location = lib.jsaci.findFirstNamedItem(cate,"location");
+    var parentnode = lib.jsaci.findFirstNamedItem(location,"node");
+    
+    var parentid = parseInt(lib.jsaci.getFirstNamedItemValue(parentnode,"id"));
+    var currentid = parseInt(lib.jsaci.getFirstNamedItemValue(cate,"id"));
+    if(cate == null || lib.jsaci.getFirstNamedItemValue(cate,"numchildren") == "0")
+    {
+      print("can't do create category from IDOL due to no any sub category for special category "+id);
+      return false;
+    }
+    if(mcompany &amp;&amp; parentid == 0)
+    {
+      print("current adapter is configured as multi-company, but your special category in IDOL is not a company node!");
+      return false;
+    }
+
+    print("warning  now will remove all the local training data to create all the categories from IDOL.");
+    removeLocalData(f,subgroupname);
+    
+    print("now is ready to insert the new root category!");
+    var rf = new SCFile(CONSTANT.getCategoryFileName());
+    rc = rf.doSelect("groupid="+groupid +" and parentid=0");
+    if(rc != RC_SUCCESS)
+    {
+      rf.id = currentid;
+      rf.sourcecount=0;
+      rf.groupid=groupid;
+      rf.name = taxonomy;
+      rf.status=2;
+      rf.sourcecount=0;
+      rf.indexcount=0;
+      rf.traincount=0;
+      rf.id=currentid;
+      rf.testflag=0;
+      rf.parentid=0;
+      rf.subgroup=0;
+      if(mcompany)
+      {
+        rf.subgroup=1;
+        rf.status=0;
+        rf.id=parentid;
+      }
+         
+      rf.category=f.level1_field;
+      rf.subcategory=f.level2_field;
+      rf.product_type=f.level3_field;
+      
+      rf.doInsert();
+    }
+    if(mcompany)
+    {
+      rf.id = currentid;
+      rf.sourcecount=0;
+      rf.groupid=groupid;
+      rf.name = subgroupname;
+      rf.status=2;
+      rf.sourcecount=0;
+      rf.indexcount=0;
+      rf.traincount=0;
+      rf.id=currentid;
+      rf.testflag=0;
+      rf.parentid=parentid;
+      rf.subgroup=currentid;
+    
+      rf.category=f.level1_field;
+      rf.subcategory=f.level2_field;
+      rf.product_type=f.level3_field;
+
+      rf.doInsert();
+    }
+    var children = lib.jsaci.findFirstNamedItem(cate,"children");
+    var child = lib.jsaci.findFirstNamedItem(children,"child");
+    print("now will handle the sub-categories!");
+    while(child != null)
+    {
+      handleonechild(child,rf,rf.id,0);
+      child = child.getNextSiblingElement();
+    }
+    f.is_active = true;
+    f.status=3;
+    f.category_group_name = taxonomy;
+    f.doUpdate();
+    if(mcompany)
+    {
+      fsec.training_status = 3;
+      fsec.doUpdate();
+    }
+    print("successfully sync all the category from IDOL");
+}
+
+function handleonechild(child,rf,pid,nlevel)
+{
+   if(nlevel == 0)
+   {
+     rf.category=null;
+     rf.subcategory=null;
+     rf.product_type=null;
+   }
+   else if(nlevel == 1)
+   {
+      rf.subcategory=null;
+     rf.product_type=null;
+   }
+   else
+   {
+     rf.product_type=null;
+   }
+   rf.sourcecount=0;
+   rf.indexcount=0;
+   rf.traincount=0;
+   rf.id=-1;
+   rf.parentid = pid;
+  var item = child.getFirstChildElement();
+  var isleafnod = true;
+  while(item != null)
+  {
+     if("childid"== item.getNodeName())
+     {
+       rf.id=parseInt(item.getNodeValue());
+     }
+     else if("childname"== item.getNodeName())
+     {
+      if(nlevel == 0)
+      {
+        rf.category = lib.jsaci.decodeStringForCategory(item.getNodeValue());
+        rf.name = rf.category;
+      }
+      else if(nlevel == 1)
+      {
+        rf.subcategory = lib.jsaci.decodeStringForCategory(item.getNodeValue());
+        rf.name = rf.subcategory;
+      }
+      else
+      {
+        rf.product_type= lib.jsaci.decodeStringForCategory(item.getNodeValue());
+        rf.name = rf.product_type;
+      }
+     }
+     else if("numchildren"== item.getNodeName())
+     {
+       var numchild = parseInt(item.getNodeValue());
+       if(numchild == 0)
+       {
+         rf.sourcecount=100;
+         rf.indexcount=100;
+         rf.traincount=100;
+       }
+     }
+     else if("children" == item.getNodeName())
+     {
+        isleafnod = false;
+        rf.doInsert();
+        var nowlevel =nlevel+1;
+        var child= lib.jsaci.findFirstNamedItem(item,"child");
+        while(child != null)
+        {
+          
+          handleonechild(child,rf,rf.id,nowlevel);
+          child = child.getNextSiblingElement();
+        }
+     }
+     item = item.getNextSiblingElement();
+     
+  }
+  
+  if(isleafnod)
+  {
+     rf.doInsert();
+  }
+}
+
+function removeLocalData(fadapter,subgroupname)
+{
+   var f = new SCFile(CONSTANT.getCategoryFileName());
+   var sql = "groupid="+fadapter.adapter_id;
+   var subgroup =-1;
+   if(subgroupname!=undefined &amp;&amp; subgroupname != null &amp;&amp; subgroupname != "")
+   {
+     subgroup= findSubGroupByName(groupid,subgroupname);
+     if(subgroup&gt;0)
+     {
+       sql += " and subgroup="+subgroup;
+     }
+   }
+  var rc =f.doSelect(sql);
+  while(rc == RC_SUCCESS)
+  {
+    f.doDelete();
+    rc = f.getNext();
+  }
+
+  
+  var f1 = new SCFile(CONSTANT.getCategoryTestFileName());
+  rc = f1.doPurge(sql);
+    
+  if(subgroup&gt;0)
+  {
+    var f = new SCFile(CONSTANT.getSubGroupStatusFileName());
+    rc = f.doSelect("adapter.id="+groupid+" and security.id=\""+subgroupname+"\"");
+    if(rc == RC_SUCCESS)
+    {
+      f.subgroup_id = null;
+      f.testing_status = -1;
+      f.testing_status_desc="Not start yet";
+      f.training_status = -1;
+      f.training_status_desc = "Not start yet";
+      f.first_accuracy = null;
+      f.total_three_accuracy = null;
+      f.doUpdate();
+    }
+  }
+  
+  fadapter.status =-1;
+  fadapter.doUpdate();
+}
+</script>
+    <package type="string">IDOL</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:37</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

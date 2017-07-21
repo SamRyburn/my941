@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="activitytype">
+  <record id="activity.number=9 and table=&quot;SurveyDefinition&quot;" recordid="9 - SurveyDefinition">
+    <activity.number type="decimal">9</activity.number>
+    <activity.name type="string">Update - Owner</activity.name>
+    <visible type="string">No</visible>
+    <table type="string">SurveyDefinition</table>
+    <sysmodtime type="dateTime">04/11/13 20:08:22</sysmodtime>
+    <sysmoduser type="string">jsteube</sysmoduser>
+    <sysmodcount type="decimal">1</sysmodcount>
+  </record>
+</recordset>

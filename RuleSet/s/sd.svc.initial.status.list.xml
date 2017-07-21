@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="RuleSet">
+  <record id="id=&quot;sd.svc.initial.status.list&quot;" recordid="sd.svc.initial.status.list">
+    <id type="string">sd.svc.initial.status.list</id>
+    <name type="string">Initialize the Status List</name>
+    <tablename sctype="array">
+      <tablename sctype="string">incidents</tablename>
+    </tablename>
+    <rule sctype="array">
+      <rule sctype="structure">
+        <ruleId type="decimal">1</ruleId>
+        <isGroup type="boolean">false</isGroup>
+        <parentGroup type="decimal">0</parentGroup>
+        <ruleXML NullValue="1" type="string"/>
+        <ruleDesc type="string">Run JavaScript Validation:Initial Status List</ruleDesc>
+        <condition type="string">true</condition>
+        <conditionDesc NullValue="1" type="string"/>
+        <conditionXML NullValue="1" type="string"/>
+        <fullDesc type="string">Run JavaScript Validation:Initial Status List</fullDesc>
+        <level type="decimal">0</level>
+        <type type="string">JSValidate</type>
+        <ruleJSON type="string">{"type":"JSValidate","script":"lib.custom.SD_setStateList( record.current_phase, record.category);"}</ruleJSON>
+      </rule>
+    </rule>
+    <lastRuleId type="decimal">1</lastRuleId>
+    <isAction NullValue="1" type="boolean"/>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:01:20</sysmodtime>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

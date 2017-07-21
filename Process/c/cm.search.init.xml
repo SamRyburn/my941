@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="Process">
+  <record id="process=&quot;cm.search.init&quot;" recordid="cm.search.init">
+    <process type="string">cm.search.init</process>
+    <pre.expressions sctype="array">
+      <pre.expressions sctype="operator">$cm3.start.after=NULL;$cm3.start.before=NULL</pre.expressions>
+      <pre.expressions sctype="operator">$cm3.close.after=NULL;$cm3.close.before=NULL</pre.expressions>
+      <pre.expressions sctype="operator">$cm3.stop.after=NULL;$cm3.stop.before=NULL</pre.expressions>
+      <pre.expressions sctype="operator">$cm3.created.after=NULL;$cm3.created.before=NULL</pre.expressions>
+      <pre.expressions sctype="string"/>
+      <pre.expressions sctype="operator">$smart.search=nullsub($smart.search, gui())</pre.expressions>
+      <pre.expressions sctype="operator">if active.query in $L.env then ($active=true);if history in $L.env then ($history=true);if deferred in $L.env then ($deferred=true);if all.query in $L.env then ($all=true)</pre.expressions>
+      <pre.expressions sctype="operator">if $deferred then ($cm3.open.flag="deferred")</pre.expressions>
+      <pre.expressions sctype="operator">if $history then ($cm3.open.flag="inactive")</pre.expressions>
+      <pre.expressions sctype="operator">if $active then ($cm3.open.flag="active")</pre.expressions>
+      <pre.expressions sctype="operator">if $all then ($cm3.open.flag="all")</pre.expressions>
+      <pre.expressions sctype="operator">cleanup($smart.search.save1111)</pre.expressions>
+      <pre.expressions sctype="operator">$record=0</pre.expressions>
+      <pre.expressions sctype="operator">$extend=0;$irspread=4</pre.expressions>
+      <pre.expressions sctype="operator">$append.sql=NULL;$operator=NULL</pre.expressions>
+      <pre.expressions sctype="string"/>
+      <pre.expressions sctype="operator">$L.rem="The following variables are new-added time zone for change and change task"</pre.expressions>
+      <pre.expressions sctype="operator">$cm3.downstart.after=NULL;$cm3.downstart.end=NULL</pre.expressions>
+      <pre.expressions sctype="operator">$cm3.request.after=NULL;$cm3.request.before=NULL</pre.expressions>
+      <pre.expressions sctype="operator">$cm3.downend.after=NULL;$cm3.downend.end=NULL</pre.expressions>
+      <pre.expressions sctype="operator">$actl.start.after=NULL;$actl.start.end=NULL</pre.expressions>
+      <pre.expressions sctype="operator">$actl.end.after=NULL;$actl.end.end=NULL</pre.expressions>
+      <pre.expressions sctype="operator">$cm3.open.after=NULL;$cm3.open.before=NULL</pre.expressions>
+      <pre.expressions sctype="operator">$cm3.update.after=NULL;$cm3.update.before=NULL</pre.expressions>
+    </pre.expressions>
+    <post.expressions NullValue="1" sctype="array">
+      <post.expressions NullValue="1" type="expression"/>
+    </post.expressions>
+    <rad sctype="array">
+      <rad sctype="structure">
+        <application type="string">se.get.record</application>
+        <names sctype="array">
+          <names sctype="string">name</names>
+          <names sctype="string">file</names>
+          <names sctype="string">string1</names>
+          <names sctype="string">text</names>
+        </names>
+        <values sctype="array">
+          <values sctype="string">number.record in $L.object</values>
+          <values sctype="string">$L.number.record</values>
+          <values sctype="string">"number"</values>
+          <values sctype="string">"name"</values>
+        </values>
+        <rad.condition type="operator">not  (null(number.record in $L.object))</rad.condition>
+        <pre.rad.expressions sctype="array"/>
+        <post.rad.expressions sctype="array"/>
+      </rad>
+    </rad>
+    <next.process NullValue="1" sctype="array">
+      <next.process NullValue="1" type="string"/>
+    </next.process>
+    <process.condition NullValue="1" sctype="array">
+      <process.condition NullValue="1" type="boolean"/>
+    </process.condition>
+    <run.standard NullValue="1" type="boolean"/>
+    <sysmodcount type="decimal">8</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">03/13/11 21:02:38</sysmodtime>
+    <save.cursor.position NullValue="1" type="boolean"/>
+    <run.in.window NullValue="1" type="boolean"/>
+    <window.name NullValue="1" type="string"/>
+    <javascript.pre NullValue="1" type="string"/>
+    <javascript.post NullValue="1" type="string"/>
+    <baseMethod NullValue="1" type="string"/>
+  </record>
+</recordset>

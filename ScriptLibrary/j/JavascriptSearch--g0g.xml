@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;JavascriptSearch&quot;" recordid="JavascriptSearch">
+    <name type="string">JavascriptSearch</name>
+    <script type="string">function search(fileName, formatName, query) {
+	if (formatName != null &amp;&amp; fileName == null) {
+		var idx = formatName.indexOf(".");
+		fileName = formatName.substring(0, idx);
+	}
+	
+	if (fileName == "taskPlannerFieldsDef") {
+		if (query == null || query == "") {
+			return "#searchTaskAddlFieldsView.view";
+		} else {
+			return "#listTaskAddlFieldsView.list";
+		}
+	}
+}</script>
+    <package type="string">BaseUtilities</package>
+    <sysmodtime type="dateTime">11/12/14 15:39:14</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">19</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

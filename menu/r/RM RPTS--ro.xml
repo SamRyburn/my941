@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="menu">
+  <record id="name=&quot;RM RPTS&quot;" recordid="RM RPTS">
+    <name type="string">RM RPTS</name>
+    <option sctype="array">
+      <option sctype="decimal">1</option>
+      <option sctype="decimal">2</option>
+      <option sctype="decimal">3</option>
+      <option sctype="decimal">4</option>
+      <option sctype="decimal">5</option>
+      <option sctype="decimal">6</option>
+      <option sctype="decimal">7</option>
+      <option sctype="decimal">22</option>
+      <option sctype="decimal">23</option>
+      <option sctype="decimal">24</option>
+    </option>
+    <description sctype="array">
+      <description sctype="string">Receipt Listing</description>
+      <description sctype="string">Request Listing</description>
+      <description sctype="string"/>
+      <description sctype="string">Purchase Request</description>
+      <description sctype="string">Vendor Performance</description>
+      <description sctype="string">Expected Deliveries</description>
+      <description sctype="string"/>
+      <description sctype="string"/>
+      <description sctype="string">System Status</description>
+      <description sctype="string">ServiceManager Mail</description>
+    </description>
+    <command sctype="array">
+      <command sctype="string"/>
+      <command sctype="string"/>
+      <command sctype="string">Back</command>
+    </command>
+    <condition sctype="array">
+      <condition sctype="boolean">true</condition>
+      <condition sctype="boolean">true</condition>
+      <condition sctype="boolean">true</condition>
+      <condition sctype="boolean">true</condition>
+      <condition sctype="boolean">true</condition>
+      <condition sctype="boolean">true</condition>
+      <condition sctype="boolean">true</condition>
+      <condition sctype="boolean">true</condition>
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0</condition>
+      <condition sctype="boolean">true</condition>
+    </condition>
+    <application sctype="array">
+      <application sctype="string">report.exerciser</application>
+      <application sctype="string">report.exerciser</application>
+      <application sctype="string">menu.manager</application>
+      <application sctype="string">report.exerciser</application>
+      <application sctype="string">report.exerciser</application>
+      <application sctype="string">report.exerciser</application>
+      <application sctype="string">menu.manager</application>
+      <application sctype="string">menu.manager</application>
+      <application sctype="string">system.status</application>
+      <application sctype="string">mail.scenter</application>
+    </application>
+    <pname sctype="array">
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+    </pname>
+    <pvalue sctype="array">
+      <pvalue sctype="string">ocm.daily.receipt</pvalue>
+      <pvalue sctype="string">ocm.daily.quote</pvalue>
+      <pvalue sctype="string">OCM MAIN</pvalue>
+      <pvalue sctype="string">ocmo.print.orders</pvalue>
+      <pvalue sctype="string">ocml.vendor.performance</pvalue>
+      <pvalue sctype="string">ocml.expected.deliveries</pvalue>
+      <pvalue sctype="string">UTILITIES</pvalue>
+      <pvalue sctype="string">HOME</pvalue>
+    </pvalue>
+    <system NullValue="1" sctype="array">
+      <system NullValue="1" type="string"/>
+    </system>
+    <format.name type="string">menu.gui.ocm.rpts</format.name>
+    <thread sctype="array">
+      <thread sctype="string"/>
+      <thread sctype="string"/>
+      <thread sctype="operator">gui()</thread>
+      <thread sctype="string"/>
+      <thread sctype="string"/>
+      <thread sctype="string"/>
+      <thread sctype="operator">gui()</thread>
+      <thread sctype="operator">gui()</thread>
+    </thread>
+    <sysmodcount type="decimal">6</sysmodcount>
+    <sysmoduser type="string">rolfel</sysmoduser>
+    <sysmodtime type="dateTime">08/13/07 04:44:50</sysmodtime>
+    <group NullValue="1" sctype="array">
+      <group NullValue="1" type="string"/>
+    </group>
+    <icon NullValue="1" sctype="array">
+      <icon NullValue="1" type="string"/>
+    </icon>
+  </record>
+</recordset>

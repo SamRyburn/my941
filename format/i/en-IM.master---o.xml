@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;IM.master&quot;" recordid="en - IM.master">
+    <name mandatory="true" type="string">IM.master</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">3</column>
+        <length type="decimal">29</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Category Specific Infomation:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Category Specific Infomation:	Name=Label0	Height=2	Name=Label0	Width=58	X=4	Y=0		</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">rmurray</editor>
+    <last.update type="dateTime">04/25/05 08:12:43</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">1</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">04/26/05 04:34:44</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

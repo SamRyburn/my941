@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;cm3profile.query.g&quot;" recordid="en - cm3profile.query.g">
+    <name mandatory="true" type="string">cm3profile.query.g</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">4</column>
+        <length type="decimal">16</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Profile Name:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Profile Name:	X=6	Y=2	Height=2	Width=32	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">20</column>
+        <length type="decimal">25</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">name</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=name	X=38	Y=2	Height=2	Width=50	MaxChars=25	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">2</column>
+        <length type="decimal">80</length>
+        <window type="decimal">18</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Query Options</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Caption= Query Options 	X=2	Y=6	Height=31	Width=160	ForeColor=0	FontIncrease=1	ArrayLength=18	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">4</column>
+        <length type="decimal">16</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">active:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=active:	X=6	Y=8	Height=2	Width=32	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">32768</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">20</column>
+        <length type="decimal">58</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">active.query</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=active.query	X=38	Y=8	Height=2	Width=116	Parse=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">4</column>
+        <length type="decimal">16</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Expert Search:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Expert Search:	X=6	Height=2	Width=32	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">32768</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">20</column>
+        <length type="decimal">58</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">query.window</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=query.window	X=38	Height=2	Width=116	Parse=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">4</column>
+        <length type="decimal">16</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">all:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=all:	X=6	Y=12	Height=2	Width=32	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">32768</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">20</column>
+        <length type="decimal">58</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">all.query</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=all.query	X=38	Y=12	Height=2	Width=116	Parse=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">4</column>
+        <length type="decimal">16</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Append Query:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Append Query:	X=6	Y=14	Height=2	Width=32	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">32768</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">20</column>
+        <length type="decimal">58</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">append.query</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=append.query	X=38	Y=14	Height=2	Width=116	Parse=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">4</column>
+        <length type="decimal">16</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Clear:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Clear:	X=6	Y=16	Height=2	Width=32	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">32768</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">20</column>
+        <length type="decimal">58</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">clear</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=clear	X=38	Y=16	Height=2	Width=116	Parse=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">10</line>
+        <column type="decimal">4</column>
+        <length type="decimal">16</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">deferred:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=deferred:	X=6	Y=18	Height=2	Width=32	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">32768</flags>
+        <line type="decimal">10</line>
+        <column type="decimal">20</column>
+        <length type="decimal">58</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">deferred</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=deferred	X=38	Y=18	Height=2	Width=116	Parse=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">11</line>
+        <column type="decimal">4</column>
+        <length type="decimal">16</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">inactive:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=inactive:	X=6	Y=20	Height=2	Width=32	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">32768</flags>
+        <line type="decimal">11</line>
+        <column type="decimal">20</column>
+        <length type="decimal">58</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">history</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=history	X=38	Y=20	Height=2	Width=116	Parse=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">12</line>
+        <column type="decimal">4</column>
+        <length type="decimal">16</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Initial Format:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Initial Format:	X=6	Y=22	Height=2	Width=32	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">12</line>
+        <column type="decimal">20</column>
+        <length type="decimal">30</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">initial.fmt</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Fill;Input=initial.fmt	X=38	Y=22	Height=2	Width=60	ArrayLength=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">13</line>
+        <column type="decimal">4</column>
+        <length type="decimal">16</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Mod Time Lim:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Mod Time Lim:	X=6	Y=24	Height=2	Width=32	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">32768</flags>
+        <line type="decimal">13</line>
+        <column type="decimal">20</column>
+        <length type="decimal">58</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">mod.time.limit</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=mod.time.limit	X=38	Y=24	Height=2	Width=116	Parse=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">14</line>
+        <column type="decimal">4</column>
+        <length type="decimal">16</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Inefficient Qry:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Inefficient Qry:	X=6	Y=26	Height=2	Width=32	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">32768</flags>
+        <line type="decimal">14</line>
+        <column type="decimal">20</column>
+        <length type="decimal">58</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">partial.key</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=partial.key	X=38	Y=26	Height=2	Width=116	Parse=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">15</line>
+        <column type="decimal">4</column>
+        <length type="decimal">16</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">QBE Format:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=QBE Format:	X=6	Y=28	Height=2	Width=32	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">15</line>
+        <column type="decimal">20</column>
+        <length type="decimal">30</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">qbe.format</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Fill;Input=qbe.format	X=38	Y=28	Height=2	Width=60	ArrayLength=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">16</line>
+        <column type="decimal">4</column>
+        <length type="decimal">16</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">restore:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=restore:	X=6	Y=30	Height=2	Width=32	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">32768</flags>
+        <line type="decimal">16</line>
+        <column type="decimal">20</column>
+        <length type="decimal">58</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">qberestore</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=qberestore	X=38	Y=30	Height=2	Width=116	Parse=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">17</line>
+        <column type="decimal">4</column>
+        <length type="decimal">16</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Skip Warning:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Skip Warning:	X=6	Y=32	Height=2	Width=32	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">17</line>
+        <column type="decimal">20</column>
+        <length type="decimal">58</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">skip.warning</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=skip.warning	X=38	Y=32	Height=2	Width=116	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">18</line>
+        <column type="decimal">4</column>
+        <length type="decimal">16</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Time Limit:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Time Limit:	X=6	Y=34	Height=2	Width=32	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">18</line>
+        <column type="decimal">20</column>
+        <length type="decimal">19</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">query.time.limit</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=query.time.limit	X=38	Y=34	Height=2	Width=38	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">joeh</editor>
+    <last.update type="dateTime">12/03/01 02:33:26</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">13</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">12/05/01 09:14:41</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

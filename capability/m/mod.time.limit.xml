@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="capability">
+  <record id="capability=&quot;mod.time.limit&quot;" recordid="mod.time.limit">
+    <capability type="string">mod.time.limit</capability>
+    <description sctype="array">
+      <description sctype="string">Allows user to modify the default time limit for a partial key query entered in either Database Manager or Change Management.</description>
+    </description>
+    <sysmodcount type="decimal">5</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">01/13/05 08:00:29</sysmodtime>
+    <parent type="string">QueryAdmin</parent>
+    <parent.tree sctype="array">
+      <parent.tree sctype="string">QueryAdmin</parent.tree>
+      <parent.tree sctype="string">SysAdmin</parent.tree>
+    </parent.tree>
+  </record>
+</recordset>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;upgradeDatadict&quot;" recordid="upgradeDatadict">
+    <name type="string">upgradeDatadict</name>
+    <script type="string">var datadictUpdates=
+        [
+          {"field":"main.table",
+           "value":true,
+           "tables":["assignment", "company", "contacts", "dept", "device", "location", "operator"]
+          }
+        ];
+        
+        
+function updateDatadict() {
+    for (var i=0; i&lt;datadictUpdates.length; i++) {
+        for (var j=0; j&lt;datadictUpdates[i].tables.length; j++) {
+            var datadict=lib.upgradeUtility.getRecord("datadict", "name=\""+datadictUpdates[i].tables[j]+"\"");
+            if (datadict!=null) {
+                datadict[datadictUpdates[i].field]=datadictUpdates[i].value;
+                datadict.doUpdate();
+            }
+        }
+    }
+}</script>
+    <package type="string">Upgrade</package>
+    <sysmodtime type="dateTime">11/12/14 15:39:13</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">9</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

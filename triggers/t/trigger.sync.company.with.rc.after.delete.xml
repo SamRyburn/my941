@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="triggers">
+  <record id="trigger.name=&quot;trigger.sync.company.with.rc.after.delete&quot;" recordid="trigger.sync.company.with.rc.after.delete">
+    <trigger.name type="string">trigger.sync.company.with.rc.after.delete</trigger.name>
+    <trigger.type type="decimal">6</trigger.type>
+    <table.name type="string">company</table.name>
+    <application.name NullValue="1" type="string"/>
+    <sysmodcount type="decimal">2</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">10/06/30 08:41:33</sysmodtime>
+    <javascript type="string">var company = record.company;
+var showCompany = record.show_company;
+var isUcmdbSynced = system.functions.nullsub(record.ucmdb_synced,false);
+var isRCSynced = system.functions.nullsub(record.rc_synced,false);
+
+if (vars.$G_multi &amp;&amp; vars.$G_system_info.UCMDB &amp;&amp; vars.$G_system_info.SMtoRC &amp;&amp; isUcmdbSynced) {
+	if (showCompany == "Y")
+		system.library.multiTenantRC.syncCompanyAfterDelete(company);
+}
+
+</javascript>
+  </record>
+</recordset>

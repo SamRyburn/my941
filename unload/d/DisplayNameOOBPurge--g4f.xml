@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="unload">
+  <record id="name=&quot;DisplayNameOOBPurge&quot;" recordid="DisplayNameOOBPurge">
+    <name mandatory="true" type="string">DisplayNameOOBPurge</name>
+    <unload type="boolean">false</unload>
+    <purge type="boolean">true</purge>
+    <record sctype="array">
+      <record sctype="structure">
+        <filename type="string">bizservice</filename>
+        <query type="string">true</query>
+        <datamap NullValue="1" type="boolean"/>
+      </record>
+      <record sctype="structure">
+        <filename type="string">cirelationship</filename>
+        <query type="string">true</query>
+        <datamap NullValue="1" type="boolean"/>
+      </record>
+      <record sctype="structure">
+        <filename type="string">device</filename>
+        <query type="string">true</query>
+        <datamap NullValue="1" type="boolean"/>
+      </record>
+      <record sctype="structure">
+        <filename type="string">pcsoftware</filename>
+        <query type="string">true</query>
+        <datamap NullValue="1" type="boolean"/>
+      </record>
+    </record>
+    <protected.formats NullValue="1" sctype="array">
+      <protected.formats NullValue="1" type="string"/>
+    </protected.formats>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:01:48</sysmodtime>
+  </record>
+</recordset>

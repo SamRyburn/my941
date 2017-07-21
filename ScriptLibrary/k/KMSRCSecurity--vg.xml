@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;KMSRCSecurity&quot;" recordid="KMSRCSecurity">
+    <name type="string">KMSRCSecurity</name>
+    <script type="string">function getSRCUserSecurity()
+{	
+	var loginname = system.functions.operator();
+	var kbs = getvalidKBsForUser(loginname);
+	var obj=new Object();
+	obj.collections=[];
+	obj.groups=[];
+	for (var i=0; i&lt;system.functions.lng(kbs.cols);i++)
+	{
+		var collection = new Object();
+		collection.name=kbs.cols[i];
+		collection.shard=kbs.shards[i];
+		collection.security=kbs.security[i];
+		obj.collections.push(collection);
+	}
+	if (system.functions.index("SysAdmin", vars.$lo_ucapex) &gt; 0 ||
+	    system.functions.index("KMAdmin", vars.$lo_ucapex) &gt; 0 )
+	{
+		obj.groups.push("*");
+	}
+	else
+	{
+		var userKMGroup = lib.KMSecurity.getKMGroupsForDocView(null);
+		for (var i=0; i&lt;system.functions.lng(userKMGroup);i++)
+		{	
+			if (userKMGroup[i]!=null)
+				obj.groups.push(userKMGroup[i]);
+		}
+	}
+	var JSON = lib.JSON.json();
+	var ret = JSON.stringify(obj);
+	return ret;
+}
+
+function getUserKMGroup(loginname)
+{
+	var op = new SCFile("operator");
+	var query = "name=\""+loginname+"\"";
+	var rc = op.doSelect(query);
+	if (rc==RC_SUCCESS)
+	{
+		return op.kmgroup;
+	}
+	else return null;
+}
+
+function getvalidKBsForUser(loginname)
+{
+	var collections = new Datum();
+	collections.setType(8);
+	var shardInfo = new Datum();
+	shardInfo.setType(8);
+	var security = new Datum();
+	security.setType(8);
+    var kmlibFile = new SCFile("kmknowledgebase");
+    var kmFind = kmlibFile.doSelect("true");
+    if (kmFind == RC_SUCCESS) {
+        kmFind = kmlibFile.getFirst();
+        while (kmFind == RC_SUCCESS) {
+            var strEval = lib[kmlibFile.kbaccessscript].checkAccess(loginname,kmlibFile);
+            var getenginename = system.library.KMSearchInterface.getEngineName();
+  			if (getenginename != "IDOL")
+  			{
+  				if (system.library.KMCollection_Statistics.checkIndexStatus(kmlibFile.kbname) != 0)
+  				{
+  				  strEval = false;
+  				}
+  			}   
+            if (strEval) {
+                var shardInfostr = system.library.KMUtils.getShardInfo(kmlibFile.searchservername)+"/"+kmlibFile.kbname;
+                var securitystr = lib[kmlibFile.searchsecurityscript].getSecurityInfo(loginname,kmlibFile);
+                collections.push(kmlibFile.kbname);
+                shardInfo.push(shardInfostr);
+                security.push(securitystr);
+            } 
+            kmFind = kmlibFile.getNext();
+        }
+    }
+    var servername = system.library.KMSRCCollection_Update.nosql_getservername();
+    if (system.library.KMCollection_Update_Utils.ifSRCChecked() &amp;&amp; servername!=null)
+    {
+    	var tmpShardInfo = system.library.KMUtils.getShardInfo(servername);
+    	collections.push("kmdoctype");
+    	shardInfo.push(tmpShardInfo+"/kmdoctype");
+    	security.push("(knowledgebase_name:kmdoctype)");
+    	collections.push("kmstopword");
+    	shardInfo.push(tmpShardInfo+"/kmstopword");
+    	security.push("(knowledgebase_name:kmstopword)");
+    	collections.push("kmcategory");
+    	shardInfo.push(tmpShardInfo+"/kmcategory");
+    	security.push("(knowledgebase_name:kmcategory)");
+    }
+    return { cols:     collections,
+    		  shards:   shardInfo,
+    		  security:	security}
+}</script>
+    <package type="string">KnowledgeManagement</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:41</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

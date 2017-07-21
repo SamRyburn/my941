@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="displayscreen">
+  <record id="screen.id=&quot;rm.requestTask.new&quot; and language=&quot;ENG&quot;" recordid="rm.requestTask.new - ENG">
+    <screen.id type="string">rm.requestTask.new</screen.id>
+    <screen.id.copy type="string">rm.requestTask.new</screen.id.copy>
+    <language type="string">ENG</language>
+    <title type="globalVar">$L.title</title>
+    <form type="globalVar">$L.format</form>
+    <io type="boolean">true</io>
+    <time NullValue="1" type="dateTime"/>
+    <initialization sctype="structure">
+      <expressions sctype="array">
+        <expressions sctype="operator">$L.allow.edit.system=lioption("HP System")</expressions>
+      </expressions>
+      <msg.condition NullValue="1" type="boolean"/>
+      <message NullValue="1" type="string"/>
+    </initialization>
+    <screen.id.alias type="string">rm.requestTask.new</screen.id.alias>
+    <on.enter.key type="string">return</on.enter.key>
+    <window.structure sctype="structure">
+      <open.window NullValue="1" type="boolean"/>
+      <parent.name NullValue="1" type="string"/>
+      <window.name NullValue="1" type="string"/>
+      <window.position type="string">left</window.position>
+      <window.percent NullValue="1" type="decimal"/>
+      <window.lines NullValue="1" type="decimal"/>
+    </window.structure>
+    <screen.id.copy.old type="string">rm.requestTask.new</screen.id.copy.old>
+    <more.window NullValue="1" type="boolean"/>
+    <user.options type="boolean">true</user.options>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:00:29</sysmodtime>
+    <object.related NullValue="1" type="boolean"/>
+    <javascript type="string">if(system.functions.exists("workflow",vars.$L_file)==true &amp;&amp; vars.$L_file.workflow!=null)
+{
+	var fname = lib.dbdictHelper.getPrimaryTablename(vars.$L_file);
+	
+	var obj = new SCFile("Object");
+	if(obj.doSelect("category.file.name=\""+fname+"\"")==RC_SUCCESS)
+	{
+		vars.$L_wfgWFName=vars.$L_file.workflow;
+		vars.$L_wfgWFTable=obj.file_name;	
+	}
+	
+}
+
+var $ = lib.c.$;
+var task_attach_num = $("#sysattachmentsService").countAttachment(vars.$L_file.number);
+var sd_attach_num = lib.sdUtil.countAttachments(vars.$L_file.parent_request);
+
+vars.$request_caption = system.functions.scmsg("RequestTask","object");
+vars.$attachmentCaption = system.functions.scmsg("caption.1","SYSATTACHMENTS", $.createSCArray(task_attach_num + sd_attach_num));
+vars.$taskAttachmentCaption = system.functions.scmsg("requesttaskattachments","SYSATTACHMENTS", $.createSCArray(task_attach_num));
+vars.$sdAttachmentCaption = system.functions.scmsg("sdattachments","SYSATTACHMENTS", $.createSCArray(sd_attach_num));
+vars.$screlation_caption = system.functions.scmsg("caption","screlation");
+
+</javascript>
+    <search.only NullValue="1" type="boolean"/>
+  </record>
+</recordset>

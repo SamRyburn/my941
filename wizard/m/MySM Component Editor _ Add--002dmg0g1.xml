@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="wizard">
+  <record id="name=&quot;MySM Component Editor - Add&quot;" recordid="MySM Component Editor - Add">
+    <name type="string">MySM Component Editor - Add</name>
+    <file.selection type="string">create</file.selection>
+    <create.record.filename type="string">uimcompdefinitions</create.record.filename>
+    <select.record.filename NullValue="1" type="string"/>
+    <select.query NullValue="1" type="string"/>
+    <resolve.variables NullValue="1" type="boolean"/>
+    <wizard.type type="string">input</wizard.type>
+    <wizard.variables sctype="array">
+      <wizard.variables sctype="string">$L.comp.msg</wizard.variables>
+      <wizard.variables sctype="string">$L.comp.table</wizard.variables>
+      <wizard.variables sctype="string">$L.comp.filter</wizard.variables>
+      <wizard.variables sctype="string">$L.comp.rad.query</wizard.variables>
+      <wizard.variables sctype="string">$L.comp.chart.type</wizard.variables>
+      <wizard.variables sctype="string">$L.comp.category</wizard.variables>
+      <wizard.variables sctype="string">$L.comp.group</wizard.variables>
+    </wizard.variables>
+    <initial.process NullValue="1" type="string"/>
+    <init.expressions NullValue="1" sctype="array">
+      <init.expressions NullValue="1" type="expression"/>
+    </init.expressions>
+    <run.expressions NullValue="1" type="boolean"/>
+    <expressions NullValue="1" sctype="array">
+      <expressions NullValue="1" type="expression"/>
+    </expressions>
+    <run.process NullValue="1" type="boolean"/>
+    <process.name type="string">mysm.components.checker</process.name>
+    <run.format.control NullValue="1" type="boolean"/>
+    <format.control NullValue="1" type="string"/>
+    <format.control.type NullValue="1" type="string"/>
+    <bad.validation.action NullValue="1" type="string"/>
+    <display.when.complete type="boolean">false</display.when.complete>
+    <display.mode NullValue="1" type="string"/>
+    <allow.finish type="boolean">true</allow.finish>
+    <restart.condition type="operator">not  (null($L.comp.msg))</restart.condition>
+    <next.wizard sctype="array">
+      <next.wizard sctype="string">MySM Component Editor - Finish</next.wizard>
+    </next.wizard>
+    <next.wizard.cond sctype="array">
+      <next.wizard.cond sctype="boolean">true</next.wizard.cond>
+    </next.wizard.cond>
+    <link.record NullValue="1" type="string"/>
+    <prompt type="string">scmsg(3,"mysm")</prompt>
+    <message NullValue="1" sctype="array">
+      <message NullValue="1" type="string"/>
+    </message>
+    <message.cond NullValue="1" sctype="array">
+      <message.cond NullValue="1" type="boolean"/>
+    </message.cond>
+    <message.type NullValue="1" sctype="array">
+      <message.type NullValue="1" type="string"/>
+    </message.type>
+    <sub.format type="string">mysm.components.detail</sub.format>
+    <use.file.as.selection NullValue="1" type="boolean"/>
+    <query.for.records NullValue="1" type="boolean"/>
+    <query.for.records.filename NullValue="1" type="string"/>
+    <query.for.records.query NullValue="1" type="string"/>
+    <title type="string">scmsg(2,"mysm")</title>
+    <select.no.records NullValue="1" type="string"/>
+    <bitmap NullValue="1" type="string"/>
+    <perform.action.on type="string">file</perform.action.on>
+    <reset.to.selections NullValue="1" type="boolean"/>
+    <window.title type="string">scmsg(1,"mysm")</window.title>
+    <display.screen NullValue="1" type="string"/>
+    <mult.field.name NullValue="1" type="string"/>
+    <message.level NullValue="1" sctype="array">
+      <message.level NullValue="1" type="decimal"/>
+    </message.level>
+    <start NullValue="1" type="boolean"/>
+    <usage NullValue="1" sctype="array">
+      <usage NullValue="1" type="string"/>
+    </usage>
+    <query.for.records.sort NullValue="1" sctype="array">
+      <query.for.records.sort NullValue="1" type="string"/>
+    </query.for.records.sort>
+    <allow.skip NullValue="1" type="boolean"/>
+    <query.select.one.record NullValue="1" type="string"/>
+    <comments NullValue="1" sctype="array">
+      <comments NullValue="1" type="string"/>
+    </comments>
+    <query.select.no.records NullValue="1" type="string"/>
+    <query.no.records.msg NullValue="1" type="string"/>
+    <brief.description type="string">MySM Component Editor - Add</brief.description>
+    <cancel.expressions NullValue="1" sctype="array">
+      <cancel.expressions NullValue="1" type="expression"/>
+    </cancel.expressions>
+    <global.lists NullValue="1" sctype="array">
+      <global.lists NullValue="1" type="string"/>
+    </global.lists>
+    <javascript.actions NullValue="1" type="string"/>
+    <javascript.init NullValue="1" type="string"/>
+    <javascript.cancel NullValue="1" type="string"/>
+    <disable.next.previous NullValue="1" type="boolean"/>
+    <sysmodtime type="dateTime">03/30/11 14:40:17</sysmodtime>
+    <sysmoduser type="string">xingjia</sysmoduser>
+    <sysmodcount type="decimal">1</sysmodcount>
+    <disable.next type="boolean">true</disable.next>
+    <reset.current.file type="boolean">true</reset.current.file>
+    <disable.previous type="boolean">false</disable.previous>
+    <formName type="string">wizard.small</formName>
+    <noPromptOnCancel type="boolean">false</noPromptOnCancel>
+    <prev.wizard NullValue="1" sctype="array">
+      <prev.wizard NullValue="1" type="string"/>
+    </prev.wizard>
+    <prev.wizard.cond NullValue="1" sctype="array">
+      <prev.wizard.cond NullValue="1" type="boolean"/>
+    </prev.wizard.cond>
+    <previous.cond NullValue="1" type="boolean"/>
+  </record>
+</recordset>

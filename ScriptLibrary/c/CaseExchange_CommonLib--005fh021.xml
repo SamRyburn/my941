@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;CaseExchange_CommonLib&quot;" recordid="CaseExchange_CommonLib">
+    <name type="string">CaseExchange_CommonLib</name>
+    <script type="string">/******************************************************
+* Module Name: SMIS TaskLog Manager
+* Function: provide functions to check whether case exchange is enabled.
+* Author: DeHong Wang
+* Version: 1.00
+* Creation Date: Jan, 2014
+*******************************************************/
+
+var updateFieldVar = {};
+var activitySelectionVar = {};
+var INBOUND_ACTIVITY_TYPE = 'Update from customer';
+var OUTBOUND_ACTIVITY_TYPE = 'Communication with customer';
+
+var _ = lib.Underscore.require();
+var logger = lib.CaseExchangeLogger.getLogger();
+if (!logger) {
+	logger = getLog('CaseExchange_CommonLib');
+}
+
+/**	
+*   This fuction is to check whether there's a CaseExchange connector is enalbed.
+*
+*	@return true or false
+*	@type - boolean
+*/
+function isCaseExchangeEnabled() {
+    var caseExchangeEnabled = false;
+    var OBJECT_KEY = "object";
+    
+    var smisTemplate = new SCFile("SMISRegistry");
+    
+    var RC_template = smisTemplate.doSelect("name #\"CaseExchange\"");
+    
+    while (RC_template==RC_SUCCESS) {
+        var templateName = smisTemplate.name;
+        
+        var instanceConfig = new SCFile("SMISConfiguration");
+	    var RC_instance = instanceConfig.doSelect("intId &lt;&gt; \"0\" and template=\"" + templateName + "\"");
+	    
+	    while (RC_instance == RC_SUCCESS) {
+	        var instanceID = instanceConfig.intId;
+	        var integrationInstance = lib.smis_ConfigurationManager.getInstanceConfig(instanceID);
+	        
+	        if (integrationInstance != null) {
+	            if (integrationInstance.getConfigParameterValue(OBJECT_KEY)=="probsummary") {
+	                if (integrationInstance.status != lib.smis_Constants.INSTANCE_STATUS_DISABLE()) {
+	                    caseExchangeEnabled = true;
+	                    break;
+	                }
+	            }    
+	        }
+	        
+	        RC_instance = instanceConfig.getNext();
+	    }
+        
+        RC_template = smisTemplate.getNext();
+    }
+    
+    return caseExchangeEnabled;
+}
+
+/**	
+*   This fuction is to check whether there's a CaseExchange reference for an object(probsummary etc,.).
+*
+*	@param {internalObject} - internalObject
+*	@param {internalId} - internalId
+*	@return true or false
+*	@type - boolean
+*/
+function isCaseExchangeEnabledByRecord(internalObject,internalId) {
+    var isCaseExchangeEnabled = false;
+    
+    if (internalObject != null &amp;&amp; internalId != null) {
+        var caseExchangeReferenceRecord = lib.CaseExchangeExternalReferencesDAO.getExternalReferencesByObjIdIntid(internalObject,internalId,false,false)
+        
+        if (caseExchangeReferenceRecord != null) {
+            isCaseExchangeEnabled = true;
+        }
+        
+        return isCaseExchangeEnabled;
+    }
+    
+    return isCaseExchangeEnabled;
+}
+
+
+/**	
+*   This fuction is to set the value from destObject in task to sm SCFile and return the changed fields
+*
+*	@param {smRecord} - SCFile in SM
+*	@param {destObject} - destObject in task
+*	@param {isSetValue} - boolean. If set the value in destObject to smRecord
+*	@return the changed field with origin and updated value
+*	@type - object {field:[], oldValue:[], newValue[]}
+*/
+function compareSetSMRecord(smRecord, destObject, isSetValue) {
+	logger.debug('CaseExchange_CommonLib', 'compareSetSMRecord');
+
+    var updatedField = {};
+    	
+    var i = 0;
+
+    for (var obj in destObject) {
+    	if(obj !== 'id'){
+    		if (destObject[obj]) {
+    			var isArray = system.functions.type(destObject[obj]) === 8;
+
+	    		if (isArray){
+	    			for (var subObj in smRecord[obj]){
+	    				if (_.string.trim(smRecord[obj][subObj]) != _.string.trim(destObject[obj][subObj])){
+	    					var field = obj;
+	    					var oldValue = system.functions.str(smRecord[obj]);
+	    					var newValue = system.functions.str(destObject[obj]);
+	    					logger.debug('CaseExchange_CommonLib', 'field: ' + obj);
+	    					logger.debug('CaseExchange_CommonLib', 'oldValue: ' + oldValue + ' --&gt; newValue: ' + newValue);
+	    					updatedField[obj] = {oldValue: oldValue, newValue: newValue};
+	    					i++;
+	    					break;
+	    				}
+	    					
+	    			}
+	    		} else {
+	    			if (_.string.trim(smRecord[obj]) != _.string.trim(destObject[obj])){
+	    				var field = obj;
+	    				var oldValue = smRecord[obj];
+	    				var newValue = destObject[obj];
+	    				logger.debug('CaseExchange_CommonLib', 'field: ' + obj);
+	    				logger.debug('CaseExchange_CommonLib', 'oldValue: ' + oldValue + ' --&gt; newValue: ' + newValue);
+	    				updatedField[obj] = {oldValue: oldValue, newValue: newValue};
+	    				i++
+	    			}
+	    		}
+    		}
+    		if (isSetValue) {
+    			if (destObject[obj] &amp;&amp; smRecord.getFieldType(obj) !== system.functions.type(destObject[obj])) {
+    				throw 'The field type of ' + obj + ' in SM is not consistent with definition in dbdict.';
+    			}
+    			if (destObject[obj]) {
+    				smRecord[obj] = destObject[obj];
+    			}
+    		}
+    	}
+    }
+	updatedField['$size'] = i;
+    return updatedField;
+}
+
+
+/**	
+*   Create comment title of activity &amp; ticket update
+*
+*	@param {direction} - exchange direction
+*	@param {createdTime} - comment's created time
+*	@param {instanceName} - case exchange instance
+*	@return - message title
+*	@type - string
+*/
+function createMsgTitle(direction, createdTime, instanceName){
+	logger.debug('CaseExchange_CommonLib', 'createMsgTitle');
+	if (!createdTime) {
+		createdTime = system.functions.tod();
+	} else {
+		var jsDate = new Date();
+		jsDate.setTime(createdTime);
+		createdTime = new XMLDate(jsDate).getDatum();
+	}
+		
+	var str = system.functions.str(createdTime) + '(' + vars['$lo.time.zone'] + '), ' + instanceName;
+	if (isOutbound(direction)){
+		str += '(' + system.functions.scmsg('2', 'CaseExchange', []) + ')';
+	} else if (isInbound(direction)) {
+		str += '(' + system.functions.scmsg('1', 'CaseExchange', []) + ')';
+	}
+	str += ': '
+	return str;
+}
+
+
+/**	
+*   convert update message to ticket update
+*
+*	@param {updateMsg} - update message
+*	@param {direction} - exchange direction
+*	@param {createdTime} - message created time
+*	@param {instanceName} - case exchange instance
+*	@return - message
+*	@type - string
+*/
+
+
+/**	
+*   Convert update field obj to string
+*
+*	@param {updatedFields} - object of update fields {field: {oldValue: ***, newValue: ***}}
+*	@return - Converted value
+*	@type - string
+*/
+function updateFieldsToString(updatedFields, objectName){
+	logger.debug('CaseExchange_CommonLib', 'updateFieldsToString');
+	var str = '';
+	var size = updatedFields['$size'];
+	if (size === 0) return system.functions.scmsg('3', 'CaseExchange', []);
+	var i = 0;
+	for (var obj in updatedFields){
+		i++;
+		if (obj !== '$size'){
+			var oldValue = updatedFields[obj].oldValue;
+			var newValue = updatedFields[obj].newValue;
+			var fieldCaption = system.functions.get_field_caption(obj,objectName);
+			str += fieldCaption + ': ' + oldValue + ' -&gt; ' + newValue;
+			if (i &lt; size){
+				str += '\n';
+			}
+		}
+	}
+	return str;
+}
+
+
+/**
+*	Set activity log of sm record
+*	@param {isInbound} - boolean is inbound or not
+*	@param {action} - action of inbound process
+*	@param {smRecord} - a record of scfile
+*	@param {journalUpdate} - journal update message
+*	@param {objectName} - object name in SM
+*/
+function setActivityLog(isInbound, action, smRecord, journalUpdate, objectName, activityType) {
+	logger.debug('CaseExchange_CommonLib', 'setActivityLog');
+    if (!updateFieldVar[objectName] || !activitySelectionVar[objectName]) {
+    	var object = new SCFile('Object', SCFILE_READONLY);
+    	object.setFields(['activitylog.file.name','activity.selection.var','update.field.var']);
+    	object.doSelect('file.name="' + objectName + '"');	
+    	updateFieldVar[objectName] = object['update.field.var'];
+    	activitySelectionVar[objectName] = object['activity.selection.var'];
+    }
+    vars[updateFieldVar[objectName]] = [journalUpdate];
+    if (activityType &amp;&amp; activityType != "") {
+		vars[activitySelectionVar[objectName]] = activityType;
+	}
+	else {
+    	if (isInbound) {
+			vars[activitySelectionVar[objectName]] = INBOUND_ACTIVITY_TYPE;
+		} else {
+			vars[activitySelectionVar[objectName]] = OUTBOUND_ACTIVITY_TYPE;
+		}
+	}
+	
+	// if is outbound or inbound with add(create) action, call rad to insert activity log
+    if (!isInbound || (isInbound &amp;&amp; action === lib.CaseExchangeConstants.CREATE_ACTION())){
+    	createActivityLog(smRecord, smRecord, 'update');
+    }
+}
+    
+/**
+*	Clear activity log var of sm record
+*
+*	@param {objectName} - object name in SM
+*/
+function clearActivityLogVar(objectName){
+	logger.debug('CaseExchange_CommonLib', 'clearActivityLogVar');
+    if (!updateFieldVar[objectName] || !activitySelectionVar[objectName]){
+    	var object = new SCFile('Object', SCFILE_READONLY);
+    	object.setFields(['activitylog.file.name','activity.selection.var','update.field.var']);
+    	object.doSelect('file.name="' + objectName + '"');	
+    	updateFieldVar[objectName] = object['update.field.var'];
+    	activitySelectionVar[objectName] = object['activity.selection.var'];
+    }
+	vars[updateFieldVar[objectName]] = null;
+	vars[activitySelectionVar[objectName]] = null;
+}
+    
+/**
+* Create activity log for sm record by calling RAD sc.activity
+*
+*/
+function createActivityLog(file, oldfile, actType){
+	logger.debug('CaseExchange_CommonLib', 'createActivityLog');
+	var rteNames = new SCDatum();
+	rteNames.push("file");
+	rteNames.push("second.file");
+	rteNames.push("text");
+	rteNames.push("boolean1");
+
+	var rteValues = new SCDatum();
+	rteValues.push(file);
+	rteValues.push(oldfile);
+	rteValues.push(actType);
+	rteValues.push(false);
+
+	// call rad "sc.activity" to create an activity log
+	system.functions.rtecall("callrad", new SCDatum(), "sc.activity",	rteNames, rteValues, false);
+}
+	
+/**	
+*   Save comments from EP to activity log
+*
+*	@param {comments} - comments array. [{body:***, createdTime:***, submitter:***}]
+*	@param {smRecord} - record in sm
+*	@param {direction} - exchange direction
+*	@param {smisInstanceName} - case exchange instance
+*	@param {objectName} - object name in SM
+*/
+function commentsToActivityLog(comments, smRecord, direction, smisInstanceName, objectName){
+	logger.debug('CaseExchange_CommonLib', 'commentsToActivityLog');
+	if (!comments) return;
+	for (var i in comments) {
+		var body = comments[i].body;
+		var createdTime = comments[i].createdTime;
+		body = lib.CaseExchange_CommonLib.createMsgTitle(direction, createdTime, smisInstanceName) + body;
+		setActivityLog(true, lib.CaseExchangeConstants.CREATE_ACTION(), smRecord, body, objectName);
+		clearActivityLogVar(objectName);
+	}
+}
+	
+/**	
+*   Append comments to smRecord['external.ticket.update']
+*
+*	@param {comments} - comments array. [{body:***, createdTime:***, submitter:***}]
+*	@param {smRecord} - record in sm
+*	@param {direction} - exchange direction
+*	@param {smisInstanceName} - case exchange instance
+*/
+	
+
+/**	
+*   append new update ticket message to old
+*
+*	@param {smRecord} - record in SM
+*	@param {updateMsg} - old update message
+*	@param {direction} - exchange direction
+*	@param {createdTime} - message created time
+*	@param {username} - message submitter
+*	@param {smisInstanceName} - case exchange instance
+*/
+
+/**
+*	Get sm and ep fields by direction
+*	
+*	@param {configItem}
+*	@param {direction} - exchange direction
+*	@return - mapped fields defined in SMIS instance
+*	@type - {SMField:[], EPField:[]}
+*/
+
+/**
+*	Convert all EP fields' alias to a string
+*
+*	@param {configItem}
+*	@return - string of field list
+*	@type - string
+*/
+
+/**
+*	A wrap function to call inbound doHTTPRequest and update the config parameter if any parameter is updated
+*
+*	@param {url} - rest url
+*	@param {timeout}
+*	@param {param} - all parameters in config item
+*	@param {timeout}
+*	@return - string of field list
+*	@type - string
+*/
+function doInboundRequest(url, timeout, param, configItem){
+	logger.debug('CaseExchange_CommonLib', 'doInboundRequest');
+	var restRequest = new (lib.CaseExchange_RestRequest.getClass())(param);
+	var response = restRequest.doInboundRequest(url, timeout, {});
+	var paramChanged = false;
+	if (restRequest.param) {
+	    for (var obj in restRequest.param) {
+	    	if (restRequest.param[obj] !== configItem.getConfigParameterValue(obj)) {
+	    		configItem.setConfigParameterValue(obj, restRequest.param[obj]);
+	    		paramChanged = true;
+	    	}
+	    }
+	    if (paramChanged) {
+	    	lib.smis_ConfigurationManager.updateParam(configItem);
+	    }
+	}
+	
+	return response;
+}
+
+
+/**
+*	A wrap function to call outbound doHTTPRequest and update the config parameter if any parameter is updated
+*
+*	@param {httpMethod} - action as GET/POST/PUT
+*	@param {url} - rest url
+*	@param {httpBody}
+*	@param {timeout}
+*	@param {param} - all parameters in config item
+*	@param {timeout}
+*	@return - string of field list
+*	@type - string
+*/
+function doOutboundRequest(httpMethod, url, httpBody, timeout, param, configItem){
+	logger.debug('CaseExchange_CommonLib', 'doOutboundRequest');
+	var restRequest = new (lib.CaseExchange_RestRequest.getClass())(param);
+    var response = restRequest.doOutboundRequest(httpMethod, url, httpBody, timeout, {});
+    var paramChanged = false;
+    if (restRequest.param) {
+	    for (var obj in restRequest.param) {
+	    	if (restRequest.param[obj] !== configItem.getConfigParameterValue(obj)) {
+	    		configItem.setConfigParameterValue(obj, restRequest.param[obj]);
+	    		paramChanged = true;
+	    	}
+	    }
+	    if (paramChanged) {
+	    	lib.smis_ConfigurationManager.updateParam(configItem);
+	    }
+	}
+	
+	return response;
+}
+
+/**
+*	The function is to judge if the direction is inbound(right-left) or not
+*
+*	@param {direction} 
+*	@return - true/false
+*	@type - boolean
+*/
+function isInbound(direction) {
+	return direction === lib.smis_Constants.MAPPING_DIRECTION_RIGHTLEFT();
+}
+
+
+/**
+*	The function is to judge if the direction is outbound(left-right) or not
+*
+*	@param {direction} 
+*	@return - true/false
+*	@type - boolean
+*/
+function isOutbound(direction) {
+	return direction === lib.smis_Constants.MAPPING_DIRECTION_LEFTRIGHT();
+}
+
+
+/**
+*	This function is to merge two js object into one DEEPLY
+*	All attributes in the 2 obj should be merged into one including array
+*
+*	@param {obj1}
+*	@param {obj2}
+*	@param {path} - This parameter is only used for recusive call. Don't need to pass anything
+*	@param {parentPath} - This parameter is only used for recusive call. Don't need to pass anything
+*	@param {isArray} - This parameter is only used for recusive call. Don't need to pass anything
+*
+*	@return - merged object
+*	@type - object
+**/
+function mergeObjectDeep(obj1, obj2, path, parentPath, isArray){
+	logger.debug('CaseExchange_CommonLib', 'mergeObjectDeep');
+	if (!path) path = '';
+	
+	//if obj1 is in an array, need to check if the array in obj2 has the same object
+	//if has, need merge
+	//if no, create a new object into this array
+	if (isArray) {
+		var obj2Array = eval('obj2' + parentPath);
+		var found = false;
+		var index = 0;
+		for(var index in obj2Array){
+			var key2 = _.keys(obj2Array[index]);
+			var key1 = _.keys(obj1);
+			//check the key2 and key1 has a same value
+			for (var key2Index in key2) {
+				for(var key1Index in key1) {
+					if (key1[key1Index] === key2[key2Index]) {
+						found = true;
+						index = key2Index;
+						break;
+					}
+				}
+				if (found) {
+					break;
+				}
+			}
+			if (found) {			
+				path = parentPath + '[' + index + ']';
+			} else {
+			
+			path = parentPath + '[' + (obj2Array.length) + ']';
+			}
+		}
+	}
+	
+	//create a new object if obj2 has no obj
+	if (!eval('obj2' + path)) {
+		eval('obj2' + path + '= {}');
+	}
+	
+	//if obj1 is not an object, means primitive type, copy it to obj2 directly
+	if (typeof(obj1) !== 'object'){
+		eval('obj2' + path + '= obj1');
+		return obj2;
+	}
+	var isArray = false;
+	for (var i in obj1) {
+		if (obj1 instanceof Array) {
+			var newPath = path + '[' + i + ']';
+			isArray = true;
+		} else {
+			var newPath = path + '.' + i;
+		}
+		obj2 = mergeObjectDeep(obj1[i], obj2, newPath, path, isArray);
+	}
+	return obj2;
+}
+
+/**
+*	This function is to remove all html tags in a string
+*
+*	@param {str}
+*
+*	@return - a string without html tags
+*	@type - string
+**/
+function removeHtmlTag(str) {
+	if (!str) {
+		return null;
+	}
+	return str.replace(/&lt;[^&gt;]+&gt;/g,"");
+}
+
+/**
+*	This function is to remove all html tags but image tag in a string
+*
+*	@param {str}
+*
+*	@return - a string without html tags
+*	@type - string
+**/
+function removeHtmlTagButImage(str) {
+	if (!str) {
+		return null;
+	}
+	return str.replace(/&lt;(?!img)[^&gt;]+&gt;/g,"");
+}</script>
+    <package type="string">CaseExchange</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:38</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

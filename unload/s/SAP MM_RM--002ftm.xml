@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="unload">
+  <record id="name=&quot;SAP MM/RM&quot;" recordid="SAP MM/RM">
+    <name mandatory="true" type="string">SAP MM/RM</name>
+    <unload type="boolean">true</unload>
+    <purge type="boolean">false</purge>
+    <record sctype="array">
+      <record sctype="structure">
+        <filename type="string">ocmevents</filename>
+        <query type="string">event#"sap"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">ocmoptions</filename>
+        <query type="string">name#"MM" and area#"q"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">ocmqcat</filename>
+        <query type="string">name#"sap"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">unload</filename>
+        <query type="string">name="SAP MM/RM"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+    </record>
+    <protected.formats NullValue="1" sctype="array">
+      <protected.formats NullValue="1" type="string"/>
+    </protected.formats>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">04/22/99 08:06:13</sysmodtime>
+  </record>
+</recordset>

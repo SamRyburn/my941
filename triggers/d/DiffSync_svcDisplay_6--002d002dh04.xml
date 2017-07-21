@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="triggers">
+  <record id="trigger.name=&quot;DiffSync-svcDisplay-6&quot;" recordid="DiffSync-svcDisplay-6">
+    <trigger.name type="string">DiffSync-svcDisplay-6</trigger.name>
+    <trigger.type type="decimal">6</trigger.type>
+    <table.name type="string">svcDisplay</table.name>
+    <application.name NullValue="1" type="string"/>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">pengfei</sysmoduser>
+    <sysmodtime type="dateTime">07/10/11 18:49:17</sysmodtime>
+    <javascript type="string">lib.ScAPI_svcCatalog_DiffSync.svcDisplayTrigger(record, oldrecord, 6);</javascript>
+  </record>
+</recordset>

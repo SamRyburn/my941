@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="smtzdst">
+  <record id="tzname=&quot;Perth&quot; and dstyear=1991" recordid="">
+    <tzname type="string">Perth</tzname>
+    <dstyear type="decimal">1991</dstyear>
+    <dstbegin type="dateTime">11/16/91 19:00:00</dstbegin>
+    <dstend type="dateTime">12/31/91 16:59:59</dstend>
+    <isdst type="decimal">1</isdst>
+  </record>
+</recordset>

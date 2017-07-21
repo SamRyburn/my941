@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="triggers">
+  <record id="trigger.name=&quot;after.update.device&quot;" recordid="after.update.device">
+    <trigger.name type="string">after.update.device</trigger.name>
+    <trigger.type type="decimal">4</trigger.type>
+    <table.name type="string">device</table.name>
+    <application.name type="string">trigger.event.record</application.name>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:01:48</sysmodtime>
+    <javascript type="string">lib.DisplayNameCache.getDisplayNameCache().cleanAll();</javascript>
+  </record>
+</recordset>

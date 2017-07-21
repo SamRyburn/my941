@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="smtzdst">
+  <record id="tzname=&quot;Urumqi&quot; and dstyear=1990" recordid="">
+    <tzname type="string">Urumqi</tzname>
+    <dstyear type="decimal">1990</dstyear>
+    <dstbegin type="dateTime">12/31/89 19:00:00</dstbegin>
+    <dstend type="dateTime">04/14/90 18:00:00</dstend>
+    <isdst type="decimal">0</isdst>
+  </record>
+</recordset>

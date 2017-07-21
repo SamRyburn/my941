@@ -1,0 +1,625 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;migrateMySM&quot;" recordid="migrateMySM">
+    <name type="string">migrateMySM</name>
+    <script type="string">
+_index    = system.functions.index;
+_lng      = system.functions.lng;
+_str      = system.functions.str;
+_insert   = system.functions.insert;
+_denull   = system.functions.denull;
+_operator = system.functions.operator;
+_rtecall  = system.functions.rtecall;
+_scmsg    = system.functions.scmsg;
+_nullsub  = system.functions.nullsub;
+_getFieldCaption = system.functions.get_field_caption;
+var JSON = lib.JSON.json();
+var XQuery = lib.XQuery.require();
+
+function toJSON(obj) {
+  return JSON.stringify(obj);
+}
+
+function jsonParse(obj) {
+  return JSON.parse(obj);
+}
+
+function decodeMySM(strCoded)
+{
+  if (strCoded == null) return "";
+
+  var strEncPrefix = "enc";
+  var iPrefixLen = strEncPrefix.length;
+  var iLen = strCoded.length;
+
+  if (iPrefixLen &gt;= iLen) return strCoded;
+  if (strCoded.substring(0,iPrefixLen)!=strEncPrefix) return strCoded;
+
+  var iBytes = (iLen - iPrefixLen) / 2; // 2 hex digits per byte
+  var bytes = new Array();
+  var strRtn = "";
+
+  for (var i = 0, pos = iPrefixLen; i &lt; iBytes; i++)
+  {
+    bytes[i] = String.fromCharCode(parseInt(strCoded.substring(pos, pos + 2), 16));
+    pos += 2;
+  }
+
+  return bytes.join("");
+}
+
+var aryUimcompUniqueId  = new Array();
+var aryUimcompInboxId   = new Array();
+var aryUimcompChartType = new Array();
+var aryUimcompTableName = new Array();
+var aryUimcompRadSQL = new Array();
+var intUimcompdefAdd = 0;
+var aryUimuserpcUniqueId = new Array();
+var aryUimuserpcInboxId  = new Array();
+var intUimuserpcAdd = 0;
+var intUimpageAdd = 0;
+var intUimpageUserpcAdd = 0;
+var intUpdateOperator4MySM = 0;
+var intRptUserpcUpdate = 0;
+var intDashUserAdd = 0; 
+
+function startMigrateMySM()
+{
+  print("--Start to migrate MySM--");
+
+  aryUimcompUniqueId  = new Array();
+  aryUimcompInboxId   = new Array();
+  aryUimcompChartType = new Array();
+  aryUimcompTableName = new Array();
+  aryUimcompRadSQL = new Array();
+  intUimcompdefAdd = 0;
+  aryUimuserpcUniqueId = new Array();
+  aryUimuserpcInboxId  = new Array();
+  intUimuserpcAdd = 0;
+  intUimpageAdd = 0;
+  intUimpageUserpcAdd = 0;
+  intUpdateOperator4MySM = 0;
+  intRptUserpcUpdate = 0;
+  intDashUserAdd = 0;  
+
+  migUimcompdefinitions();
+  print("--migrated " + intUimcompdefAdd + " reports from uimcompdefinitions table--");
+
+  migUimuserpagecontent();
+  print("--migrated " + intUimuserpcAdd + " reports from uimuserpagecontent table--");
+
+  migUimpages();
+  print("--migrated " + intUimpageUserpcAdd + " reports from uimpages table--");
+  print("--migrated " + intUimpageAdd + " dashboards from uimpages table--");
+
+  print("--updated " + intRptUserpcUpdate + " reports for user from uimpages table--");
+  print("--migrated " + intDashUserAdd + " dashboards for user from uimpages table--");
+
+  migAddQueryGroup4MySM();
+  migOperator4MySM();
+  print("--Updated " + intUpdateOperator4MySM + " Operators--");
+
+  print("--Completed the MySM Migration--");
+}
+
+//uimcompdefinitions table
+function migUimcompdefinitions()
+{
+  var record = new SCFile("uimcompdefinitions", SCFILE_READONLY);
+  var sql = "comp.type=\"INTERNAL\"";
+
+  //id, name, unique.id, view.url, owner
+  if (record.doSelect(sql) == RC_SUCCESS)
+  {
+    do
+    {
+      createOrGetInbox4Uimcompdef(record);
+    }while (record.getNext() == RC_SUCCESS)
+  }
+}
+
+function createOrGetInbox4Uimcompdef(objUimcompdef)
+{
+  var strInboxId = "";
+  var strInboxChartType = "";
+  var strInboxTableName = "";
+  var strInboxRadSQL = "";
+  var strName = "MySM_" + objUimcompdef.name + "_" + objUimcompdef.id;
+  var record = new SCFile("inbox");
+  var sql = "inbox.name=\""+strName+"\"";
+
+  if (record.doSelect(sql) == RC_SUCCESS)
+  {
+    strInboxId = record.inbox_id;
+    strInboxChartType = record.chart_type;
+    strInboxTableName = record.inbox_type;
+	strInboxRadSQL = record.query;
+  } else {
+    var rc, scNumber = new SCDatum;
+    _rtecall("getnumber", rc, scNumber, "inbox");
+    strInboxId = scNumber.getText();
+
+    var handler = lib.MySMHelper.MySMHelperParaHandler(objUimcompdef);
+    var strGroupByField = handler.getGroupedByField();
+    strGroupByField = strGroupByField.replace("instance/","");
+
+    record.inbox_name = strName;
+    record.inbox_id = parseInt(strInboxId);
+    record.inbox_type = handler.getTable(); //table name
+    strInboxTableName = record.inbox_type;
+    record.inbox_class = "chart";
+    record.container_id = 0;
+    record.chart_type = handler.getCompType();
+    record.chart_source = "aggregate";
+    record.chart_break_down_by = strGroupByField;
+    strInboxChartType = record.chart_type;
+    record.aggregation_type = "Count";
+	strInboxRadSQL = handler.getRadQuery();
+    record.query = strInboxRadSQL;
+    record.short_query = record.query;
+    record.inbox_manager = objUimcompdef.owner;
+    record.audience_type = "groups";
+    record.operator_name = "%NONE%";
+    record.groups = ["MySM"];
+    record.report_category = "MySM";
+
+    record.doSave();
+    
+    intUimcompdefAdd++;
+  }
+
+  aryUimcompUniqueId.push(objUimcompdef.unique_id);
+  aryUimcompChartType.push(strInboxChartType);
+  aryUimcompTableName.push(strInboxTableName);
+  aryUimcompRadSQL.push(strInboxRadSQL);
+  aryUimcompInboxId.push(strInboxId);
+}
+
+//uimuserpagecontent table
+function migUimuserpagecontent()
+{
+  var record = new SCFile("uimuserpagecontent", SCFILE_READONLY);
+  var sql = "content.type=\"FILTER\" and page.id&gt;-1 ";
+
+  //id, user.id, comp.instance.uid, content.data
+  if (record.doSelect(sql) == RC_SUCCESS)
+  {
+    do
+    {
+      createOrGetInbox4Uimuserpc(record);
+    }while (record.getNext() == RC_SUCCESS)
+  }
+}
+
+function createOrGetInbox4Uimuserpc(objUimuserpc)
+{
+  var strInboxId = "";
+  var strName = "MySM_UserContent_" + objUimuserpc.comp_instance_uid + "_" + objUimuserpc.user_id + "_" + objUimuserpc.page_id;
+  var record = new SCFile("inbox");
+  var sql = "inbox.name=\""+strName+"\"";
+
+  if (record.doSelect(sql) == RC_SUCCESS)
+  {
+    strInboxId = record.inbox_id;
+  } else {
+    var rc, scNumber = new SCDatum;
+    _rtecall("getnumber", rc, scNumber, "inbox");
+    strInboxId = scNumber.getText();
+
+    var handler = MySMHelperContentDataParaHandler(objUimuserpc.content_data, "@@##@@");
+    var strGroupByField = handler.getGroupby();
+
+    record.inbox_name = strName;
+    record.inbox_id = parseInt(strInboxId);
+    record.container_id = 0;
+    record.inbox_type = "probsummary"; //table name
+    record.inbox_class = "chart";
+    record.chart_type = "pie";
+    record.chart_source = "aggregate";
+    record.chart_break_down_by = strGroupByField;
+    record.aggregation_type = "Count";
+    record.query = handler.getRadQuery();
+    record.short_query = record.query;
+    record.inbox_manager = objUimuserpc.user_id;
+    record.audience_type = "oneperson";
+    record.operator_name = objUimuserpc.user_id;
+    record.report_category = "MySM";
+
+    record.doSave();
+
+    intUimuserpcAdd++;
+  }
+
+  aryUimuserpcUniqueId.push(objUimuserpc.comp_instance_uid + "_" + objUimuserpc.user_id + "_" + objUimuserpc.page_id);
+  aryUimuserpcInboxId.push(strInboxId);
+}
+
+//uimpages table
+function migUimpages()
+{
+  var record = new SCFile("uimpages");
+  var sql = "true";
+
+  //id, name, content.xml, owner
+  if (record.doSelect(sql) == RC_SUCCESS)
+  {
+    do
+    {
+      createDashboardByUimPage(record);
+    }while (record.getNext() == RC_SUCCESS)
+  }
+}
+
+function createDashboardByUimPage(objUimPage)
+{
+  var strInboxId = "";
+  var strName = "MySM_" + objUimPage.name + "_" + objUimPage.id;
+  var record = new SCFile("inbox");
+  var sql = "inbox.name=\""+strName+"\"";
+
+  if (record.doSelect(sql) == RC_SUCCESS)
+  {
+  } else {
+    var rc, scNumber = new SCDatum;
+    _rtecall("getnumber", rc, scNumber, "inbox");
+    strInboxId = scNumber.getText();
+
+    record.inbox_name = strName;
+    record.inbox_id = parseInt(strInboxId);
+    record.inbox_class = "dashboard";
+    record.container_id = 0;
+ 
+    var strContentXml = decodeMySM(objUimPage.content_xml);
+    record.dashboard_content = toJSON(getDashboardContentByXml(strContentXml, objUimPage.owner, objUimPage.name, objUimPage.id));
+
+    record.inbox_manager = objUimPage.owner;
+    record.audience_type = "groups";
+    record.operator_name = "%NONE%";
+    record.groups = ["MySM"];
+    record.report_category = "MySM";
+
+    record.doSave();
+    intUimpageAdd++;
+  }
+}
+
+var aryComponents = new Array();
+
+function visitElement4Component( elem )
+{
+  if (elem.getQualifiedName() == "component")
+  {
+    aryComponents.push(elem);
+  } else {
+    // Now print child elements
+    var child = elem.getFirstChildElement();
+    while( child != null )
+    {
+      visitElement4Component( child );
+      child = child.getNextSiblingElement();
+    }
+  }
+}
+
+function getDashboardContentByXml(strXML, ownerName, uimPageName, uimPageId)
+{
+  var aryInboxId = new Array();
+  var aryInboxName = new Array();
+
+  var objXML = new XML();
+  objXML.setContent( strXML  );
+  
+  aryComponents = new Array();
+
+  var xmlDoc = objXML.getDocumentElement();
+  visitElement4Component(xmlDoc);
+  var lng = aryComponents.length;
+  var aryUid = new Array();
+  var aryFilterParams = new Array();
+  var aryDefUid = new Array();
+  var aryRptName = new Array();
+  var aryRptInboxId = new Array();
+
+  for (var i=0;i&lt;lng;i++)
+  {    
+    var strFilterParams = XQuery.queryText('filterParams', aryComponents[i]);
+    var strUid = XQuery.queryText('uid', aryComponents[i]);
+    var strDefUid = XQuery.queryText('componentDefUid', aryComponents[i]);
+    var strName = aryComponents[i].getAttributeValue("name");
+    var strInboxId = "";
+
+    if (strFilterParams!=null &amp;&amp; strFilterParams!="")
+    {
+      var j = _index(strDefUid, aryUimcompUniqueId);     
+        if (j&gt;0)
+        {
+          var rc, scNumber = new SCDatum;
+          _rtecall("getnumber", rc, scNumber, "inbox");
+          strInboxId = scNumber.getText();
+
+          var handler = MySMHelperContentDataParaHandler(strFilterParams, "&amp;");
+          var strGroupByField = handler.getGroupby();
+          var radQuery = handler.getRadQuery();
+          if (radQuery==null || radQuery=="") radQuery = "true";
+
+          aryInboxId.push(strInboxId);
+          aryInboxName.push(strName);
+          
+		  radQuery = radQuery + " and (" + aryUimcompRadSQL[j-1] + ")";
+          createInboxById(strInboxId, "MySM_" + strName + "_" + strInboxId, aryUimcompTableName[j-1], aryUimcompChartType[j-1], ownerName, strGroupByField, radQuery);
+        }
+    } else {
+      var j = _index(strDefUid, aryUimcompUniqueId);
+      
+      if (j&gt;0)
+      {
+        strInboxId = aryUimcompInboxId[j-1];
+        aryInboxId.push(strInboxId);
+        aryInboxName.push(strName);
+      }
+    }
+
+    aryUid.push(strUid);
+    aryFilterParams.push(strFilterParams);
+    aryDefUid.push(strDefUid);
+    aryRptName.push(strName);
+    aryRptInboxId.push(strInboxId);
+  }
+
+  createDashboard4User(uimPageName, aryUid, aryFilterParams, aryDefUid, aryRptName, aryRptInboxId, uimPageId);
+
+  return assembleDashboardFromMySMRecord( aryInboxId, aryInboxName );
+}
+
+function createDashboard4User(parmName, aryUid, aryFilterParams, aryDefUid, aryRptName, aryRptInboxId, parmUimPageId)
+{
+  var record = new SCFile("uimuserpagecontent");
+  var sql = "select user.id, count(*) as cnt from uimuserpagecontent where comp.instance.uid isin "+ _str(_denull(aryUid)) + " group by user.id";
+  var strContent = "";
+  var strOwner = "";
+  
+  if (record.doSelect(sql) == RC_SUCCESS)
+  {
+    do
+    {
+      strOwner = record.user_id;
+	  strContent = getDashboardContent4User(strOwner, aryUid, aryFilterParams, aryDefUid, aryRptName, aryRptInboxId, parmUimPageId);
+
+	  createDashboardByName(parmName, strContent, strOwner, parmUimPageId);
+    }while (record.getNext() == RC_SUCCESS)
+  }
+}
+
+function getDashboardContent4User(parmUserId, aryUid, aryFilterParams, aryDefUid, aryRptName, aryRptInboxId, parmUimPageId)
+{
+  var lng = aryUid.length;
+  var aryInboxId = new Array();
+  var aryInboxName = new Array();
+  var strRptName = "";
+
+  for (var i=0;i&lt;lng;i++)
+  {    
+      var j = _index(aryDefUid[i], aryUimcompUniqueId);
+      var m = _index(aryUid[i] + "_" + parmUserId + "_" + parmUimPageId, aryUimuserpcUniqueId);
+      if (j&gt;0 &amp;&amp; m&gt;0)
+      {
+        aryInboxId.push(aryUimuserpcInboxId[m-1]);
+		strRptName = "MySM_" + aryRptName[i];
+        aryInboxName.push(strRptName);
+
+        updateInboxById(aryUimuserpcInboxId[m-1], strRptName, aryUimcompTableName[j-1], aryUimcompChartType[j-1], aryUimcompRadSQL[j-1]);
+      } else {
+	    if (j&gt;0)
+		{
+          aryInboxName.push(aryRptName[i]);
+          aryInboxId.push(aryRptInboxId[i]);
+		}
+	  }
+  }
+
+  return toJSON(assembleDashboardFromMySMRecord( aryInboxId, aryInboxName ));
+}
+
+function createDashboardByName(parmName, parmContent, parmOwner, parmUimPageId)
+{
+  var strInboxId = "";
+  var strName = "MySM_" + parmName + "_" + parmOwner + "_" + parmUimPageId;
+  var record = new SCFile("inbox");
+  var sql = "inbox.name=\""+strName+"\"";
+
+  if (record.doSelect(sql) == RC_SUCCESS)
+  {
+    strInboxId = record.inbox_id;
+  } else {
+    var rc, scNumber = new SCDatum;
+    _rtecall("getnumber", rc, scNumber, "inbox");
+    strInboxId = scNumber.getText();
+
+    record.inbox_name = strName;
+    record.inbox_id = parseInt(strInboxId);
+    record.inbox_class = "dashboard";
+    record.container_id = 0;
+    record.dashboard_content = parmContent;
+    record.inbox_manager = parmOwner;
+    record.audience_type = "oneperson";
+    record.operator_name = parmOwner;
+    record.report_category = "MySM";
+
+    record.doSave();
+    intDashUserAdd++; 
+  }
+
+  return strInboxId;
+}
+
+function updateInboxById(inboxId, inboxName, tableName, chartType, appendRadSQL)
+{
+  var record = new SCFile("inbox");
+  var sql = "inbox.id=\""+inboxId+"\"";
+
+  if (record.doSelect(sql) == RC_SUCCESS)
+  {
+    record.inbox_name = inboxName + "_" + inboxId;
+    record.inbox_type = tableName;
+    record.chart_type = chartType;
+
+    var strRadSQL = record.query;
+	if (strRadSQL==null || strRadSQL=="") strRadSQL = "true";
+    record.query = strRadSQL + " and (" + appendRadSQL + ")";
+    record.short_query = record.query;
+    record.doSave();
+ 
+	intRptUserpcUpdate++;
+  }
+}
+
+function createInboxById(inboxId, inboxName, tableName, chartType, ownerName, groupByField, radQuery)
+{
+  var record = new SCFile("inbox");
+  var sql = "inbox.id=\""+inboxId+"\"";
+  var strName = "";
+
+  if (record.doSelect(sql) == RC_SUCCESS)
+  {
+  }
+  else
+  {
+    record.inbox_name = inboxName;
+    record.inbox_id = parseInt(inboxId);
+    record.inbox_type = tableName;
+    record.inbox_class = "chart";
+    record.container_id = 0;
+    record.chart_type = chartType;
+    record.chart_source = "aggregate";
+    record.chart_break_down_by = groupByField;
+    record.aggregation_type = "Count";
+    record.query = radQuery;
+    record.short_query = record.query;
+    record.inbox_manager = ownerName;
+    record.audience_type = "groups";
+    record.operator_name = "%NONE%";
+    record.groups = ["MySM"];
+    record.report_category = "MySM";
+
+    record.doSave();
+
+    intUimpageUserpcAdd++;
+  }
+}
+
+function assembleDashboardFromMySMRecord( aryInboxId, aryInboxName )
+{
+  var dropZones = [];
+  var dropZone = { "name" : "dropzone1", "maxSize" : 2, "children" : [] };
+
+  var i = 0;
+  var DEFAULT_GADGET_HEIGHT = 450;
+  var gadgetCol0 = { "gadgets" : [] };
+  var gadgetCol1 = { "gadgets" : [] };
+
+  var lng = aryInboxId.length;
+
+  for (i=0;i&lt;lng;i++)
+  {
+    var def = { "id" : aryInboxId[i], "type" : "chart", "name" : aryInboxName[i], "height" : DEFAULT_GADGET_HEIGHT, "collapsed": false };
+
+    if ( (i%2) == 0 )
+      gadgetCol0.gadgets.push(def);
+    else
+      gadgetCol1.gadgets.push(def);
+  }
+
+  if ( gadgetCol0.gadgets.length  ) dropZone.children.push(gadgetCol0);
+  if ( gadgetCol1.gadgets.length ) dropZone.children.push(gadgetCol1);
+  if ( i &gt; 0 ) dropZones.push( dropZone );
+
+  var content = { "layout" : "column", "dropZones" : dropZones };
+  return content;
+}
+
+function MySMHelperContentDataParaHandler(parmContentData, parmSplitChar) {
+	var handler = {
+		content_data: null,
+		pList: null,
+		init: function () {
+			this.content_data = parmContentData;			
+			this.pList = this.separateURL(this.content_data);
+		},
+		separateURL: function (url) {
+			var retList = [];
+			if (url) {
+				retList = url.split(parmSplitChar);
+			}
+			return retList;
+		},
+		getValueByKey: function (key, paraList) {
+			if (!key) return "";			
+			if (!paraList) return "";
+
+			for (var i = 0; i &lt; paraList.length; i++) {
+				if (paraList[i].substring(0,key.length) == key) {
+					return decodeURIComponent(paraList[i].split("=")[1]);
+				}
+			}
+		},					
+		getGroupby: function () {
+            var strGroupByField = this.getValueByKey("groupby",this.pList);
+            strGroupByField = strGroupByField.replace("instance/","");
+
+			return strGroupByField;
+		},
+		getRadQuery: function () {
+			return decodeURIComponent(this.getValueByKey("where",this.pList));
+		}
+	};
+
+	if (parmContentData) handler.init();
+
+	return handler;
+}
+
+
+function migOperator4MySM()
+{
+  var record = new SCFile("operator");
+  var sql = "cap.exec#\"MySM\"";
+
+  if (record.doSelect(sql) == RC_SUCCESS)
+  {
+    do
+    {      
+      record.groups = _nullsub(record.groups, []);      
+      if (_index("MySM", record.groups)&lt;=0) record.groups.push("MySM");
+
+      record.secRole = _nullsub(record.secRole, []);      
+      if (_index("report manager", record.secRole)&lt;=0) record.secRole.push("report manager");
+      
+      intUpdateOperator4MySM++;
+
+      record.doSave();
+    }while (record.getNext() == RC_SUCCESS)
+  }
+}
+
+function migAddQueryGroup4MySM()
+{
+  var record = new SCFile("querygroups");
+  var sql = "name#\"MySM\"";
+
+  if (record.doSelect(sql) == RC_SUCCESS)
+  {
+  } else {
+    record.name = "MySM";
+    record.doSave();
+  }
+}
+
+</script>
+    <package type="string">Reporting</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:42</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;MySMHelper&quot;" recordid="MySMHelper">
+    <name type="string">MySMHelper</name>
+    <script type="string">/*
+ * The helper class for My SM Componemt Editor 
+ *
+ * @Author: Xing, Jiang-Bin 
+ * @Date: 3/24/2011
+ */
+
+function MySMHelperParaHandler(comp) {
+ 
+	var handler = {
+		
+		view_url: null,
+		filter_url: null,
+		pList: null,
+	
+		init: function () {
+		
+			this.view_url = comp.view_url;
+			this.filter_url = comp.filter_url;
+			
+			this.pList = this.separateURL(this.view_url);
+
+		},
+		
+		separateURL: function (url) {
+		
+			var paraList;
+			var retList = [];
+			if (url) {
+				paraList = url.split('\?');
+				if (paraList.length == 2) {
+					retList = paraList[1].split("\&amp;");
+				}	
+			}
+			
+			return retList;
+		},
+		
+		getValueByKey: function (key, paraList) {
+			if (!key) return "";			
+			if (!paraList) return "";
+			
+			for (var i = 0; i &lt; paraList.length; i++) {
+				if (paraList[i].substring(0,key.length) == key) {
+					return decodeURIComponent(paraList[i].split("=")[1]);
+				}
+			}
+		},
+		
+		getCompType: function () {
+	
+			return this.getValueByKey("type",this.pList);
+		},
+						
+		getTable: function () {
+	
+			return this.getValueByKey("file",this.pList);
+		},
+		
+		getRadQuery: function () {
+			return this.getValueByKey("query",this.pList);
+		},
+		
+		setValueByKey: function (key, newValue, oriURL) {
+			var oldKVPair = key+"=";
+			var position = oriURL.indexOf(oldKVPair);
+			
+			var preURL = oriURL.substring(0,position);
+			var postPos = position + oldKVPair.length;
+			var leftURL = oriURL.substring(postPos);
+			var firstAndPos = leftURL.indexOf("\&amp;");
+			var postURL="";
+			if (firstAndPos &gt; 0) {
+				postURL = leftURL.substring(firstAndPos);
+			}
+			var newURL = preURL+key+"="+encodeURIComponent(newValue)+postURL;
+			return newURL;
+		},
+		
+		updateViewURL: function (table,type,query,field) {
+			if (!table || !type || !query ||!field) return;
+			
+			//update file
+			var urlTmp = this.setValueByKey("file",table,this.view_url);
+			urlTmp = this.setValueByKey("type",type,urlTmp);
+			//update query
+			urlTmp = this.setValueByKey("query",query,urlTmp);
+			//update field
+			urlTmp = this.setValueByKey("field",field,urlTmp);
+			return urlTmp;
+		},
+		
+		generateViewURL: function (table, type, query,field) {
+			//set default value
+			if (!table) table = "probsummary";
+			if (!type) type = "pie"
+			if (!query) query = "true";
+			if (!field) field = "priority.code";
+			//update file
+			var urlTmp = this.setValueByKey("file",table,this.getViewURLTemplate());
+			urlTmp = this.setValueByKey("type",type,urlTmp);
+			//update query
+			urlTmp = this.setValueByKey("query",query,urlTmp);
+			//update query
+			urlTmp = this.setValueByKey("field",field,urlTmp);
+			return urlTmp;
+		},
+		
+		getViewURLTemplate: function () {
+			return "/uimComponent.jsp?ctx=chart&amp;source=aggregate&amp;file=***&amp;field=***&amp;query=true&amp;uimcomponent=dashboard&amp;type=***";
+		},
+		
+		generateFilterURL: function (fName,table,field) {
+		
+			if (!fName || !table) return "";
+			
+			if (!field) {
+				return "/queryFilter.jsp?formname="+encodeURIComponent(fName) +"&amp;file=" + encodeURIComponent(table)+ "&amp;field=priority.code";
+			} else {
+				return "/queryFilter.jsp?formname="+encodeURIComponent(fName) +"&amp;file=" + encodeURIComponent(table)+ "&amp;field=" + encodeURIComponent(field);
+			}
+		},
+
+
+		getFilterName: function () {
+			var filterPair = this.separateURL(this.filter_url);
+			if (!filterPair || filterPair.length == 0) return "";
+			
+			return decodeURIComponent(filterPair[0].split("\=")[1]);
+			
+		},
+		
+		getCategory: function () {
+			var catCom = new SCFile("uimcompdefcatscdefs");
+			var RC = catCom.doSelect("definition.id=\""+comp.id+"\"");
+
+			if (RC != RC_SUCCESS) {
+				return null;
+			} else {
+				return catCom["category.id"];
+			}
+		},
+		getGroupedByField: function () {
+			return this.getValueByKey("field",this.pList);
+		}
+		
+		
+	};
+	
+	if (comp &amp;&amp; comp.view_url)
+		handler.init();
+	
+	return handler;
+}
+
+function isUniqueName(name) {
+	//Check if the specified name already exist.
+	var comp = new SCFile("uimcompdefinitions");
+	var RC = comp.doSelect("name=\""+name+"\"");
+	if (RC == RC_SUCCESS) {
+		return false;
+	}
+	
+	return true;
+	
+}
+
+
+</script>
+    <package type="string">MySM</package>
+    <sysmodtime type="dateTime">12/25/12 19:03:40</sysmodtime>
+    <sysmoduser type="string">zhangqi</sysmoduser>
+    <sysmodcount type="decimal">6</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

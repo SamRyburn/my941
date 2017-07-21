@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ModuleStatus">
+  <record id="module=&quot;request&quot; and status=&quot;Fulfilled&quot;" recordid="request - Fulfilled">
+    <status type="string">Fulfilled</status>
+    <sysmodtime type="dateTime">03/17/14 19:56:53</sysmodtime>
+    <sysmodcount type="decimal">5</sysmodcount>
+    <sysmoduser type="string">miquan</sysmoduser>
+    <module type="string">request</module>
+    <tablename type="string">request</tablename>
+    <sort.order NullValue="1" type="decimal"/>
+  </record>
+</recordset>

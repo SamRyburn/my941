@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="htmltemplates">
+  <record id="name=&quot;ChM Final Denial&quot; and language=&quot;en&quot;" recordid="ChM Final Denial - en">
+    <id type="string">887</id>
+    <type NullValue="1" type="string"/>
+    <name type="string">ChM Final Denial</name>
+    <expression type="string">//#################################################################################################################
+//This is the url for index.do. if you want to generate url for ess.do, please use getESSURLFromQuery instead
+var file_name = system.functions.filename($RECORD);
+var record_name = system.functions.scmsg(file_name,"tablename");
+var record_title = record_name+" "+$RECORD.number;
+var record_query = "number=\""+$RECORD.number+"\"";
+var web_url = lib.urlCreator.getURLFromQuery(file_name,record_query,record_title);
+//var web_url = lib.urlCreator.getESSURLFromQuery(file_name,record_query,record_title);
+//#################################################################################################################
+//Generate Impact, Urgency, and Priority readable label
+var _priority = $RECORD.priority_code;
+var _severity = $RECORD.severity;
+var _impact = $RECORD.initial_impact;
+var _risk = $RECORD.risk_assessment;
+
+var priority="";
+var severity="";
+
+var impact="";
+var risk = "";
+
+
+switch(true)
+{
+  case _severity==1:
+        severity = "1 - Critical"; break;
+  case _severity==2:
+        severity = "2 - High"; break;
+  case _severity==3:
+        severity = "3 - Average"; break;
+  case _severity==4:
+        severity = "4 - Low"; break; 
+}
+
+
+switch(true)
+{
+  case _priority==1:
+        priority = "1 - Critical"; break;
+  case _priority==2:
+        priority = "2 - High"; break;
+  case _priority==3:
+        priority = "3 - Average"; break;
+  case _priority==4:
+        priority = "4 - Low"; break;                
+}
+
+
+
+switch(true)
+{
+  case _impact==1:
+        impact = "1 - Enterprise"; break;
+  case _impact==2:
+        impact = "2 - Site/Dept"; break;
+  case _impact==3:
+        impact = "3 - Multiple Users"; break;
+  case _impact==4:
+        impact = "4 - User"; break;         
+}
+
+switch(true)
+{
+  case _risk==0:
+        risk = "0 - No Risk"; break;
+  case _risk==1:
+        risk = "1 - Low Risk"; break;
+  case _impact==2:
+        risk = "2 - Some Risk"; break;
+  case _impact==3:
+        risk = "3 - Moderate Risk"; break;
+  case _impact==4:
+        risk = "4 - High Risk"; break;
+  case _impact==5:
+        risk = "5 - Very High Risk"; break;
+}
+
+var operator = $RECORD.operator;
+var old_start = $RECORDOLD.down_start;
+var old_end = $RECORDOLD.down_end;
+var new_start = $RECORD.down_start;
+var new_end = $RECORD.down_end;
+var label = "";
+if(old_start &amp;&amp; !new_start)  label= "The outage for "+ $RECORD.logical_name  + " has been cancelled.";
+if(!old_start &amp;&amp; new_start &amp;&amp; new_end)  label= $RECORD.logical_name + " is scheduled to be unavailable from " + new_start + " to " + new_end + ".";
+if(!old_start &amp;&amp; new_start &amp;&amp; !new_end)  label= $RECORD.logical_name + " is scheduled to be unavailable from " + new_start + ".";
+if(old_start &amp;&amp; new_start &amp;&amp; new_end &amp;&amp; old_end)   label= "The outage for "+ $RECORD.logical_name + " originally planned for " + old_start + " - " + old_end + " has been rescheduled to " + new_start + " - " + new_end +".";
+if(old_start &amp;&amp; new_start &amp;&amp; new_end &amp;&amp; !old_end)  label= "The outage for "+ $RECORD.logical_name + " originally planned for " + old_start + " has been rescheduled to " + new_start + " - " + new_end +".";
+if(old_start &amp;&amp; new_start &amp;&amp; !new_end &amp;&amp; old_end)  label= "The outage for "+ $RECORD.logical_name + " originally planned for " + old_start + " - " + old_end + " has been rescheduled to " + new_start + ".";
+if(old_start &amp;&amp; new_start &amp;&amp; !new_end &amp;&amp; !old_end) label= "The outage for "+ $RECORD.logical_name + " originally planned for " + old_start + " has been rescheduled to " + new_start + ".";
+var email_title="";
+var email_body_title="";
+email_title=email_body_title=label;
+
+var $ = lib.c.$;
+var current_phase = $("#datadictService").displayValue($RECORD,"current.phase");
+ 
+var logical_name_disp_new= system.functions.get_display_value($RECORD, "logical.name",-1,true);</expression>
+    <content NullValue="1" sctype="array">
+      <content NullValue="1" type="string"/>
+    </content>
+    <module type="string">cm3r</module>
+    <cap.exec NullValue="1" sctype="array">
+      <cap.exec NullValue="1" type="string"/>
+    </cap.exec>
+    <active type="boolean">true</active>
+    <htmlcode type="string">&lt;table style="WIDTH: 98%"&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;td valign="top" align="left"&gt;
+            &lt;table style="WIDTH: 600px"&gt;
+                &lt;tbody&gt;
+                    &lt;tr&gt;
+                        &lt;td valign="top"&gt;
+                        &lt;table style="FONT-FAMILY: arial" cellspacing="10" cellpadding="10" width="100%"&gt;
+                            &lt;tbody&gt;
+                                &lt;tr&gt;
+                                    &lt;td style="WIDTH: 100%" valign="top" align="left"&gt;
+                                    &lt;h1 style="COLOR: #036; FONT-SIZE: 24px"&gt;HP Service Manager&lt;/h1&gt;
+                                    &lt;table border="0" cellspacing="0" cellpadding="0" width="100%"&gt;
+                                        &lt;tbody&gt;
+                                            &lt;tr&gt;
+                                                &lt;td style="BACKGROUND-COLOR: #cfe0f1" height="10" colspan="2"&gt;&amp;nbsp;&lt;/td&gt;
+                                            &lt;/tr&gt;
+                                            &lt;tr&gt;
+                                                &lt;td style="BACKGROUND-COLOR: #cfe0f1" width="10"&gt;&amp;nbsp;&lt;/td&gt;
+                                                &lt;td style="BACKGROUND-COLOR: #cfe0f1; FONT-FAMILY: arial"&gt;The Approval Status has been set to denied. No other groups are pending approval.&lt;/td&gt;
+                                            &lt;/tr&gt;
+                                            &lt;tr&gt;
+                                                &lt;td style="BACKGROUND-COLOR: #cfe0f1" height="10" colspan="2"&gt;&amp;nbsp;&lt;/td&gt;
+                                            &lt;/tr&gt;
+                                        &lt;/tbody&gt;
+                                    &lt;/table&gt;
+                                    &lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr&gt;
+                                    &lt;td style="WIDTH: 100%" valign="top" align="left"&gt;
+                                    &lt;div style="POSITION: relative; PADDING-BOTTOM: 0px; MARGIN-TOP: -24px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; PADDING-TOP: 0px"&gt;
+                                    &lt;h2 style="COLOR: #036; FONT-SIZE: 18px"&gt;Details&lt;/h2&gt;
+                                    &lt;/div&gt;
+                                    &lt;/td&gt;
+                                &lt;/tr&gt;
+                            &lt;/tbody&gt;
+                        &lt;/table&gt;
+                        &lt;table style="FONT-FAMILY: arial; FONT-SIZE: 11px" cellspacing="2" cellpadding="6" width="94%" align="center"&gt;
+                            &lt;tbody&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td width="20%" align="right"&gt;Title&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.brief_description} &lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Description&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.description} &lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td width="20%" align="right"&gt;Category&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.category} &lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Phase&lt;/td&gt;
+                                    &lt;td&gt;{current_phase} &lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;RFC Cost Centre&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.account_id}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Change Sponsor&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.coordinator}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;Change Owner&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.assigned_to}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Change Initiator&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.requested_by}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;Impact Level&lt;/td&gt;
+                                    &lt;td&gt;{risk}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Priority&lt;/td&gt;
+                                    &lt;td&gt;{priority}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;Status&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.status}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Approval Status&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.approval_status}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;Alert Stage&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.alert_stage}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Planned Start&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.planned_start}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;Planned End&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.planned_end}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Configuration Item&lt;/td&gt;
+                                    &lt;td&gt;{logical_name_disp_new}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;Location&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.location}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Reference No.&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.product_no_}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;Estimated Price&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.estimate_price}&lt;/td&gt;
+                                &lt;/tr&gt;
+                            &lt;/tbody&gt;
+                        &lt;/table&gt;
+                        &lt;div style="POSITION: relative; MARGIN-TOP: 20px; FONT-FAMILY: arial; MARGIN-LEFT: 20px; FONT-SIZE: 11px"&gt;
+                        &lt;p style="FONT-WEIGHT: bold"&gt;Change Management Team&lt;/p&gt;
+                        &lt;p style="COLOR: #999"&gt;Sent from HP Service Manager. Do not reply to this email.&lt;/p&gt;
+                        &lt;/div&gt;
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                &lt;/tbody&gt;
+            &lt;/table&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;</htmlcode>
+    <language type="string">en</language>
+    <mandant NullValue="1" sctype="array">
+      <mandant NullValue="1" type="string"/>
+    </mandant>
+    <test.record type="string">C10001</test.record>
+    <mail.title type="string">The Approval Status has been set to denied.  No other groups are pending approval.</mail.title>
+  </record>
+</recordset>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;temp.rc.multitenant&quot;" recordid="en - temp.rc.multitenant">
+    <name mandatory="true" type="string">temp.rc.multitenant</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">4100</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">13</column>
+        <length type="decimal">17</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">rc.synced</input>
+        <output type="string">Synched with RC</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Name=	?Visible=[$G.RC.integration]=true &amp; [$G.multi]=true	Height=2	Name=input1275549955040	ReadOnly=1	Visible=1	Width=33	X=24	Y=1	Caption=Synched with RC		Input=rc.synced	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">32</column>
+        <length type="decimal">10</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Re-synch</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Re-synch	Name=	ButtonID=124	dvdEnabled=	?Visible=[$G.RC.integration]=true &amp; [$G.multi]=true	enabled=1	Height=2	Name=button1275549955064	BalloonHelp=This option will push this company record to the UCMDB again	Width=19	X=63	Y=1		</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">falcon</editor>
+    <last.update type="dateTime">10/06/03 09:32:27</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">2</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">10/06/30 08:41:19</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

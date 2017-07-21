@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="cm3rcategory">
+  <record id="name=&quot;Hardware&quot;" recordid="Hardware">
+    <name mandatory="true" type="string">Hardware</name>
+    <phases sctype="array">
+      <phases sctype="string">Change Logging</phases>
+      <phases sctype="string">Change Review</phases>
+      <phases sctype="string">Change Assessment &amp; Planning</phases>
+      <phases sctype="string">Prepare for Change Approval</phases>
+      <phases sctype="string">Change Approval</phases>
+      <phases sctype="string">Change Implementation</phases>
+      <phases sctype="string">Evaluation &amp; Change Closure</phases>
+    </phases>
+    <avail.cond mandatory="true" type="boolean">true</avail.cond>
+    <active type="boolean">true</active>
+    <description type="string">Hardware</description>
+    <assign.number type="boolean">true</assign.number>
+    <sysmodcount type="decimal">2</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">12/07/14 20:39:48</sysmodtime>
+    <company type="string">HP</company>
+    <default.template NullValue="1" type="string"/>
+    <workflow type="string">Hardware</workflow>
+  </record>
+</recordset>

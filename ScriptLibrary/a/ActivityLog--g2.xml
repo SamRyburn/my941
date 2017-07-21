@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;ActivityLog&quot;" recordid="ActivityLog">
+    <name type="string">ActivityLog</name>
+    <script type="string">/**
+  * Create activity log.
+  *
+  * @file:		The record that activity log create for 
+  * @actMode:   Mode of activity actions
+  */
+function createActivityLog(file, actMode)
+{
+    var rteNames = new SCDatum();
+    rteNames.push("file");
+    rteNames.push("text");
+    rteNames.push("boolean1");
+	
+    var rteValues = new SCDatum();
+    rteValues.push(file);
+    rteValues.push(actMode);
+    rteValues.push(false);
+
+    // call rad "sc.activity" to create an activity log
+    system.functions.rtecall("callrad", new SCDatum(), "sc.activity", rteNames, rteValues, false);
+}
+
+
+/**
+  * Create activity log for attachment, call from the triggers of SYSATTACHMENTS.
+  *
+  * @attachment:	SYSATTACHMENTS SCFile, the attachment record that has been added/deleted.
+  * @triggerType:	Integer, the type of the trigger.
+  */
+function createAttachmentActivityLog(attachment, triggerType)
+{
+	if (attachment.segment != 0)
+		return;
+         
+	if (attachment.topic == null || attachment.topic == "")
+		return;
+		
+	// only support "after add" &amp; "after delete"
+	if (triggerType != 2 &amp;&amp; triggerType != 6)
+		return;
+	
+	var actType = "";
+	if (triggerType == 2)		// after add
+		actType = "add";
+	else if (triggerType == 6)	// after delete
+		actType = "delete"
+		
+	var rteNames = new SCDatum();
+	rteNames.push("file");
+	rteNames.push("text");
+	rteNames.push("boolean1");
+
+	var rteValues = new SCDatum();
+	rteValues.push(record);
+	rteValues.push(actType);
+	rteValues.push(false);
+
+	// call rad "sc.activity" to create an activity log
+	system.functions.rtecall("callrad", new SCDatum(), "sc.activity",	rteNames, rteValues, false);
+}
+</script>
+    <package type="string">Activities</package>
+    <sysmodtime type="dateTime">08/26/14 18:14:32</sysmodtime>
+    <sysmoduser type="string">zhangqi</sysmoduser>
+    <sysmodcount type="decimal">17</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

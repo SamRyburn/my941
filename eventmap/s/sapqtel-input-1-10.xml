@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="eventmap">
+  <record id="evmap=&quot;sapqtel&quot; and evtype=&quot;input&quot; and evseq=1 and evindex=10" recordid="sapqtel - input - 1 - 10">
+    <evmap type="string">sapqtel</evmap>
+    <evindex type="decimal">10</evindex>
+    <evnullsub NullValue="1" type="string"/>
+    <evmaptyp type="string">variable</evmaptyp>
+    <evfile type="string">ocml</evfile>
+    <evfield type="globalVar">$L.comments</evfield>
+    <evcalc sctype="array">
+      <evcalc sctype="operator">if (not  (null($cur.field))) then if (1 in comments in $axces.target~=$cur.field) then (comments in $axces.target=insert(comments in $axces.target, 1, 1, $cur.field))</evcalc>
+    </evcalc>
+    <evtype type="string">input</evtype>
+    <evsepchar NullValue="1" type="string"/>
+    <evdtype type="decimal">2</evdtype>
+    <evquery NullValue="1" type="boolean"/>
+    <evxlate NullValue="1" type="string"/>
+    <evinit sctype="array">
+      <evinit sctype="operator">$cur.field=10 in evlist in $axces</evinit>
+    </evinit>
+    <evseq type="decimal">1</evseq>
+    <evlength NullValue="1" type="decimal"/>
+    <evitmlng NullValue="1" type="decimal"/>
+    <evmapcond NullValue="1" type="boolean"/>
+    <eveltype NullValue="1" type="decimal"/>
+    <sysmodcount type="decimal">3</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">02/25/03 07:33:41</sysmodtime>
+    <evsepchar.struc NullValue="1" type="string"/>
+  </record>
+</recordset>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="smtzdst">
+  <record id="tzname=&quot;Yakutsk&quot; and dstyear=2011" recordid="">
+    <tzname type="string">Yakutsk</tzname>
+    <dstyear type="decimal">2011</dstyear>
+    <dstbegin type="dateTime">03/26/11 20:00:00</dstbegin>
+    <dstend type="dateTime">12/31/11 16:59:59</dstend>
+    <isdst type="decimal">1</isdst>
+  </record>
+</recordset>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;StatusSyncServiceConfig&quot;" recordid="StatusSyncServiceConfig">
+    <name type="string">StatusSyncServiceConfig</name>
+    <script type="string">var STATUS_SYNC_RELATION_ESCALATION = ["Escalation"];
+var STATUS_SYNC_RELATION_STREAMLINED = ["Trigger To", "Fulfillment"];
+var STATUS_MAPS_ESCALATION = {
+    probsummary: {
+        statusField: "problem.status",
+        statusMap: {
+            /**"Open": "Dispatched",//do not map open, escalation will move interaction to dispatched*/
+            Resolved: "Resolved",
+            //"Work In Progress": "In Progress",
+            //"Pending Customer": "Pending Customer",
+            //Assign: "Assign",
+            /**"Categorize": "Categorize",*/
+            //Suspended: "Suspended",
+            /**"Closed": "Callback or Closed"//do not map closed, there is alreay mechanisme to handle incident closing.*/
+        }
+    },
+    request: {
+        statusField: "status",
+        statusMap: {
+            // "In Progress": "In Progress",
+            "Fulfilled": "Resolved",
+            //"Pending Customer": "Pending Customer"
+        }
+    },
+    rootcause: {
+        statusField: "rcStatus",
+        idField: "id",
+        statusMap: {
+            //"Work In Progress": "In Progress",
+            Resolved: "Resolved",
+        }
+    },
+    cm3r: {
+        statusField: "current.phase",
+        statusMap: {
+            "Post Implementation Review": "Resolved",
+        }
+    },
+}
+var STATUS_MAPS_STREAMLINED = {
+    probsummary: {
+        statusField: "problem.status",
+        statusMap: {
+            "Pending Customer": {
+                status: "Pending Customer",
+                priority: 0
+            },
+            "Resolved": {
+                status: "Resolved",
+                priority: 0,
+                syncFields: [{
+                    source: "resolution",
+                    target: "resolution",
+                    override: true
+                }]
+
+            }
+        },
+        defaultStatus: {
+            status: "Dispatched",
+            priority: 1
+        },
+        ignoreStatus: ["Closed"]
+    },
+    request: {
+        statusField: "status",
+        statusMap: {
+            "Pending Customer": {
+                status: "Pending Customer",
+                priority: 0
+            }
+        },
+        defaultStatus: {
+            status: "Dispatched",
+            priority: 1
+        },
+        ignoreStatus: ["Closed"]
+    },
+    rootcause: {
+        statusField: "rcStatus",
+        idField: "id",
+        statusMap: {
+            "Pending": {
+                status: "Pending Customer",
+                priority: 0
+            }
+        },
+        defaultStatus: {
+            status: "Dispatched",
+            priority: 1
+        },
+        ignoreStatus: ["Closed", "Abandoned"]
+    },
+    cm3r: {
+        statusField: "current.phase",
+        statusMap: {},
+        defaultStatus: {
+            status: "Dispatched",
+            priority: 1
+        },
+        ignoreStatus: ["Closed", "Abandoned"]
+    },
+}
+
+/**
+ *  This function is wrapper to return the configured relation type which need status sync.
+ */
+function getStusSyncRelation(streamlined) {
+    return streamlined ? STATUS_SYNC_RELATION_STREAMLINED : STATUS_SYNC_RELATION_ESCALATION;
+}
+
+/**
+ *  This function is wrapper to return the status sync map.
+ */
+function getStusSyncMap(streamlined) {
+    return streamlined ? STATUS_MAPS_STREAMLINED : STATUS_MAPS_ESCALATION;
+}</script>
+    <package type="string">Interaction</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:44</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">false</sysrestricted>
+  </record>
+</recordset>

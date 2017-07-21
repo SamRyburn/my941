@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="displayscreen">
+  <record id="screen.id=&quot;cate2idol2.view&quot; and language=&quot;ENG&quot;" recordid="cate2idol2.view - ENG">
+    <screen.id type="string">cate2idol2.view</screen.id>
+    <screen.id.copy type="string">cate2idol2.view</screen.id.copy>
+    <language type="string">ENG</language>
+    <title type="globalVar">$L.title</title>
+    <form type="globalVar">$L.format</form>
+    <io type="boolean">true</io>
+    <time NullValue="1" type="dateTime"/>
+    <initialization sctype="structure">
+      <expressions NullValue="1" sctype="array">
+        <expressions NullValue="1" type="expression"/>
+      </expressions>
+      <msg.condition NullValue="1" type="boolean"/>
+      <message NullValue="1" type="string"/>
+    </initialization>
+    <screen.id.alias type="string">cate2idol2.view</screen.id.alias>
+    <on.enter.key type="string">return</on.enter.key>
+    <window.structure sctype="structure">
+      <open.window NullValue="1" type="boolean"/>
+      <parent.name NullValue="1" type="string"/>
+      <window.name NullValue="1" type="string"/>
+      <window.position type="string">left</window.position>
+      <window.percent NullValue="1" type="decimal"/>
+      <window.lines NullValue="1" type="decimal"/>
+    </window.structure>
+    <screen.id.copy.old type="string">cate2idol2.view</screen.id.copy.old>
+    <more.window NullValue="1" type="boolean"/>
+    <user.options type="boolean">true</user.options>
+    <sysmodcount type="decimal">11</sysmodcount>
+    <sysmoduser type="string">pengfei</sysmoduser>
+    <sysmodtime type="dateTime">07/14/14 15:29:07</sysmodtime>
+    <object.related NullValue="1" type="boolean"/>
+    <javascript type="string">if (vars['$L.file']['subgroup'] &amp;&amp; vars['$L.file']['subgroup'] &gt;= 1) {
+	var idolsecgroup = new SCFile('idolsecgroup');
+	var rc = idolsecgroup.doSelect('adapter.id="' + vars['$L.file']['groupid'] + '" and subgroup.id="' + vars['$L.file']['subgroup'] + '"');
+	if (rc === RC_SUCCESS) {
+		vars['$security.id'] = idolsecgroup['security.id'];
+	}
+} else {
+	vars['$security.id'] = '';
+}</javascript>
+    <search.only NullValue="1" type="boolean"/>
+  </record>
+</recordset>

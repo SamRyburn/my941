@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="scmessage">
+  <record id="syslanguage=&quot;en&quot; and class=&quot;multi-tenant&quot; and message.id=&quot;ucmdbAndRC_delete&quot;" recordid="en - multi-tenant - ucmdbAndRC_delete">
+    <syslanguage type="string">en</syslanguage>
+    <message.id type="string">ucmdbAndRC_delete</message.id>
+    <severity type="decimal">3</severity>
+    <message type="string">Companies that have been synched with UCMDB and Release Control cannot be deleted.</message>
+    <class type="string">multi-tenant</class>
+    <comments NullValue="1" sctype="array">
+      <comments NullValue="1" type="string"/>
+    </comments>
+    <sysmodtime type="dateTime">10/06/30 08:41:31</sysmodtime>
+    <sysmodcount type="decimal">2</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+  </record>
+</recordset>

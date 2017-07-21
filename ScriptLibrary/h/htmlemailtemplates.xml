@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;htmlemailtemplates&quot;" recordid="htmlemailtemplates">
+    <name type="string">htmlemailtemplates</name>
+    <script type="string">
+var $ = lib.c.$;
+
+var logMsgApp="HTML Templates";
+
+var sys_lang = getSysLang();
+
+function oc(a)
+{
+  var o = {};
+  for(var i=0;i&lt;a.length;i++)
+  {
+    o[a[i]]='';
+  }
+  return o;
+}
+
+
+/**
+ * Parses the template header and returns an HTML String
+ * &lt;br&gt;
+ * History:&lt;br&gt;
+ * 20090126 - Tom Hauri, HP - Change / Requirement: N/A Description: Function created&lt;br&gt;
+ * Contains code from Outlance GmbH - www.outlance.de - Lars Detmers, Dejan Djurovski
+ *
+ * @date	20090126
+ * @param   {String} templateName
+ * @param   {File} Record
+ * @param   {File} Record Old (if available, otherwise same as Record)
+ * @param   {String} Email Recipient (used to determine language)
+ * @param   {String} Language (used to override recipient language, optional)
+ * @returns	{String} HTML Code with values
+ *
+ */
+
+
+
+function getTemplate(templateName, $RECORD, $RECORDOLD, recipient, lang, templateField) {
+
+	var logMsgStep="getTemplate";
+	var content = "";
+
+	logMsg("DEBUG", logMsgApp, logMsgStep, "Start: " + recipient);
+
+        function parseTemplate(content, data) {
+
+        content=String(content);
+        re = /\{[a-zA-Z_|., $\[\]0-9]{0,}\}/gi;
+
+        return (
+            content.replace(
+                re,
+                function ($1,$2,$3) {
+                    var tag_content = $1.substr(1, $1.length-2);
+                    var splitparameters = tag_content.split(',');
+                    splitparameters[0] = TrimString(splitparameters[0]);
+                    var splitarray = splitparameters[0].split('.');
+                    if ( typeof ( splitarray[1] ) != "undefined" ) {
+                        var variable = 'data[\''+splitarray[0]+'\'].' + splitarray[1];
+                    } else {
+                        var variable = splitarray[0];
+                    }
+
+                    var splitmodifiers = variable.split("|");
+					var str="";
+                    if( typeof ( splitmodifiers[1] ) != "undefined" &amp;&amp; splitmodifiers[1] == 'formatdate' ) {
+                        str=( formatJSDateTime(eval(splitmodifiers[0])) );
+                    } else if ( eval(variable) == null ) {
+                          str= '';
+                    } else if ( typeof ( splitparameters[1] ) != "undefined" ) {
+                        splitparameters[1] = TrimString(splitparameters[1]);
+                          str=( eval( variable + '.substr(0, ' + splitparameters[1] + ' )' ) );
+                    } else 	{
+                    	 var tmp=eval(variable);
+                    	 if(system.functions.type(tmp)==8){
+                          str = tmp.join("&lt;br/&gt;");
+                          }else{
+                          	str=tmp;
+                          }
+                          if (str == null) {
+                            str = '';
+                          }
+                    } // end if typeof
+                    return str;
+                } // end function
+                )
+            );
+    }
+
+        // added by Ryan
+         if (!lang)
+        {
+            try{
+                lang = (system.vars.$L_mailLang)?system.vars.$L_mailLang:determinLang();
+            } catch (ex) {
+                logMsg("ERROR", logMsgApp, logMsgStep, "Language determination: Record contains invalid code");
+                lang = sys_lang;
+            }
+
+        }
+    /*
+	var htmlTemplate = $.cachedSelect("htmltemplates", "name=\""+templateName + "\" and language=\"" + lang + "\" and active=true");
+	if (htmlTemplate == null &amp;&amp; lang != sys_lang) {
+		htmlTemplate = $.cachedSelect("htmltemplates", "name=\""+templateName + "\" and language=\"" + sys_lang + "\" and active=true");
+	}
+        if (htmlTemplate == null) {
+		htmlTemplate = $.cachedSelect("htmltemplates", "name=\""+templateName + "\" and language=\"en\" and active=true");
+	}
+    */
+    
+    //Optimize performance start added by Henrry 06/23/2015
+    var htmlTemplate = new SCFile('htmltemplates');
+    var res = htmlTemplate.doSelect("name=\""+templateName + "\" and language=\"" + lang + "\"");
+    if(res == RC_SUCCESS &amp;&amp; htmlTemplate.active != true){
+        res = RC_ERROR;
+    }
+    if (res != RC_SUCCESS &amp;&amp; lang != sys_lang) {
+        res = htmlTemplate.doSelect("name=\""+templateName + "\" and language=\"" + sys_lang + "\"");
+        if(res == RC_SUCCESS &amp;&amp; htmlTemplate.active != true){
+            res = RC_ERROR;
+        }
+    }
+    if (res != RC_SUCCESS) {
+         res = htmlTemplate.doSelect("name=\""+templateName + "\" and language=\"en\"");
+         if(res == RC_SUCCESS &amp;&amp; htmlTemplate.active != true){
+             res = RC_ERROR;
+         }
+    }
+    if (res == RC_SUCCESS) {
+     //end
+    //if (htmlTemplate != null) {
+
+		try {
+			system.vars.$L_mailLang = htmlTemplate.language;
+                        var javascript_expression = htmlTemplate.expression;
+			var data = [];
+			data['$RECORD'] = new Datum($RECORD);
+		   	data['$RECORD'] = $RECORD;
+			data['$RECORDOLD'] = new Datum($RECORDOLD);
+                        data['$RECORDOLD'] = $RECORDOLD;
+			eval(javascript_expression);
+			if(templateField=="subject")
+			    {
+                                content = parseTemplate(htmlTemplate.mail_title, data);
+								system.vars.$L_mailLang = null;
+                                //added by Ryan
+                            }
+			else
+		        content = "&lt;html&gt;" + parseTemplate(htmlTemplate.htmlcode, data) + "&lt;/html&gt;";
+			logMsg("DEBUG", logMsgApp, logMsgStep, htmlTemplate.mail_title);
+			logMsg("DEBUG", logMsgApp, logMsgStep, htmlTemplate.htmlcode);
+			logMsg("DEBUG", logMsgApp, logMsgStep, content);
+			return content;
+		} catch (ex) {
+			logMsg("ERROR", logMsgApp, logMsgStep, "Record contains invalid code" + ex);
+			return null;
+		} // end try
+
+	} else 	{
+		logMsg("ERROR", logMsgApp, logMsgStep, "Template " + templateName +" could not be found.");
+	} // end if template
+
+}
+
+
+function getMailBody(templateName, $RECORD, $RECORDOLD, recipient, lang) {
+
+	var logMsgStep="formatMailBody";
+
+	logMsg("DEBUG", logMsgApp, logMsgStep, "Start " + templateName + " mail for " + recipient);
+	return getTemplate(templateName, $RECORD, $RECORDOLD, recipient, lang, "body");
+
+}
+
+
+/**
+ * Parses the template header and returns an HTML String
+ * &lt;br&gt;
+ * History:&lt;br&gt;
+ * 20090126 - Tom Hauri, HP - Change / Requirement: N/A Description: Function created&lt;br&gt;
+ * Contains code from Outlance GmbH - www.outlance.de - Lars Detmers, Dejan Djurovski
+ *
+ * @date	20090126
+ * @param   {String} templateName
+ * @param   {File} Record
+ * @param   {File} Record Old (if available, otherwise same as Record)
+ * @param   {String} Email Recipient (used to determine language)
+ * @param   {String} Language (used to override recipient language, optional)
+ * @returns	{String} HTML Code with values
+ *
+ */
+
+
+function getMailHeader(templateName, $RECORD, $RECORDOLD, recipient, lang) {
+
+	var logMsgStep="getMailHeader";
+	logMsg("DEBUG", logMsgApp, logMsgStep, "Start: " + recipient);
+	logMsg("DEBUG", logMsgApp, logMsgStep, "record: " + $RECORD);
+	logMsg("DEBUG", logMsgApp, logMsgStep, "RECORDOLD: " + $RECORDOLD);
+
+	return getTemplate(templateName, $RECORD, $RECORDOLD, recipient, lang, "subject");
+}
+
+/**
+ * Generates the PreView of an HTML EMail
+ * &lt;br&gt;
+ * History:&lt;br&gt;
+ * 20090126 - Tom Hauri, HP - Change / Requirement: N/A Description: Function created&lt;br&gt;
+ *
+ * @date	20090126
+ * @param   {String} String
+ * @returns	{String} HTML Code with values
+ *
+ */
+
+function getPreview(tablename) {
+
+    if (tablename) {
+		var targetKeys = lib.tableFunctions.getUniqueKey(tablename);
+		if (targetKeys) {
+			var query = targetKeys[0] + "=\"" + vars.$L_file.test_record + "\"";
+			var HTMLString = "";
+			if (query) {
+				var fRecord = new SCFile(tablename);
+				var rc = fRecord.doSelect(query);
+				if ( rc == RC_SUCCESS ) {
+					if (vars.$L_file.type == "mail") {
+						HTMLString += "&lt;b&gt;Mail Header:&lt;/b&gt; " + getMailHeader(vars.$L_file.name, fRecord, fRecord, system.functions.operator(), vars.$L_file.language) + "&lt;br&gt;&lt;br&gt;";
+					}
+					HTMLString += getMailBody(vars.$L_file.name, fRecord, fRecord, system.functions.operator(), vars.$L_file.language);
+					return HTMLString;
+				}
+			} // if query
+		} // if targetkey
+	} // if tablename
+	return "Cannot create Preview...";
+
+}
+
+
+/**
+ * Trims a String from leading and trailing spaces
+ * &lt;br&gt;
+ * History:&lt;br&gt;
+ * 20090126 - Tom Hauri, HP - Change / Requirement: N/A Description: Function created&lt;br&gt;
+ *
+ * @date	20090126
+ * @param   {String} String
+ * @return	{String} String
+ *
+ */
+
+function TrimString(str) {
+      str = str.replace('/^[ ]+(.*)$/', str); // Trims leading spaces
+      str = str.replace('/^(.*)[ ]+$/', str); // Trims trailing spaces
+      return str;
+}
+
+/**
+ * Returns SC DateTime String
+ * &lt;br&gt;
+ * History:&lt;br&gt;
+ * 20090126 - Tom Hauri, HP - Change / Requirement: N/A Description: Function created&lt;br&gt;
+ *
+ * @date	20090126
+ * @param   {Date} JS Date
+ * @return	{String} SCDateTimeString
+ *
+ */
+
+function formatJSDateTime(date) {
+   var retVal = "";
+   if (date!=null) {
+   		var myDate = new XMLDate( date );
+		var retVal = myDate.getSCDateTimeString();
+      	return retVal;
+   }
+   return retVal;
+}
+
+
+function logMsg(type, app, step, msg) {
+	var debug="off";
+        if ((type == "DEBUG") &amp;&amp; (debug != "on")) {
+		return "";
+	}
+	var rc = system.functions.log(type + ";" + app + ";" + step + ";" + msg);
+}
+
+function determinLang() {
+
+    var logMsgStep="determine_language";
+
+    var lang = "";
+    var lang_temp = [];
+    var temp = "";
+    var operator = system.functions.operator();
+
+    //determine if it is called from notification engine
+    if( system.vars.$L_notification )
+    {
+        var userList = getUserList();
+        logMsg("DEBUG", logMsgApp, logMsgStep,"userList -- "+userList);
+
+        //parse language
+        if( typeof userList == "string") lang = getLang(userList);
+        else{
+            for( var user in oc(userList) )
+            {
+                if( user == operator ) continue;
+                temp = getLang(user);
+                if( temp in oc(lang_temp) ) continue;
+                lang_temp.push(temp);
+            }
+
+            lang = ( lang_temp.length == 1 ) ? lang_temp[0] : sys_lang;
+
+        }
+
+        logMsg("DEBUG", logMsgApp, logMsgStep,"language is "+lang);
+
+        system.vars.$L_mailLang = lang;
+    }
+    else lang = getLang( operator );
+
+    return lang;
+
+}
+
+function getSysLang()
+{
+
+    var sysInfo = new SCFile("info");
+    var sql = "type=\"company\"";
+
+    if( sysInfo.doSelect(sql) == RC_SUCCESS )
+    {
+        return sysInfo.syslanguage;
+    }
+    else return "en";
+
+}
+
+
+function getUserList()
+{
+    var logMsgStep="getUserList";
+
+    var userList = [];
+
+    var index = system.vars.$L_i;
+    var message = new SCDatum();
+    message.setType(9);
+    message = system.vars.$L_notification.message[index-1];
+
+    //initialize vars
+    var str_recipients = system.functions.nullsub(system.functions.str(message[2]),"");
+    logMsg("DEBUG", logMsgApp, logMsgStep,"str_recipients is "+str_recipients);
+    var users = "";
+    var userSql = "";
+
+    //evaluate recipient field
+    users = vars.$L_users//users is defined in process.msg panel of us.nofity rad , it's workaround to fix issue QCCR1E94254
+    
+    logMsg("DEBUG", logMsgApp, logMsgStep,"users is "+users);
+
+    if (users == null)
+    {
+    	return userList;
+    }
+    
+    //generate user sql
+    userSql = ( system.functions.type(users) == 2 ) ? "name isin {\"" + users + "\"}" : "name isin " + system.functions.str(users);
+
+    //generate user list
+    userList = ( system.functions.type(users) == 2 ) ? users : users.toArray();
+
+    //determine whether it`s a group or not
+    if(!system.functions._null(message[5]))
+    {
+        var groupFile = message[5];
+        var groupArea = message[7];
+        var subGroup = message[8];
+        var groupUsers = [];
+        var emptyArray = new SCDatum();
+        emptyArray.setType(8);
+        var groupUsersDatum = new SCDatum();
+        groupUsersDatum.setType(8);
+		var groupUsersDatum2 = new SCDatum();
+        groupUsersDatum2.setType(8);
+		
+
+        if( ("cm3groups, ocmgroups".indexOf(groupFile) != -1) &amp;&amp; ("c, t, q, o, l".indexOf(groupArea) != -1) )
+        {
+            userSql = userSql + " and area=\"" + groupArea + "\"";
+        }
+
+        //extract operators
+        var groupRecord = new SCFile(groupFile);
+        if( groupRecord.doSelect(userSql) == RC_SUCCESS )
+        {
+
+            do{
+
+                if( ("cm3groups, ocmgroups".indexOf(groupFile) != -1) &amp;&amp; (subGroup == "approvers") )
+                {
+                    groupUsersDatum = system.functions.nullsub(system.functions.denull(groupRecord.approvers),emptyArray);
+                    groupUsers = (groupUsersDatum.toArray())?groupUsers.concat(groupUsersDatum.toArray()) : groupUsers;
+                }
+
+                if( ("cm3groups, ocmgroups".indexOf(groupFile) != -1) &amp;&amp; (subGroup == "members") )
+                {
+                    groupUsersDatum = system.functions.nullsub(system.functions.denull(groupRecord.members),emptyArray);
+                    groupUsers = (groupUsersDatum.toArray())?groupUsers.concat(groupUsersDatum.toArray()) : groupUsers;
+                }
+				
+				if( ("cm3groups, ocmgroups".indexOf(groupFile) != -1) &amp;&amp; (system.functions.nullsub(subGroup,"all") == "all") )
+				{
+					groupUsersDatum = system.functions.nullsub(system.functions.denull(groupRecord.approvers),emptyArray);
+					groupUsersDatum2 = system.functions.nullsub(system.functions.denull(groupRecord.members),emptyArray);
+                    groupUsers = (groupUsersDatum.toArray())?groupUsers.concat(groupUsersDatum.toArray()) : groupUsers;
+					groupUsers = (groupUsersDatum2.toArray())?groupUsers.concat(groupUsersDatum2.toArray()) : groupUsers;
+				}
+				
+                if( groupFile == "assignment" )
+                {
+                    groupUsersDatum = system.functions.nullsub(system.functions.denull(groupRecord.operators),emptyArray);
+                    groupUsers = (groupUsersDatum.toArray())?groupUsers.concat(groupUsersDatum.toArray()) : groupUsers;
+                }
+
+            }while( groupRecord.getNext() == RC_SUCCESS )
+
+            // set user list, remove redundant user name
+            var user_temp = [];
+            for(var i = 0; i &lt; groupUsers.length; i++ )
+            {
+                if( groupUsers[i] in oc(user_temp) ) continue;
+                user_temp.push(groupUsers[i]);
+            }
+
+            // re assign user list
+            userList = user_temp;
+
+        }
+    }
+
+    return userList;
+}
+
+
+function getLang(user) {
+
+    var operator_sql = "name=\"" + user + "\"";
+    var contact_sql  = "contact.name=\"" + user + "\"";
+    
+    /**QCCR1E101238, SM934, dengxin
+	 **add readonly for doselect, and add the selected fields
+	 **apply for operator, contact
+	 */
+
+    var contact = new SCFile("contacts", SCFILE_READONLY);
+    var operator = new SCFile("operator", SCFILE_READONLY);
+    contact.setFields(["language","operator.id"]);
+    operator.setFields(["syslanguage","contact.name"]);
+
+    if( contact.doSelect(contact_sql) == RC_SUCCESS )
+    {
+        if( !system.functions._null(contact.language) ) return contact.language;
+        else if( operator.doSelect( "name=\"" + contact.operator_id + "\"" ) == RC_SUCCESS )
+        {
+            if( !system.functions._null(operator.syslanguage) ) return operator.syslanguage;
+            else return sys_lang;
+        }
+    }
+
+    if( operator.doSelect(operator_sql) == RC_SUCCESS )
+    {
+        if( !system.functions._null(operator.syslanguage) ) return operator.syslanguage;
+        else if( contact.doSelect( "contact.name=\"" + operator.contact_name + "\"" ) == RC_SUCCESS )
+        {
+            if( !system.functions._null(contact.language) ) return contact.language;
+            else return sys_lang;
+        }
+
+    }
+
+    return sys_lang;
+
+}</script>
+    <package type="string">BaseUtilities</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:39</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

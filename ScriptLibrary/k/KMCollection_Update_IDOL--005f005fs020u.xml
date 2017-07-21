@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;KMCollection_Update_IDOL&quot;" recordid="KMCollection_Update_IDOL">
+    <name type="string">KMCollection_Update_IDOL</name>
+    <script type="string">/**  @fileoverview KMCollection_Update_IDOL
+ *   @author Yang,Chun-Fu
+ *   this is the interface for KM reindex and KMUpdate scheduler.
+ */
+
+var IDOLKMIndexService = lib.IDOLKMIndexService.require(),
+    KMDocument_Index_IDOL = lib.KMDocument_Index_IDOL.require(),
+    KMIDOLUtils = lib.KMIDOLUtils.require(),
+    IDOLConfigure =lib.IDOLConfigure.require(),
+    IDOL_SharePoint = lib.IDOL_SharePoint.require(),
+    logger = getLog('KMCollection_Update_IDOL');
+
+var KMCollectionUpdateIDOL= (function (){
+
+        function submitReindexRecord(){
+            var collectionname = vars.$L_file.kbname,
+                reindex_file =  new SCFile("kmreindex"),
+                ret = reindex_file.doSelect('collectionname="'+collectionname+'" and action="U"');
+
+            //already submitted, just return
+            if( ret ==  RC_SUCCESS ){
+                if(reindex_file.scquery == vars.$L_file.scquery){
+                    var records =  reindex_file.total_number;
+                    print(funcs.scmsg('1107', 'km', [records]));
+                    return 0;
+                }
+                else {
+                    //scquery change, need reindex
+                    reindex_file.doDelete();
+                }
+            }
+
+            var sclibtablename = vars.$L_file.sclibtablename,
+                scquery =  vars.$L_file.scquery || 'true';
+
+            var file = new SCFile(sclibtablename);
+            var num = file.doCount(scquery);
+
+            reindex_file.collectionname = collectionname;
+            reindex_file.sclibtablename = sclibtablename;
+            reindex_file.scquery = scquery;
+            reindex_file.action = "U";
+            reindex_file.total_number = num;
+            reindex_file.record_number = 0;
+
+            ret = reindex_file.doInsert();
+            if(RC_SUCCESS == ret) {
+                KMIDOLUtils.setKBFieldMap(collectionname,null);
+                KMIDOLUtils.setKBFieldWeightPair(collectionname,null);
+                KMIDOLUtils.setTypeMap(collectionname,null);
+                KMIDOLUtils.getKBFieldMap(collectionname);
+                KMIDOLUtils.getKBFieldWeightPair(collectionname);
+                KMIDOLUtils.getTypeMap(collectionname);
+                logger.info(num+' documents submitted');
+                print(funcs.scmsg('1107', 'km', [num]));
+            }
+
+            return ret;
+        }
+
+        function reindexNonSClib() {
+            var result = IDOLKMIndexService.deleteIndexDB(vars['$L.file']['kbname']);
+
+            if (result != 0) {
+                print(funcs.msg('1105', 'km', [vars.$L_file.kbname]));
+                return -1;
+            }
+
+            result =  IDOLKMIndexService.createIndexDB(vars['$L.file']['kbname']);
+            if(result === 0) {
+                IDOLKMIndexService.mappingVDB(vars['$L.file']['kbname']);
+                result = IDOL_SharePoint.fullReindex(vars['$L.file']);
+            }
+            return result;
+        }
+
+        function markFullReindexLibrary() {
+            var stat = lib.jsaci.checkServerStatus(IDOLConfigure.getEndPoint(), lib.jsaci.getIDOLOEMLicenseFlag());
+
+            if(! stat){
+                print(system.functions.scmsg(224, "km"));
+                return -1;
+            }
+
+            if( vars.$L_file.kbtype !== 'sclib') {
+                var result = reindexNonSClib();
+                if (result === -1) {
+                    return result;
+                }
+                vars['$L.file']['idoltoken'] = result;
+                return 0;
+            }
+
+            var result = lib.KMAdmin.kmadminlock();
+            if (result != 0) {
+                print(funcs.scmsg('1106', 'km'));
+                lib.KMAdmin.kmadminunlock();
+                return -1;
+            }
+            
+            var dbname = vars['$L.file']['kbname'];
+            lib.KMCollection_Update_Utils.clearKMUpdateFile(dbname);
+            lib.KMCollection_Update_Utils.clearKMErrorFile(dbname);
+                        
+            if (!IDOLKMIndexService.isDBExists(dbname)) {
+                //this is a first time full index of the lib
+                result = IDOLKMIndexService.createIndexDB(dbname);
+                if (result != RC_SUCCESS){
+                    logger.error('Failed to create index db '+dbname+' in IDOL Server');
+                    lib.KMAdmin.kmadminunlock();
+                    return -1;
+                }
+
+                result = IDOLKMIndexService.mappingVDB(dbname);
+                if (result != 0) {
+                    logger.error('Failed to mapping VDB');
+                    lib.KMAdmin.kmadminunlock();
+                    return -1;
+                }
+            }else{
+                // this is reindex of an existing lib
+                if (IDOLKMIndexService.isDBReadOnlyOnAnyContent(dbname)){
+                    print('The index database '+dbname+' is read only in IDOL server');
+                    logger.error('The index database '+dbname+' is read only in IDOL server');
+                    lib.KMAdmin.kmadminunlock();
+                    return -1;
+                }
+                
+                result = IDOLKMIndexService.createIndexDB(dbname+IDOLKMIndexService.tempDBPostFix());
+                if (result != 0) {
+                  logger.error('Failed to create temp index database for '+dbname);
+                  lib.KMAdmin.kmadminunlock();
+                  return -1;
+                }
+            }
+
+            
+            print(system.functions.scmsg(225, "km"));
+
+            result = submitReindexRecord();
+            if (result != 0) {
+                logger.error('Failed to submit document to indexer');
+                lib.KMAdmin.kmadminunlock();
+                return -1;
+            }
+
+            lib.KMAdmin.kmadminunlock();
+
+            return result;
+
+        }
+
+        function fullIndexNumber() {
+            var freindex = new SCFile("kmreindex");
+            return freindex.doCount(true);
+        }
+
+
+        function fullIndex(){
+
+            var freindex = new SCFile("kmreindex"),
+                ret = freindex.doSelect("true");
+
+            while(ret === RC_SUCCESS) {
+				try {
+	                var kbname = freindex.collectionname,
+	                    sclibtablename = freindex.sclibtablename,
+	                    scquery = freindex.scquery,
+	                    record_number = freindex.record_number,
+	                    collectionFile = new SCFile("kmknowledgebase"),
+	                    result = collectionFile.doSelect('kbname="'+kbname+'"');
+	                var isReindex = IDOLKMIndexService.isDBExists(kbname+IDOLKMIndexService.tempDBPostFix());
+	
+	                if(RC_SUCCESS !== result){
+	                    return -1;
+	                }
+	
+	                logger.info('full index for '+freindex.collectionname+' started');
+	
+	                //set indexstatus to 'indexing'
+	                if (collectionFile.indexstatus !== lib.KMCollection_Status_Constant.INDEXSTATUS_OFFLINE()) {
+	                    collectionFile.indexstatus = lib.KMCollection_Status_Constant.INDEXSTATUS_INDEXING();
+	                    collectionFile.doUpdate();
+	                }
+	
+	                var sclibFile = new SCFile(sclibtablename);
+	                result = sclibFile.doSelect(scquery);
+	
+	                var indexFieldSet = KMIDOLUtils.getIndexFieldSet(collectionFile);
+	                var currRec = 0;
+	                while(RC_SUCCESS === result &amp;&amp; record_number  &amp;&amp; currRec &lt; record_number) {
+	                    currRec++;
+	                    vars.$L_currRec = currRec;
+	                    result = sclibFile.getNext();
+	                }
+	
+	                while(RC_SUCCESS === result){
+	
+	                    currRec++;
+	                    vars.$L_currRec = currRec;
+	
+	                    try{
+	                      result = KMDocument_Index_IDOL.indexDocument(collectionFile, sclibFile, indexFieldSet,isReindex);
+	                    } catch(ex){
+	                      result = -1;
+	                      logger.error(ex.message);
+	                      logger.error(ex.stack);
+	                    }
+	                    if(RC_SUCCESS != result) {
+	                        //insert into kmknowledgebaseupdates for further retry
+	                        var ret = lib.IDOLKMIncrementalIndex.verifyEnvironment();
+	
+	                        if (ret !=0) {
+	                            result = lib.KMCollection_Update_Utils.getKMUpdateProcState();
+	                            if (result == true) {
+	                                result = lib.KMCollection_Update_Utils.stopKMUpdate();
+	                            }
+	
+	                            freindex.record_number = --currRec;
+	                            freindex.doUpdate();
+	                            return -1;
+	                        }else{
+	                            var kmuFile = new SCFile("kmknowledgebaseupdates");
+	                            kmuFile.id = lib.KMCollection_Update_Utils.getNextKMUpdateId();
+	                            kmuFile.collectionname = kbname;
+	                            kmuFile.docid = sclibFile[collectionFile.docid] + "";
+	                            kmuFile.recdata = lib.KMUtils.recordToXML(sclibFile);
+	                            kmuFile.sedocid = kbname+"_"+kmuFile.docid+"_0";
+	                            kmuFile.action = "U";
+	                            kmuFile.doInsert();
+	                        }
+	                    }
+	
+	                    if(currRec % 1000 == 0) {
+	                        freindex.record_number = currRec;
+	                        freindex.doUpdate();
+	                    }
+	                    result = sclibFile.getNext();
+	                }
+	
+	                freindex.record_number = currRec;
+	                freindex.action = "D";
+	
+	                freindex.doUpdate();
+	                
+	                if(isReindex){
+	                    IDOLKMIndexService.renameIndexDB(kbname,kbname+'_old_');
+	                    IDOLKMIndexService.flushIndexData();
+	                    IDOLKMIndexService.renameIndexDB(kbname+IDOLKMIndexService.tempDBPostFix(),kbname);
+	                    ret = IDOLKMIndexService.mappingVDB(kbname);
+	                    if( ret == RC_SUCCESS){ 
+	                      IDOLKMIndexService.removeIndexDB(kbname+'_old_');
+	                    }else{
+	                      logger.error('Reindex for '+kbname+' finished but failed to map VDB');
+	                      return -1;
+	                    }
+	                }
+	                 
+	                logger.info('full index for '+freindex.collectionname+' finished');
+	                //set indexstatus to 'finished'
+	                if (collectionFile.indexstatus !== lib.KMCollection_Status_Constant.INDEXSTATUS_OFFLINE()) {
+	                    collectionFile.indexstatus = lib.KMCollection_Status_Constant.INDEXSTATUS_FINISHED();
+	                    var endDate = new Date();
+	                    collectionFile.lastindextime = endDate;
+	                    collectionFile.doUpdate();
+	                }
+	
+	                ret = freindex.getNext();
+				} catch (ex) {
+					
+					logger.error('error when doing full index ' + freindex.collectionname + ', exception:' + ex);
+					logger.error(ex.stack);
+					return -1;
+				}
+            }
+
+            return RC_SUCCESS;
+        }
+
+        function doPurge(){
+            var freindex = new SCFile("kmreindex");
+            return freindex.doPurge('action="D"');
+        }
+
+        function checkFullReindex(){
+            if(fullIndexNumber() &gt; 0){
+                var ret = fullIndex();
+                doPurge();
+                return ret;
+            }
+            return RC_SUCCESS;
+        }
+
+        function refreshIndexes()
+        {
+            if ( !system.functions.lioption("Knowledge Management") &amp;&amp; !system.functions.lioption("Smart Analytics")) {
+                logger.error("This system is not licensed for KM or Smart Analytics");
+                return -1;
+            }
+
+            var result = lib.IDOLKMIncrementalIndex.verifyEnvironment();
+            if(RC_SUCCESS !== result){
+                logger.error('IDOL server is not running in well status');
+                return -1;
+            }
+
+            result = lib.KMAdmin.kmadminlock();
+            if (result != 0) {
+                logger.error("Admin locked, will retry next interval");
+                return -1;
+            }
+
+            result = lib.KMCollection_Update_Utils.setIndexStopOff();
+            if (result !=0) {
+                lib.KMAdmin.kmadminunlock();
+                return -1;
+            }
+
+            if(checkFullReindex() != RC_SUCCESS) {
+                lib.KMAdmin.kmadminunlock();
+                logger.error('full reindex failed');
+                return -1;
+            }
+
+            result = lib.IDOLKMIncrementalIndex.checkIncrementalIndex();
+            lib.KMAdmin.kmadminunlock();
+
+            return result;
+
+        }
+
+        return {
+            refreshIndexes:refreshIndexes,
+            reindex:markFullReindexLibrary
+        }
+    }()
+);
+
+function require()
+{  return KMCollectionUpdateIDOL;
+}
+</script>
+    <package type="string">KnowledgeManagement</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:41</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

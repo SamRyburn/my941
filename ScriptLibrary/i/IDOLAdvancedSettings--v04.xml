@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;IDOLAdvancedSettings&quot;" recordid="IDOLAdvancedSettings">
+    <name type="string">IDOLAdvancedSettings</name>
+    <script type="string">var IDOLAdvancedSettings = (function() {
+
+  var GLOBAL_SEARCH_SETTINGS = {
+    // Pagination, page size
+    PAGE_SIZE : 10,
+
+    PARAMETRIC_PAGE_SIZE : 10,
+
+    // IDOL cannot return reasonable spell check result for long text
+    // XXX: this configuration is not valid when spell check max term was specified in IDOL server
+    SPELLCHECK_THRESHOLD : 50,
+
+    // Global Search result max character per record
+    MAX_PRINT_CHARACTERS : 200,
+
+    // IDOL server side has 'MaxQueryTerms' limitation, if 'action=Query' has a very long Text
+    // error will returned, so use 'action=SuggestOnText' instead
+    SUGGEST_ON_TEXT_THRESHOLD : 400,
+
+    // max summary characters when doing search in main search page
+    MAIN_SEARCH_CHARACTERS : 300,
+
+    // max summary characters when doing search in context-awareness search page
+    QUICK_SEARCH_CHARACTERS : 200,
+
+    // used to load summary for search search expand preview
+    PREVIEW_CHARACTERS : 600,
+
+    ENABLE_ESS_CONTEXT_AWARENESS_SEARCH : false
+  };
+
+  return {
+    GlobalSearch : GLOBAL_SEARCH_SETTINGS
+  };
+
+}());
+
+function require() {
+  return IDOLAdvancedSettings;
+}</script>
+    <package type="string">IDOL</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:40</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

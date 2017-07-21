@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;IDOLCategoryTuning&quot;" recordid="IDOLCategoryTuning">
+    <name type="string">IDOLCategoryTuning</name>
+    <script type="string">var CONSTANT = lib.IDOL_Constant,
+	ExceptionLib = lib.IDOLCategoryException,
+	CategoryUtilLib = lib.IDOLCategoryUtil;
+
+
+function findParentCategory(cate,subcate,groupid,subgroup,levelcount,parentroot)
+{
+  var myquery = "groupid="+groupid;
+  if(subgroup &gt; 0)
+  {
+    myquery += " and subgroup="+subgroup;
+  }
+  var parentid = parentroot;
+  var currentid = lib.acicategory.getNextCategoryID(lib.acicategory.getMaxCategoryID(-1));
+  var fcate = null;
+  if(levelcount &gt; 1 )
+  {
+    myquery += " and category=\""+cate+"\" ";
+    fcate = new SCFile(CONSTANT.getCategoryFileName());
+    var rc = fcate.doSelect(myquery);
+    if(rc != RC_SUCCESS)
+    {
+      fcate.status = 0; //create
+      fcate.sourcecount=0;
+      fcate.groupid=groupid;
+   
+      fcate.subgroup=subgroup;
+      var isokay = lib.jsaci.createOneCategory(cate,currentid,parentid);
+      if(isokay==false &amp;&amp; lib.acicategory.readCategoryStatus(currentid) == false)
+     {
+   
+       return isokay;
+     }
+     
+     fcate.id=currentid;
+     fcate.parentid=parentid;
+     fcate.name=cate;
+     fcate.category=cate;
+   
+     fcate.subcategory="";
+     fcate.product_type="";
+     fcate.testflag =0;
+     fcate.doInsert();
+     currentid = lib.acicategory.getNextCategoryID(currentid);
+    }
+         
+    parentid = fcate.id;
+  }
+  if(levelcount &gt; 2 )
+  {
+    myquery += " and subcategory=\""+subcate+"\" ";
+    fcate = new SCFile(CONSTANT.getCategoryFileName());
+    var rc = fcate.doSelect(myquery);
+    if(rc != RC_SUCCESS)
+    {
+      fcate.status = 0; //create
+      fcate.sourcecount=0;
+      fcate.groupid=groupid;
+   
+      fcate.subgroup=subgroup;
+      var isokay = lib.jsaci.createOneCategory(subcate,currentid,parentid);
+      if(isokay==false &amp;&amp; lib.acicategory.readCategoryStatus(currentid) == false)
+      {
+   
+       return isokay;
+      }
+     
+      fcate.id=currentid;
+      fcate.parentid=parentid;
+      fcate.name=subcate;
+      fcate.category=cate;
+   
+      fcate.subcategory=subcate;
+      fcate.product_type="";
+      fcate.testflag =0;
+      fcate.doInsert();
+      
+    }
+         
+    parentid = fcate.id;
+  }
+  
+    
+      
+  return parentid;
+}
+function generateIndexContent(groupname,filename,keyfield,keyvalue,groupid,field1,field2,field3,timefield,title,categoryfields,sourcefields,include_ar,exclude_ar,remove_ar)
+{
+
+  var retval = [];
+  var f = new SCFile(filename,SCFILE_READONLY);
+  var rc= f.doSelect(keyfield+"=\""+keyvalue+"\"");
+  if(rc != RC_SUCCESS)
+  {
+    return retval;
+  }
+  
+  
+  
+  var catetory = f[field1];
+  var myquery = "groupid="+groupid+" and category=\""+catetory+"\" ";
+  var subcate = "";
+  var ilevel =1;
+  if(field2!=null &amp;&amp; field2 !="")
+  {
+    
+    
+    
+    subcate = f[field2];
+    myquery += " and subcategory=\""+subcate+"\"";
+    ilevel=2;
+  }
+  var prodtype = "";
+  if(field3!=null &amp;&amp; field3 !="")
+  {
+    
+    
+    
+    prodtype = f[field3];
+    myquery += " and product.type=\""+prodtype+"\"";
+    ilevel=3;
+  }
+  // is this a multi-company
+  
+  var fcate = new SCFile(CONSTANT.getCategoryFileName());
+  var subgroup = 0;
+  rc = fcate.doSelect("parentid=0 and groupid="+groupid); // already index finish
+  if(rc!=RC_SUCCESS)
+  {
+    return retval;
+   
+  }
+  var taxonomy=fcate.name;
+  var rootparent = fcate.id;
+  var ismulticompany = false;
+  var company ="";
+  
+  var root = fcate.id;
+  if(fcate.subgroup&gt;0)
+  {
+     ismulticompany=true;
+     var mandant = lib.acicategory.getMandantField(filename);
+     
+     
+     
+     company=f[mandant];
+     
+     if(company != null &amp;&amp; company != "" )
+     {
+        rc = fcate.doSelect("parentid="+root+" and groupid="+groupid+" and name=\""+company+"\"");
+        if(RC_SUCCESS == rc)
+        {
+
+          subgroup= fcate.subgroup;
+          rootparent = fcate.id;
+        }
+     }
+     if(subgroup == 0)
+     {
+       return retval;
+     }
+     taxonomy= taxonomy + "_" + company;
+     myquery += " and subgroup="+subgroup;
+  }
+  rc = fcate.doSelect(myquery);
+  
+  if(rc!=RC_SUCCESS)
+  {
+     var parentid = findParentCategory(catetory,subcate,groupid,subgroup,ilevel,rootparent);
+     var currentid = lib.acicategory.getNextCategoryID(lib.acicategory.getMaxCategoryID(-1));
+     fcate.status = 0; //create
+     fcate.sourcecount=1;
+     fcate.indexcount=1;
+     fcate.traincount=1;
+     fcate.groupid=groupid;
+   
+     fcate.subgroup=subgroup;
+    
+     
+     fcate.id=currentid;
+     fcate.parentid=parentid;
+     if(ilevel == 1)
+     {
+       fcate.name=catetory;
+       fcate.category=catetory;
+       fcate.subcategory="";
+       fcate.product_type="";
+     }
+     else if(ilevel == 2)
+     {
+       fcate.name=subcate;
+       fcate.category=catetory;
+       fcate.subcategory=subcate;
+       fcate.product_type="";
+     }
+     else
+     {
+       fcate.name=prodtype;
+       fcate.category=catetory;
+       fcate.subcategory=subcate;
+       fcate.product_type=prodtype;
+     }
+     fcate.testflag =0;
+     fcate.indexdocs=new Array();
+     fcate.traindocs = new Array();
+     var isokay = lib.jsaci.createOneCategory(fcate.name,currentid,parentid);
+     if(isokay==false &amp;&amp; lib.acicategory.readCategoryStatus(currentid) == false)
+     {
+   
+      return isokay;
+     }
+     
+     fcate.doInsert();
+    //return retval;   
+    //try to create this
+  }
+  else if(fcate.sourcecount &lt; 0 )
+  {
+     fcate.sourcecount=1;
+     fcate.indexcount=1;
+     fcate.traincount=1;
+     
+     
+     var isokay = lib.jsaci.createOneCategory(fcate.name,fcate.id,fcate.parentid);
+     if(isokay==false &amp;&amp; lib.acicategory.readCategoryStatus(fcate.id) == false)
+     {
+   
+      return isokay;
+     }
+     
+  }
+  var docs = [];
+  if(fcate.indexdocs != null)
+  {
+    docs = fcate.indexdocs.toArray();
+  }
+  for(var i=0;docs != null &amp;&amp; i&lt;docs.length;i++)
+  {
+    var strdoc =docs[i]+",";
+    if(strdoc.indexOf(keyvalue+",")!= -1)
+    {
+      return retval;
+    }
+  }
+  var newdoc = ""; 
+  if(docs != null &amp;&amp; docs.length &gt;1)
+  {
+    newdoc = docs[1];
+  }
+  if(newdoc == "")
+  {
+    newdoc = keyvalue;
+  }
+  else
+  {
+    newdoc +=","+keyvalue;
+  }
+  fcate.indexdocs[1] = newdoc;
+  retval.push(fcate.id);
+  fcate.tuningstatus=1;
+  fcate.doUpdate();
+  
+  var idoldatabase = lib.acicategory.getCategoryIDOLDatabase(filename,groupname,company);
+  var dis = lib.jsaci.getDistributeNameAndValue(idoldatabase);
+  var keys = [];
+  keys.push(keyfield);
+  retval.push(lib.acicategory.generateIdxDataForIDOL(f,keys,timefield,title,categoryfields,sourcefields,include_ar,exclude_ar,remove_ar,taxonomy,
+                                         true, dis[0], dis[1]));
+  retval.push(idoldatabase);
+  return retval;  
+}
+function trainingCategory(groupid,traintype)
+{
+  
+    lib.acicategory.myPrint("Check IDOL server status to start training");
+    var indexok = lib.jsaci.checkIndexStatus(-1);
+    var itry = 0;
+    while(indexok &gt; 0)
+    {
+       lib.acicategory.checkTaskIsStoped();
+       lib.acicategory.myPrint("Wait for IDOL server to finish current task......");
+       system.functions.sleep(5);
+       
+       indexok = lib.jsaci.checkIndexStatus(-1);
+       itry ++;
+       if(indexok == 1 &amp;&amp; itry &gt;= 120)
+       {
+          lib.acicategory.myPrint("can't get response from IDOL server for a long time, exit now...");
+          return false;
+       }
+    }
+    var f = new SCFile(CONSTANT.getCategoryFileName());
+    var sql = "tuningstatus=1 and groupid="+groupid;
+  
+    var rc = f.doSelect(sql); // already index finish
+    while(rc==0)
+    {
+     lib.acicategory.checkTaskIsStoped();
+     var ar = f.indexdocs.toArray();
+     if(ar==null || ar.length &lt;2)
+     {
+     
+       rc = f.getNext();
+       continue;
+     }
+     lib.acicategory.myPrint("Now is start to tuning category ["+f.id+"]  ["+f.name+"]");
+     
+     if(lib.acicategory.checkCategoryModuleStatus() == false &amp;&amp; false == lib.acicategory.readCategoryStatus(f.id))
+     {
+       return false;
+     }
+     var trainedar = f.traindocs.toArray();
+     var index_ar = ar[1].split(",");
+     var train_ar =[];
+     var strtrained="";
+     if(trainedar.length==3)
+     {
+      train_ar =trainedar[2].split(",");
+      strtrained = trainedar[2];
+     }
+     var docref="";
+     for(var i=0; i&lt;index_ar.length;i++)
+     {
+       if(CategoryUtilLib.stringAleadyInArray(index_ar[i],train_ar))
+       {
+         continue;
+       }
+       if(docref!="")
+       {
+         docref +=","+index_ar[i];
+       }
+       else
+       {
+         docref=index_ar[i];
+       }
+     }
+     if(docref =="")
+     {
+       return false;
+     }
+     if(strtrained!="")
+     {
+       strtrained+=",";
+     }
+     strtrained+=docref;
+     f.traindocs[2]=strtrained;
+     
+     if(traintype != null &amp;&amp; traintype == 1)
+     {
+        docref = docref.replace(/,/g,"+");
+        //now 
+        var terms = lib.jsaci.getBestTerms(docref,CONSTANT.getBestTermsCount());
+        if(terms != "")
+        {
+          lib.jsaci.trainingCategoryByTerms(f.id,terms);
+        }
+     }
+     else
+     {
+        lib.jsaci.trainingCategoryByPost(f.id,"",docref); 
+     }
+     lib.acicategory.myPrint("end to tuning category ["+f.id+"]  ["+f.name+"]");
+     f.tuningstatus=2;
+     f.doUpdate();
+  
+     rc = f.getNext();
+   }  
+   return true;
+}
+
+
+function getAutoCategorizationTuningStatus(groupid)
+{
+   var ar=[];
+   var f = new SCFile(CONSTANT.getCategoryFileName());
+ 
+   if(RC_SUCCESS != f.doSelect("groupid="+groupid +" and parentid=0"))
+   {
+     ar.push(-1);
+     ar.push(system.functions.scmsg("TuningStatus_1","IDOLCategoryTuning"));
+     return ar;
+   }
+   var fcurrent = new SCFile(CONSTANT.getCategoryFileName());
+   if( f.tuningstatus== null || f.tuningstatus == 0)
+   {
+     ar.push(0);
+     ar.push(system.functions.scmsg("TuningStatus_2","IDOLCategoryTuning"));
+   }
+   else if(f.tuningstatus == 10)
+   {
+     ar.push(10);
+    
+     ar.push(system.functions.scmsg("TuningStatus_3","IDOLCategoryTuning"));
+      
+    }
+   else if(f.tuningstatus == 11)
+   {
+     ar.push(11);
+    
+     ar.push(system.functions.scmsg("TuningStatus_4","IDOLCategoryTuning"));
+      
+    }
+    else if(f.tuningstatus == 12)
+    {
+      ar.push(12);
+      var catecount =  fcurrent.doCount("tuningstatus=1 and groupid="+groupid);
+      
+
+      ar.push(system.functions.scmsg("TuningStatus_5","IDOLCategoryTuning",[catecount]));
+    }
+    else if(f.tuningstatus == 13)
+    {
+      ar.push(13);
+      var catecount =  fcurrent.doCount("tuningstatus=2 and groupid="+groupid);
+      if(catecount == 0)
+      {
+        ar.push(system.functions.scmsg("TuningStatus_6","IDOLCategoryTuning"));
+      }
+      else
+      {
+        ar.push(system.functions.scmsg("TuningStatus_7","IDOLCategoryTuning",[catecount]));
+      }
+    }
+    else if(f.tuningstatus == 100)
+    {
+     ar.push(100);
+    
+     ar.push(system.functions.scmsg("TuningStatus_8","IDOLCategoryTuning"));
+      
+    }
+    return ar;
+}
+
+function tuningCategory(adapterid)
+{
+  ExceptionLib.setLastTuningException(null);
+  var f = new SCFile(lib.IDOL_Constant.getCategoryConfigFileName());
+  var rc = f.doSelect("adapter.id="+adapterid);
+  if(rc != RC_SUCCESS )
+  {
+    ExceptionLib.setLastTuningException("Can't find any category configuration");
+    return false;
+  }
+  if(f.is_active == null || f.is_active == false)
+  {
+    ExceptionLib.setLastTuningException("Can't do tuning due to category configuration " +adapterid+" is inactive now.");
+    return false;
+  }
+  if(f.key_field== null ||f.key_field=="" )
+  {
+    ExceptionLib.setLastTuningException("Miss configuration parameter, key field is empty!");
+    return false;
+  }
+  var keyfield = f.key_field;
+  var tablename = f.table_name;
+  lib.acicategory.setDataCleanPattens(null);
+  var inc_ar = lib.acicategory.getDataCleanPattens(tablename,"Include");
+  var exc_ar = lib.acicategory.getDataCleanPattens(tablename,"Exclude");
+  var rm_ar = lib.acicategory.getDataCleanPattens(tablename,"Remove");
+  var sourcefields = f.content_fields.toArray();
+  
+  var categoryfields = new Array();
+  var ar = lib.acicategory.findTitleAndTimeField(tablename,categoryfields);
+  var timefield= "";
+  var title ="";
+  var strIndex="";
+  var icount =0;
+  if(ar.length==2)
+  {
+     title =ar[0];
+     timefield=ar[1];
+  }
+  try
+  {
+    f.last_tuning_time = new Date();
+   
+    f.doUpdate();
+      
+    var fcate = new SCFile(CONSTANT.getCategoryFileName());
+    fcate.doSelect("parentid=0 and groupid="+adapterid); // already index finish
+    fcate.tuningstatus=10;
+    fcate.doUpdate();
+    var ftuning = new SCFile(CONSTANT.getCategoryTuningTableName());
+    rc = ftuning.doSelect("file.name=\""+f.table_name+"\"");
+    fcate.tuningstatus=11;
+    fcate.doUpdate();
+    while(rc == RC_SUCCESS)
+    {
+      lib.acicategory.checkTaskIsStoped();
+      var strcontent = generateIndexContent(f.category_group_name,tablename,keyfield,ftuning.file_key,f.adapter_id,f.level1_field,f.level2_field,f.level3_field,
+                        timefield,title,categoryfields,sourcefields,inc_ar,exc_ar,rm_ar);
+      if(strcontent.length ==3)
+      {
+        icount++;
+        strIndex += strcontent[1];
+        strIndex += "#DREENDDATAREFERENCE\n\n";
+        
+        if(null == lib.jsaci.IndexDataToIdol(strcontent[2],strIndex) &amp;&amp; false == lib.acicategory.readCategoryStatus(strcontent[0]))
+        {
+          return false;
+        }
+ 
+      }
+      rc = ftuning.getNext();
+    }
+   
+    if(icount ==0)
+    {
+      lib.acicategory.myPrint("No new tuning sample found!");
+    }
+    else
+    {
+      lib.acicategory.myPrint("Already index tuning sample "+icount+", now is start to training them!");
+      f.is_active = false;
+      f.doUpdate();
+      fcate.tuningstatus=12;
+      fcate.doUpdate();
+      lib.jsaci.flushIndexData();
+      trainingCategory(adapterid,f.training_method);
+      
+      f.is_active = true; 
+      f.doUpdate();
+    }
+    
+    fcate.tuningstatus=13;
+    fcate.doUpdate();
+  }
+  catch(e)
+  {
+    f.is_active = true; 
+    f.doUpdate();
+    lib.acicategory.myPrint("tuningCategory meet exception:"+e);
+    ExceptionLib.setLastTuningException(e);
+    fcate.tuningstatus=100;
+    fcate.doUpdate();
+    lib.acicategory.checkTaskIsStoped(true);
+  }
+  
+}</script>
+    <package type="string">IDOL</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:40</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

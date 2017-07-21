@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;hppsunloadlist&quot;" recordid="en - hppsunloadlist">
+    <name mandatory="true" type="string">hppsunloadlist</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">78</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">hppsunloadlist</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=hppsunloadlist	Elastic=1	Name=Label0	Opaque=1	BackColor=6	Bold=1	FontIncrease=2	ForeColor=10	Height=2	Name=Label0	Width=156	X=0	Y=0		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Table Name:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Table Name:	Name=Label12	ForeColor=0	Height=2	Name=Label12	Width=34	X=2	Y=4		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">19</column>
+        <length type="decimal">30</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">table.name</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComFill;Name=comfill1375106611058	dataType=string	Height=2	Name=comfill1375106611058	FillButtonID=9	ThirdButtonID=8	FillButtonVisible=0	ThirdButtonVisible=0	Width=60	X=36	Y=4		Input=table.name	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Sql:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Sql:	Name=Label11	ForeColor=0	Height=2	Name=Label11	Width=34	X=2	Y=6		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">19</column>
+        <length type="decimal">60</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">sql</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text2	ForeColor=0	Height=2	Name=Text2	Width=120	X=36	Y=6		Input=sql	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Notes:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Notes:	Name=Label10	ForeColor=0	Height=2	Name=Label10	Width=34	X=2	Y=8		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">19</column>
+        <length type="decimal">60</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">notes</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text3	ForeColor=0	Height=2	Name=Text3	Width=120	X=36	Y=8		Input=notes	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Group:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Group:	ForeColor=0	Height=2	Name=	Width=34	X=2	Y=10		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">19</column>
+        <length type="decimal">30</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">group</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComFill;BoxLines=4	dataType=string	?ValueList=select("value","codes","type","hppsunloadlistgroup")	Height=2	Name=comfill1375191842468	FillButtonID=9	ThirdButtonID=8	FillButtonVisible=0	ThirdButtonVisible=0	Width=60	X=36	Y=10		Input=group	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">19</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">ddl</input>
+        <output type="string">Include DDL?</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Name=input1375124647882	Height=2	Name=input1375124647882	Width=40	X=36	Y=12	Caption=Include DDL?		Input=ddl	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">44</column>
+        <length type="decimal">20</length>
+        <window type="decimal">3</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">NOTE: DDL files will be written to the ./RUN/ddls/ subdirectory on the SM server.</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Wlabel;Caption=NOTE: DDL files will be written to the ./RUN/ddls/ subdirectory on the SM server.	Name=label1375126942430	Bold=1	?ForeColor=[ddl]?true:1	ForeColor=0	Height=6	Name=label1375126942430	Width=40	X=87	Y=12		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Sysmodcount:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Sysmodcount:	Name=Label9	ForeColor=0	Height=2	Name=Label9	Width=34	X=2	Y=14		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">sysmodcount</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text4	ForeColor=0	Height=2	Name=Text4	ReadOnly=1	Width=36	X=36	Y=14		Input=sysmodcount	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Sysmodtime:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Sysmodtime:	Name=Label8	ForeColor=0	Height=2	Name=Label8	Width=34	X=2	Y=16		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">sysmodtime</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text5	ForeColor=0	Height=2	Name=Text5	ReadOnly=1	Width=36	X=36	Y=16		Input=sysmodtime	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">10</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Sysmoduser:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Sysmoduser:	Name=Label7	ForeColor=0	Height=2	Name=Label7	Width=34	X=2	Y=18		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4</flags>
+        <line type="decimal">10</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">sysmoduser</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text6	ForeColor=0	Height=2	Name=Text6	ReadOnly=1	Width=36	X=36	Y=18		Input=sysmoduser	</property>
+      </field>
+    </field>
+    <file.name type="string">hppsunloadlist</file.name>
+    <editor type="string">sryburn</editor>
+    <last.update type="dateTime">07/30/13 07:58:36</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/17/17 07:17:05</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

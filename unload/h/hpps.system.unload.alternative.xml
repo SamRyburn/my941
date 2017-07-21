@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="unload">
+  <record id="name=&quot;hpps.system.unload.alternative&quot;" recordid="hpps.system.unload.alternative">
+    <name mandatory="true" type="string">hpps.system.unload.alternative</name>
+    <unload type="boolean">true</unload>
+    <purge type="boolean">false</purge>
+    <record sctype="array">
+      <record sctype="structure">
+        <filename type="string">Process</filename>
+        <query type="string">process="hpps.unload.file"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">ScriptLibrary</filename>
+        <query type="string">name="hppsunloadlist"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">ScriptPackage</filename>
+        <query type="string">name="hpps"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">codes</filename>
+        <query type="string">type="hppsunloadlistgroup"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">format</filename>
+        <query type="string">name#"hpps.system.unload.alternative"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">format</filename>
+        <query type="string">name#"hppsunloadlist"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">formatctrl</filename>
+        <query type="string">name#"hppsunloadlist"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">hppsunloadlist</filename>
+        <query type="string">false</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">unload</filename>
+        <query type="string">name="hpps.system.unload.alternative"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">wizard</filename>
+        <query type="string">name#"hpps.system.unload.alternative"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+    </record>
+    <protected.formats NullValue="1" sctype="array">
+      <protected.formats NullValue="1" type="string"/>
+    </protected.formats>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/17/17 07:17:05</sysmodtime>
+  </record>
+</recordset>

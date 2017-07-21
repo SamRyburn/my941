@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;KMSearchUtils&quot;" recordid="KMSearchUtils">
+    <name type="string">KMSearchUtils</name>
+    <script type="string">function writeUtfFile(strFileName, strContent)
+{
+	var result = -1;
+   	result = system.functions.plugin("KMPLUGIN","writeUtfFile", strFileName, strContent);
+ 	return result;
+}
+
+function htmlToText(strContent)
+{
+	var strResult = new Datum();
+   	system.functions.plugin("KMPLUGIN","htmlToText", strContent, strResult);
+ 	return strResult.getText();
+}</script>
+    <package NullValue="1" type="string"/>
+    <sysmodtime type="dateTime">01/29/10 07:11:03</sysmodtime>
+    <sysmoduser type="string">jantonecchia</sysmoduser>
+    <sysmodcount type="decimal">3</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

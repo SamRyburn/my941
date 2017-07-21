@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;SurveyView&quot;" recordid="SurveyView">
+    <name type="string">SurveyView</name>
+    <script type="string">var $ = lib.c.$;
+var msg = system.functions.scmsg;
+var str = system.functions.str;
+var denull = system.functions.denull;
+var lng = system.functions.lng;
+var fileMapping = {
+    "cm3r": "change",
+    "incidents": "interaction",
+    "probsummary": "incident"
+}
+
+var SurveyView = $({
+    doOpen: function (request) {
+        return "SurveySend.new";
+    },
+
+    doSend: function (request) {
+        var text;
+
+        var survey_users = denull(vars["$survey.users"]);
+        var users_number = lng(survey_users);
+
+        if (users_number &lt;= 0) {
+            text = msg(36, "survey");
+            request.setAttribute("$L.mb.message", text);
+            request.setAttribute("$L.mb.ok", "#surveyView.doOk");
+            return "mb.ok";
+
+        }
+        var text = msg(34, "survey");
+        request.setAttribute("$L.mb.message", text);
+        request.setAttribute("$L.mb.level", 2);
+        request.setAttribute("$L.mb.yes", "#surveyView.doYes");
+        request.setAttribute("$L.mb.no", "#surveyView.doNo");
+        request.setAttribute("$L.mb.needCancel", false);
+        return "mb.yes.no";
+    },
+
+    doYes: function (request) {
+        var file = request.getParameter("$L.file")
+        var file_tag = fileMapping[system.functions.filename(file)];
+        var i, j;
+        var format_list="";
+        var survey_users = denull(vars["$survey.users"]);
+        var users_number = lng(survey_users);
+        for (i = 0; i &lt; users_number; i++) {
+            format_list += "\n"+ survey_users[i];
+        }
+        for (j = 0; j &lt; users_number; j++) {
+            lib.Survey_Internal.genSurveyInternalURL(survey_users[j], file);
+            var surveyRcd = lib.Survey_Internal.findRecordSurvey(survey_users[j], file);
+            callrad("us.notify", ["name", "record", "names"], ["Send Survey", surveyRcd, [survey_users[j], file_tag]]);
+        }
+        text = msg(35, "survey",new Array(str(format_list+"\n")));
+
+        request.setAttribute("$L.mb.message", text);
+		request.setAttribute("$L.mb.level", 1);
+        request.setAttribute("$L.mb.ok", "#surveyView.doContinue");
+        return "mb.ok";
+
+
+    },
+    doContinue: function (request) {
+        return;
+    },
+    doNo: function (request) {
+        return "SurveySend.new";
+
+    },
+    doOk: function (request) {
+
+        return "SurveySend.new";
+
+    }
+})
+
+function getClass() {
+    return SurveyView;
+}
+
+
+</script>
+    <package type="string">Survey</package>
+    <sysmodtime type="dateTime">10/24/14 10:01:55</sysmodtime>
+    <sysmoduser type="string">yuliang.gao</sysmoduser>
+    <sysmodcount type="decimal">60</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

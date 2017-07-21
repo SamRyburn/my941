@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="smtzdst">
+  <record id="tzname=&quot;Australia/Victoria&quot; and dstyear=1980" recordid="">
+    <tzname type="string">Australia/Victoria</tzname>
+    <dstyear type="decimal">1980</dstyear>
+    <dstbegin type="dateTime">03/01/80 21:00:00</dstbegin>
+    <dstend type="dateTime">10/25/80 20:00:00</dstend>
+    <isdst type="decimal">0</isdst>
+  </record>
+</recordset>

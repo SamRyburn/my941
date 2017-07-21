@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="triggers">
+  <record id="trigger.name=&quot;after.update.contacts.SAP&quot;" recordid="after.update.contacts.SAP">
+    <trigger.name type="string">after.update.contacts.SAP</trigger.name>
+    <trigger.type type="decimal">4</trigger.type>
+    <table.name type="string">contacts</table.name>
+    <application.name type="string">trigger.contacts.sap</application.name>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">04/14/99 05:16:43</sysmodtime>
+    <javascript NullValue="1" type="string"/>
+  </record>
+</recordset>

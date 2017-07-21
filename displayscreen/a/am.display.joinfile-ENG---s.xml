@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="displayscreen">
+  <record id="screen.id=&quot;am.display.joinfile&quot; and language=&quot;ENG&quot;" recordid="am.display.joinfile - ENG">
+    <screen.id type="string">am.display.joinfile</screen.id>
+    <screen.id.copy type="string">am.display.joinfile</screen.id.copy>
+    <language type="string">ENG</language>
+    <title type="globalVar">$L.title</title>
+    <form type="globalVar">$L.format</form>
+    <io type="operator">evaluate($L.tableAccess.update)</io>
+    <time NullValue="1" type="dateTime"/>
+    <initialization sctype="structure">
+      <expressions sctype="array">
+        <expressions sctype="operator">$L.title=scmsg("device", "tablename")+": "+nullsub(sm.device.display.name in $L.file, logical.name in $L.file)</expressions>
+        <expressions sctype="operator">$L.sla.enabled=enable in $G.sla.environment</expressions>
+        <expressions sctype="operator">if (not  (null(ucmdb.browser in $G.system.info))) then ($L.viewInUCMDB=scmsg(92, "am")) else ($L.viewInUCMDB=scmsg(91, "am"))</expressions>
+        <expressions sctype="operator">$uCMDBRelatioinship=jscall("uCMDBConfiguration.isUCMDBRelationship")</expressions>
+        <expressions sctype="operator">$ucmdbbrowser.history.url=jscall("uCMDBBrowserUrl.getBrowserHistoryUrl", $L.file)</expressions>
+        <expressions sctype="operator">$allow.input=false</expressions>
+        <expressions sctype="operator">if allow.input.CI.identifier in $G.am.global.environment then if ($L.mode="add") then ($allow.input=true)</expressions>
+        <expressions sctype="operator">$L.allrelation=NULL</expressions>
+        <expressions sctype="operator">$L.upstream=NULL</expressions>
+        <expressions sctype="operator">$L.downstream=NULL</expressions>
+        <expressions sctype="operator">$upstreamcinamelist=NULL</expressions>
+        <expressions sctype="operator">$upstreamcilabellist=NULL</expressions>
+        <expressions sctype="operator">$upstreamcirelatelist=NULL</expressions>
+        <expressions sctype="operator">$upstreamcitypelist=NULL</expressions>
+        <expressions sctype="operator">$downstreamcinamelist=NULL</expressions>
+        <expressions sctype="operator">$downstreamcilabellist=NULL</expressions>
+        <expressions sctype="operator">$downstreamcirelatelist=NULL</expressions>
+        <expressions sctype="operator">$downstreamcitypelist=NULL</expressions>
+        <expressions sctype="string"/>
+        <expressions sctype="operator">if jscall("uCMDBConfiguration.isUCMDBRelationship") then ($L.allrelation=jscall("Query_AffectCI.getRelationShipGather", logical.name in $L.file, 3))</expressions>
+        <expressions sctype="operator">if (not  (null($L.allrelation))) then ($L.upstream=1 in $L.allrelation;$L.downstream=2 in $L.allrelation)</expressions>
+        <expressions sctype="operator">if (not  (null($L.upstream))) then ($upstreamcinamelist=1 in $L.upstream;$upstreamcilabellist=2 in $L.upstream;$upstreamcirelatelist=3 in $L.upstream;$upstreamcitypelist=4 in $L.upstream)</expressions>
+        <expressions sctype="operator">if (not  (null($L.downstream))) then ($downstreamcinamelist=1 in $L.downstream;$downstreamcilabellist=2 in $L.downstream;$downstreamcirelatelist=3 in $L.downstream;$downstreamcitypelist=4 in $L.downstream)</expressions>
+      </expressions>
+      <msg.condition NullValue="1" type="boolean"/>
+      <message NullValue="1" type="string"/>
+    </initialization>
+    <screen.id.alias type="string">am.display.joinfile</screen.id.alias>
+    <on.enter.key type="string">return</on.enter.key>
+    <window.structure sctype="structure">
+      <open.window NullValue="1" type="boolean"/>
+      <parent.name NullValue="1" type="string"/>
+      <window.name NullValue="1" type="string"/>
+      <window.position type="string">left</window.position>
+      <window.percent NullValue="1" type="decimal"/>
+      <window.lines NullValue="1" type="decimal"/>
+    </window.structure>
+    <screen.id.copy.old type="string">am.display.joinfile</screen.id.copy.old>
+    <more.window NullValue="1" type="boolean"/>
+    <user.options type="boolean">true</user.options>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:00:28</sysmodtime>
+    <object.related NullValue="1" type="boolean"/>
+    <javascript type="string">if ( vars.$L_file.baseline_noncompliant == true &amp;&amp; (vars.$L_html == null || vars.$L_html == "" ) )
+{
+	vars.$L_html = lib.configurationManagement.getBaselineDeltas( vars.$L_file );
+}</javascript>
+    <search.only NullValue="1" type="boolean"/>
+  </record>
+</recordset>

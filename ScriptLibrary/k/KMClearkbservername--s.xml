@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;KMClearkbservername&quot;" recordid="KMClearkbservername">
+    <name type="string">KMClearkbservername</name>
+    <script type="string">	var collectionFile = new SCFile("kmknowledgebase");
+   	var collFind = collectionFile.doSelect("true");
+   	if (collFind == RC_SUCCESS)
+   	{
+		collFind = collectionFile.getFirst();
+	  	while (collFind == RC_SUCCESS)
+	  	{
+			
+				collectionFile.searchservername = "";
+				collectionFile.doUpdate();
+			
+			collFind = collectionFile.getNext();
+		}
+	}</script>
+    <package NullValue="1" type="string"/>
+    <sysmodtime type="dateTime">02/15/11 07:24:44</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">1</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

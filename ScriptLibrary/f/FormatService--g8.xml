@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;FormatService&quot;" recordid="FormatService">
+    <name type="string">FormatService</name>
+    <script type="string">var $ = lib.c.$;
+
+var FormatService = $({
+	getFormat : function(name) {
+		return $("format").select('name="' + name + '"').uniqueResult();
+	},
+
+	getFormatForFile : function(fileName) {
+		var format = $("format").select('file.name="' + fileName + '"')
+				.uniqueResult();
+		if (format == null) {
+			format = $("format").select('name like "' + fileName + '*"')
+					.uniqueResult();
+		}
+		return format;
+	}
+});
+
+function getClass() {
+	return FormatService;
+}</script>
+    <package NullValue="1" type="string"/>
+    <sysmodtime type="dateTime">09/18/13 13:20:37</sysmodtime>
+    <sysmoduser type="string">shiji.shu</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="triggers">
+  <record id="trigger.name=&quot;secRightsAdd_addFolders&quot;" recordid="secRightsAdd_addFolders">
+    <trigger.name type="string">secRightsAdd_addFolders</trigger.name>
+    <trigger.type type="decimal">2</trigger.type>
+    <table.name type="string">secRights</table.name>
+    <application.name NullValue="1" type="string"/>
+    <sysmodcount type="decimal">2</sysmodcount>
+    <sysmoduser type="string">dengxin</sysmoduser>
+    <sysmodtime type="dateTime">11/04/13 02:01:03</sysmodtime>
+    <javascript type="string">try {
+	lib.securityTriggers.updateFolderAccess( record );
+}
+catch ( exception )
+{
+	print( exception.toString() );
+}</javascript>
+  </record>
+</recordset>

@@ -1,0 +1,758 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;extreq.detail&quot;" recordid="en - extreq.detail">
+    <name mandatory="true" type="string">extreq.detail</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">78</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">extreq</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=extreq	Name=Label0	Opaque=1	BackColor=6	Bold=1	FontIncrease=2	ForeColor=10	Height=2	Name=Label0	Elastic=1	Width=156	X=0	Y=0		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">incidentId:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=incidentId:	Name=Label54	ForeColor=0	Height=2	Name=Label54	Width=34	X=2	Y=4		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">incidentId</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text1	ForeColor=0	Height=2	Name=Text1	Width=36	X=36	Y=4		Input=incidentId	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">contactName:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=contactName:	Name=Label53	ForeColor=0	Height=2	Name=Label53	Width=34	X=2	Y=6		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">contactName</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text2	ForeColor=0	Height=2	Name=Text2	Width=36	X=36	Y=6		Input=contactName	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">callbackContact:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=callbackContact:	Name=Label52	ForeColor=0	Height=2	Name=Label52	Width=34	X=2	Y=8		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">callbackContact</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text3	ForeColor=0	Height=2	Name=Text3	Width=36	X=36	Y=8		Input=callbackContact	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">callbackType:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=callbackType:	Name=Label51	ForeColor=0	Height=2	Name=Label51	Width=34	X=2	Y=10		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">callbackType</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text4	ForeColor=0	Height=2	Name=Text4	Width=36	X=36	Y=10		Input=callbackType	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">description:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=description:	Name=Label6	ForeColor=0	Height=2	Name=Label6	Width=34	X=2	Y=12		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">512</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">description</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">MultiText;Name=MultiText5	ForeColor=0	Height=4	Name=MultiText5	Width=36	X=36	Y=12		Input=description	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">neededByTime:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=neededByTime:	Name=Label50	ForeColor=0	Height=2	Name=Label50	Width=34	X=2	Y=16		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">neededByTime</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text7	ForeColor=0	Height=2	Name=Text7	Width=36	X=36	Y=16		Input=neededByTime	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">10</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">severity:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=severity:	Name=Label49	ForeColor=0	Height=2	Name=Label49	Width=34	X=2	Y=18		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">10</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">severity</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text8	ForeColor=0	Height=2	Name=Text8	Width=36	X=36	Y=18		Input=severity	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">11</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">cartItemId:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=cartItemId:	Name=Label48	ForeColor=0	Height=2	Name=Label48	Width=34	X=2	Y=20		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">11</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">cartItemId</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text9	ForeColor=0	Height=2	Name=Text9	Width=36	X=36	Y=20		Input=cartItemId	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">12</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">completed:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=completed:	Name=Label47	ForeColor=0	Height=2	Name=Label47	Width=34	X=2	Y=22		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">12</line>
+        <column type="decimal">19</column>
+        <length type="decimal">2</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">completed</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Name=CheckBox10	ForeColor=0	Height=2	Name=CheckBox10	Width=4	X=36	Y=22		Input=completed	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">13</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">submitted:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=submitted:	Name=Label46	ForeColor=0	Height=2	Name=Label46	Width=34	X=2	Y=24		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">13</line>
+        <column type="decimal">19</column>
+        <length type="decimal">2</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">submitted</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Name=CheckBox11	ForeColor=0	Height=2	Name=CheckBox11	Width=4	X=36	Y=24		Input=submitted	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">14</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">status:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=status:	Name=Label45	ForeColor=0	Height=2	Name=Label45	Width=34	X=2	Y=26		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">14</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">status</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text12	ForeColor=0	Height=2	Name=Text12	Width=36	X=36	Y=26		Input=status	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">15</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">agreementId:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=agreementId:	Name=Label44	ForeColor=0	Height=2	Name=Label44	Width=34	X=2	Y=28		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">15</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">agreementId</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text13	ForeColor=0	Height=2	Name=Text13	Width=36	X=36	Y=28		Input=agreementId	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">16</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">cost:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=cost:	Name=Label43	ForeColor=0	Height=2	Name=Label43	Width=34	X=2	Y=30		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">16</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">cost</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text14	ForeColor=0	Height=2	Name=Text14	Width=36	X=36	Y=30		Input=cost	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">17</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">duration:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=duration:	Name=Label42	ForeColor=0	Height=2	Name=Label42	Width=34	X=2	Y=32		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">17</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">duration</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text15	ForeColor=0	Height=2	Name=Text15	Width=36	X=36	Y=32		Input=duration	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">18</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">quantity:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=quantity:	Name=Label41	ForeColor=0	Height=2	Name=Label41	Width=34	X=2	Y=34		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">18</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">quantity</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text16	ForeColor=0	Height=2	Name=Text16	Width=36	X=36	Y=34		Input=quantity	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">19</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">nextBreach:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=nextBreach:	Name=Label40	ForeColor=0	Height=2	Name=Label40	Width=34	X=2	Y=36		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">19</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">nextBreach</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text17	ForeColor=0	Height=2	Name=Text17	Width=36	X=36	Y=36		Input=nextBreach	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">20</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">unitCost:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=unitCost:	Name=Label39	ForeColor=0	Height=2	Name=Label39	Width=34	X=2	Y=38		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">20</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">unitCost</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text18	ForeColor=0	Height=2	Name=Text18	Width=36	X=36	Y=38		Input=unitCost	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">21</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">requestTime:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=requestTime:	Name=Label38	ForeColor=0	Height=2	Name=Label38	Width=34	X=2	Y=40		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">21</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">requestTime</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text19	ForeColor=0	Height=2	Name=Text19	Width=36	X=36	Y=40		Input=requestTime	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">22</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">startTime:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=startTime:	Name=Label37	ForeColor=0	Height=2	Name=Label37	Width=34	X=2	Y=42		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">22</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">startTime</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text20	ForeColor=0	Height=2	Name=Text20	Width=36	X=36	Y=42		Input=startTime	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">23</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">svcCatalogId:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=svcCatalogId:	Name=Label36	ForeColor=0	Height=2	Name=Label36	Width=34	X=2	Y=44		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">23</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">svcCatalogId</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text21	ForeColor=0	Height=2	Name=Text21	Width=36	X=36	Y=44		Input=svcCatalogId	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">24</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">itemDescription:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=itemDescription:	Name=Label35	ForeColor=0	Height=2	Name=Label35	Width=34	X=2	Y=46		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">24</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">itemDescription</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text22	ForeColor=0	Height=2	Name=Text22	Width=36	X=36	Y=46		Input=itemDescription	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">25</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">options:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=options:	Name=Label34	ForeColor=0	Height=2	Name=Label34	Width=34	X=2	Y=48		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">25</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">options</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text23	ForeColor=0	Height=2	Name=Text23	Width=36	X=36	Y=48		Input=options	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">26</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">partNumber:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=partNumber:	Name=Label33	ForeColor=0	Height=2	Name=Label33	Width=34	X=2	Y=50		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">26</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">partNumber</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text24	ForeColor=0	Height=2	Name=Text24	Width=36	X=36	Y=50		Input=partNumber	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">27</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">externalId:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=externalId:	Name=Label32	ForeColor=0	Height=2	Name=Label32	Width=34	X=2	Y=52		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">27</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">externalId</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text25	ForeColor=0	Height=2	Name=Text25	Width=36	X=36	Y=52		Input=externalId	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">28</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">sysmodcount:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=sysmodcount:	Name=Label31	ForeColor=0	Height=2	Name=Label31	Width=34	X=2	Y=54		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">28</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">sysmodcount</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text26	ForeColor=0	Height=2	Name=Text26	Width=36	X=36	Y=54		Input=sysmodcount	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">29</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">sysmoduser:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=sysmoduser:	Name=Label30	ForeColor=0	Height=2	Name=Label30	Width=34	X=2	Y=56		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">29</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">sysmoduser</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text27	ForeColor=0	Height=2	Name=Text27	Width=36	X=36	Y=56		Input=sysmoduser	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">30</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">sysmodtime:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=sysmodtime:	Name=Label29	ForeColor=0	Height=2	Name=Label29	Width=34	X=2	Y=58		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">30</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">sysmodtime</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text28	ForeColor=0	Height=2	Name=Text28	Width=36	X=36	Y=58		Input=sysmodtime	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">31</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">requestedFor:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=requestedFor:	Name=	ForeColor=0	Height=2	Name=label1143047167359	Width=34	X=2	Y=60	Caption=requestedFor:		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">31</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">requestedFor</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=	ForeColor=0	Height=2	Name=input1143047167454	Width=36	X=36	Y=60		Input=requestedFor	</property>
+      </field>
+    </field>
+    <file.name type="string">extreq</file.name>
+    <editor type="string">ffaegh</editor>
+    <last.update type="dateTime">03/22/06 02:06:40</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">1</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">03/28/06 09:01:42</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

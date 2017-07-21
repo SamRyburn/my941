@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;KMknowledgebase&quot;" recordid="KMknowledgebase">
+    <name type="string">KMknowledgebase</name>
+    <script type="string">function validateFieldNames(fFile)
+{
+ var result=true;
+  var i;
+  for (i = 0; i &lt; fFile.kbfields.length(); i++) {
+      if(fFile.kbfields[i].kbfieldname==null) {
+        result=false;
+      }
+   }    
+  return result;
+}
+
+
+function validateFieldTypes(fFile)
+{
+ var result=true;
+  var i;
+  for (i = 0; i &lt; fFile.kbfields.length(); i++) {
+      if(fFile.kbfields[i].kbfieldtype==null) {
+        result=false;
+      }
+   }    
+  return result;
+}
+ 
+function validateFieldAlias(fFile)
+{
+ var result=true;
+  var i;
+  for (i = 0; i &lt; fFile.kbfields.length(); i++) {
+      if(fFile.kbfields[i].kbfieldvalue==null) {
+        result=false;
+      }
+   }    
+  return result;
+}
+ 
+ 
+function validateFieldHitlist(fFile)
+{
+ var result=true;
+  var i;
+  for (i = 0; i &lt; fFile.kbfields.length(); i++) {
+      if(fFile.kbfields[i].hitlist==null) {
+       fFile.kbfields[i].hitlist="true";
+        }
+     }    
+  return result;
+}
+ 
+ 
+function validateFieldDocbody(fFile)
+{
+  var result=true;
+    var i;
+    for (i = 0; i &lt; fFile.kbfields.length(); i++) {
+      if(fFile.kbfields[i].docbody==null) {
+       fFile.kbfields[i].docbody= "true";
+     }    
+    }    
+  return result;
+}
+ 
+ 
+function validateFieldSort(fFile) 
+{
+  var nonNumberFields = [], nonMatchFields = [];
+  var i;
+  for (i = 0; i &lt; fFile.kbfields.length(); i++) {
+    if (fFile.kbfields[i].sort != null &amp;&amp; !lib.IntegerUtil.isNormalInteger(fFile.kbfields[i].sort)) {
+      nonNumberFields.push(fFile.kbfields[i].kbfieldname);
+    }
+    if (fFile.kbfields[i].hitlist != true &amp;&amp; fFile.kbfields[i].sort != null) {
+      nonMatchFields.push(fFile.kbfields[i].kbfieldname);
+      fFile.kbfields[i].sort = null;
+    }
+  }
+  
+  if (nonNumberFields.length &gt; 0) {
+    funcs.msg(funcs.scmsg('km_5', 'fc', nonNumberFields), 3);
+  }
+  
+  if (nonMatchFields.length &gt; 0) {
+    funcs.msg(funcs.scmsg('km_6', 'fc', nonMatchFields), 2);
+  }
+  
+  return nonNumberFields.length &gt; 0 ? false : true;
+}
+
+function validateMatchField(kmlib) {
+  var fields = kmlib.kbfields, i, length;
+  for (i = 0, length = fields.length(); i &lt; length; i++) {
+    var field = fields[i];
+    if (field.match) {
+      var name = field.kbfieldname, alias = field.kbfieldvalue, type = field.kbfieldtype;
+      if (alias &amp;&amp; (alias.toLowerCase() === 'title' || alias.toLowerCase() === 'id')) {
+        vars['$L.km.validate.msg'] = funcs.scmsg('km_9', 'fc', [ alias ]);
+        funcs.cursor_field_name_set('kbfields,match', i + 1);
+        return false;
+      } else if (type === 'Date' || type === 'Rich Text') {
+        vars['$L.km.validate.msg'] = funcs.scmsg('km_9', 'fc', [ type ]);
+        funcs.cursor_field_name_set('kbfields,match', i + 1);
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+
+function validateFieldWeight(fFile)
+{
+  var result = true;
+  var hasIndex = false;
+  var i;
+  for (i = 0; i &lt; fFile.kbfields.length(); i++) {
+      if (fFile.kbfields[i].weight != null &amp;&amp; fFile.kbfields[i].weight != -1) {
+    hasIndex = true;
+    break;
+    }
+  }
+  return hasIndex;
+}
+
+
+function setFieldWeightNoIndex(fFile)
+{
+  var result = true;
+  var i;
+  for (i = 0; i &lt; fFile.kbfields.length(); i++) {
+      if (fFile.kbfields[i].weight == null) {
+    fFile.kbfields[i].weight = -1;
+    }
+  }    
+  return result;
+}
+
+
+function setFieldMatchFalse(fFile)
+{
+  var result = true;
+  var i;
+  for (i = 0; i &lt; fFile.kbfields.length(); i++) {
+      if (fFile.kbfields[i].match == null) {      
+    fFile.kbfields[i].match = false;
+    }
+  }    
+  return result;
+}
+
+function setFieldDatacleansingFalse(fFile)
+{
+  var result = true;
+  var i;
+  for (i = 0; i &lt; fFile.kbfields.length(); i++) {
+      if (fFile.kbfields[i].datacleansing == null) {
+      fFile.kbfields[i].datacleansing = false;
+    }
+  }    
+  return result;
+}
+
+function setFieldDatacleansingFalse(fFile)
+{
+  var result = true;
+  for( var i = 0; i &lt; fFile.kbfields.length(); i++){
+    if (fFile.kbfields[i].datacleansing == null)
+    fFile.kbfields[i].datacleansing = false;
+  }    
+  return result;
+}
+
+function getIdFieldForKB(filename)
+{
+  // Get the record for this knowledgebase to determine the id field.
+  var kbFile = new SCFile("kmknowledgebase");
+  var rc = kbFile.doSelect( "sclibtablename=\""+filename+"\"");  
+  if ( rc == RC_SUCCESS )
+  {
+    return kbFile.docid;
+  }
+  else
+  {
+     return "";
+  }
+}
+
+function getKBObjectForFilename(filename)
+{
+  // Get the record for this knowledgebase given the name of the file that is indexed.
+  var kbFile = new SCFile("kmknowledgebase");
+  var rc = kbFile.doSelect( "sclibtablename=\""+filename+"\"");  
+  if ( rc == RC_SUCCESS )
+  {
+    return kbFile;
+  }
+  else
+  {
+     return null;
+  }
+}
+
+// Does this id exist in this knowledgebase? return true if so, else false
+function checkValidIdForKB(kbname,id)
+{
+  //print("kbname: "+kbname+"id: "+id);
+  var kbFile = new SCFile("kmknowledgebase", SCFILE_READONLY);
+  var rc = kbFile.doSelect( "kbname=\""+kbname+"\"");  
+  if ( rc == RC_SUCCESS )
+  {
+    var filename = kbFile.sclibtablename;
+    // Get the record for this knowledgebase to determine the id field.
+    var idField = system.library.KMknowledgebase.getIdFieldForKB(filename);
+    //print(idField + "=\""+id+"\"");
+    if (idField == "")
+    {
+      return false;
+    }
+    var kmFile = new SCFile(filename, SCFILE_READONLY);
+    rc = kmFile.doSelect( idField + "=\""+id+"\"");  
+    if ( rc != RC_SUCCESS )
+    {
+       return false;
+  }
+  }
+  else
+  {
+    return false;
+  }
+     
+  return true;
+}
+
+
+function checkExistConnectorTask(inFile) {
+    var kmknowledgebase = new SCFile('kmknowledgebase');
+    var rc = kmknowledgebase.doSelect('kbname~="' + inFile['kbname'] + '" and kbtype="' + inFile['kbtype'] + '"');
+    if (rc !== RC_SUCCESS) {
+      return false;
+    }
+      
+    while (rc === RC_SUCCESS) {
+      var connector = kmknowledgebase['spconnectorurl'];
+      var task = kmknowledgebase['sptask'];
+      if (connector === inFile['spconnectorurl'] &amp; task === inFile['sptask']){
+        return true;
+      }
+      rc = kmknowledgebase.getNext();
+    }
+      
+    return false;
+}
+
+
+function showListInUI() {
+  if (vars['$G.kmsearchengine'] === 'IDOL' &amp;&amp; vars['$L.file']['name'] === 'knowledge management') {
+    var idolConfig = lib.IDOLConfigure.require().getConfig();
+    var idolUrl = idolConfig['server.url'];
+    var idoldb = {};
+    var connected = true;
+    try {
+      var response = lib.jsaci.runIDOLAction(idolUrl + 'action=getStatus', false, false);
+      var xml = new XML();
+      xml.setContent(response);
+      var xQuery = lib.XQuery.require();
+      var databases = xQuery.query('responsedata/databases/database', xml);
+      var i;
+      for (i = 0, j = databases.length; i &lt; j; i++) {
+        idoldb[xQuery.queryText('name', databases[i])] = xQuery.queryText('documents', databases[i]);
+      }
+    } catch (ex) {
+      funcs.msg(funcs.scmsg('102', 'idol', [idolUrl + 'action=getStatus']), 2);
+      connected = false;
+    }
+
+    vars['$kbname'] = [];
+    vars['$L.kbdescription'] = [];
+    vars['$L.kbtype'] = [];
+    vars['$L.indexstatus'] = [];
+    vars['$L.lastindextime'] = [];
+    vars['$L.interval']= [];
+    vars['$L.doccount']= [];
+    var kmknowledgebase = new SCFile('kmknowledgebase', SCFILE_READONLY);
+    kmknowledgebase.setFields(['kbname', 'kbdescription', 'kbtype', 'indexstatus', 'lastindextime', 'interval', 'spconnectorurl', 'sptask', 'idoltoken']);
+    var rc = kmknowledgebase.doSelect('true');
+    while (rc === RC_SUCCESS) {
+      vars['$kbname'].push(kmknowledgebase['kbname']);
+      vars['$L.kbdescription'].push(kmknowledgebase['kbdescription']);
+      vars['$L.kbtype'].push(kmknowledgebase['kbtype']);
+      
+      //if the library doesn't exist in idol, offline
+      if (idoldb[kmknowledgebase['kbname']]) {
+        vars['$L.doccount'].push(idoldb[kmknowledgebase['kbname']]);
+      } else {
+        vars['$L.doccount'].push('');
+      }
+      if (connected &amp;&amp; kmknowledgebase['kbtype'] !== 'sclib') {
+        var status = lib.IDOL_SharePoint.require().getSharePointStatus(kmknowledgebase['spconnectorurl'], kmknowledgebase['idoltoken']);
+        if (status !== kmknowledgebase['indexstatus']) {
+          kmknowledgebase['indexstatus'] = status;
+          kmknowledgebase.doSave();
+        }
+      }
+      if (vars['$G.km.index.status.name'] &amp;&amp; vars['$G.km.index.status.name'].length() &gt; 0 &amp;&amp; vars['$G.km.index.status.display'] &amp;&amp; vars['$G.km.index.status.display'].length() &gt; 0){
+        var index = lib.ArrayUtil.indexOf(vars['$G.km.index.status.name'], kmknowledgebase['indexstatus']);
+        vars['$L.indexstatus'].push(vars['$G.km.index.status.display'][index]);
+      } else {
+        vars['$L.indexstatus'].push(kmknowledgebase['indexstatus']);
+      }
+      vars['$L.lastindextime'].push(kmknowledgebase['lastindextime']);
+      vars['$L.interval'].push(kmknowledgebase['interval']);
+      rc = kmknowledgebase.getNext();
+    }
+    
+    if (!vars['$new.kbtype']) {
+      vars['$new.kbtype'] = 'sclib';
+    }
+    vars['$L.mult'] = false;
+  }
+}
+
+
+/**
+ * Rebuild kmquery dbdict according with kmknowledgebase records
+ *
+ * @returns {Number}
+ */
+function rebuildKmqueryDbdict()
+{
+  var $ = lib.c.$;
+  var dbdictName = "kmquery";
+  
+  // get dbdict fields those related with kmknowledgebase 
+  var dbdict = $("dbdict", SCFILE_READONLY).setFields(["field"]).select("name=\"" + dbdictName + "\"").uniqueResult();
+  
+  var kmfields = [];  
+  var booleanType = lib.DataTypeConst.typeBoolean();
+  
+  var fields = dbdict.field;
+  var i, length;
+  for (i = 0, length = fields.length(); i &lt; length; i++)
+  {
+    var field = fields[i];
+    if (field.level == 1 &amp;&amp; field.type == booleanType)
+    {
+      kmfields.push(field.name);
+    }
+  }
+  
+  var result = RC_NO_MORE;
+  
+  // go through all kmknowledgebase records
+  var records = $("kmknowledgebase", SCFILE_READONLY).setFields(["kbname"]).select("true").iterate(function(record)
+  {
+    var name = record.kbname;
+    
+    // ignore APM/Upgrade records
+    if (name.indexOf("NEW") == 0 || name.indexOf("OLD") == 0 || name.indexOf("PRE") == 0)
+    {
+      return;
+    }
+    
+    // ignore pd4 enablement records
+    var pdtag = "_for_pd4_tobe_used";
+    if (name.indexOf(pdtag) == name.length - pdtag.length)
+    {
+      return;
+    }
+    
+    // remove '_'
+    name = name.replace(/_/g, "");
+    
+    if (lib.ArrayUtil.contains(kmfields, name))
+    {
+      return;
+    }
+    
+    //print(name);
+    
+    if (result == RC_NO_MORE)
+    {
+      result = RC_SUCCESS;
+    }   
+    
+    // update dbdict
+      var rc = callrad("add.new.dbdict.field", ["string1","number1","text"], [name,"4",dbdictName]);
+      if (rc != RC_SUCCESS)
+      {
+        result = rc;
+      } 
+  });
+  
+  return result;
+}
+
+function removeNullKBFields(fFile) {
+  var kbfields = new SCDatum();
+  kbfields.setType(8);
+  for (var i = 0, len = fFile.kbfields.length(); i &lt; len; i++) {
+      if(fFile.kbfields[i].kbfieldname!=null || fFile.kbfields[i].kbfieldvalue!=null || fFile.kbfields[i].kbfieldtype!=null || fFile.kbfields[i].hitlist!=null 
+        || fFile.kbfields[i].weight!=null || fFile.kbfields[i].match!=null || fFile.kbfields[i].sort!=null || fFile.kbfields[i].datacleansing!=null) {
+        kbfields.push(fFile.kbfields[i]);
+      }
+  }    
+  fFile.kbfields = kbfields;
+}</script>
+    <package type="string">KnowledgeManagement</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:41</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

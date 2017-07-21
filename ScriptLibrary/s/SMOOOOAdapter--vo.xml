@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;SMOOOOAdapter&quot;" recordid="SMOOOOAdapter">
+    <name type="string">SMOOOOAdapter</name>
+    <script type="string">/******************************************************
+* Module Name: SMIS Adapter
+* Function: Adapter Interface
+* Author: Yang, Wen-Ying
+* Version: 1.00
+* Creation Date: Nov, 2009
+*******************************************************/
+
+var Class = lib.smis_Prototype.getClass();
+var getParmeterValue = lib.smis_ConfigurationManager.getSMISConfigurationParameterValue;
+
+var SMOOOOAdapterClass = Class.create({
+  initialize: function(configItem) {
+    this.configItem = configItem;
+  },
+  
+  getRecords: function() {
+  	var records = [];
+  	return records;
+  },
+  
+  sendRecord: function(record, action) {
+  },
+  
+  getFields: function() {
+  }
+  
+});
+
+function getClass() {return SMOOOOAdapterClass;}
+
+
+function testConnect(){
+ 	var targetUrl = getParmeterValue(vars.$L_file, "oo.server.url");
+ 	var userName = getParmeterValue(vars.$L_file, "oo.user.name");
+ 	var userPassword = getParmeterValue(vars.$L_file, "oo.password");
+ 	var basePath = getParmeterValue(vars.$L_file, "basepath");
+ 	var req = new lib.WSCentralServiceService.listRequest();
+	req.basePath.setValue([basePath]);
+	try{
+		var OOService = new lib.WSCentralServiceService.WSCentralServiceService(targetUrl+"\/PAS\/services\/WSCentralService",userName,userPassword);
+		var response = OOService.invoke( req,null,null );
+	}catch(e){
+		return system.functions.scmsg(117, "smis")+"\r\n"+ ex;
+	}
+	return system.functions.scmsg(116, "smis");
+}</script>
+    <package type="string">SMOO</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:44</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

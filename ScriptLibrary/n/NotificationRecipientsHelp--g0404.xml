@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;NotificationRecipientsHelp&quot;" recordid="NotificationRecipientsHelp">
+    <name type="string">NotificationRecipientsHelp</name>
+    <script type="string">function getChangeManagerBySecRole(id){
+	var role="change manager";
+	var opr=new SCFile("operator", SCFILE_READONLY);
+	opr.setFields(["name"]);
+	var sql="secRole=\"" + role+ "\"";
+	var list="{";
+	if (opr.doSelect(sql)==RC_SUCCESS){
+		do{
+			list=list+"\""+opr.name+"\",";
+							
+		}while ( opr.getNext() == RC_SUCCESS )
+
+	}
+	list=list+"\" "+"\"}";
+	return list;
+}
+//The getChangeOwnerBySecRole() function.
+//Cybele added @Sep.21th 2011. For Change Task need notification sent to Change Owner.
+
+function getRelatedChangeOwnerByChangeID(id){
+	var chm=new SCFile("cm3r", SCFILE_READONLY);
+	chm.setFields(["change.owner"]);
+	var sqlchm="number=\"" + id+ "\"";
+
+	var list="{";
+	if (chm.doSelect(sqlchm)==RC_SUCCESS){
+		do{
+			list=list+"\""+chm.change_owner+"\",";
+				
+		}while ( chm.getNext() == RC_SUCCESS )
+
+	}
+	list=list+"\" "+"\"}";
+	return list;
+}
+
+function getRelatedTaskAssigneeByChangeID(id){
+	var tsk=new SCFile("cm3t", SCFILE_READONLY);
+	tsk.setFields(["assigned.to"]);
+	var sqltsk="parent.change=\"" + id+ "\"";
+
+	var list="{";
+	if (tsk.doSelect(sqltsk)==RC_SUCCESS){
+		do{
+			list=list+"\""+tsk.assigned_to+"\",";
+				
+		}while ( tsk.getNext() == RC_SUCCESS )
+
+	}
+	list=list+"\" "+"\"}";
+	return list;
+}
+function getDcabApprovers(id){
+	var groupfile=new SCFile("ApprovalDef", SCFILE_READONLY);
+	groupfile.setFields(["group.name"]);
+	var sql="";
+	var memberlist="";
+	var group="DCAB Approval";
+	sql="name=\"" + group+ "\"";
+	if (groupfile.doSelect(sql)==RC_SUCCESS){
+		memberlist=""+groupfile.group_name;
+		memberlist=memberlist.substr(memberlist.indexOf("{"));
+	}
+	if(memberlist==""){
+		memberlist=new Array();
+	}
+	
+	return memberlist;
+}
+function getEcabApprovers(id){
+	var groupfile=new SCFile("ApprovalDef", SCFILE_READONLY);
+	groupfile.setFields(["group.name"]);
+	var sql="";
+	var memberlist="";
+	var group="ECAB Approval";
+	sql="name=\"" + group+ "\"";
+	if (groupfile.doSelect(sql)==RC_SUCCESS){
+		memberlist=""+groupfile.group_name;
+		memberlist=memberlist.substr(memberlist.indexOf("{"));
+	}
+	if(memberlist==""){
+		memberlist=new Array();
+	}
+	
+	return memberlist;
+}
+function getTcabApprovers(id){
+	var groupfile=new SCFile("ApprovalDef", SCFILE_READONLY);
+	groupfile.setFields(["group.name"]);
+	var sql="";
+	var memberlist="";
+	var group="TCAB Approval";
+	sql="name=\"" + group+ "\"";
+	if (groupfile.doSelect(sql)==RC_SUCCESS){
+		memberlist=""+groupfile.group_name;
+		memberlist=memberlist.substr(memberlist.indexOf("{"));
+	}
+	if(memberlist==""){
+		memberlist=new Array();
+	}
+	
+	return memberlist;
+}
+</script>
+    <package type="string">BaseUtilities</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:42</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

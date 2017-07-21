@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;sapconfig.g&quot;" recordid="en - sapconfig.g">
+    <name mandatory="true" type="string">sapconfig.g</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">78</length>
+        <window type="decimal">15</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">BevelFrame;X=0	Y=0	Height=30	Width=156	OuterBevelWidth=1	InnerBevelWidth=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">1</column>
+        <length type="decimal">78</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Enterprise Connections for HP Service Manager Configuration File</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Enterprise Connections for HP Service Manager Configuration File	X=0	Y=2	Height=2	Width=156	ForeColor=0	Justification=2	FontIncrease=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">6</column>
+        <length type="decimal">24</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Enable HR Interface:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Enable HR Interface:	Y=7	Height=2	Width=48	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">30</column>
+        <length type="decimal">2</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">hr.enabled</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Caption=	Input=hr.enabled	X=58	Y=7	Height=2	Width=4	ArrayLength=1	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">30</column>
+        <length type="decimal">22</length>
+        <window type="decimal">3</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Caption=	X=58	Y=8	Height=6	Width=44	?Visible=[hr.enabled]=1	ForeColor=0	ArrayLength=3	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">32</column>
+        <length type="decimal">15</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">hr.type</input>
+        <output type="string">SAP R/3</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Radio;Caption=SAP R/3	Input=hr.type	X=62	Y=9	Height=2	Width=30	?Visible=[hr.enabled]=1	Value=sap	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">32</column>
+        <length type="decimal">15</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">hr.type</input>
+        <output type="string">PeopleSoft</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Radio;Caption=PeopleSoft	Input=hr.type	X=62	Y=11	Height=2	Width=30	?Visible=[hr.enabled]=1	Value=ps	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">6</column>
+        <length type="decimal">24</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Default HR Server Name:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Default HR Server Name:	Y=14	Height=2	Width=48	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">30</column>
+        <length type="decimal">22</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">hr.sap.server</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=hr.sap.server	X=58	Y=14	Height=2	Width=44	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">10</line>
+        <column type="decimal">6</column>
+        <length type="decimal">24</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Enable SAP MM Interface:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Enable SAP MM Interface:	Y=19	Height=2	Width=48	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">10</line>
+        <column type="decimal">30</column>
+        <length type="decimal">2</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">mm.enabled</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Caption=	Input=mm.enabled	X=58	Y=19	Height=2	Width=4	ArrayLength=1	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">11</line>
+        <column type="decimal">6</column>
+        <length type="decimal">24</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Default MM SAP Server Name:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Default MM SAP Server Name:	Y=21	Height=2	Width=48	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">11</line>
+        <column type="decimal">30</column>
+        <length type="decimal">22</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">mm.sap.server</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=mm.sap.server	X=58	Y=21	Height=2	Width=44	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">lisa</editor>
+    <last.update type="dateTime">10/26/99 10:16:45</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">10</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">10/24/01 08:17:31</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

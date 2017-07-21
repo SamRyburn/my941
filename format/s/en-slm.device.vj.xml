@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;slm.device.vj&quot;" recordid="en - slm.device.vj">
+    <name mandatory="true" type="string">slm.device.vj</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Cost Center:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Cost Center:	X=0	Y=0	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">18</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">cost.center</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=cost.center	X=34	Y=0	Height=2	Width=36	ReadOnly=1	MaxChars=64	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">41</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Make:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Make:	X=80	Y=0	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">58</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">manufacturer</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=manufacturer	X=114	Y=0	Height=2	Width=36	ReadOnly=1	MaxChars=64	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">1</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Serial No.:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Serial No.:	X=0	Y=2	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">18</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">serial.no.</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=serial.no.	X=34	Y=2	Height=2	Width=36	ReadOnly=1	MaxChars=64	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">41</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Model:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Model:	X=80	Y=2	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">58</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">model</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=model	X=114	Y=2	Height=2	Width=36	ReadOnly=1	MaxChars=64	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">1</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Description:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Description:	X=0	Y=4	Height=2	Width=34	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">18</column>
+        <length type="decimal">58</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">description</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=description	X=34	Y=4	Height=2	Width=116	ReadOnly=1	MaxChars=64	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">18</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">device.severity</input>
+        <output type="string">Critical CI</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Caption=Critical CI	Input=device.severity	X=34	Y=6	Height=2	Width=40	ArrayLength=1	ForeColor=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">58</column>
+        <length type="decimal">18</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">pending.change</input>
+        <output type="string">Pending Change</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Caption=Pending Change	Input=pending.change	X=114	Y=6	Height=2	Width=36	TabStop=-1	ArrayLength=1	ForeColor=0	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">prietke</editor>
+    <last.update type="dateTime">03/22/05 07:03:05</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">03/23/05 04:24:03</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

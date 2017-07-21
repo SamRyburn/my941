@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="cm3tcategory">
+  <record id="name=&quot;Identify Affected Systems&quot;" recordid="Identify Affected Systems">
+    <name mandatory="true" type="string">Identify Affected Systems</name>
+    <phases sctype="array">
+      <phases sctype="string">Identify Affected Systems</phases>
+    </phases>
+    <avail.cond mandatory="true" type="boolean">true</avail.cond>
+    <active type="boolean">true</active>
+    <description type="string">Build and Test: Identify Affected System</description>
+    <assign.number type="boolean">true</assign.number>
+    <request.phases NullValue="1" sctype="array">
+      <request.phases NullValue="1" type="string"/>
+    </request.phases>
+    <is.parent NullValue="1" type="boolean"/>
+    <sysmodcount type="decimal">2</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">12/07/14 20:39:48</sysmodtime>
+    <company NullValue="1" type="string"/>
+    <default.template NullValue="1" type="string"/>
+    <workflow type="string">Identify Affected Systems</workflow>
+  </record>
+</recordset>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="triggers">
+  <record id="trigger.name=&quot;DiffSync-joinsvcDisplay-2&quot;" recordid="DiffSync-joinsvcDisplay-2">
+    <trigger.name type="string">DiffSync-joinsvcDisplay-2</trigger.name>
+    <trigger.type type="decimal">2</trigger.type>
+    <table.name type="string">joinsvcDisplay</table.name>
+    <application.name NullValue="1" type="string"/>
+    <sysmodcount type="decimal">1</sysmodcount>
+    <sysmoduser type="string">zouguo</sysmoduser>
+    <sysmodtime type="dateTime">10/12/31 05:10:22</sysmodtime>
+    <javascript type="string">lib.ScAPI_svcCatalog_DiffSync.joinsvcDisplayTrigger(record, oldrecord, 2);</javascript>
+  </record>
+</recordset>

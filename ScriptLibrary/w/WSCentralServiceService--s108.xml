@@ -1,0 +1,1439 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;WSCentralServiceService&quot;" recordid="WSCentralServiceService">
+    <name type="string">WSCentralServiceService</name>
+    <script type="string">function WSCentralServiceService(ooservice_url, user, password)
+{
+  this.location = new String( ooservice_url );
+
+  this.user = user;
+  this.password = password;
+  this.connectTimeOut = 10;
+  this.sendTimeOut = 10;
+  this.recvTimeOut = 10;
+  this.soapEnvelope = null;
+  this.soapBody = null;
+  this.soapHeader = null;
+  this.attachments = new Array();
+  this.resultXML = null;
+  this.invoke = invoke;
+  this.SOAPOperations = new Array();
+  this.getSOAPOperation = function( reqName )
+  {
+     var soapOp = this.SOAPOperations[ reqName ];
+  
+     if ( soapOp != null )
+     {
+       return soapOp;
+     }
+  
+    for ( var op in this.SOAPOperations )
+    {
+       soapOp = this.SOAPOperations[op];
+  
+       if ( soapOp.requestObj == reqName )
+         return soapOp;
+    }
+    throw( "Can't find SOAP Operation for " + reqName );
+  }
+
+  this.SOAPOperations[ "list" ] = new soap_Operation( "list", "", "rpc", "listRequest", "listResponse" );
+  this.SOAPOperations[ "getFlowDetails" ] = new soap_Operation( "getFlowDetails", "", "rpc", "getFlowDetailsRequest", "getFlowDetailsResponse" );
+  this.getProto = function( )
+  {
+    return this.location.before("://");
+  }
+   
+  this.getHost = function( )
+  {
+    var hostport = this.location.after("://");
+    var h;
+    return ( (h = hostport.before(":")) ? h : hostport );
+  }
+   
+  this.getPort = function( )
+  {
+    var hostport = this.location.after("//");
+    var p;
+    return ( (p = hostport.after(":")) ? p : 80 );
+  }
+   
+  this.setHost = function( host )
+  {
+    var port  = this.getPort();
+    var proto = this.getProto();
+   
+    this.location = proto + "://" + host + ":" + port;
+  }
+   
+  this.setPort = function( port )
+  {
+    var host  = this.getHost();
+    var proto = this.getProto();
+   
+    this.location = proto + "://" + host + ":" + port;
+  }
+
+   this.setAttachments = function( attachments )
+  {
+    this.attachments = attachments;
+  }
+  
+  this.getAttachments = function()
+  {
+    return this.attachments;
+  }
+
+}
+
+function invoke( requestObj, headerObj, bEmitXsiTypeAttributes )
+{
+  var bEmitTypeAttrs = true;
+
+  if ( bEmitXsiTypeAttributes != undefined &amp;&amp; bEmitXsiTypeAttributes != null )
+  {
+    bEmitTypeAttrs = bEmitXsiTypeAttributes;
+  }
+
+  var soapOp = this.getSOAPOperation( requestObj.getName() );
+ 
+  this.soapEnvelope = new soap_Envelope();
+  this.soapBody = new soap_Body();
+ 
+  this.soapBody.setContent( requestObj );
+ 
+  if ( headerObj != undefined &amp;&amp; headerObj != null )
+  {
+    this.soapHeader = new soap_Header();
+    this.soapHeader.setContent( headerObj );
+    this.soapEnvelope.setContent( this.soapHeader, this.soapBody );
+  }
+  else
+    this.soapEnvelope.setContent( this.soapBody );
+ 
+  var result = new Object();
+ 
+  lib.SOAP.serialize( this.soapEnvelope, result, bEmitTypeAttrs );
+ 
+  this.resultXML = doSOAPRequest( this.location, soapOp.SOAPAction, result.xml,
+                              this.user, this.password,
+                              this.connectTimeOut, this.sendTimeOut, this.recvTimeOut,
+                              this.attachments );
+
+  if ( soapOp.responseObj == "null" )  // one-way MEP ? 
+  {
+    return null;
+  }
+ 
+  var resultObj = new Object();
+ 
+  resultObj.responseObj = soapOp.responseObj;
+ 
+  try
+  {
+    lib.SOAP.deserialize( "WSCentralServiceService", this.resultXML.getDocumentElement(), resultObj );
+  }
+  catch( e )
+  {
+    print( "Error deserializing response: " + e.toString() );
+    return null;
+  }
+   
+  try
+  {
+    this.soapEnvelope = resultObj["soap_Envelope"];
+    this.soapBody = this.soapEnvelope[ "Body" ];
+   
+    if ( this.soapEnvelope[ "Header" ] != undefined )
+    {
+      this.soapHeader = this.soapEnvelope[ "Header" ];
+    }
+    else
+      this.soapHeader = null;
+    
+    return this.soapBody.getContent();
+  }
+  catch( e )
+  {
+    print( "Error extracting response object: " + e.toString() );
+    return null;
+  }
+}
+
+function soap_Operation( name, SOAPAction, style, requestObj, responseObj )
+{
+  this.name       = name;
+  this.SOAPAction = SOAPAction;
+  this.style      = style;
+  this.requestObj = requestObj;
+  this.responseObj= responseObj;
+}
+
+function soap_Body( ) 
+{
+  this.$$nsPrefix = "soap";
+  this.$$elementFormDefault = "qualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getName = getName;
+  this.getXmlName = getXmlName;
+  this.setContent = setContent;
+  this.addContent = addContent;
+  this.getContent = getContent;
+  this.isFault = isFault;
+  this.$$elementChildren = new Array();
+  this.$$name = "soap_Body";
+  this.$$xmlNames[ "soap_Body" ] = "soap:Body";
+  this.soap_encodingStyle = new String("http://schemas.xmlsoap.org/soap/encoding/");
+  this.$$attributes.push( "soap_encodingStyle" );
+  this.$$xmlNames["soap_encodingStyle"] = "soap:encodingStyle";
+  this.$$objNames["soap:encodingStyle"] = "soap_encodingStyle";
+}
+
+function soap_Envelope( ) 
+{
+  this.$$nsPrefix = "soap";
+  this.$$elementFormDefault = "qualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getName = getName;
+  this.getXmlName = getXmlName;
+  this.setContent = setContent;
+  this.addContent = addContent;
+  this.getContent = getContent;
+  this.isFault = isFault;
+  this.$$elementChildren = new Array();
+  this.$$name = "soap_Envelope";
+  this.$$xmlNames[ "soap_Envelope" ] = "soap:Envelope";
+  this.xmlns_ns0 = new String("http://xml.apache.org/xml-soap");
+  this.$$attributes.push( "xmlns_ns0" );
+  this.$$xmlNames["xmlns_ns0"] = "xmlns:ns0";
+  this.$$objNames["xmlns:ns0"] = "xmlns_ns0";
+  this.xmlns_ns2 = new String("http://schemas.xmlsoap.org/soap/encoding/");
+  this.$$attributes.push( "xmlns_ns2" );
+  this.$$xmlNames["xmlns_ns2"] = "xmlns:ns2";
+  this.$$objNames["xmlns:ns2"] = "xmlns_ns2";
+  this.xmlns_ns3 = new String("http://iconclude.com/webservices/rss/v2.0/soap");
+  this.$$attributes.push( "xmlns_ns3" );
+  this.$$xmlNames["xmlns_ns3"] = "xmlns:ns3";
+  this.$$objNames["xmlns:ns3"] = "xmlns_ns3";
+  this.xmlns_ns4 = new String("http://schemas.xmlsoap.org/wsdl/");
+  this.$$attributes.push( "xmlns_ns4" );
+  this.$$xmlNames["xmlns_ns4"] = "xmlns:ns4";
+  this.$$objNames["xmlns:ns4"] = "xmlns_ns4";
+  this.xmlns_ns5 = new String("http://schemas.xmlsoap.org/wsdl/soap/");
+  this.$$attributes.push( "xmlns_ns5" );
+  this.$$xmlNames["xmlns_ns5"] = "xmlns:ns5";
+  this.$$objNames["xmlns:ns5"] = "xmlns_ns5";
+  this.xmlns_ns1 = new String("");
+  this.$$attributes.push( "xmlns_ns1" );
+  this.$$xmlNames["xmlns_ns1"] = "xmlns:ns1";
+  this.$$objNames["xmlns:ns1"] = "xmlns_ns1";
+  this.xmlns_soap = new String("http://schemas.xmlsoap.org/soap/envelope/");
+  this.$$attributes.push( "xmlns_soap" );
+  this.$$xmlNames["xmlns_soap"] = "xmlns:soap";
+  this.$$objNames["xmlns:soap"] = "xmlns_soap";
+  this.xmlns_xsi = new String("http://www.w3.org/2001/XMLSchema-instance");
+  this.$$attributes.push( "xmlns_xsi" );
+  this.$$xmlNames["xmlns_xsi"] = "xmlns:xsi";
+  this.$$objNames["xmlns:xsi"] = "xmlns_xsi";
+  this.xmlns_xsd = new String("http://www.w3.org/2001/XMLSchema");
+  this.$$attributes.push( "xmlns_xsd" );
+  this.$$xmlNames["xmlns_xsd"] = "xmlns:xsd";
+  this.$$objNames["xmlns:xsd"] = "xmlns_xsd";
+  this.Body = new soap_Body();
+  this.$$elementChildren.push( "Body" );
+}
+
+function soap_Fault( ) 
+{
+  this.$$nsPrefix = "soap";
+  this.$$elementFormDefault = "qualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getName = getName;
+  this.getXmlName = getXmlName;
+  this.setContent = setContent;
+  this.addContent = addContent;
+  this.getContent = getContent;
+  this.isFault = isFault;
+  this.$$elementChildren = new Array();
+  this.$$name = "soap_Fault";
+  this.$$xmlNames[ "soap_Fault" ] = "soap:Fault";
+  this.faultcode = new xsd_string();
+  this.$$elementChildren.push( "faultcode" );
+  this.faultstring = new xsd_string();
+  this.$$elementChildren.push( "faultstring" );
+  this.faultactor = new xsd_string();
+  this.$$elementChildren.push( "faultactor" );
+  this.detail = new XML();
+  this.$$elementChildren.push( "detail" );
+}
+
+function soap_Header( ) 
+{
+  this.$$nsPrefix = "soap";
+  this.$$elementFormDefault = "qualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getName = getName;
+  this.getXmlName = getXmlName;
+  this.setContent = setContent;
+  this.addContent = addContent;
+  this.getContent = getContent;
+  this.isFault = isFault;
+  this.$$elementChildren = new Array();
+  this.$$name = "soap_Header";
+  this.$$xmlNames[ "soap_Header" ] = "soap:Header";
+}
+
+function WSFlow(  ) 
+{
+  this.$$nsPrefix = "ns3";
+  this.$$elementFormDefault = "unqualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getName = getName;
+  this.getXmlName = getXmlName;
+  this.setContent = setContent;
+  this.addContent = addContent;
+  this.getContent = getContent;
+  this.isFault = isFault;
+  this.$$elementChildren = new Array();
+  this.$$name = "WSFlow";
+  this.$$xmlNames[ "WSFlow" ] = "WSFlow";
+  this.$$childElementFunctions = new Array();
+  this.getChildFunc = getChildFunc; 
+  if ( arguments.length &gt; 0 )
+  {
+    this.$$deserializing = arguments[0];
+  }
+  if ( this.$$deserializing == undefined )
+  {
+  this.UUID = new xsd_string();
+  }
+  this.$$childElementFunctions[ "UUID" ] = xsd_string;
+  this.$$elementChildren.push( "UUID" );
+  if ( this.$$deserializing == undefined )
+  {
+  this.name = new xsd_string();
+  }
+  this.$$childElementFunctions[ "name" ] = xsd_string;
+  this.$$elementChildren.push( "name" );
+  if ( this.$$deserializing == undefined )
+  {
+  this.path = new xsd_string();
+  }
+  this.$$childElementFunctions[ "path" ] = xsd_string;
+  this.$$elementChildren.push( "path" );
+}
+
+function xsd_string( val ) 
+{
+  this.$$nsPrefix = "xsd";
+  this.$$elementFormDefault = "unqualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getValue = getValue;
+  this.setValue = setValue;
+  this.$$value = val;
+  this.xsi_type = new String("xsd:string");
+  this.$$attributes.push( "xsi_type" );
+  this.$$xmlNames["xsi_type"] = "xsi:type";
+  this.$$objNames["xsi:type"] = "xsi_type";
+}
+
+function WSFolderDetails(  ) 
+{
+  this.$$nsPrefix = "ns3";
+  this.$$elementFormDefault = "unqualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getName = getName;
+  this.getXmlName = getXmlName;
+  this.setContent = setContent;
+  this.addContent = addContent;
+  this.getContent = getContent;
+  this.isFault = isFault;
+  this.$$elementChildren = new Array();
+  this.$$name = "WSFolderDetails";
+  this.$$xmlNames[ "WSFolderDetails" ] = "WSFolderDetails";
+  this.$$childElementFunctions = new Array();
+  this.getChildFunc = getChildFunc; 
+  if ( arguments.length &gt; 0 )
+  {
+    this.$$deserializing = arguments[0];
+  }
+  if ( this.$$deserializing == undefined )
+  {
+  this.lastModifiedBy = new xsd_string();
+  }
+  this.$$childElementFunctions[ "lastModifiedBy" ] = xsd_string;
+  this.$$elementChildren.push( "lastModifiedBy" );
+  if ( this.$$deserializing == undefined )
+  {
+  this.lastModifiedTime = new xsd_long();
+  }
+  this.$$childElementFunctions[ "lastModifiedTime" ] = xsd_long;
+  this.$$elementChildren.push( "lastModifiedTime" );
+  if ( this.$$deserializing == undefined )
+  {
+  this.name = new xsd_string();
+  }
+  this.$$childElementFunctions[ "name" ] = xsd_string;
+  this.$$elementChildren.push( "name" );
+  if ( this.$$deserializing == undefined )
+  {
+  this.path = new xsd_string();
+  }
+  this.$$childElementFunctions[ "path" ] = xsd_string;
+  this.$$elementChildren.push( "path" );
+}
+
+function xsd_long( val ) 
+{
+  this.$$nsPrefix = "xsd";
+  this.$$elementFormDefault = "unqualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getValue = getValue;
+  this.setValue = setValue;
+  this.$$value = val;
+  this.xsi_type = new String("xsd:long");
+  this.$$attributes.push( "xsi_type" );
+  this.$$xmlNames["xsi_type"] = "xsi:type";
+  this.$$objNames["xsi:type"] = "xsi_type";
+}
+
+function WSFolderContent(  ) 
+{
+  this.$$nsPrefix = "ns3";
+  this.$$elementFormDefault = "unqualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getName = getName;
+  this.getXmlName = getXmlName;
+  this.setContent = setContent;
+  this.addContent = addContent;
+  this.getContent = getContent;
+  this.isFault = isFault;
+  this.$$elementChildren = new Array();
+  this.$$name = "WSFolderContent";
+  this.$$xmlNames[ "WSFolderContent" ] = "WSFolderContent";
+  this.$$childElementFunctions = new Array();
+  this.getChildFunc = getChildFunc; 
+  if ( arguments.length &gt; 0 )
+  {
+    this.$$deserializing = arguments[0];
+  }
+  if ( this.$$deserializing == undefined )
+  {
+  this.flows = new ArrayOf_tns1_WSFlow();
+  }
+  this.$$childElementFunctions[ "flows" ] = ArrayOf_tns1_WSFlow;
+  this.$$elementChildren.push( "flows" );
+  if ( this.$$deserializing == undefined )
+  {
+  this.folderFound = new xsd_boolean();
+  }
+  this.$$childElementFunctions[ "folderFound" ] = xsd_boolean;
+  this.$$elementChildren.push( "folderFound" );
+  if ( this.$$deserializing == undefined )
+  {
+  this.folderName = new xsd_string();
+  }
+  this.$$childElementFunctions[ "folderName" ] = xsd_string;
+  this.$$elementChildren.push( "folderName" );
+  if ( this.$$deserializing == undefined )
+  {
+  this.folders = new ArrayOf_tns1_WSFolderDetails();
+  }
+  this.$$childElementFunctions[ "folders" ] = ArrayOf_tns1_WSFolderDetails;
+  this.$$elementChildren.push( "folders" );
+}
+
+function xsd_boolean( val ) 
+{
+  this.$$nsPrefix = "xsd";
+  this.$$elementFormDefault = "unqualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getValue = getValue;
+  this.setValue = setValue;
+  this.$$value = val;
+  this.xsi_type = new String("xsd:boolean");
+  this.$$attributes.push( "xsi_type" );
+  this.$$xmlNames["xsi_type"] = "xsi:type";
+  this.$$objNames["xsi:type"] = "xsi_type";
+}
+
+function WSFlowInput(  ) 
+{
+  this.$$nsPrefix = "ns3";
+  this.$$elementFormDefault = "unqualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getName = getName;
+  this.getXmlName = getXmlName;
+  this.setContent = setContent;
+  this.addContent = addContent;
+  this.getContent = getContent;
+  this.isFault = isFault;
+  this.$$elementChildren = new Array();
+  this.$$name = "WSFlowInput";
+  this.$$xmlNames[ "WSFlowInput" ] = "WSFlowInput";
+  this.$$childElementFunctions = new Array();
+  this.getChildFunc = getChildFunc; 
+  if ( arguments.length &gt; 0 )
+  {
+    this.$$deserializing = arguments[0];
+  }
+  if ( this.$$deserializing == undefined )
+  {
+  this.listValues = new ArrayOf_xsd_string();
+  }
+  this.$$childElementFunctions[ "listValues" ] = ArrayOf_xsd_string;
+  this.$$elementChildren.push( "listValues" );
+  if ( this.$$deserializing == undefined )
+  {
+  this.name = new xsd_string();
+  }
+  this.$$childElementFunctions[ "name" ] = xsd_string;
+  this.$$elementChildren.push( "name" );
+  if ( this.$$deserializing == undefined )
+  {
+  this.value = new xsd_string();
+  }
+  this.$$childElementFunctions[ "value" ] = xsd_string;
+  this.$$elementChildren.push( "value" );
+}
+
+
+function xsd_int( val ) 
+{
+  this.$$nsPrefix = "xsd";
+  this.$$elementFormDefault = "unqualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getValue = getValue;
+  this.setValue = setValue;
+  this.$$value = val;
+  this.xsi_type = new String("xsd:int");
+  this.$$attributes.push( "xsi_type" );
+  this.$$xmlNames["xsi_type"] = "xsi:type";
+  this.$$objNames["xsi:type"] = "xsi_type";
+}
+
+
+function WSFlowInputDef(  ) 
+{
+  this.$$nsPrefix = "ns3";
+  this.$$elementFormDefault = "unqualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getName = getName;
+  this.getXmlName = getXmlName;
+  this.setContent = setContent;
+  this.addContent = addContent;
+  this.getContent = getContent;
+  this.isFault = isFault;
+  this.$$elementChildren = new Array();
+  this.$$name = "WSFlowInputDef";
+  this.$$xmlNames[ "WSFlowInputDef" ] = "WSFlowInputDef";
+  this.$$childElementFunctions = new Array();
+  this.getChildFunc = getChildFunc; 
+  if ( arguments.length &gt; 0 )
+  {
+    this.$$deserializing = arguments[0];
+  }
+  if ( this.$$deserializing == undefined || this.$$deserializing )
+  {
+  this.defaultValue = new xsd_string();
+  }
+  this.$$childElementFunctions[ "defaultValue" ] = xsd_string;
+  this.$$elementChildren.push( "defaultValue" );
+  if ( this.$$deserializing == undefined || this.$$deserializing )
+  {
+  this.defaultValues = new ArrayOf_xsd_string_defaultValues();
+  }
+  this.$$childElementFunctions[ "defaultValues" ] = ArrayOf_xsd_string_defaultValues;
+  this.$$elementChildren.push( "defaultValues" );
+  if ( this.$$deserializing == undefined || this.$$deserializing )
+  {
+  this.description = new xsd_string();
+  }
+  this.$$childElementFunctions[ "description" ] = xsd_string;
+  this.$$elementChildren.push( "description" );
+  if ( this.$$deserializing == undefined || this.$$deserializing )
+  {
+  this.encrypted = new xsd_boolean();
+  }
+  this.$$childElementFunctions[ "encrypted" ] = xsd_boolean;
+  this.$$elementChildren.push( "encrypted" );
+  if ( this.$$deserializing == undefined || this.$$deserializing )
+  {
+  this.isList = new xsd_boolean();
+  }
+  this.$$childElementFunctions[ "isList" ] = xsd_boolean;
+  this.$$elementChildren.push( "isList" );
+  if ( this.$$deserializing == undefined || this.$$deserializing )
+  {
+  this.list = new xsd_boolean();
+  }
+  this.$$childElementFunctions[ "list" ] = xsd_boolean;
+  this.$$elementChildren.push( "list" );
+  if ( this.$$deserializing == undefined || this.$$deserializing )
+  {
+  this.listType = new xsd_int();
+  }
+  this.$$childElementFunctions[ "listType" ] = xsd_int;
+  this.$$elementChildren.push( "listType" );
+  if ( this.$$deserializing == undefined || this.$$deserializing )
+  {
+  this.name = new xsd_string();
+  }
+  this.$$childElementFunctions[ "name" ] = xsd_string;
+  this.$$elementChildren.push( "name" );
+  if ( this.$$deserializing == undefined || this.$$deserializing )
+  {
+  this.required = new xsd_boolean();
+  }
+  this.$$childElementFunctions[ "required" ] = xsd_boolean;
+  this.$$elementChildren.push( "required" );
+}
+
+function WSFlowDetails(  )
+{
+  this.$$nsPrefix = "ns3";
+  this.$$elementFormDefault = "unqualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getName = getName;
+  this.getXmlName = getXmlName;
+  this.setContent = setContent;
+  this.addContent = addContent;
+  this.getContent = getContent;
+  this.isFault = isFault;
+  this.$$elementChildren = new Array();
+  this.$$name = "WSFlowDetails";
+  this.$$xmlNames[ "WSFlowDetails" ] = "WSFlowDetails";
+  this.$$childElementFunctions = new Array();
+  this.getChildFunc = getChildFunc; 
+  if ( arguments.length &gt; 0 )
+  {
+    this.$$deserializing = arguments[0];
+  }
+  if ( this.$$deserializing == undefined || this.$$deserializing)
+  {
+  this.UUID = new xsd_string();
+  }
+  this.$$childElementFunctions[ "UUID" ] = xsd_string;
+  this.UUID.$$nsPrefix = "ns3"
+  this.$$refs[ "UUID" ] = true;
+  this.$$elementChildren.push( "UUID" );
+  if ( this.$$deserializing == undefined || this.$$deserializing)
+  {
+  this.name = new xsd_string();
+  }
+  this.$$childElementFunctions[ "name" ] = xsd_string;
+  this.name.$$nsPrefix = "ns3"
+  this.$$refs[ "name" ] = true;
+  this.$$elementChildren.push( "name" );
+  if ( this.$$deserializing == undefined || this.$$deserializing)
+  {
+  this.path = new xsd_string();
+  }
+  this.$$childElementFunctions[ "path" ] = xsd_string;
+  this.path.$$nsPrefix = "ns3"
+  this.$$refs[ "path" ] = true;
+  this.$$elementChildren.push( "path" );
+  if ( this.$$deserializing == undefined || this.$$deserializing)
+  {
+  this.categories = new ArrayOf_xsd_string_categories();
+  }
+  this.$$childElementFunctions[ "categories" ] = ArrayOf_xsd_string_categories;
+  this.$$elementChildren.push( "categories" );
+  if ( this.$$deserializing == undefined || this.$$deserializing)
+  {
+  this.description = new xsd_string();
+  }
+  this.$$childElementFunctions[ "description" ] = xsd_string;
+  this.$$elementChildren.push( "description" );
+  if ( this.$$deserializing == undefined || this.$$deserializing)
+  {
+  this.domain = new xsd_string();
+  }
+  this.$$childElementFunctions[ "domain" ] = xsd_string;
+  this.$$elementChildren.push( "domain" );
+  if ( this.$$deserializing == undefined || this.$$deserializing)
+  {
+  this.lastModifiedBy = new xsd_string();
+  }
+  this.$$childElementFunctions[ "lastModifiedBy" ] = xsd_string;
+  this.$$elementChildren.push( "lastModifiedBy" );
+  if ( this.$$deserializing == undefined || this.$$deserializing)
+  {
+  this.lastModifiedTime = new xsd_long();
+  }
+  this.$$childElementFunctions[ "lastModifiedTime" ] = xsd_long;
+  this.$$elementChildren.push( "lastModifiedTime" );
+  if ( this.$$deserializing == undefined || this.$$deserializing)
+  {
+  this.parameters = new ArrayOf_tns1_WSFlowInputDef();
+  }
+  this.$$childElementFunctions[ "parameters" ] = ArrayOf_tns1_WSFlowInputDef;
+  this.$$elementChildren.push( "parameters" );
+  if ( this.$$deserializing == undefined || this.$$deserializing)
+  {
+  this.userCanRunFlow = new xsd_boolean();
+  }
+  this.$$childElementFunctions[ "userCanRunFlow" ] = xsd_boolean;
+  this.$$elementChildren.push( "userCanRunFlow" );
+  if ( this.$$deserializing == undefined || this.$$deserializing)
+  {
+  this.flowVersion = new xsd_string();
+  }
+  this.$$childElementFunctions[ "flowVersion" ] = xsd_string;
+  this.$$elementChildren.push( "flowVersion" );
+}
+
+function xsd_base64Binary( val ) 
+{
+  this.$$nsPrefix = "xsd";
+  this.$$elementFormDefault = "unqualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getValue = getValue;
+  this.setValue = setValue;
+  this.$$value = val;
+  this.xsi_type = new String("xsd:base64Binary");
+  this.$$attributes.push( "xsi_type" );
+  this.$$xmlNames["xsi_type"] = "xsi:type";
+  this.$$objNames["xsi:type"] = "xsi_type";
+}
+
+function ArrayOf_tns1_WSFlow(  ) 
+{
+  this.$$nsPrefix = "ns1";
+  this.$$elementFormDefault = "unqualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getName = getName;
+  this.getXmlName = getXmlName;
+  this.setContent = setContent;
+  this.addContent = addContent;
+  this.getContent = getContent;
+  this.isFault = isFault;
+  this.$$elementChildren = new Array();
+  this.$$name = "ArrayOf_tns1_WSFlow";
+  this.$$xmlNames[ "ArrayOf_tns1_WSFlow" ] = "ArrayOf_tns1_WSFlow";
+  this.$$childElementFunctions = new Array();
+  this.getChildFunc = getChildFunc; 
+  if ( arguments.length &gt; 0 )
+  {
+    this.$$deserializing = arguments[0];
+  }
+  this.flows = new Array();  // of WSFlow
+  this.flows.$$nsPrefix = "ns1"
+ // method to create a new member of the item array
+  this.flows.newInstance = function( bDeserializing )
+  {
+    var newObj = new WSFlow( bDeserializing );
+    this.push( newObj );
+    return newObj;
+  }
+ // _newInstance syntax (deprecated) for backward compatibility
+  this.flows_newInstance = function( bDeserializing )
+  {
+    var newLen = this.flows.push( new WSFlow( bDeserializing ) );
+    return this.flows[ newLen-1 ];
+  }
+  this.length = function()
+  {
+    return this.flows.length;
+  }
+  this.WSFlow = this.flows;
+  this.WSFlow_newInstance = this.flows_newInstance;
+  this.WSFlow.newInstance = this.flows.newInstance;
+  this.$$elementChildren.push( "flows" );
+}
+
+function ArrayOf_tns1_WSFolderDetails(  ) 
+{
+  this.$$nsPrefix = "ns1";
+  this.$$elementFormDefault = "unqualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getName = getName;
+  this.getXmlName = getXmlName;
+  this.setContent = setContent;
+  this.addContent = addContent;
+  this.getContent = getContent;
+  this.isFault = isFault;
+  this.$$elementChildren = new Array();
+  this.$$name = "ArrayOf_tns1_WSFolderDetails";
+  this.$$xmlNames[ "ArrayOf_tns1_WSFolderDetails" ] = "ArrayOf_tns1_WSFolderDetails";
+  this.$$childElementFunctions = new Array();
+  this.getChildFunc = getChildFunc; 
+  if ( arguments.length &gt; 0 )
+  {
+    this.$$deserializing = arguments[0];
+  }
+  this.folders = new Array();  // of WSFolderDetails
+  this.folders.$$nsPrefix = "ns1"
+ // method to create a new member of the item array
+  this.folders.newInstance = function( bDeserializing )
+  {
+    var newObj = new WSFolderDetails( bDeserializing );
+    this.push( newObj );
+    return newObj;
+  }
+ // _newInstance syntax (deprecated) for backward compatibility
+  this.folders_newInstance = function( bDeserializing )
+  {
+    var newLen = this.folders.push( new WSFolderDetails( bDeserializing ) );
+    return this.folders[ newLen-1 ];
+  }
+  this.length = function()
+  {
+    return this.folders.length;
+  }
+  this.WSFolderDetails = this.folders;
+  this.WSFolderDetails_newInstance = this.folders_newInstance;
+  this.WSFolderDetails.newInstance = this.folders.newInstance;
+  this.$$elementChildren.push( "folders" );
+}
+
+function ArrayOf_xsd_string_categories(  ) 
+{
+  this.$$nsPrefix = "ns1";
+  this.$$elementFormDefault = "unqualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getName = getName;
+  this.getXmlName = getXmlName;
+  this.setContent = setContent;
+  this.addContent = addContent;
+  this.getContent = getContent;
+  this.isFault = isFault;
+  this.$$elementChildren = new Array();
+  this.$$name = "ArrayOf_xsd_string";
+  this.$$xmlNames[ "ArrayOf_xsd_string" ] = "ArrayOf_xsd_string";
+  this.$$childElementFunctions = new Array();
+  this.getChildFunc = getChildFunc; 
+  if ( arguments.length &gt; 0 )
+  {
+    this.$$deserializing = arguments[0];
+  }
+  this.categories = new Array();  // of xsd_string
+  this.categories.$$nsPrefix = "ns1"
+ // method to create a new member of the item array
+  this.categories.newInstance = function( bDeserializing )
+  {
+    var newObj = new xsd_string(  );
+    this.push( newObj );
+    return newObj;
+  }
+ // _newInstance syntax (deprecated) for backward compatibility
+  this.categories_newInstance = function( bDeserializing )
+  {
+    var newLen = this.categories.push( new xsd_string(  ) );
+    return this.categories[ newLen-1 ];
+  }
+  this.length = function()
+  {
+    return this.categories.length;
+  }
+  this.xsd_string = this.categories;
+  this.xsd_string_newInstance = this.categories_newInstance;
+  this.xsd_string.newInstance = this.categories.newInstance;
+  this.$$elementChildren.push( "categories" );
+}
+
+function ArrayOf_xsd_string(  ) 
+{
+  this.$$nsPrefix = "ns1";
+  this.$$elementFormDefault = "unqualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getName = getName;
+  this.getXmlName = getXmlName;
+  this.setContent = setContent;
+  this.addContent = addContent;
+  this.getContent = getContent;
+  this.isFault = isFault;
+  this.$$elementChildren = new Array();
+  this.$$name = "ArrayOf_xsd_string";
+  this.$$xmlNames[ "ArrayOf_xsd_string" ] = "ArrayOf_xsd_string";
+  this.$$childElementFunctions = new Array();
+  this.getChildFunc = getChildFunc; 
+  if ( arguments.length &gt; 0 )
+  {
+    this.$$deserializing = arguments[0];
+  }
+  this.item = new Array();  // of xsd_string
+  this.item.$$nsPrefix = "ns1"
+ // method to create a new member of the item array
+  this.item.newInstance = function( bDeserializing )
+  {
+    var newObj = new xsd_string(  );
+    this.push( newObj );
+    return newObj;
+  }
+ // _newInstance syntax (deprecated) for backward compatibility
+  this.item_newInstance = function( bDeserializing )
+  {
+    var newLen = this.item.push( new xsd_string(  ) );
+    return this.item[ newLen-1 ];
+  }
+  this.length = function()
+  {
+    return this.item.length;
+  }
+  this.xsd_string = this.item;
+  this.xsd_string_newInstance = this.item_newInstance;
+  this.xsd_string.newInstance = this.item.newInstance;
+  this.$$elementChildren.push( "item" );
+}
+
+function ArrayOf_tns1_WSFlowInput(  ) 
+{
+  this.$$nsPrefix = "ns1";
+  this.$$elementFormDefault = "unqualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getName = getName;
+  this.getXmlName = getXmlName;
+  this.setContent = setContent;
+  this.addContent = addContent;
+  this.getContent = getContent;
+  this.isFault = isFault;
+  this.$$elementChildren = new Array();
+  this.$$name = "ArrayOf_tns1_WSFlowInput";
+  this.$$xmlNames[ "ArrayOf_tns1_WSFlowInput" ] = "ArrayOf_tns1_WSFlowInput";
+  this.$$childElementFunctions = new Array();
+  this.getChildFunc = getChildFunc; 
+  if ( arguments.length &gt; 0 )
+  {
+    this.$$deserializing = arguments[0];
+  }
+  this.item = new Array();  // of WSFlowInput
+  this.item.$$nsPrefix = "ns1"
+ // method to create a new member of the item array
+  this.item.newInstance = function( bDeserializing )
+  {
+    var newObj = new WSFlowInput( bDeserializing );
+    this.push( newObj );
+    return newObj;
+  }
+ // _newInstance syntax (deprecated) for backward compatibility
+  this.item_newInstance = function( bDeserializing )
+  {
+    var newLen = this.item.push( new WSFlowInput( bDeserializing ) );
+    return this.item[ newLen-1 ];
+  }
+  this.length = function()
+  {
+    return this.item.length;
+  }
+  this.WSFlowInput = this.item;
+  this.WSFlowInput_newInstance = this.item_newInstance;
+  this.WSFlowInput.newInstance = this.item.newInstance;
+  this.$$elementChildren.push( "item" );
+}
+
+function ArrayOfArrayOf_xsd_string(  ) 
+{
+  this.$$nsPrefix = "ns1";
+  this.$$elementFormDefault = "unqualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getName = getName;
+  this.getXmlName = getXmlName;
+  this.setContent = setContent;
+  this.addContent = addContent;
+  this.getContent = getContent;
+  this.isFault = isFault;
+  this.$$elementChildren = new Array();
+  this.$$name = "ArrayOfArrayOf_xsd_string";
+  this.$$xmlNames[ "ArrayOfArrayOf_xsd_string" ] = "ArrayOfArrayOf_xsd_string";
+  this.$$childElementFunctions = new Array();
+  this.getChildFunc = getChildFunc; 
+  if ( arguments.length &gt; 0 )
+  {
+    this.$$deserializing = arguments[0];
+  }
+  this.item = new Array();  // of xsd_string
+  this.item.$$nsPrefix = "ns1"
+ // method to create a new member of the item array
+  this.item.newInstance = function( bDeserializing )
+  {
+    var newObj = new xsd_string(  );
+    this.push( newObj );
+    return newObj;
+  }
+ // _newInstance syntax (deprecated) for backward compatibility
+  this.item_newInstance = function( bDeserializing )
+  {
+    var newLen = this.item.push( new xsd_string(  ) );
+    return this.item[ newLen-1 ];
+  }
+  this.length = function()
+  {
+    return this.item.length;
+  }
+  this.xsd_string = this.item;
+  this.xsd_string_newInstance = this.item_newInstance;
+  this.xsd_string.newInstance = this.item.newInstance;
+  this.$$elementChildren.push( "item" );
+}
+
+function ArrayOf_tns1_WSFlowInputDef(  ) 
+{
+  this.$$nsPrefix = "ns1";
+  this.$$elementFormDefault = "unqualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getName = getName;
+  this.getXmlName = getXmlName;
+  this.setContent = setContent;
+  this.addContent = addContent;
+  this.getContent = getContent;
+  this.isFault = isFault;
+  this.$$elementChildren = new Array();
+  this.$$name = "ArrayOf_tns1_WSFlowInputDef";
+  this.$$xmlNames[ "ArrayOf_tns1_WSFlowInputDef" ] = "ArrayOf_tns1_WSFlowInputDef";
+  this.$$childElementFunctions = new Array();
+  this.getChildFunc = getChildFunc; 
+  if ( arguments.length &gt; 0 )
+  {
+    this.$$deserializing = arguments[0];
+  }
+  this.parameters = new Array();  // of WSFlowInputDef
+  this.parameters.$$nsPrefix = "ns1"
+ // method to create a new member of the item array
+  this.parameters.newInstance = function( bDeserializing )
+  {
+    var newObj = new WSFlowInputDef( bDeserializing );
+    this.push( newObj );
+    return newObj;
+  }
+ // _newInstance syntax (deprecated) for backward compatibility
+  this.parameters_newInstance = function( bDeserializing )
+  {
+    var newLen = this.parameters.push( new WSFlowInputDef( bDeserializing ) );
+    return this.parameters[ newLen-1 ];
+  }
+  this.length = function()
+  {
+    return this.parameters.length;
+  }
+  this.WSFlowInputDef = this.parameters;
+  this.WSFlowInputDef_newInstance = this.parameters_newInstance;
+  this.WSFlowInputDef.newInstance = this.parameters.newInstance;
+  this.$$elementChildren.push( "parameters" );
+}
+
+function ArrayOf_tns1_WSFlowDetails(  ) 
+{
+  this.$$nsPrefix = "ns1";
+  this.$$elementFormDefault = "unqualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getName = getName;
+  this.getXmlName = getXmlName;
+  this.setContent = setContent;
+  this.addContent = addContent;
+  this.getContent = getContent;
+  this.isFault = isFault;
+  this.$$elementChildren = new Array();
+  this.$$name = "ArrayOf_tns1_WSFlowDetails";
+  this.$$xmlNames[ "ArrayOf_tns1_WSFlowDetails" ] = "ArrayOf_tns1_WSFlowDetails";
+  this.$$childElementFunctions = new Array();
+  this.getChildFunc = getChildFunc; 
+  if ( arguments.length &gt; 0 )
+  {
+    this.$$deserializing = arguments[0];
+  }
+  this.getFlowDetailsReturn = new Array();  // of WSFlowDetails
+  this.getFlowDetailsReturn.$$nsPrefix = "ns1"
+ // method to create a new member of the item array
+  this.getFlowDetailsReturn.newInstance = function( bDeserializing )
+  {
+    var newObj = new WSFlowDetails( bDeserializing );
+    this.push( newObj );
+    return newObj;
+  }
+ // _newInstance syntax (deprecated) for backward compatibility
+  this.getFlowDetailsReturn_newInstance = function( bDeserializing )
+  {
+    var newLen = this.getFlowDetailsReturn.push( new WSFlowDetails( bDeserializing ) );
+    return this.getFlowDetailsReturn[ newLen-1 ];
+  }
+  this.length = function()
+  {
+    return this.getFlowDetailsReturn.length;
+  }
+  this.WSFlowDetails = this.getFlowDetailsReturn;
+  this.WSFlowDetails_newInstance = this.getFlowDetailsReturn_newInstance;
+  this.WSFlowDetails.newInstance = this.getFlowDetailsReturn.newInstance;
+  this.$$elementChildren.push( "getFlowDetailsReturn" );
+}
+
+function getFlowDetailsRequest(  ) 
+{
+  this.$$nsPrefix = "ns1";
+  this.$$elementFormDefault = "unqualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getName = getName;
+  this.getXmlName = getXmlName;
+  this.setContent = setContent;
+  this.addContent = addContent;
+  this.getContent = getContent;
+  this.isFault = isFault;
+  this.$$elementChildren = new Array();
+  this.$$name = "getFlowDetails";
+  this.$$xmlNames[ "getFlowDetails" ] = "getFlowDetails";
+  this.$$childElementFunctions = new Array();
+  this.getChildFunc = getChildFunc; 
+  if ( arguments.length &gt; 0 )
+  {
+    this.$$deserializing = arguments[0];
+  }
+  this.xmlns_ns1 = new String("http://wscentralservice.services.dharma.iconclude.com");
+  this.$$attributes.push( "xmlns_ns1" );
+  this.$$xmlNames["xmlns_ns1"] = "xmlns:ns1";
+  this.$$objNames["xmlns:ns1"] = "xmlns_ns1";
+  if ( this.$$deserializing == undefined ||this.$$deserializing )
+  {
+  this.flowUuids = new ArrayOf_xsd_string();
+  }
+  this.$$childElementFunctions[ "flowUuids" ] = ArrayOf_xsd_string;
+  this.$$elementChildren.push( "flowUuids" );
+}
+
+function getFlowDetailsResponse(  ) 
+{
+  this.$$nsPrefix = "ns1";
+  this.$$elementFormDefault = "unqualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getName = getName;
+  this.getXmlName = getXmlName;
+  this.setContent = setContent;
+  this.addContent = addContent;
+  this.getContent = getContent;
+  this.isFault = isFault;
+  this.$$elementChildren = new Array();
+  this.$$name = "getFlowDetailsResponse";
+  this.$$xmlNames[ "getFlowDetailsResponse" ] = "getFlowDetailsResponse";
+  this.$$childElementFunctions = new Array();
+  this.getChildFunc = getChildFunc; 
+  if ( arguments.length &gt; 0 )
+  {
+    this.$$deserializing = arguments[0];
+  }
+  this.xmlns_ns1 = new String("http://wscentralservice.services.dharma.iconclude.com");
+  this.$$attributes.push( "xmlns_ns1" );
+  this.$$xmlNames["xmlns_ns1"] = "xmlns:ns1";
+  this.$$objNames["xmlns:ns1"] = "xmlns_ns1";
+  if ( this.$$deserializing == undefined )
+  {
+  this.getFlowDetailsReturn = new ArrayOf_tns1_WSFlowDetails();
+  }
+  this.$$childElementFunctions[ "getFlowDetailsReturn" ] = ArrayOf_tns1_WSFlowDetails;
+  this.$$elementChildren.push( "getFlowDetailsReturn" );
+}
+
+
+function listRequest(  ) 
+{
+  this.$$nsPrefix = "ns1";
+  this.$$elementFormDefault = "unqualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getName = getName;
+  this.getXmlName = getXmlName;
+  this.setContent = setContent;
+  this.addContent = addContent;
+  this.getContent = getContent;
+  this.isFault = isFault;
+  this.$$elementChildren = new Array();
+  this.$$name = "list";
+  this.$$xmlNames[ "list" ] = "list";
+  this.$$childElementFunctions = new Array();
+  this.getChildFunc = getChildFunc; 
+  if ( arguments.length &gt; 0 )
+  {
+    this.$$deserializing = arguments[0];
+  }
+  this.xmlns_ns1 = new String("http://wscentralservice.services.dharma.iconclude.com");
+  this.$$attributes.push( "xmlns_ns1" );
+  this.$$xmlNames["xmlns_ns1"] = "xmlns:ns1";
+  this.$$objNames["xmlns:ns1"] = "xmlns_ns1";
+  if ( this.$$deserializing == undefined )
+  {
+  this.basePath = new xsd_string();
+  }
+  this.$$childElementFunctions[ "basePath" ] = xsd_string;
+  this.$$elementChildren.push( "basePath" );
+}
+
+function listResponse(  ) 
+{
+  this.$$nsPrefix = "ns1";
+  this.$$elementFormDefault = "unqualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getName = getName;
+  this.getXmlName = getXmlName;
+  this.setContent = setContent;
+  this.addContent = addContent;
+  this.getContent = getContent;
+  this.isFault = isFault;
+  this.$$elementChildren = new Array();
+  this.$$name = "listResponse";
+  this.$$xmlNames[ "listResponse" ] = "listResponse";
+  this.$$childElementFunctions = new Array();
+  this.getChildFunc = getChildFunc; 
+  if ( arguments.length &gt; 0 )
+  {
+    this.$$deserializing = arguments[0];
+  }
+  this.xmlns_ns1 = new String("http://wscentralservice.services.dharma.iconclude.com");
+  this.$$attributes.push( "xmlns_ns1" );
+  this.$$xmlNames["xmlns_ns1"] = "xmlns:ns1";
+  this.$$objNames["xmlns:ns1"] = "xmlns_ns1";
+  if ( this.$$deserializing == undefined )
+  {
+  this.listReturn = new WSFolderContent();
+  }
+  this.$$childElementFunctions[ "listReturn" ] = WSFolderContent;
+  this.$$elementChildren.push( "listReturn" );
+}
+
+function getChildFunc( childElemName ) 
+{
+if(childElemName=="parameters"){
+	print(this.$$childElementFunctions["isList"].name);
+}
+ return this.$$childElementFunctions[ childElemName ];
+}
+
+function getName( ) 
+{
+ return this.$$name;
+}
+
+function getXmlName( ) 
+{
+ return this.$$xmlNames[ this.$$name ];
+}
+
+function getValue( ) 
+{
+ return this.$$value;
+}
+
+function setValue( value ) 
+{
+ this.$$value = value;
+}
+
+function setContent( obj, obj2 ) 
+{
+  var name = obj.getXmlName();
+  if ( name.indexOf(":") &gt; 0 ) 
+  {
+    name = name.after(":");
+  }
+  this.$$elementChildren.length = 0;
+  this.$$elementChildren.push( name );
+  this[ name ] = obj;
+
+  this.$$refs[ name ] = true;
+
+  if ( obj2 != undefined )
+  {
+    name = obj2.getXmlName();
+    if ( name.indexOf(":") &gt; 0 ) 
+    {
+      name = name.after(":");
+    }
+
+    this.$$elementChildren.push( name );
+    this.$$refs[ name ] = true;
+
+    this[ name ] = obj2;
+  }
+}
+
+function addContent( obj ) 
+{
+  var name = obj.getXmlName();
+  if ( name.indexOf(":") &gt; 0 ) 
+  {
+    name = name.after(":");
+  }
+
+  this.$$elementChildren.push( name );
+  this.$$refs[ name ] = true;
+
+  this[ name ] = obj;
+}
+
+function getContent( ) 
+{
+  return this[this.$$elementChildren[0]];
+}
+
+function isFault( ) 
+{
+  return this.$$name == "soap_Fault";
+}
+
+function ArrayOf_xsd_string_defaultValues	(  ) 
+{
+  this.$$nsPrefix = "ns1";
+  this.$$elementFormDefault = "unqualified";
+  this.$$attributes = new Array();
+  this.$$xmlNames = new Array();
+  this.$$objNames = new Array();
+  this.$$minOccurs = new Array();
+  this.$$refs = new Array();
+  this.getName = getName;
+  this.getXmlName = getXmlName;
+  this.setContent = setContent;
+  this.addContent = addContent;
+  this.getContent = getContent;
+  this.isFault = isFault;
+  this.$$elementChildren = new Array();
+  this.$$name = "ArrayOf_xsd_string";
+  this.$$xmlNames[ "ArrayOf_xsd_string" ] = "ArrayOf_xsd_string";
+  this.$$childElementFunctions = new Array();
+  this.getChildFunc = getChildFunc; 
+  if ( arguments.length &gt; 0 )
+  {
+    this.$$deserializing = arguments[0];
+  }
+  this.defaultValues = new Array();  // of xsd_string
+  this.defaultValues.$$nsPrefix = "ns1"
+ // method to create a new member of the item array
+  this.defaultValues.newInstance = function( bDeserializing )
+  {
+    var newObj = new xsd_string(  );
+    this.push( newObj );
+    return newObj;
+  }
+ // _newInstance syntax (deprecated) for backward compatibility
+  this.defaultValues_newInstance = function( bDeserializing )
+  {
+    var newLen = this.defaultValues.push( new xsd_string(  ) );
+    return this.defaultValues[ newLen-1 ];
+  }
+  this.length = function()
+  {
+    return this.defaultValues.length;
+  }
+  this.xsd_string = this.defaultValues;
+  this.xsd_string_newInstance = this.defaultValues_newInstance;
+  this.xsd_string.newInstance = this.defaultValues.newInstance;
+  this.$$elementChildren.push( "defaultValues" );
+}
+// Ensure that material in lib.SOAP is available
+
+lib.SOAP.init();
+
+/// End ----------------
+
+</script>
+    <package type="string">SMOO</package>
+    <sysmodtime type="dateTime">01/21/10 14:47:52</sysmodtime>
+    <sysmoduser type="string">yangweny</sysmoduser>
+    <sysmodcount type="decimal">2</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

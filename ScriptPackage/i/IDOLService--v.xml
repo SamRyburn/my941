@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptPackage">
+  <record id="name=&quot;IDOLService&quot;" recordid="IDOLService">
+    <name type="string">IDOLService</name>
+    <description type="string">Smart Analyticts API for other functions</description>
+    <sysmodtime type="dateTime">07/16/17 17:01:45</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+  </record>
+</recordset>

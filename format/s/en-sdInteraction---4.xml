@@ -1,0 +1,1070 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;sdInteraction&quot;" recordid="en - sdInteraction">
+    <name mandatory="true" type="string">sdInteraction</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">0</line>
+        <column type="decimal">0</column>
+        <length type="decimal">81</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Interaction</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Name=topframe	Height=29	Width=162	X=0	Y=0	Caption=Interaction	canCollapse=0	floatGroup=1	isExpanded=1</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">0</line>
+        <column type="decimal">0</column>
+        <length type="decimal">81</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Name=lFrame0_0	Height=27	Width=162	X=0	Y=0	Caption= 	canCollapse=0	floatGroup=1	isExpanded=1	type=widgetBox</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">0</line>
+        <column type="decimal">0</column>
+        <length type="decimal">81</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Interaction</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=title	Height=2	Width=162	X=0	Y=0	Caption=Interaction	BackColor=12	FontIncrease=4	Bold=1</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">2</column>
+        <length type="decimal">14</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Interaction ID</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=caption3_1	Height=2	Width=28	X=2	Y=3	Caption=Interaction ID:	labelfor=Name</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">30</column>
+        <length type="decimal">21</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">Name</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Name_3_1	Input=Name	Height=2	Width=42	X=30	Y=3	MaxChars=20	TabStop=1	ReadOnly=1</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">82</column>
+        <length type="decimal">14</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Assigned Group</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=caption3_2	Height=2	Width=28	X=82	Y=3	Caption=Assigned Group:</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">110</column>
+        <length type="decimal">21</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">hasAssigned.FunctionalGroup.DisplayLabel</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComFill;Name=hasAssigned.FunctionalGroup.DisplayLabel_3_2	Input=hasAssigned.FunctionalGroup.DisplayLabel	Height=2	Width=42	X=110	Y=3	FillButtonID=901	ThirdButtonID=8	ThirdButtonVisible=1	ComboButtonVisible=0	ComboButtonVisible=0</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">2</column>
+        <length type="decimal">14</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Status</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=caption6_1	Height=2	Width=28	X=2	Y=6	Caption=Status:	labelfor=InteractionStatus</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">30</column>
+        <length type="decimal">21</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">InteractionStatus</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;Name=InteractionStatus_6_1	Input=InteractionStatus	Height=2	Width=42	X=30	Y=6	BoxLines=8	SelectOnly=1	ValueList=Assign;Categorize;Closed;Dispatched;In Progress;Resolved;Suspended;Withdrawal Requested	DisplayList=Assign;Categorize;Closed;Dispatched;In Progress;Resolved;Suspended;Withdrawal Requested</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">82</column>
+        <length type="decimal">14</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Phase</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=caption6_2	Height=2	Width=28	X=82	Y=6	Caption=Phase:	labelfor=WorkflowState</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">110</column>
+        <length type="decimal">21</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">WorkflowState</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;Name=WorkflowState_6_2	Input=WorkflowState	Height=2	Width=42	X=110	Y=6	ReadOnly=1	BoxLines=6	SelectOnly=1	ValueList=Categorization;Closure;Logging;Review;Withdrawal;Work In Progress	DisplayList=Categorization;Closure;Logging;Review;Withdrawal;Work In Progress</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">2</column>
+        <length type="decimal">14</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Create Time</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=caption9_1	Height=2	Width=28	X=2	Y=9	Caption=Create Time:	labelfor=CreateTime</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">30</column>
+        <length type="decimal">21</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">CreateTime</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">DateTime;Name=CreateTime_9_1	Input=CreateTime	Height=2	Width=42	X=30	Y=9	ReadOnly=1</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">82</column>
+        <length type="decimal">14</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Owner</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=caption9_2	Height=2	Width=28	X=82	Y=9	Caption=Owner:</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">110</column>
+        <length type="decimal">21</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">isOwnedBy.Person.DisplayLabel</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComFill;Name=isOwnedBy.Person.DisplayLabel_9_2	Input=isOwnedBy.Person.DisplayLabel	Height=2	Width=42	X=110	Y=9	FillButtonID=901	ThirdButtonID=8	ThirdButtonVisible=1	ComboButtonVisible=0	ComboButtonVisible=0</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">12</line>
+        <column type="decimal">2</column>
+        <length type="decimal">14</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Primary Email</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=caption12_1	Height=2	Width=28	X=2	Y=12	Caption=Primary Email:	labelfor=isOwnedBy.Person.PrimaryEmail</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">12</line>
+        <column type="decimal">30</column>
+        <length type="decimal">61</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">isOwnedBy.Person.PrimaryEmail</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">MultiText;Name=isOwnedBy.Person.PrimaryEmail_12_1	Input=isOwnedBy.Person.PrimaryEmail	Height=4	Width=122	X=30	Y=12	MaxChars=250	ReadOnly=1</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">17</line>
+        <column type="decimal">2</column>
+        <length type="decimal">14</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Requested By</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=caption17_1	Height=2	Width=28	X=2	Y=17	Caption=Requested By:</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">17</line>
+        <column type="decimal">30</column>
+        <length type="decimal">21</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">isRequestedBy.Person.DisplayLabel</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComFill;Name=isRequestedBy.Person.DisplayLabel_17_1	Input=isRequestedBy.Person.DisplayLabel	Height=2	Width=42	X=30	Y=17	FillButtonID=901	ThirdButtonID=8	ThirdButtonVisible=1	ComboButtonVisible=0	ComboButtonVisible=0</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">20</line>
+        <column type="decimal">2</column>
+        <length type="decimal">14</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Primary Email</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=caption20_1	Height=2	Width=28	X=2	Y=20	Caption=Primary Email:	labelfor=isRequestedBy.Person.PrimaryEmail</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">20</line>
+        <column type="decimal">30</column>
+        <length type="decimal">61</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">isRequestedBy.Person.PrimaryEmail</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">MultiText;Name=isRequestedBy.Person.PrimaryEmail_20_1	Input=isRequestedBy.Person.PrimaryEmail	Height=4	Width=122	X=30	Y=20	MaxChars=250	ReadOnly=1</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">25</line>
+        <column type="decimal">2</column>
+        <length type="decimal">14</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Service</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=caption25_1	Height=2	Width=28	X=2	Y=25	Caption=Service:</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">25</line>
+        <column type="decimal">30</column>
+        <length type="decimal">21</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">isRegisteredFor.Service.DisplayLabel</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComFill;Name=isRegisteredFor.Service.DisplayLabel_25_1	Input=isRegisteredFor.Service.DisplayLabel	Height=2	Width=42	X=30	Y=25	FillButtonID=901	ThirdButtonID=8	ThirdButtonVisible=1	ComboButtonVisible=0	ComboButtonVisible=0</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">33</line>
+        <column type="decimal">0</column>
+        <length type="decimal">81</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Categorization</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Name=frame0_33	Height=12	Width=162	X=0	Y=33	Caption=Categorization	canCollapse=1	floatGroup=1	isExpanded=1</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">35</line>
+        <column type="decimal">0</column>
+        <length type="decimal">81</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Name=lFrame0_35	Height=8	Width=162	X=0	Y=35	Caption= 	canCollapse=0	floatGroup=1	isExpanded=1	type=widgetBox</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">35</line>
+        <column type="decimal">2</column>
+        <length type="decimal">14</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Category</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=caption35_1	Height=2	Width=28	X=2	Y=35	Caption=Category:</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">35</line>
+        <column type="decimal">30</column>
+        <length type="decimal">21</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">isLinkedTo.Category.DisplayLabel</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComFill;Name=isLinkedTo.Category.DisplayLabel_35_1	Input=isLinkedTo.Category.DisplayLabel	Height=2	Width=42	X=30	Y=35	ReadOnly=1	FillButtonID=901	ThirdButtonID=8	ThirdButtonVisible=1	ComboButtonVisible=0	ComboButtonVisible=0</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">35</line>
+        <column type="decimal">82</column>
+        <length type="decimal">14</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Subcategory</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=caption35_2	Height=2	Width=28	X=82	Y=35	Caption=Subcategory:	?Visible=[isLinkedTo.Category.DisplayLabel]="Request for Administration" | [isLinkedTo.Category.DisplayLabel]="Request for Information"</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">35</line>
+        <column type="decimal">110</column>
+        <length type="decimal">21</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">isLinkedTo.Subcategory.DisplayLabel</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComFill;Name=isLinkedTo.Subcategory.DisplayLabel_35_2	Input=isLinkedTo.Subcategory.DisplayLabel	Height=2	Width=42	X=110	Y=35	FillButtonID=901	ThirdButtonID=8	ThirdButtonVisible=1	ComboButtonVisible=0	?Visible=[isLinkedTo.Category.DisplayLabel]="Request for Administration" | [isLinkedTo.Category.DisplayLabel]="Request for Information"	ComboButtonVisible=0</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">38</line>
+        <column type="decimal">2</column>
+        <length type="decimal">14</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Impact</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=caption38_1	Height=2	Width=28	X=2	Y=38	Caption=Impact:	labelfor=ImpactScope</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">38</line>
+        <column type="decimal">30</column>
+        <length type="decimal">21</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">ImpactScope</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;Name=ImpactScope_38_1	Input=ImpactScope	Height=2	Width=42	X=30	Y=38	BoxLines=3	SelectOnly=1	ValueList=high;medium;low	DisplayList=1 - High;2 - Medium;3 - Low</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">38</line>
+        <column type="decimal">82</column>
+        <length type="decimal">14</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Urgency</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=caption38_2	Height=2	Width=28	X=82	Y=38	Caption=Urgency:	labelfor=Urgency</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">38</line>
+        <column type="decimal">110</column>
+        <length type="decimal">21</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">Urgency</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;Name=Urgency_38_2	Input=Urgency	Height=2	Width=42	X=110	Y=38	BoxLines=4	SelectOnly=1	ValueList=1_critical;2_high;3_average;4_low	DisplayList=1 - Critical;2 - High;3 - Average;4 - Low</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">41</line>
+        <column type="decimal">2</column>
+        <length type="decimal">14</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Priority</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=caption41_1	Height=2	Width=28	X=2	Y=41	Caption=Priority:	labelfor=Priority</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">41</line>
+        <column type="decimal">30</column>
+        <length type="decimal">21</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">Priority</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;Name=Priority_41_1	Input=Priority	Height=2	Width=42	X=30	Y=41	ReadOnly=1	BoxLines=4	SelectOnly=1	ValueList=1;2;3;4	DisplayList=1 - Critical;2 - High;3 - Normal;4 - Low</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">49</line>
+        <column type="decimal">0</column>
+        <length type="decimal">81</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Description</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Name=frame0_49	Height=19	Width=162	X=0	Y=49	Caption=Description	canCollapse=1	floatGroup=1	isExpanded=1</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">51</line>
+        <column type="decimal">0</column>
+        <length type="decimal">81</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Name=lFrame0_51	Height=15	Width=162	X=0	Y=51	Caption= 	canCollapse=0	floatGroup=1	isExpanded=1	type=widgetBox</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">51</line>
+        <column type="decimal">2</column>
+        <length type="decimal">14</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Title</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=caption51_1	Height=2	Width=28	X=2	Y=51	Caption=Title:	labelfor=Title</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">51</line>
+        <column type="decimal">30</column>
+        <length type="decimal">61</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">Title</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Title_51_1	Input=Title	Height=2	Width=122	X=30	Y=51	MaxChars=250</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">54</line>
+        <column type="decimal">2</column>
+        <length type="decimal">14</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Description</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=caption54_1	Height=2	Width=28	X=2	Y=54	Caption=Description:	labelfor=Description</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">54</line>
+        <column type="decimal">30</column>
+        <length type="decimal">61</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">Description</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">MultiText;Name=Description_54_1	Input=Description	Height=12	Width=122	X=30	Y=54	MaxChars=4000</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">72</line>
+        <column type="decimal">0</column>
+        <length type="decimal">81</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Update</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Name=frame0_72	Height=19	Width=162	X=0	Y=72	Caption=Update	canCollapse=1	floatGroup=1	isExpanded=1</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">74</line>
+        <column type="decimal">0</column>
+        <length type="decimal">81</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Name=lFrame0_74	Height=15	Width=162	X=0	Y=74	Caption= 	canCollapse=0	floatGroup=1	isExpanded=1	type=widgetBox</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">74</line>
+        <column type="decimal">2</column>
+        <length type="decimal">14</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Update Type</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=caption74_1	Height=2	Width=28	X=2	Y=74	Caption=Update Type:</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">74</line>
+        <column type="decimal">30</column>
+        <length type="decimal">21</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">$activity.type</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;Name=$activity.type_74_1	Input=$activity.type	Height=2	Width=42	X=30	Y=74	BoxLines=7	SelectOnly=1	ValueList=Communication_from_Customer;Interaction_Suspended;Interaction_Unsuspended;Operator_Update;Referred;Update_from_Customer;Withdraw	DisplayList=Communication From Customer;Interaction Suspended;Interaction Unsuspended;Operator Update;Referred;Update From Customer;Withdraw</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">74</line>
+        <column type="decimal">82</column>
+        <length type="decimal">14</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Customer Visible</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=caption74_2	Height=2	Width=28	X=82	Y=74	Caption=Customer Visible:</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">74</line>
+        <column type="decimal">110</column>
+        <length type="decimal">21</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">$cust.visible</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Name=$cust.visible_74_2	Input=$cust.visible	Height=2	Width=42	X=110	Y=74</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">77</line>
+        <column type="decimal">2</column>
+        <length type="decimal">14</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Update</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=caption77_1	Height=2	Width=28	X=2	Y=77	Caption=Update:</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">77</line>
+        <column type="decimal">30</column>
+        <length type="decimal">61</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">$pmc.actions</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">MultiText;Name=$pmc.actions_77_1	Input=$pmc.actions	Height=12	Width=122	X=30	Y=77	MaxChars=4000</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">95</line>
+        <column type="decimal">0</column>
+        <length type="decimal">81</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Solution</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Name=frame0_95	Height=19	Width=162	X=0	Y=95	Caption=Solution	canCollapse=1	floatGroup=1	isExpanded=1</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">97</line>
+        <column type="decimal">0</column>
+        <length type="decimal">81</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Name=lFrame0_97	Height=15	Width=162	X=0	Y=97	Caption= 	canCollapse=0	floatGroup=1	isExpanded=1	type=widgetBox</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">97</line>
+        <column type="decimal">2</column>
+        <length type="decimal">14</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Completion Code</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=caption97_1	Height=2	Width=28	X=2	Y=97	Caption=Completion Code:	labelfor=CompletionCode</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">97</line>
+        <column type="decimal">30</column>
+        <length type="decimal">21</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">CompletionCode</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;Name=CompletionCode_97_1	Input=CompletionCode	Height=2	Width=42	X=30	Y=97	BoxLines=7	SelectOnly=1	ValueList=Cancelled;Fulfilled;Invalid;Out of Scope;Resolved(Workaround);Unable to Solve;Withdrawn by User	DisplayList=Cancelled;Fulfilled;Invalid;Out of Scope;Resolved with Workaround;Unable to Solve;Withdrawn by User</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">100</line>
+        <column type="decimal">2</column>
+        <length type="decimal">14</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Solution</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Name=caption100_1	Height=2	Width=28	X=2	Y=100	Caption=Solution:	labelfor=Solution</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">100</line>
+        <column type="decimal">30</column>
+        <length type="decimal">61</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">Solution</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">MultiText;Name=Solution_100_1	Input=Solution	Height=12	Width=122	X=30	Y=100	MaxChars=4000</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">118</line>
+        <column type="decimal">0</column>
+        <length type="decimal">81</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Activities</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Name=frame0_118	Height=30	Width=162	X=0	Y=118	Caption=Activities	canCollapse=1	floatGroup=1	isExpanded=1</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">120</line>
+        <column type="decimal">0</column>
+        <length type="decimal">81</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Name=lFrame0_120	Height=26	Width=162	X=0	Y=120	Caption= 	canCollapse=0	floatGroup=1	isExpanded=1	type=widgetBox</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">120</line>
+        <column type="decimal">2</column>
+        <length type="decimal">20</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Group by Activity Type</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Name=button120_1	Height=2	Width=40	X=2	Y=120	Caption=Group by Activity Type	ButtonID=904	Style=1</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">64</flags>
+        <line type="decimal">128</line>
+        <column type="decimal">4</column>
+        <length type="decimal">50</length>
+        <window type="decimal">4</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">hasParts.ActivityLog</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">SubFormat;Name=subview26	Input=hasParts.ActivityLog	Height=16	Width=100	X=4	Y=128	Caption=subview26	DisplayUsingTable=1	VirtualJoin=1	Format=sdActivity.qbe</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">152</line>
+        <column type="decimal">0</column>
+        <length type="decimal">81</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Related Incidents</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Name=frame0_152	Height=26	Width=162	X=0	Y=152	Caption=Related Incidents	canCollapse=1	floatGroup=1	isExpanded=1</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">154</line>
+        <column type="decimal">0</column>
+        <length type="decimal">81</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Name=lFrame0_154	Height=22	Width=162	X=0	Y=154	Caption= 	canCollapse=0	floatGroup=1	isExpanded=1	type=widgetBox</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">64</flags>
+        <line type="decimal">158</line>
+        <column type="decimal">4</column>
+        <length type="decimal">50</length>
+        <window type="decimal">4</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">isLinkedTo.Incident</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">SubFormat;Name=subview28	Input=isLinkedTo.Incident	Height=16	Width=100	X=4	Y=158	Caption=subview28	DisplayUsingTable=1	VirtualJoin=1	Format=fk1sdLinkedIncidents.qbe</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">182</line>
+        <column type="decimal">0</column>
+        <length type="decimal">81</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Related Interactions</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Name=frame0_182	Height=-2	Width=162	X=0	Y=182	Caption=Related Interactions	canCollapse=1	floatGroup=1	isExpanded=1</property>
+      </field>
+      <field sctype="structure">
+        <flags NullValue="1" type="decimal"/>
+        <line NullValue="1" type="decimal"/>
+        <column NullValue="1" type="decimal"/>
+        <length NullValue="1" type="decimal"/>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property NullValue="1" type="string"/>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">184</line>
+        <column type="decimal">0</column>
+        <length type="decimal">81</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Related Change</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Name=frame0_184	Height=24	Width=162	X=0	Y=184	Caption=Related Change	canCollapse=1	floatGroup=1	isExpanded=1</property>
+      </field>
+      <field sctype="structure">
+        <flags NullValue="1" type="decimal"/>
+        <line NullValue="1" type="decimal"/>
+        <column NullValue="1" type="decimal"/>
+        <length NullValue="1" type="decimal"/>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property NullValue="1" type="string"/>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">184</line>
+        <column type="decimal">2</column>
+        <length type="decimal">80</length>
+        <window type="decimal">3</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ButtonBox;Name=ButtonBox2_184	Height=3	Width=160	X=2	Y=184	floatGroup=1</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">184</line>
+        <column type="decimal">1</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">#isLinkedTo.Change</input>
+        <output type="string">Link Related Changes</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Name=buttonisLinkedTo.Change67	Input=#isLinkedTo.Change	Height=2	Width=40	X=1	Y=184	Caption=Link Related Changes	ButtonID=901</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">184</line>
+        <column type="decimal">37</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">#isLinkedTo.Change</input>
+        <output type="string">Link New Related Changes</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Name=button2isLinkedTo.Change68	Input=#isLinkedTo.Change	Height=2	Width=40	X=37	Y=184	Caption=Link New Related Changes	ButtonID=902	?Visible=true</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">184</line>
+        <column type="decimal">73</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">#isLinkedTo.Change</input>
+        <output type="string">Unlink Related Changes</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Name=button3isLinkedTo.Change69	Input=#isLinkedTo.Change	Height=2	Width=40	X=73	Y=184	Caption=Unlink Related Changes	ButtonID=903	?Visible=true</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;Height=2	Width=2	X=1	Y=1</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">188</line>
+        <column type="decimal">0</column>
+        <length type="decimal">81</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Name=lFrame0_188	Height=18	Width=162	X=0	Y=188	Caption= 	canCollapse=0	floatGroup=1	isExpanded=1	type=widgetBox</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">64</flags>
+        <line type="decimal">188</line>
+        <column type="decimal">4</column>
+        <length type="decimal">50</length>
+        <window type="decimal">4</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">isLinkedTo.Change</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">SubFormat;Name=subview32	Input=isLinkedTo.Change	Height=16	Width=100	X=4	Y=188	Caption=subview32	DisplayUsingTable=1	VirtualJoin=1	Format=fk2sdLinkedChange.qbe</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">212</line>
+        <column type="decimal">0</column>
+        <length type="decimal">81</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Workflow</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Name=frame0_212	Height=28	Width=162	X=0	Y=212	Caption=Workflow	canCollapse=1	floatGroup=1	isExpanded=1</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">214</line>
+        <column type="decimal">0</column>
+        <length type="decimal">81</length>
+        <window NullValue="1" type="decimal"/>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input NullValue="1" type="string"/>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Name=lFrame0_214	Height=26	Width=162	X=0	Y=214	Caption= 	canCollapse=0	floatGroup=1	isExpanded=1	type=widgetBox</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">214</line>
+        <column type="decimal">0</column>
+        <length type="decimal">78</length>
+        <window type="decimal">13</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">syspk</input>
+        <output type="string">!Designer.WorkflowViewer!</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">workflowviewer;Input=syspk	Height=25	Width=156	X=1	Y=214	workflowCurrentPhase=$L.wfgWFPhase	workflowName=$L.wfgWFName	workflowRecordId=$L.wfgWFRecId	workflowTable=$L.wfgWFTable	Visible=0	?Visible=[$L.wfgWFName]&lt;&gt;""</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">238</line>
+        <column type="decimal">0</column>
+        <length type="decimal">10</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">$L.wfgWFName</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=$L.wfgWFName	Height=2	Width=20	X=0	Y=238	Visible=0</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">238</line>
+        <column type="decimal">20</column>
+        <length type="decimal">10</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">$L.wfgWFTable</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=$L.wfgWFTable	Height=2	Width=20	X=20	Y=238	Visible=0</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">238</line>
+        <column type="decimal">40</column>
+        <length type="decimal">10</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">$L.wfgWFRecId</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=$L.wfgWFRecId	Height=2	Width=20	X=40	Y=238	Visible=0</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">238</line>
+        <column type="decimal">60</column>
+        <length type="decimal">10</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">$L.wfgWFPhase</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=$L.wfgWFPhase	Height=2	Width=20	X=60	Y=238	Visible=0</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">238</line>
+        <column type="decimal">80</column>
+        <length type="decimal">10</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="string"/>
+        <input type="string">$L.clientType</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Input=$L.clientType	Height=2	Width=20	X=80	Y=238	Visible=0</property>
+      </field>
+    </field>
+    <file.name type="string">sdInteraction</file.name>
+    <editor type="string">System.Admin</editor>
+    <last.update type="dateTime">01/06/13 13:26:29</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">shiji.shu</sysmoduser>
+    <sysmodtime type="dateTime">09/18/13 13:20:13</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

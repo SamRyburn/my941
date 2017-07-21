@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="Process">
+  <record id="process=&quot;am.view.ucmdb&quot;" recordid="am.view.ucmdb">
+    <process type="string">am.view.ucmdb</process>
+    <pre.expressions sctype="array">
+      <pre.expressions sctype="operator">$L.url=""</pre.expressions>
+    </pre.expressions>
+    <post.expressions NullValue="1" sctype="array">
+      <post.expressions NullValue="1" type="expression"/>
+    </post.expressions>
+    <rad sctype="array">
+      <rad sctype="structure">
+        <application type="string">us.launch.external</application>
+        <names sctype="array">
+          <names sctype="string">name</names>
+        </names>
+        <values sctype="array">
+          <values sctype="string">$L.url</values>
+        </values>
+        <rad.condition type="boolean">true</rad.condition>
+        <pre.rad.expressions sctype="array"/>
+        <post.rad.expressions sctype="array"/>
+      </rad>
+    </rad>
+    <next.process NullValue="1" sctype="array">
+      <next.process NullValue="1" type="string"/>
+    </next.process>
+    <process.condition NullValue="1" sctype="array">
+      <process.condition NullValue="1" type="boolean"/>
+    </process.condition>
+    <run.standard NullValue="1" type="boolean"/>
+    <sysmodcount type="decimal">7</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">09/24/12 19:51:53</sysmodtime>
+    <save.cursor.position NullValue="1" type="boolean"/>
+    <run.in.window NullValue="1" type="boolean"/>
+    <window.name NullValue="1" type="string"/>
+    <javascript.pre type="string">if (vars.$G_system_info.ucmdb_browser == null)
+{
+vars.$L_url = vars.$G_system_info.UCMDB_services_endpoint.substring(0, vars.$G_system_info.UCMDB_services_endpoint.indexOf("/axis2"));
+
+//  The following line should be uncommented for use with UCMDB 7.5.x
+//vars.$L_url += "/ucmdb/cms/topologyApplet.do?customer=1&amp;cmd=related&amp;objectId="+vars.$L_file.ucmdb_id;
+
+// The following lines should be uncommented for use with UCMDB 8.0 and above.
+if( system.vars.$G_multi &amp;&amp; system.vars.$G_UCMDB_integration )
+{
+	var companyData = lib.discoveryEvent.getUCMDBCompanyData(vars.$L_file);
+	var id = companyData.ucmdb_customer_id;
+	var userName = vars.$G_system_info.UCMDB_user;
+	if (companyData.ucmdb_userid != null) 
+		userName = companyData.ucmdb_userid;	
+	vars.$L_url+="/ucmdb/cms/directAppletLogin.do?cmd=ShowRelatedCIsSA&amp;interfaceVersion=8.0.0&amp;objectId="
+              +vars.$L_file.ucmdb_id+"&amp;navigation=false&amp;userName="+userName+"&amp;customerID="+id
+}
+else
+
+	vars.$L_url+="/ucmdb/cms/directAppletLogin.do?cmd=ShowRelatedCIsSA&amp;interfaceVersion=8.0.0&amp;objectId="
+              +vars.$L_file.ucmdb_id+"&amp;navigation=false&amp;userName="+vars.$G_system_info.UCMDB_user
+}
+else
+{
+	/* http://localhost:8081/ucmdb-browser/?username=admin&amp;locale=en#search=44e50cdb9fd8046439ff2bf2af6cd23e;search-selection=44e50cdb9fd8046439ff2bf2af6cd23e */
+	/* http://localhost:8081/ucmdb-browser/?theme=LIGHT&amp;username=admin&amp;locale=en#search=378061c176e7e6262cd092aed23dfc6b;search-selection=378061c176e7e6262cd092aed23dfc6b */
+	vars.$L_url = vars.$G_system_info.ucmdb_browser;
+	if (vars.$L_url.indexOf("?") == -1)
+	{
+		var slashSuffix = vars.$L_url.lastIndexOf("/");
+		if (slashSuffix == vars.$L_url.length-1)
+		{
+			vars.$L_url += "?username=";
+		}
+		else
+		{
+			vars.$L_url += "/?username=";
+		}
+	}
+	else
+	{
+		vars.$L_url += "&amp;username=";
+	}
+	vars.$L_url += vars.$G_system_info.UCMDB_user + "&amp;locale=" + vars.$G_my_language
+			+ "#search=" + vars.$L_file.ucmdb_id + ";search-selection=" + vars.$L_file.ucmdb_id;
+}
+</javascript.pre>
+    <javascript.post NullValue="1" type="string"/>
+    <baseMethod NullValue="1" type="string"/>
+  </record>
+</recordset>

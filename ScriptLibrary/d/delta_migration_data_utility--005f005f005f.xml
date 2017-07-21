@@ -1,0 +1,3207 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;delta_migration_data_utility&quot;" recordid="delta_migration_data_utility">
+    <name type="string">delta_migration_data_utility</name>
+    <script type="string">/****************************************************************
+ *  Functions used for Service Manager data migration			*
+ *  Author: Bin-Lun Yang (bin-lun.yang@hp.com)                  *
+ *  Date:2012/02/14                                             *
+ *  Version:1.0 
+ *  
+ *  Date:2013/12/2                                                *
+ *  version:1.01 add comments by yumin.chen
+ *   
+ *  Date:2013/12/16                                                *
+ *  version:2.00 add *_pre_check by yumin.chen, to provide summary list before execution
+ *  
+ *  Date:2014/04/03                                                *
+ *  version:3.00 split UNL file if it contains too many record
+ *   
+ *  Date:2014/04/25                                                *
+ *  version:4.04 add test functions
+ *   
+ *  Date:2014/04/17                                                *
+ *  version:4.01 SM711 doesn't support long SQL, so rewrite split function, just split into 10 pieces and try again
+ *  
+ *  Date:2014/04/18                                                *
+ *  version:4.02 import to an table must obey UNL time order, so add check in myKpiList_update
+ *  
+ *  Date:2014/04/21                                                *
+ *  version:4.03 change time estimation method
+ *   
+ *  Date:2014/04/25                                                *
+ *  version:4.04 more test functions
+ *  
+ *  Date:2014/04/29                                                *
+ *  version:4.05 ignore table syslog, msglog, counter during exporting
+ *                change the method to generate 'table_exported.txt' and '*_unload_result.txt' 
+ *  
+ *  Date:2014/05/25                                                *
+ *  version:4.05 in SQLExecute, make all field name upper case 
+ *
+ *  Date:2014/06/05                                                *
+ *  version:4.06 when read txt file during importing, replace \r\n to \n,
+ *					       in case that importing env is Unix and exporting env is windows
+ *	             when compare table structure, consider SQL type of different DB, such as varchar(sqlserver) and varchar2(oracle), DB2 is not concidered.
+ *               modify a bug, to assign previous task for each import task, thus UNLs can be imported in order					 
+ *               function generate_delta_data_unload() now use Data parameter, not string, to avoid timezone disorder when export using method 1					 
+ *  
+ ****************************************************************/
+var RECORD_LIMIT_FOR_UNL=300;
+
+/*****************************************
+ * Below are test area, should be deleted in formal release
+ *
+ *****************************************/
+
+// 1. open bg_load_unload1 
+
+// 2. execute below command:
+
+// 3. wait until all schedule names "dmtTest...." executed. 
+
+var simulateUserActionLog="c:\\simulated_user_actions.csv";
+var tableSysmodTimeLog="c:\\table_sysmodtime_changes.csv";
+var importedUserActionLog="c:\\imported_user_actions.csv";
+
+function scheduleSimulatedUserBusinessAction(simulateSeconds){
+  var simStartTime=new Date();
+  var simTime=new Date();
+  // simulate user action, for example, modify probsummary... 
+  var f=new SCFile("schedule");
+  f._class="bg_load_unload1";
+  var recordID="";
+  var actionId=0;
+  
+  var modifyChance=0.1;
+  var recordList=["IM10030","IM10031","IM10032"]; // status is WIP or Open
+  var rnd;
+  var simTime=simStartTime;
+  //every 5 seconds, 90% change to chance status of N incident
+  writeFile(simulateUserActionLog, 't', "id, action, action id, time\n"); 
+  
+  for(var i=5;i&lt;simulateSeconds;i+=5){
+    rnd=Math.random();
+    if(rnd&lt;modifyChance){
+        simTime=DateTimeTool_addSeconds(simStartTime,i);
+        f.expiration =simTime; 
+        f.name = "dmtTest:modify user update some incidents at "+getTimeString2(simTime);
+        var js="";
+        for(var j=0;j&lt;10;j++){
+          rnd=Math.floor(Math.random()*system.functions.lng(recordList));
+          recordID=recordList[rnd];
+          if(recordID.indexOf("IM")&gt;=0){
+            actionId++;
+            js+="lib.delta_migration_data_utility.simulateUserModifyProbsummary(\""+recordID+"\",\""+actionId+"\");";
+          }
+        }
+        f.javascript=js;
+        f.doInsert();
+    }
+  }
+}
+function simulateUserModifyProbsummary(id,actionId)
+{
+  var d=new Date();
+  var log="";
+  
+  var f=new SCFile("probsummary");
+  f.doSelect("number=\""+id+"\"");
+  f.brief_description+="*"+actionId;
+  f.doUpdate();
+  log=id+",";
+  log+="modify title,";
+  log+="action "+actionId+",";
+  log+=getTimeString2(d)+"\n";
+  writeFile(simulateUserActionLog, 'a',log); 
+  
+  
+	var f=new SCFile("activity");
+	var callRtn = new SCDatum;
+	var nextNumber = new SCDatum;
+	system.functions.rtecall("getnumber", callRtn, nextNumber, "activity");
+	f.thenumber = nextNumber.getText();
+	f.number=id;
+	type="sim action &lt;actionId&gt; at &lt;datetime&gt;";
+  type=type.replace("&lt;actionId&gt;",actionId);
+  type=type.replace("&lt;datetime&gt;",getTimeString2(d));
+  f.type=type;
+	f.datestamp=system.functions.tod();
+	f.operator="portal";
+	f.description=new Array();
+	f.description=system.functions.insert(f.description,0,1,"cym add activity "+actionId+" to "+id+" by JS, at "+getTimeString2(d));
+	f.sysmodtime=f.datestamp;
+	f.sysmoduser="portal";
+	f.sysmodcount=0;
+	f.cust_visible=true;
+	
+	var rc=f.doInsert();
+
+  log=id+",";
+  log+="add activity,";
+  log+="action "+actionId+",";
+  log+=getTimeString2(d)+"\n";
+  writeFile(simulateUserActionLog, 'a',log); 
+}
+function scheduleCheckTablesSysmodtime(simulateSeconds, intervalSeconds){
+  myKpiList_init();
+  var tablesWithTimeStampField=GetPotentialFilesAndTimestampFieldFromDbdict();
+  for(var i in tablesWithTimeStampField){
+    tableName=tablesWithTimeStampField[i].split(",")[0];
+    timestampfield=tablesWithTimeStampField[i].split(",")[1];
+    if(timestampfield=="sysmodtime"){
+      if(tablesWithTimeStampField[i].split(",")[2]=="true" &amp;&amp; tablesWithTimeStampField[i].split(",")[3]=="true")
+        myKpiList_register("checkSysmodtime_"+tableName,tableName,"have sysmoduser and sysmodcount");
+      else
+        myKpiList_register("checkSysmodtime_"+tableName,tableName,null);
+        
+    }
+  }
+  
+  var simStartTime=new Date();
+  var simTime=new Date();
+  var f=new SCFile("schedule");
+  f._class="bg_load_unload1";
+  for(var i=0;i&lt;simulateSeconds;i+=intervalSeconds){
+    f.expiration =simTime; 
+    f.name = "dmtTest:check tables max sysmodtime at "+getTimeString2(simTime);
+    var js="lib.delta_migration_data_utility.checkTablesSysmodtime();";
+    f.javascript=js;
+    f.doInsert();
+    
+    simTime=DateTimeTool_addSeconds(simTime,intervalSeconds);
+  }
+}
+function checkTablesSysmodtime(){
+  // DeltaMigToolKPI.toTime : lastest sysmodtime
+  // DeltaMigToolKPI.unlFileName : lastest sysmodtime related sysmoduser
+  // DeltaMigToolKPI.recordsNumber : how many records match lastest sysmodtime?
+  
+  // use SqlExecute to get last modified record
+  var statements=new Array();
+  var statement="";
+  var f=new SCFile("DeltaMigToolKPI");
+  if(RC_SUCCESS==f.doSelect("kpiName#\"checkSysmodtime_\"")){
+    do{
+      statement="update dmt set dmt.toTime = (";
+      statement+= "select max(sysmodtime) from &lt;tableName&gt;";
+      statement+= ") from &lt;DMT KPI table&gt; dmt where dmt.KPINAME='&lt;kpiName&gt;'";
+           
+      statement=statement.replace(/&lt;tableName&gt;/g,f.sqlTableOfSysmodtime);
+      statement=statement.replace(/&lt;kpiName&gt;/g,f.kpiName);
+      statement=statement.replace(/&lt;DMT KPI table&gt;/g,"DELTAMIGTOOLKPIM1");
+      
+      statements.push(statement);
+      if(f.prevKpiName=="have sysmoduser and sysmodcount"){
+
+        statement="update dmt set dmt.recordsNumber = (";
+        statement+= "select count(*) from &lt;tableName&gt; where sysmodtime=dmt.toTime";
+        statement+= ") from &lt;DMT KPI table&gt; dmt where dmt.KPINAME='&lt;kpiName&gt;'";
+             
+        statement=statement.replace(/&lt;tableName&gt;/g,f.sqlTableOfSysmodtime);
+        statement=statement.replace(/&lt;kpiName&gt;/g,f.kpiName);
+        statement=statement.replace(/&lt;DMT KPI table&gt;/g,"DELTAMIGTOOLKPIM1");
+        
+        statements.push(statement);
+      }
+
+    }while(RC_SUCCESS==f.getNext())
+    statements.push("commit");
+  
+    // use the query to get record number
+    var names = new SCDatum();
+    var values = new SCDatum();
+    var returns=new SCDatum();   
+    names.push("values");      
+    values.push(statements);
+    try {  
+      system.functions.rtecall("callrad", returns, "SQLexecute", names, values, false);   
+    } catch(e) {
+     print("Can't check sysmodtime "+kpiName);
+    }
+  }  
+  if(RC_SUCCESS==f.doSelect("kpiName#\"checkSysmodtime_\"")){
+    var statements=new Array();
+    do{
+        if(f.recordsNumber==1){
+          statement="update dmt set dmt.unlFileName = (";
+          statement+= "select sysmoduser from &lt;tableName&gt; where sysmodtime=dmt.toTime";
+          statement+= ") from &lt;DMT KPI table&gt; dmt where dmt.KPINAME='&lt;kpiName&gt;'";
+               
+          statement=statement.replace(/&lt;tableName&gt;/g,f.sqlTableOfSysmodtime);
+          statement=statement.replace(/&lt;kpiName&gt;/g,f.kpiName);
+          statement=statement.replace(/&lt;DMT KPI table&gt;/g,"DELTAMIGTOOLKPIM1");
+          
+          statements.push(statement);
+        }
+        else if(f.recordsNumber&gt;1){
+          statement="update dmt set dmt.unlFileName = (";
+          statement+= "select top 1 sysmoduser from &lt;tableName&gt; where sysmodtime=dmt.toTime";
+          statement+= ") from &lt;DMT KPI table&gt; dmt where dmt.KPINAME='&lt;kpiName&gt;'";
+               
+          statement=statement.replace(/&lt;tableName&gt;/g,f.sqlTableOfSysmodtime);
+          statement=statement.replace(/&lt;kpiName&gt;/g,f.kpiName);
+          statement=statement.replace(/&lt;DMT KPI table&gt;/g,"DELTAMIGTOOLKPIM1");
+          
+          statements.push(statement);
+        }
+        else{
+          statement="update dmt set dmt.unlFileName = '' from &lt;DMT KPI table&gt; dmt where dmt.KPINAME='&lt;kpiName&gt;'";
+               
+          statement=statement.replace(/&lt;tableName&gt;/g,f.sqlTableOfSysmodtime);
+          statement=statement.replace(/&lt;kpiName&gt;/g,f.kpiName);
+          statement=statement.replace(/&lt;DMT KPI table&gt;/g,"DELTAMIGTOOLKPIM1");
+          
+          statements.push(statement);
+        }
+    
+    }while(RC_SUCCESS==f.getNext())
+    statements.push("commit");
+  
+    // use the query to get record number
+    var names = new SCDatum();
+    var values = new SCDatum();
+    var returns=new SCDatum();   
+    names.push("values");      
+    values.push(statements);
+    try {  
+      system.functions.rtecall("callrad", returns, "SQLexecute", names, values, false);   
+    } catch(e) {
+     print("Can't check sysmodtime "+kpiName);
+    }
+
+  }
+  
+  // record result into CSV files
+  var historyLog=readFile(tableSysmodTimeLog,"t");
+  var newLog="";
+  if(historyLog==-1){
+    newLog="tableName,sysmodtime at &lt;check time&gt;,sysmoduser,records of this sysmodtime\n";
+    var f=new SCFile("DeltaMigToolKPI");
+    if(RC_SUCCESS==f.doSelect("kpiName#\"checkSysmodtime_\"")){
+      newLog=newLog.replace(/&lt;check time&gt;/g,getTimeString2(new Date()));
+      do{
+        timeString="";
+        if(f.toTime!=null)
+          timeString=getTimeString3(f.toTime);
+        newLog+=f.tableName+","+timeString+","+f.unlFileName+","+f.recordsNumber+"\n";
+
+      }while(RC_SUCCESS==f.getNext())
+    }
+    writeFile(tableSysmodTimeLog,"t",newLog);  
+  }
+  else{
+    var lines=historyLog.split("\n");
+    var lineIndex=0;
+    var f=new SCFile("DeltaMigToolKPI");
+    if(RC_SUCCESS==f.doSelect("kpiName#\"checkSysmodtime_\"")){
+      newLog=lines[lineIndex++]+",sysmodtime at &lt;check time&gt;,sysmoduser,records of this sysmodtime\n"
+      newLog=newLog.replace(/&lt;check time&gt;/g,getTimeString2(new Date()));
+      do{
+        timeString="";
+        if(f.toTime!=null)
+          timeString=getTimeString3(f.toTime);
+        newLog+=lines[lineIndex++]+","+timeString+","+f.unlFileName+","+f.recordsNumber+"\n";
+      }while(RC_SUCCESS==f.getNext())
+    }
+    writeFile(tableSysmodTimeLog,"t",newLog);  
+  }
+}
+function checkImportedBusinessUserAction(){
+  // read simulateUserActionLog, check if each action is in current environment
+  writeFile(importedUserActionLog, 't', "id, action, action id, time, result\n"); 
+
+  var fact=new SCFile("activity");
+  var qact="";
+  var contents=readFile(simulateUserActionLog,"t");
+  if(contents==-1)
+    return;
+    
+  simulatedUserActions=contents.split("\n");
+  for(var i=1;i&lt;system.functions.lng(simulatedUserActions);i++){
+    id=simulatedUserActions[i].split(",")[0];
+    type=simulatedUserActions[i].split(",")[1];
+    actionId=simulatedUserActions[i].split(",")[2];
+    datetime=simulatedUserActions[i].split(",")[3];
+    if(type=="add activity"){
+      qact="type=\"sim &lt;actionId&gt; at &lt;datetime&gt;\"";
+      qact=qact.replace("&lt;actionId&gt;",actionId);
+      qact=qact.replace("&lt;datetime&gt;",datetime);
+      print(qact);
+      if(RC_SUCCESS==fact.doSelect(qact)){
+        writeFile(importedUserActionLog, 'a',simulatedUserActions[i]+",pass\n"); 
+      }
+      else{
+        writeFile(importedUserActionLog, 'a',simulatedUserActions[i]+",fail\n"); 
+      }
+    }
+    else{
+        writeFile(importedUserActionLog, 'a',simulatedUserActions[i]+",\n"); 
+    }
+  }
+  print("done.");
+}
+
+/*
+    this function will do some initialize function before importing, include:
+      disable triggers in background scheduler session
+*/
+function unload_data_init()
+{
+  myMessageList_init();
+  myKpiList_init();
+  for(var i=1;i&lt;=5;i++){
+    scheduler_register("bg_load_unload"+i);
+    scheduler_watchDogHungry("bg_load_unload"+i);
+  }
+  // if backgound schedule has started, then within 1 minutes, kpi "bg_load_unload*" will have title=1
+  var f=new SCFile("schedule");
+  f.expiration = new Date();
+  for(var i=1;i&lt;=5;i++){
+    f.name = "bg_load_unload"+i+" report.";
+    f.javascript="lib.delta_migration_data_utility.scheduler_watchDogFeed(\"bg_load_unload"+i+"\");";
+    f._class="bg_load_unload"+i;
+    f.doInsert();
+  }
+
+}
+// check parameters before exporting using opt 1.
+function unload_data_parameters_ok_opt1(){
+  var currentOperatorTimezone=getCurrentOperatorTimezone();
+  var currentOperatorDateFormat=getCurrentOperatorDateFormat();
+  if(currentOperatorDateFormat=="Not set"){
+    myMessageList_add("error","Please specify date format for "+system.functions.operator());
+    return false;
+  }
+  if(currentOperatorTimezone=="Not set"){
+    myMessageList_add("error","Please specify time zone for "+system.functions.operator());
+    return false;
+  }
+  return true;
+}
+// check parameters before exporting using opt 2.
+function unload_data_parameters_ok(FILE_PATH,start_date,end_date)
+{
+  var currentOperatorTimezone=getCurrentOperatorTimezone();
+  var systemDefaultTimezone=getSystemDefaultTimezone();
+  var currentOperatorDateFormat=getCurrentOperatorDateFormat();
+  var systemDefaultDateFormat=getSystemDefaultDateFormat();
+  if(systemDefaultDateFormat.indexOf("yyyy")&lt;0){
+    myMessageList_add("error","Please use 4 digits year in System Information Record's data format.");
+    return false;
+  }
+  if(currentOperatorTimezone!=systemDefaultTimezone){
+    myMessageList_add("error","Please use same timezone as that in System Information Record.");
+    return false;
+  }
+  if(currentOperatorDateFormat!=systemDefaultDateFormat){
+    myMessageList_add("error","Please use same date format as that in System Information Record.");
+    return false;
+  }
+  if(end_date&gt;=new Date()){
+    myMessageList_add("error","End time should be earlier than now.");
+    return false;
+  }
+  if(start_date&gt;=end_date){
+    myMessageList_add("error","Start time should be earlier than end time.");
+    return false;
+  }
+  return true;
+}  
+/*
+  function before data loading by lots of unl files
+  return value will be used to setup $tablesToBeExported, which is a array, its item is:
+    &lt;table name&gt;$
+    &lt;timestamp field&gt;$
+    &lt;suggestion, such as 'export by default', 'need confirm'&gt;$
+    &lt;time estimation, in seconds&gt;$
+    &lt;unload or not, 'true' or 'false', if 'suggestion is 'export by default', it is 'true', otherwise it is false, but user can modify in next GUI&gt;$
+    &lt;comments, such as 'table structure are same', can be modified by user later&gt;
+  $tablesToBeExported  will be displayed and updated in next wizard, for user to select which tables are to be exported
+  
+  input:  1,  folder that contains UNL files
+          2,  time range
+  output: 1,  return value will be used to setup $tablesToBeExported
+*/
+function unload_data_pre_check(FILE_PATH,start_date,end_date)
+{
+  myMessageList_init();
+  myMessageList_add("debug","function unload_data_pre_check(FILE_PATH,str_start_date,str_end_date) START");
+  
+  
+  var operatorTimeZone=lib.tzFunctions.getTZforOperator(system.functions.operator());
+  var contentForReadme="";
+  contentForReadme+="This folder contains files for delata migration, \n";
+  contentForReadme+="Time range from "+start_date+" to "+end_date+"(timezone:"+operatorTimeZone+").\n";       
+  contentForReadme+="\n";       
+  contentForReadme+="Files under this folder(please don't modify them):\n";       
+  contentForReadme+="Overall Export Status Report.html    real-time report for the migration process, to be used when exporting.\n";
+  contentForReadme+="table_exported.txt    record how many tables have delta data and UNL(s) exported, this information will be used during importing.\n";       
+  contentForReadme+="Overall Import Status Report.html    real-time report for the migration process, to be used when importing.\n";
+  contentForReadme+="&lt;SM table name&gt;_unload_result.txt    record how many UNLs are to be migrated for specified table.\n";       
+  contentForReadme+="&lt;SM table name&gt;_unload_structure.txt    describe the table structure of old environment, will be used to be compared with table structure in new environment.\n";       
+  contentForReadme+="&lt;SM table name&gt;_unload_structure_new.txt    describe the table structure of new environment.\n";       
+  contentForReadme+="&lt;SM table name&gt;_&lt;start time&gt;_&lt;end time&gt;.UNL    unloaded UNL files, format of start and end time is 'yyyymmdd_hhMMss'\n";
+  writeFile(FILE_PATH+"readme.txt", 't', contentForReadme); 
+  
+  var contentFeedback = readFile( FILE_PATH+"readme.txt", "t" );
+  if(contentFeedback==contentForReadme){
+    myMessageList_add("info","Output folder ready.");
+  }
+  else{
+    myMessageList_add("error","Can't write files into output folder.");
+    return null;
+  }
+  
+  var array_tableToBeExported=new Array();
+  var tableToBeExported="";
+
+ 
+  // check background schedulers
+  if(scheduler_isItStarted("bg_load_unload1")==false
+  || scheduler_isItStarted("bg_load_unload2")==false
+  || scheduler_isItStarted("bg_load_unload3")==false
+  || scheduler_isItStarted("bg_load_unload4")==false
+  || scheduler_isItStarted("bg_load_unload5")==false
+  ){
+    myMessageList_add("error","background scheduler 'dmt_unload_load*' not started yet, please start them in 'System Status'. If they are already there, wait for 1 minute and try again.");
+    return array_tableToBeExported;
+  }
+  var array_fileAndTimestampField=GetPotentialFilesAndTimestampFieldFromDbdict();
+  var sQuery="";
+
+  for (var i in array_fileAndTimestampField)
+  { 
+    tableName=array_fileAndTimestampField[i].split(",")[0];
+    timestampField=array_fileAndTimestampField[i].split(",")[1];
+    if(timestampField==null || timestampField==""){
+      tableToBeExported="";
+      tableToBeExported+=tableName+"$"+timestampField+"$";
+      tableToBeExported+="no sysmodtime field.$";
+      tableToBeExported+="0"+"$"; 
+      tableToBeExported+="false$"; 
+      array_tableToBeExported.push(tableToBeExported);
+      continue;
+    }
+    
+    var kk=0;
+    var ff=new SCFile(tableName);
+    var num_unloaded_UNL_files=0;
+    
+    // some of the table contains so many data, and it will take a long time to search, for example, 'application'
+    //  so if the time range include more than 5 days, before searching these table by day, search by start time and end time first, just to check if delta data exists or not
+    //  but to estimate time, always check it.
+  	var sampleSearchStartTime=new Date();
+    if(true || addDays(start_date,5)&lt;end_date){
+      sQuery = timestampField +"&gt;='"+DateTimeTool_convertDatetoString(start_date,vars.$lo_operator.date_order)+ "'"
+                  + " and "+timestampField+"&lt;'"+DateTimeTool_convertDatetoString(end_date,vars.$lo_operator.date_order)+ "'";
+      //check if there is data
+      
+      if (ff.doSelect(sQuery)!=RC_SUCCESS){
+        tableToBeExported="";
+        tableToBeExported+=tableName+"$"+timestampField+"$";
+        tableToBeExported+="no delta data within time range.$";
+        tableToBeExported+="0"+"$"; 
+        tableToBeExported+="false$"; 
+        continue;          
+      }
+    }
+    myMessageList_add("info","find delta data in "+tableName);
+    
+  	var sampleSearchEndTime=new Date();
+    var secondsConsumed=0.001*(sampleSearchEndTime-sampleSearchStartTime); // time used for scan all records in the table
+    secondsConsumed=Math.round(secondsConsumed*10)/10;  
+    
+    tableToBeExported="";
+    tableToBeExported+=tableName+"$"+timestampField+"$";
+    tableToBeExported+="export by default$";
+    tableToBeExported+=secondsConsumed+"$"; 
+    tableToBeExported+="true$"; 
+    array_tableToBeExported.push(tableToBeExported);
+       
+  }
+  // register tables with delta data, to estimate unload time
+  var fkpi=new SCFile("DeltaMigToolKPI");
+  if(RC_SUCCESS==fkpi.doSelect("kpiName#\"export_\"")){
+    do{
+      fkpi.doDelete();
+    }while(RC_SUCCESS==fkpi.getNext())
+  }
+  for (var i in array_tableToBeExported)
+  { 
+    tableName=array_tableToBeExported[i].split("$")[0];
+    timestampField=array_tableToBeExported[i].split("$")[1];
+    
+
+    if(array_tableToBeExported[i].split("$")[4]=="false"){
+      continue;
+    }    	  
+    myMessageList_add("info","check "+tableName);
+    
+    var kk=0;
+    var ff=new SCFile(tableName);
+    var num_unloaded_UNL_files=0;
+    
+    sQuery = timestampField +"&gt;='"+DateTimeTool_convertDatetoString(start_date,vars.$lo_operator.date_order)+ "'"
+              + " and "+timestampField+"&lt;'"+DateTimeTool_convertDatetoString(end_date,vars.$lo_operator.date_order)+ "'";
+             
+    var kpiName="export_"+tableName+"_"+getTimeString2(start_date)+"_"+getTimeString2(end_date);
+    var unlFileName=tableName+"_"+getTimeString2(start_date)+"_"+getTimeString2(end_date)+".unl";
+    var estimatedTime=parseFloat(array_tableToBeExported[i].split("$")[3]);
+    myKpiList_register(kpiName,tableName,sQuery,estimatedTime,unlFileName,1,start_date,end_date);
+    
+  }
+  myKpiList_calculateRecordsNumber();
+  
+  
+  for (var i in array_tableToBeExported)
+  { 
+    tableName=array_tableToBeExported[i].split("$")[0];
+    timestampField=array_tableToBeExported[i].split("$")[1];
+    suggestion=array_tableToBeExported[i].split("$")[2];    
+    estimatedTime=parseFloat(array_tableToBeExported[i].split("$")[3]);    
+    exportOrNot=array_tableToBeExported[i].split("$")[4];    
+    
+    if(RC_SUCCESS==fkpi.doSelect("kpiName#\"export_"+tableName+"\"")){
+      estimatedTime+=1.0*(fkpi.recordsNumber/300);
+      estimatedTime=Math.floor(estimatedTime*100)*0.01;  
+    }
+    
+    tableToBeExported="";
+    tableToBeExported+=tableName+"$"+timestampField+"$";
+    tableToBeExported+=suggestion+"$";
+    tableToBeExported+=estimatedTime+"$"; 
+    tableToBeExported+=exportOrNot+"$"; 
+
+    array_tableToBeExported[i]=tableToBeExported;
+  }
+    
+  
+  myMessageList_add("debug","function unload_data_pre_check(FILE_PATH,str_start_date,str_end_date) END");
+  myMessageList_add("info","finish checking before unload.");
+  return array_tableToBeExported;
+}
+/*
+  main function for data migration by lots of unl files
+  create background schedule for data unloading
+  input:  1,   folder to contain UNL files 
+          2,   start time, end time
+          3,   array_tableToBeExported, which is generated by function 'unload_data_pre_check' and modifyed by wizard '...Check_before_Export' 
+  output: 1,  lots of "schedule" record, to run app "unload.background", the parameters for this app are:
+    strings[2]: target unl file name
+    strings[3]: condition to retrieve records by
+    strings[4]: table to retrive records from       
+         2,   after this “schedule" record performed, a lots of unl files will be created in specified folder.
+*/
+function unload_data_utility(FILE_PATH,start_date,end_date,array_tableToBeExported)
+{
+  myMessageList_add("info","start creating schedule for unload.");
+  var fsche=new SCFile("schedule");
+  var fkpi=new SCFile("DeltaMigToolKPI");
+  var str_start_date_standard=convertToStandardDateFormat(""+ start_date,vars.$lo_operator.date_order);
+  var str_end_date_standard=convertToStandardDateFormat(""+ end_date,vars.$lo_operator.date_order);
+  /*
+    below 2 lines are wrong, the start_data and end_data have no timezone info, but if
+    but when call new Date(xxx), it will assume that timezone is SM server(not system infomation)'s timezone 
+  
+  var start_date_very_begining=new Date(str_start_date_standard.substr(0,system.functions.lng(str_end_date_standard)-9)+" 00:00:00");
+  var end_date_very_ending=new Date(str_end_date_standard.substr(0,system.functions.lng(str_end_date_standard)-9)+" 00:00:00");
+  */
+  
+  writeFile(FILE_PATH+"table_exported.txt","t","Table Name,Timestamp Field Name\n");
+  var fkpi=new SCFile("DeltaMigToolKPI");
+  if(RC_SUCCESS==fkpi.doSelect("kpiName#\"export_\"")){
+    do{
+      fkpi.doDelete();
+    }while(RC_SUCCESS==fkpi.getNext())
+  }
+  for (var i in array_tableToBeExported)
+  { 
+    tableName=array_tableToBeExported[i].split("$")[0];
+    timestampField=array_tableToBeExported[i].split("$")[1];
+    
+
+    if(array_tableToBeExported[i].split("$")[4]=="false"){
+      continue;
+    }    	  
+    myMessageList_add("info","check "+tableName);
+    var structureDescrp=getTableStructureFromDbdict(tableName);
+    writeFile(FILE_PATH+tableName+"_unload_structure.txt", 't', structureDescrp);        
+    
+    var kk=0;
+    var ff=new SCFile(tableName);
+    var num_unloaded_UNL_files=0;
+    
+    sQuery = timestampField +"&gt;='"+DateTimeTool_convertDatetoString(start_date,vars.$lo_operator.date_order)+ "'"
+              + " and "+timestampField+"&lt;'"+DateTimeTool_convertDatetoString(end_date,vars.$lo_operator.date_order)+ "'";
+             
+    var kpiName="export_"+tableName+"_"+getTimeString2(start_date)+"_"+getTimeString2(end_date);
+    var unlFileName=tableName+"_"+getTimeString2(start_date)+"_"+getTimeString2(end_date)+".unl";
+    var estimatedTime=parseFloat(array_tableToBeExported[i].split("$")[3]);
+    myKpiList_register(kpiName,tableName,sQuery,estimatedTime,unlFileName,1,start_date,end_date);
+    
+  }
+  myKpiList_calculateRecordsNumber();
+  //  if it contains too many record, split the time range
+  var haveSplitableBigUNLFiles=true;
+  var loopLimit=1000;
+  var loop=1;
+  while(haveSplitableBigUNLFiles &amp;&amp; loop&lt;=loopLimit){
+    loop++;
+    if(RC_SUCCESS==fkpi.doSelect("sysmodtimeIsInDB=true and kpiName#\"export_\" and recordsNumber&gt;"+RECORD_LIMIT_FOR_UNL)){
+      var timeMid=new Date();
+      var splitBigUNLFiles=false;
+      do{
+        intervalSeconds=Math.floor((fkpi.toTime-fkpi.fromTime)/1000);
+        if(intervalSeconds&lt;2)
+          continue;
+          
+        splitBigUNLFiles=true;
+        tableName=fkpi.tableName;
+        timestampField=fkpi.query;
+        timestampField=timestampField.substr(0,timestampField.indexOf("&gt;="));
+        if(intervalSeconds&gt;=10)
+          splitInto=10;
+        else
+          splitInto=intervalSeconds;
+          
+        myMessageList_add("info","split "+fkpi.kpiName +" into "+splitInto+" pieces.");
+        myKpiList_unregister(fkpi.kpiName);
+        
+        var time1=new Date();
+        var time2=new Date();
+          
+        for(var i=1;i&lt;splitInto;i++){
+          time1=DateTimeTool_addSeconds(fkpi.fromTime,intervalSeconds/splitInto*(i-1));
+          time2=DateTimeTool_addSeconds(fkpi.fromTime,intervalSeconds/splitInto*i);
+          sQuery = timestampField +"&gt;='"+DateTimeTool_convertDatetoString(time1,vars.$lo_operator.date_order)+ "'"
+                    + " and "+timestampField+"&lt;'"+DateTimeTool_convertDatetoString(time2,vars.$lo_operator.date_order)+ "'";
+                   
+          kpiName="export_"+tableName+"_"+getTimeString2(time1)+"_"+getTimeString2(time2);
+          unlFileName=tableName+"_"+getTimeString2(time1)+"_"+getTimeString2(time2)+".unl";
+          estimatedTime=fkpi.remainSeconds;
+          myKpiList_register(kpiName,tableName,sQuery,estimatedTime,unlFileName,1,time1,time2);
+          myMessageList_add("debug","new "+kpiName);
+        }
+        
+        
+        time1=DateTimeTool_addSeconds(fkpi.fromTime,intervalSeconds/splitInto*(splitInto-1));
+        time2=fkpi.toTime;
+        sQuery = timestampField +"&gt;='"+DateTimeTool_convertDatetoString(time1,vars.$lo_operator.date_order)+ "'"
+                  + " and "+timestampField+"&lt;'"+DateTimeTool_convertDatetoString(time2,vars.$lo_operator.date_order)+ "'";
+                 
+        kpiName="export_"+tableName+"_"+getTimeString2(time1)+"_"+getTimeString2(time2);
+        unlFileName=tableName+"_"+getTimeString2(time1)+"_"+getTimeString2(time2)+".unl";
+        estimatedTime=fkpi.remainSeconds;
+        myKpiList_register(kpiName,tableName,sQuery,estimatedTime,unlFileName,1,time1,time2);
+        myMessageList_add("debug","new "+kpiName);
+          
+      }while(RC_SUCCESS==fkpi.getNext())
+      if(!splitBigUNLFiles)
+        haveSplitableBigUNLFiles=false;  
+    }else{
+      haveSplitableBigUNLFiles=false;
+    }
+    myKpiList_calculateRecordsNumber();
+  }
+  if(RC_SUCCESS==fkpi.doSelect("kpiName#\"export_\" and recordsNumber=0")){
+    do{
+      fkpi.remainSeconds=0;
+      fkpi.doUpdate();
+    }while(RC_SUCCESS==fkpi.getNext())
+  }
+  
+  // adjust estimated time, 
+  //  if a table's unload estimated time is 30 seconds, then the sum of all its tasks' estimated time should be a litle more than 30 seconds 
+  
+  // schedule these tasks
+  if(RC_SUCCESS==fsche.doSelect("name#\"unload data - \"")){
+    do{
+      fsche.doDelete();
+    }while(RC_SUCCESS==fsche.getNext())
+  }
+  if(RC_SUCCESS==fkpi.doSelect("kpiName#\"export_\"")){
+    do{
+      if(true){
+          //randomly assign the unload work to schedule 'bg_load_unload2'... 'bg_load_unload5'
+          // 'bg_load_unload1' will be used to prepare HTML report
+          var rnd;
+          rnd=2+Math.floor(Math.random()*4);
+          fsche._class="bg_load_unload"+rnd;
+          fsche.application = "unload.background";
+          fsche.strings[2]=FILE_PATH+fkpi.unlFileName;
+          fsche.strings[3]=fkpi.query;
+          fsche.strings[4]=fkpi.tableName;
+          fsche.name = "unload data - "+fkpi.tableName+"_"+getTimeString2(fkpi.fromTime)+"_"+getTimeString2(fkpi.toTime);
+          
+          fsche.javascript="lib.delta_migration_data_utility.myKpiList_update(\""+FILE_PATH+"\",\""+fkpi.unlFileName+"\",1,\"export\");";
+          fsche.expiration = new Date();
+          fsche.doInsert();
+          myMessageList_add("info","schedule for '"+fkpi.unlFileName+"' created under "+fsche._class+".");
+      }
+    }while(RC_SUCCESS==fkpi.getNext())
+  }  
+    
+  lib.delta_migration_data_utility.myKpiList_generateExportStatusReportHTML(FILE_PATH+"Overall Export Status Report.html");
+  
+  // setup 'bg_load_unload1' to update 'Overall Export Status Report.html' every minutes, until 100% completed.
+  var f2=new SCFile("schedule");
+  f2._class="bg_load_unload1"; 
+  f2.name = "prepare real-time report for delta migration progress";
+  var scriptJS="lib.delta_migration_data_utility.myKpiList_updateAndscheduleNextStatusReportUpdate(\""+FILE_PATH+"Overall Export Status Report.html\",\"export\",\""+f2._class+"\");";
+  scriptJS=system.functions.strrep(scriptJS,"\\","\\\\");
+  f2.javascript=scriptJS;
+  f2.expiration = new Date();
+  f2.doInsert();
+  
+  myMessageList_add("debug","function unload_data_utility(FILE_PATH,str_start_date,str_end_date) END");
+  myMessageList_add("info","finish creating schedule for unload.");
+  myMessageList_add("info","delta data are scheduled to export, please open 'Overall Export Status Report.html' in output folder for real-time status.");
+  return "SUCCESS";
+}
+function unload_data_utility_backup(FILE_PATH,str_start_date,str_end_date)
+{
+  myMessageList_init();
+  
+  myMessageList_add("debug","function unload_data_utility(FILE_PATH,str_start_date,str_end_date) START");
+  
+  var operatorTimeZone=lib.tzFunctions.getTZforOperator(system.functions.operator());
+  // check input parameter here
+  var contentForReadme="";
+  contentForReadme+="This folder contains UNLs for delata migration, \n";
+  contentForReadme+="Time range from "+str_start_date+" to "+str_end_date+"(timezone:"+operatorTimeZone+").\n";       
+  writeFile(FILE_PATH+"readme.txt", 't', contentForReadme); 
+  var contentFeedback = readFile( FILE_PATH+"readme.txt", "t" );
+  if(contentFeedback==contentForReadme){
+    
+    myMessageList_add("debug","output folder OK.");
+  }
+  else{
+    print("output folder can't access.");
+    myMessageList_add("error","output folder can't access.");
+    return;
+  }
+  var str_start_date_standard=convertToStandardDateFormat(str_start_date, vars.$lo_operator.date_order);      
+  var str_end_date_standard=convertToStandardDateFormat(str_end_date, vars.$lo_operator.date_order);      
+ 
+  
+ var start_date=new Date(str_start_date_standard);
+ var end_date=new Date(str_end_date_standard);
+ 
+ 
+ 
+  var array_fileAndTimestampField=GetPotentialFilesAndTimestampFieldFromDbdict();
+  var sQuery="";
+
+  var f=new SCFile("schedule");
+  f.application = "unload.background";
+	var scriptExpiry = new Date(); 
+	var nowPlusDelay = scriptExpiry.getMinutes() + 1;
+	scriptExpiry.setMinutes(nowPlusDelay);
+  f.expiration = scriptExpiry;
+  
+  for (var i in array_fileAndTimestampField)
+  { 
+    tableName=array_fileAndTimestampField[i].split(",")[0];
+    timestampField=array_fileAndTimestampField[i].split(",")[1];
+    
+    print("file name - "+tableName+"   checking ..."+system.functions.tod());
+    var kk=0;
+    var ff=new SCFile(tableName);
+    var num_unloaded_UNL_files=0;
+    
+    // some of the table contains so many data, and it will take a long time to search, for example, 'application'
+    //  so if the time range include more than 5 days, before searching these table by day, search by start time and end time first, just to check if delta data exists or not
+  	if(addDays(start_date,5)&lt;end_date){
+      sQuery = timestampField +"&gt;='"+system.functions.str(start_date)+ "'"
+                    + " and "+timestampField+"&lt;'"+system.functions.str(end_date)+ "'";
+      
+      //check if there is data
+      if (ff.doSelect(sQuery)!=RC_SUCCESS)
+        continue;          
+    }
+    
+    print("file name - "+tableName+" has some delta data.  "+system.functions.tod());
+    myMessageList_add("debug","find delta data in "+tableName);
+    
+    for (var temp_date=start_date;temp_date.getTime()&lt;=end_date.getTime();temp_date=addDays(temp_date,1))
+    {
+        
+        
+        
+        
+        kk++;
+        if (true || kk%30==0)
+          print("date - "+getTimeString(temp_date)+"   "+system.functions.tod());
+	    
+  	    sQuery = timestampField +"&gt;='"+system.functions.str(temp_date)+ "'"
+                  + " and "+timestampField+"&lt;'"+system.functions.str(addDays(temp_date,1))+ "'";
+                 
+        //check if there is data
+        if (ff.doSelect(sQuery)!=RC_SUCCESS)
+          continue;          
+        
+        num_unloaded_UNL_files++;
+        
+        //randomly assign the unload work to schedule 'bg_load_unload1'... 'bg_load_unload5'
+        f._class="bg_load_unload"+((new Date()).getMilliseconds()%5+1); 
+        f.strings[2]=FILE_PATH+tableName+"_"+getTimeString(temp_date)+".unl";
+        f.strings[3]=sQuery;
+        f.strings[4]=tableName;
+        f.name = "unload data - "+tableName+"_"+getTimeString(temp_date);
+        
+        f.javascript="print(\"**************** bg_unload "+tableName+"_"+getTimeString(temp_date)+".unl ****************\");";
+        f.doInsert();
+        myMessageList_add("debug","schedule for unload '"+f.strings[2]+"' created under "+f._class+".");
+        print(writeFile(FILE_PATH+tableName+"_unload_result.txt", 'a', tableName+"_"+getTimeString(temp_date)+".unl\n"));        
+    }
+    
+    if(num_unloaded_UNL_files&gt;0){
+      // record the table structure of exported table, if it is differnet from that of new environment, then the UNL file should not be loaded.
+      var structureDescrp=getTableStructureFromDbdict(tableName);
+      print(writeFile(FILE_PATH+tableName+"_unload_structure.txt", 't', structureDescrp));        
+    }
+    	  
+  }
+  
+  print("function unload_data_utility(FILE_PATH,str_start_date,str_end_date) -  END.)"+system.functions.tod());
+  myMessageList_add("debug","function unload_data_utility(FILE_PATH,str_start_date,str_end_date) END");
+  return "SUCCESS";
+}
+
+
+function addDays(start_date,add_days)
+{
+  return new Date(start_date-0+add_days*86400000);
+}
+function getTimeString(datetime)
+{
+  var s=DateTimeTool_convertDatetoString(datetime,6);
+  
+  return s.substr(0,4)+s.substr(5,2)+s.substr(8,2);
+}
+function getTimeString2(datetime)
+{
+  var s=DateTimeTool_convertDatetoString(datetime,6);
+  
+  return s.substr(0,4)+s.substr(5,2)+s.substr(8,2)+"_"+s.substr(11,2)+s.substr(14,2)+s.substr(17,2);
+}
+function getTimeString3(datetime)
+{
+  var s=DateTimeTool_convertDatetoString(datetime,6);
+  
+  return s.substr(0,4)+"/"+s.substr(5,2)+"/"+s.substr(8,2)+" "+s.substr(11,2)+":"+s.substr(14,2)+":"+s.substr(17,2);
+}
+function getSqlTableName(tableName)
+{
+  var ret="";
+  var file = new SCFile("dbdict");
+  var rc = file.doSelect("name=\"" + tableName + "\"");
+  if(rc == RC_SUCCESS){
+    for(var i =0; i &lt; file.sql_tables.length(); i++){
+      if(file.sql_tables[i].sql_table_alias.toLowerCase() == "m1"){
+        ret = file.sql_tables[i].sql_table_name;
+      }
+    }
+  }
+  return ret;
+}
+/*
+    this function will do some initialize function before importing, include:
+      disable triggers in background scheduler session
+*/
+function load_data_init()
+{
+  myMessageList_init();
+  var ret=myKpiList_init();
+  
+  for(var i=1;i&lt;=5;i++){
+    scheduler_register("bg_load_unload"+i);
+    scheduler_watchDogHungry("bg_load_unload"+i);
+  }
+  var f=new SCFile("schedule");
+  f.expiration = new Date();
+  for(var i=1;i&lt;=5;i++){
+  f.name = "bg_load_unload"+i+" report.";
+    f.javascript="lib.delta_migration_data_utility.scheduler_watchDogFeed(\"bg_load_unload"+i+"\");";
+    f._class="bg_load_unload"+i;
+    f.doInsert();
+  }
+
+
+  var f=new SCFile("schedule");
+  f.expiration = new Date();
+  for(var i=2;i&lt;=5;i++){
+  f.name = "disable triggers - bg_load_unload"+i;
+    f.javascript="lib.delta_migration_data_utility.scheduler_disable_triggers(\"bg_load_unload"+i+"\");";
+    f._class="bg_load_unload"+i;
+    f.doInsert();
+  }
+   
+  
+}
+/*
+  function before data loading by lots of unl files
+  return value will be used to setup $tablesToBeLoaded, which is a array, its item is:
+    &lt;table name&gt;$
+    &lt;suggestion, such as 'import by default', 'need confirm'&gt;$
+    &lt;import or not, 'true' or 'false', if 'suggestion is 'import by default', it is 'true', otherwise it is false, but user can modify in next GUI&gt;$
+    &lt;comments, such as 'table structure are same', can be modified by user later&gt;
+  $tablesToBeLoaded  will be displayed and updated in next wizard, for user to select which tables are to be imported
+  
+  input:  1,  folder that contains UNL files 
+  output: 1,  return value will be used to setup $tablesToBeLoaded
+*/
+function load_data_pre_check(FILE_PATH)
+{
+  myMessageList_init();
+  myMessageList_add("info","start checking before load");
+
+  var array_tableToBeLoaded=new Array();
+  var tableToBeLoaded="";
+  
+  // check input parameter here
+  var contentForReadme="";
+  var contentFeedback = readFile( FILE_PATH+"readme.txt", "t" );
+  if(contentFeedback==-1){
+    
+    myMessageList_add("error","Selected folder is empty, or 'readme.txt' missing. Please check the folder again.");
+    return null;
+  }
+  // check background schedulers
+  if(scheduler_isItStarted("bg_load_unload1")==false
+  || scheduler_isItStarted("bg_load_unload2")==false
+  || scheduler_isItStarted("bg_load_unload3")==false
+  || scheduler_isItStarted("bg_load_unload4")==false
+  || scheduler_isItStarted("bg_load_unload5")==false
+  ){
+    myMessageList_add("error","Background scheduler 'dmt_unload_load*' not started yet, please start them in 'System Status'. If they are already there, wait for 1 minute and try again.");
+    return null;
+  }
+  if(scheduler_isItDisabledTriggers("bg_load_unload2")==false
+  || scheduler_isItDisabledTriggers("bg_load_unload3")==false
+  || scheduler_isItDisabledTriggers("bg_load_unload4")==false
+  || scheduler_isItDisabledTriggers("bg_load_unload5")==false
+  ){
+    myMessageList_add("error","Background scheduler 'dmt_unload_load*' are trying to disable triggers, please wait at most 1 minutes before starting importing.");
+    return null;
+  }
+  
+  var array_fileAndTimestampField=getExportedTableAndTimestampFieldFromFile(FILE_PATH+"table_exported.txt");
+  if(array_fileAndTimestampField==null || system.functions.lng(array_fileAndTimestampField)==0){
+    myMessageList_add("error","Can't find list of exported tables in 'table_exported.txt'.");
+    return null;
+  }
+  
+  var sQuery="";
+
+  for (var i in array_fileAndTimestampField)
+  { 
+    tableName=array_fileAndTimestampField[i].split(",")[0];
+    timestampField=array_fileAndTimestampField[i].split(",")[1];
+    migration_suggestion="?";
+    migration_finalDecision=false;
+    migration_userConfirm="";
+
+    var fileName=FILE_PATH+tableName+"_unload_result.txt";
+    var fileBody = readFile(fileName, "t");
+    if (fileBody==-1)
+    {
+	   
+	   continue;
+	  }
+    fileBody=fileBody.replace(/\r\n/g,"\n");
+
+    // get the table structure of table to load UNL, if it is differnet from that of old environment, then the UNL file should not be loaded.
+    var tableStructureCompareResult=compareTableStructureBetweenTxtFileAndCurrent(FILE_PATH+tableName+"_unload_structure.txt");
+    if(tableStructureCompareResult=="same"){
+      
+      myMessageList_add("debug","File structure match -   "+tableName);
+      migration_suggestion="import by default";
+      migration_finalDecision=true;
+      migration_userConfirm="";
+    }
+    else{
+      if (tableStructureCompareResult=="descriptor missing"){
+        
+        myMessageList_add("debug","File structure match -   "+tableName);
+        continue;
+      }
+      print("File structure changed -   "+tableName);
+      migration_suggestion="need confirm, table structure changed.";
+      migration_finalDecision=false;
+      migration_userConfirm="";
+    }
+
+  	var Tags = fileBody.split("\n");
+  	var tLng = system.functions.lng(Tags);
+  	if (tLng &lt; 1){
+  		print("No UNL file for " + tableName+"!");
+  		continue;
+  	}  
+    tableToBeLoaded=tableName+"$"+migration_suggestion+"$"+migration_finalDecision+"$"+migration_userConfirm;
+    array_tableToBeLoaded.push(tableToBeLoaded);
+
+  }
+  myMessageList_add("info","finish checking before load");
+  return array_tableToBeLoaded;
+}
+/*
+  main function for data loading by lots of unl files
+  
+  input:  1,  folder that contains UNL files 
+          2,  $tablesToBeLoaded (include user's final decision about migrate or not)
+  output: 1,  UNL files
+          2,  &lt;table name&gt;_load_result.txt (include how many UNL files loaded.)
+*/
+
+function load_data_utility(FILE_PATH,array_tableToBeLoaded)
+{
+  
+  myMessageList_add("info","start checking before load");
+  var array_fileAndTimestampField=getExportedTableAndTimestampFieldFromFile(FILE_PATH+"table_exported.txt");
+  var sQuery="";
+
+  var f=new SCFile("schedule");
+  if(RC_SUCCESS==f.doSelect("name#\"load data - \"")){
+    do{
+      f.doDelete();
+    }while(RC_SUCCESS==f.getNext())
+  }
+
+  f.application = "bgload";
+  f.strings[1]="database load/unload.winnt";
+  f.strings[2]="false";  
+  f.expiration = new Date();
+  
+  for (var i in array_fileAndTimestampField)
+  { 
+    tableName=array_fileAndTimestampField[i].split(",")[0];
+    timestampField=array_fileAndTimestampField[i].split(",")[1];
+    
+  	f.expiration = new Date();
+    
+    var fileName=FILE_PATH+tableName+"_unload_result.txt";
+    var fileBody = readFile(fileName, "t");
+    if (fileBody==-1)
+    {
+	   print("File does not exist -   "+fileName);
+	   continue;
+	  }
+    fileBody=fileBody.replace(/\r\n/g,"\n");
+    
+    // check user confirmation in array_tableToBeLoaded
+    var importOrNotByDefault=null;
+    var importOrNotByUserConfirm=null;
+    var importTheseUNL=false;
+    for(var j=system.functions.lng(array_tableToBeLoaded)-1;j&gt;=0;j--){
+      tableToBeLoaded=array_tableToBeLoaded[j];
+      migration_tableName=tableToBeLoaded.split("$")[0];
+      if(tableName==migration_tableName){
+        migration_suggestion=tableToBeLoaded.split("$")[1];
+        migration_finalDecision=tableToBeLoaded.split("$")[2];
+        migration_userConfirm=tableToBeLoaded.split("$")[3];
+        if(migration_finalDecision==true || migration_finalDecision=="true")
+          importTheseUNL=true;    
+        j=0;
+      }
+    }
+    
+    if(importTheseUNL){
+  		
+      myMessageList_add("info","Delta data for file " + migration_tableName + " will be imported.");
+
+    }
+    else{
+  		
+      myMessageList_add("info","Delta data for file " + migration_tableName + " will not be imported, ("+ migration_suggestion+","+migration_userConfirm+")");
+      continue;
+    }
+
+  	var Tags = fileBody.split("\n");
+  	var tLng = system.functions.lng(Tags);
+  	if (tLng &lt; 1){
+  		
+      myMessageList_add("warning","File " + fileName + " is empty!");
+  		continue;
+  	}  
+
+    var rnd;
+    rnd=2+Math.floor(Math.random()*4);
+  	for(var j=0;j&lt;tLng;j++)
+  	{
+  	  
+  	  if (system.functions.lng(system.functions.denull(Tags[j]))==0){
+        continue;
+      }
+      myMessageList_add("info","schedule for load "+Tags[j]+" created under bg_load_unload"+rnd);
+      myKpiList_register("import_"+Tags[j],tableName,sQuery,1,Tags[j],1);
+      f.strings[0]=FILE_PATH+Tags[j];
+      f.name = "load data - "+Tags[j];
+      f.javascript="lib.delta_migration_data_utility.myKpiList_update(\""+FILE_PATH+"\",\""+Tags[j]+"\",1,\"import\");";
+      f._class="bg_load_unload"+rnd;
+      f.doInsert();
+    }  
+      
+      
+  }
+    	
+  lib.delta_migration_data_utility.myKpiList_generateImportStatusReportHTML(FILE_PATH+"Overall Import Status Report.html");
+
+  // setup 'bg_load_unload1' to update 'Overall Export Status Report.html' every minutes, until 100% completed.
+  var f2=new SCFile("schedule");
+  f2._class="bg_load_unload1"; 
+  f2.name = "prepare real-time report for delta migration progress";
+  var scriptJS="lib.delta_migration_data_utility.myKpiList_updateAndscheduleNextStatusReportUpdate(\""+FILE_PATH+"Overall Import Status Report.html\",\"import\",\""+f2._class+"\");";
+  scriptJS=system.functions.strrep(scriptJS,"\\","\\\\");
+  f2.javascript=scriptJS;
+	var scriptExpiry = new Date(); 
+	var nowPlusDelay = scriptExpiry.getMinutes()+1;
+	scriptExpiry.setMinutes(nowPlusDelay);
+  f2.expiration = scriptExpiry;
+  f2.doInsert();
+
+  
+  myMessageList_add("info","finish creating schedule for load.");
+  myMessageList_add("info","delta data are scheduled to import, please open 'Overall Import Status Report.html' in target folder for real-time status.");
+
+}
+function scheduler_register(schedulerName){
+  var f=new SCFile("DeltaMigToolKPI");
+  if(RC_SUCCESS==f.doSelect("kpiName=\""+schedulerName+"\"")){
+    f.kpiName=schedulerName;
+    f.completed=0;
+    f.total=0;
+    f.doUpdate();
+  }
+  else{
+    f.kpiName=schedulerName;
+    f.completed=0;
+    f.total=0;
+    f.doInsert();
+  }
+  
+}
+function scheduler_watchDogHungry(schedulerName){
+  var f=new SCFile("DeltaMigToolKPI");
+  if(RC_SUCCESS==f.doSelect("kpiName=\""+schedulerName+"\"")){
+    f.kpiName=schedulerName;
+    f.total=0;
+    f.doUpdate();
+  }
+  else{
+    f.kpiName=schedulerName;
+    f.total=0;
+    f.doInsert();
+  }
+  
+}
+function scheduler_watchDogFeed(schedulerName){
+  var f=new SCFile("DeltaMigToolKPI");
+  if(RC_SUCCESS==f.doSelect("kpiName=\""+schedulerName+"\"")){
+    f.kpiName=schedulerName;
+    f.total=1;
+    f.doUpdate();
+  }
+  else{
+    f.kpiName=schedulerName;
+    f.total=1;
+    f.doInsert();
+  }
+  
+}
+
+function scheduler_isItStarted(schedulerName){
+  var f=new SCFile("DeltaMigToolKPI");
+  if(RC_SUCCESS==f.doSelect("kpiName=\""+schedulerName+"\"")){
+    if(f.total==1){//watch dog feeded, so the schduler must has been started.
+      return true;
+    }
+  }
+  return false;
+}
+function scheduler_isItDisabledTriggers(schedulerName){
+  var f=new SCFile("DeltaMigToolKPI");
+  if(RC_SUCCESS==f.doSelect("kpiName=\""+schedulerName+"\"")){
+    if(f.completed==1){// after scheduler disable the triggers, it will setup this flag to 1
+      return true;
+    }
+  }
+  return false;
+}
+function scheduler_disable_triggers(schedulerName){
+		var ret;
+    system.functions.rtecall("trigger", ret, 0);
+    var f=new SCFile("DeltaMigToolKPI");
+    if(RC_SUCCESS==f.doSelect("kpiName=\""+schedulerName+"\"")){
+      f.completed=1;
+      f.doUpdate();
+    }
+}
+function scheduler_enable_triggers(schedulerName){
+		var ret;
+    system.functions.rtecall("trigger", ret, 1);			
+    var f=new SCFile("DeltaMigToolKPI");
+    if(RC_SUCCESS==f.doSelect("kpiName=\""+schedulerName+"\"")){
+      f.completed=0;
+      f.doUpdate();
+    }
+}
+
+/*
+  main function for data migration by single unl file
+  create data unload script for delta data migration, the unload script will be used to abstract records after a specified time from all registed tables
+  input: start time 
+  output: a UNL script "delta_data_after_mm/dd/yyyy", to be used to retrive all records after start time from registered tables.  
+
+*/
+function generate_delta_data_unload(start_date)
+{
+
+  
+ 
+
+  var sQuery="";
+  var array_fileAndTimestampField=GetPotentialFilesAndTimestampFieldFromDbdict();
+
+  var f = new SCFile("unload"); 
+  var id=1;
+  if(RC_SUCCESS==f.doSelect("name=\""+"delta_data_after_"+getTimeString2(start_date)+"\"")){
+    f.doDelete();
+    print("Unload Script: delta_data_after_"+getTimeString2(start_date)+" updated.");
+  }
+
+  f.name="delta_data_after_"+getTimeString2(start_date);
+  f.purge=false;
+  f.unload=true;
+	var validTables=0;
+  for (var i in array_fileAndTimestampField)
+  { 
+    tableName=array_fileAndTimestampField[i].split(",")[0];
+    timestampField=array_fileAndTimestampField[i].split(",")[1];
+    
+	  if(timestampField!=null &amp;&amp; timestampField!=""){
+      sQuery = timestampField +"&gt;='"+DateTimeTool_convertDatetoString(start_date,vars.$lo_operator.date_order)+ "'";
+  	    
+      f.record[validTables].filename=tableName;
+      f.record[validTables].query=sQuery;
+      f.record[validTables].datamap=false;
+      validTables++;
+    }
+    else{
+      print("no sysmodtime - "+tableName+" ... ");
+    }  
+  }
+  
+  f.doInsert();
+  
+  return f.name;
+
+}
+
+function GetTransactionFiles(){
+	
+	var files = new Array();
+	
+	files.push("incidents");
+	files.push("probsummary");
+	files.push("rootcause");
+	files.push("cm3r");
+	files.push("cm3t");
+	files.push("knownerror");
+	files.push("knownerrortask");
+
+	return files;
+	
+}
+// TODO Read these files from a configuration table
+function Get_Delta_Data_Files(){
+	
+	var files = new Array();
+	
+	files.push("incidents");
+	files.push("probsummary");
+	files.push("rootcause");
+	
+	
+	files.push("cm3r");
+	files.push("cm3t");
+	files.push("knownerror");
+	files.push("knownerrortask");
+	
+	//NO FIELD TIME IN THE TABLE BELOW
+
+    files.push("hpcauditassignment");
+    files.push("hpcauditcm3r");
+    files.push("hpcauditcm3t");
+    files.push("hpcauditcontacts");
+    files.push("hpcauditdevice");
+    files.push("hpcauditincidents");
+    files.push("hpcauditknownerror");
+    files.push("hpcauditknownerrortask");
+    files.push("hpcauditprobsummary");
+    files.push("hpcauditrootcause");
+    files.push("hpcauditrootcausetask");
+    files.push("hpcauditSubscription");
+    
+    
+    // ACTIVITY TABLE
+    files.push("activity");
+    files.push("activitycm3r");
+    files.push("activitycm3t");
+    files.push("activitycontacts");
+    files.push("activityknownerror");
+    files.push("activityproblem");
+    files.push("activityproblemtasks");
+    files.push("activityservicemgt");
+    files.push("activitySubscription");
+  
+ 
+	return files;
+}
+function GetAllFilesFromDbdict(){
+	var files = new Array();
+  var f=new SCFile("dbdict")
+  f.doSelect("true");
+  do{
+     files.push(f.name);
+  }while(RC_SUCCESS==f.getNext())
+	
+	return files;
+}
+
+function GetAllFilesAndTimestampFieldFromDbdict(){
+	var array_fileAndTimestampField = new Array();
+  var f=new SCFile("dbdict")
+  f.doSelect("true");
+  do{
+    fileName=f.name;
+    timestampField="?";
+    find_sysmodtime=false;
+    // if one file no sysmodtime field, and if it doesn't belong to below exceptions, then ignore this file
+    for(var i in f.field){
+      if(f.field[i].name=="sysmodtime"){
+        timestampField="sysmodtime";
+        find_sysmodtime=true;    
+      }
+    }
+    if (fileName=="knownerrortask"){
+      timestampField="update.time";
+      find_sysmodtime=true;    
+    }
+    if(find_sysmodtime){
+      
+      array_fileAndTimestampField.push(fileName+","+timestampField);
+    }
+    else{
+      
+    }
+ 
+  }while(RC_SUCCESS==f.getNext())
+	
+	return array_fileAndTimestampField;
+}
+// compared with 'GetAllFilesAndTimestampFieldFromDbdict', this function will ignore some tables, such as 'application'.
+//  check on 'application' is useless for delta migration, and will take a long time
+//  for quick test, get first 50 records in dbdict  
+function GetPotentialFilesAndTimestampFieldFromDbdict(){
+	var array_fileAndTimestampField = new Array();
+  
+  var f=new SCFile("dbdict");
+  f.doSelect("true");
+  var num_DbdictRecord=0;
+  do{
+    fileName=f.name;
+    if(fileName=="application")
+      continue;
+    if(fileName=="DeltaMigToolKPI") // used by delta migration tool only.
+      continue;
+    if(fileName=="syslog") 
+      continue;
+    if(fileName=="msglog") 
+      continue;
+    if(fileName=="counters") 
+      continue;
+
+    timestampField="?";
+    find_sysmodtime=false;
+    find_sysmoduser=false;
+    find_sysmodcount=false;
+    // if one file no sysmodtime field, and if it doesn't belong to below exceptions, then ignore this file
+    for(var i in f.field){
+      if(f.field[i].name=="sysmodtime"){
+        timestampField="sysmodtime";
+        find_sysmodtime=true;
+      }
+      if(f.field[i].name=="sysmoduser"){
+        find_sysmoduser=true;      
+      }
+      if(f.field[i].name=="sysmodcount"){
+        find_sysmodcount=true;      
+      }
+    }
+    if(find_sysmodtime){
+      
+      array_fileAndTimestampField.push(fileName+","+timestampField+","+find_sysmoduser+","+find_sysmodcount);
+    }
+    else{
+      
+      array_fileAndTimestampField.push(fileName+","+","+find_sysmoduser+","+find_sysmodcount);
+    }
+    num_DbdictRecord++;
+  }while(RC_SUCCESS==f.getNext() &amp;&amp; num_DbdictRecord&lt;99999999)
+	
+	return array_fileAndTimestampField;
+}
+function writeExportedTableAndTimestampFieldToFile(array_tableAndTimestampField,filePathName){
+  writeFile(filePathName, 't', "Table Name,Timestamp Field Name\n"); 
+
+  for(var i in array_tableAndTimestampField){
+    if(array_tableAndTimestampField[i].split("$")[4]=="true"){
+      var newLine=array_tableAndTimestampField[i].split("$")[0];
+      newLine+=","+array_tableAndTimestampField[i].split("$")[1];
+      newLine+="\n";
+      writeFile(filePathName, 'a', newLine);  
+    }
+  }   
+  return;
+}
+function getExportedTableAndTimestampFieldFromFile(filePathName){
+   var ret=new Array();
+   var fileBody = readFile(filePathName, "t");
+   if(fileBody==-1)
+      return ret;
+      
+   var Tags = fileBody.split("\n");
+   for(var i in Tags){
+    if(Tags[i]!=null &amp;&amp; Tags[i]!="" &amp;&amp; Tags[i]!="Table Name,Timestamp Field Name"){
+      // also check dbdict, in case the table doesn't exists in new environment
+      var f=new SCFile("dbdict")
+      var q="name=\""+Tags[i].split(",")[0]+"\"";
+      if(RC_SUCCESS==f.doSelect(q)){
+        ret=system.functions.insert(ret,0,1,Tags[i]);
+      }
+    }
+   }                                               
+   return ret;
+}
+// convert diffent format of data/time string(depend on contacts setting), to standard 'mm/dd/yyyy hh:MM:ss'
+function convertToStandardDateFormat(oldStr,oldFormatType){
+    
+  var ret=null;
+  if(oldFormatType=="1" || oldFormatType==1){
+    ret=oldStr.substr(0,6)+"20"+oldStr.substr(6);
+  }
+  if(oldFormatType=="2" || oldFormatType==2){
+    ret=oldStr.substr(3,3)+oldStr.substr(0,3)+"20"+oldStr.substr(6);
+  }
+  if(oldFormatType=="3" || oldFormatType==3){
+    ret=oldStr.substr(3,5)+"/"+"20"+oldStr.substr(0,2)+oldStr.substr(8);
+  }
+  if(oldFormatType=="4" || oldFormatType==4){
+    ret=oldStr;
+  }
+  if(oldFormatType=="5" || oldFormatType==5){
+    ret=oldStr.substr(3,3)+oldStr.substr(0,3)+oldStr.substr(6);
+  }
+  if(oldFormatType=="6" || oldFormatType==6){
+    ret=oldStr.substr(5,5)+"/"+oldStr.substr(0,4)+oldStr.substr(10);
+  }
+  
+  return ret;
+}
+function convertDateFormatTo(curDate, newFormatType){
+  var year=1900+curDate.getYear();
+  var month=1+curDate.getMonth();
+  var day=0+curDate.getDate();
+  var hour=0+curDate.getHours();
+  var minute=0+curDate.getMinutes();
+  var second=0+curDate.getSeconds();
+  var millsecond=0+curDate.getMilliseconds();
+  
+  yyyy=""+year;
+  yy=yyyy.substr(2,2);
+  if(month&lt;10) 
+  	mm="0"+month;
+  else
+  	mm=""+month;
+  	
+  if(day&lt;10) 
+  	dd="0"+day;
+  else
+  	dd=""+day;
+  	
+  if(hour&lt;10) 
+  	hh="0"+hour;
+  else
+  	hh=""+hour;
+  	
+  if(minute&lt;10) 
+  	MM="0"+minute;
+  else
+  	MM=""+minute;
+  
+  if(second&lt;10) 
+  	ss="0"+second;
+  else
+  	ss=""+second;
+  
+  var ret=null;
+  if(newFormatType=="1" || newFormatType==1){
+    ret=mm+"/"+dd+"/"+yy+" "+hh+":"+MM+":"+ss;
+  }
+  if(newFormatType=="2" || newFormatType==2){
+    ret=dd+"/"+ddmm+"/"+yy+" "+hh+":"+MM+":"+ss;
+  }
+  if(newFormatType=="3" || newFormatType==3){
+    ret=yy+"/"+mm+"/"+dd+" "+hh+":"+MM+":"+ss;
+  }
+  if(newFormatType=="4" || newFormatType==4){
+    ret=mm+"/"+dd+"/"+yyyy+" "+hh+":"+MM+":"+ss;
+  }
+  if(newFormatType=="5" || newFormatType==5){
+    ret=dd+"/"+mm+"/"+yyyy+" "+hh+":"+MM+":"+ss;
+  }
+  if(newFormatType=="6" || newFormatType==6){
+    ret=yyyy+"/"+mm+"/"+dd+" "+hh+":"+MM+":"+ss;
+  }
+  return ret;                       
+}
+/*
+  tool function to prepare HTML description for wizards 
+  input:  1,   wizard name 
+          2,    
+  output: 1,  description in HTML style, to be displayed on wizard form
+*/
+function getDescriptionHtmlForWizards(wizardName){
+   	
+    var html;
+  	html = lib.htmlTemplates.getBasicListTemplate();
+  	switch(wizardName){
+    case "Delta Migration General (Intro)":
+      html+="&lt;h1&gt;General Introduction of Delta Migration Tool&lt;/h1&gt;";
+      html+="&lt;p&gt;&lt;b&gt;It may take serveral days when old version of Service Manager upgrade to new version, the production data that generated at that time on old environment also need to migrate to new environment. &lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;This tool is used to migration data from old production environment to new production environment.&lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;current time: "+new Date()+"&lt;/p&gt;";
+      break;
+    case "Delta Migration General (Select Mode)":
+      html+="&lt;h1&gt;Select migration mode&lt;/h1&gt;";
+      html+="&lt;p&gt;&lt;b&gt;Two modes are available to migration data: &lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;The first one is to use this tool to generate a unload script, then use it to unload data from old environment manually, and load data onto new environment manually. &lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;The second one is to use this tool to generate some background schedule, they will abstract data into multiple UNL fiels in specified folder, then copy the whole folder to new environment, run the tool again, some background schedule will be generated to load data into tables. &lt;/b&gt;&lt;/p&gt;";
+      break;
+    case "Delta Migration by UNL (Intro)":
+      html+="&lt;h1&gt;Detailed steps to migration using mode 1&lt;/h1&gt;";
+      html+="&lt;p&gt;&lt;b&gt;Specify the start time in the coming wizard window. &lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;Then a unload script named 'delta_data_after_&lt;yyyymmdd&gt;' will be created in old environment. &lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;Use this unload script to retrive data from onld environment to a UNL file&lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;Finally, deploy the UNL file onto new environment.&lt;/b&gt;&lt;/p&gt;";
+      break;
+    case "Delta Migration by UNL (Select Params)":
+      html+="&lt;h1&gt;Select the start day of data to be migrated:&lt;/h1&gt;";
+      html+="&lt;p&gt;&lt;b&gt;Note: it may take some time if many days' data are to be migrated. &lt;/b&gt;&lt;/p&gt;";
+      break;
+    case "Delta Migration by Bg UNLs (Intro)":
+      html+="&lt;h1&gt;Detailed steps to migration using mode 2&lt;/h1&gt;";
+      html+="&lt;p&gt;&lt;b&gt;Create a folder in old environment, make sure Service Manager can add file into it. &lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;Start scheduler 'dmt.unload.load', it will open 5 small schedulers from 'bg_load_unload1' to 'bg_load_unload5' &lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;Input the folder name, and specify the start time/end time in the coming wizard window. &lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;Then some schedules will be created, they will retrieve data into UNL files and save them in the folder mentioned above. &lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;Wait until all schedules finished&lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;Copy the whole folder to new environment&lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;Login SM of new environment, click menu item 'Delta Migration - Import', the guide in it will show you how to continue.&lt;/b&gt;&lt;/p&gt;";
+      break;
+    case "Delta Migration by Bg UNLs (Select Params)":
+      html+="&lt;h1&gt;Select below parameters:&lt;/h1&gt;";
+      html+="&lt;p&gt;&lt;b&gt;Target folder to contains UNL files for migration. &lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;Start time and end time of data to be migrated.&lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;Note: it may take some time if many days' data are to be migrated. &lt;/b&gt;&lt;/p&gt;";
+      break;
+    case "Delta Migration by Bg UNLs (Check before Export)":
+      html+="&lt;h1&gt;Please review the tables to be migrated:&lt;/h1&gt;";
+      html+="&lt;p&gt;&lt;b&gt;If you think no need to migrate data in some tables, modify column 'Migrate?' from 'yes' to 'no', and provide comments. &lt;/b&gt;&lt;/p&gt;";
+      break;
+    case "Delta Migration by Bg UNLs (Confirm before Export)":
+      html+="&lt;h1&gt;Please review the tables to be migrated again:&lt;/h1&gt;";
+      break;
+    case "Delta Migration by Bg UNLs (Run)":
+      html+="&lt;p&gt;&lt;b&gt;Background tasks are scheduled. &lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;To see the current process status, goto the UNL folder you selected, open 'Overall Export Status Report.html' &lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;Please wait until 'Overall Export Status Report.html' show 100% completed. &lt;/b&gt;&lt;/p&gt;";
+      break;
+    case "Delta Migration by Bg UNLs (Intro for Import)":
+      html+="&lt;h1&gt;Detailed steps to add data into new environment using mode 2&lt;/h1&gt;";
+      html+="&lt;p&gt;&lt;b&gt;Start scheduler 'dmt.unload.load', it will open 5 small schedulers from 'bg_load_unload1' to 'bg_load_unload5' &lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;A folder contains multiple UNL files, multiple txt files should already be in the new environment.) &lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;Input the folder name in the coming wizard window. &lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;Then some schedules will be created, they will load data from UNL files in the folder mentioned above, to SM. &lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;Wait until all schedules finished&lt;/b&gt;&lt;/p&gt;";
+      break;
+    case "Delta Migration by Bg UNLs (Select Params for Import)":
+      html+="&lt;h1&gt;Select below parameters:&lt;/h1&gt;";
+      html+="&lt;p&gt;&lt;b&gt;Target folder that contains UNL files for migration. &lt;/b&gt;&lt;/p&gt;";
+      break;
+    case "Delta Migration by Bg UNLs (Check before Import)":
+      html+="&lt;h1&gt;Please review the tables to be migrated:&lt;/h1&gt;";
+      html+="&lt;p&gt;&lt;b&gt;If the table structure of new environment is same as that in old environment, delta data in it will be migrated by defalut, unless you cancel it. &lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;If the table structure of new environment is different from that in old environment, delta data in it will not be migrated by defalut, unless you checked and make sure it can be migrated using UNL files. &lt;/b&gt;&lt;/p&gt;";
+      break;
+    case "Delta Migration by Bg UNLs (Confirm before Import)":
+      html+="&lt;h1&gt;Please review the tables to be migrated again:&lt;/h1&gt;";
+      break;
+    case "Delta Migration by Bg UNLs (Run for Import)":
+      html+="&lt;p&gt;&lt;b&gt;Background tasks are scheduled. &lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;To see the current process status, goto the UNL folder you selected, open 'Overall Import Status Report.html' &lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;Please wait until 'Overall Import Status Report.html' show 100% completed. &lt;/b&gt;&lt;/p&gt;";
+      break;
+    default:
+      html+="&lt;p&gt;&lt;b&gt;Default Introduction of Delta Migration Tool...&lt;/b&gt;&lt;/p&gt;";
+      break;
+    }
+    
+
+    return html;
+}
+/*
+  tool function to prepare confirm report before execution for wizards 
+  input:  1,   wizard name 
+          2,   a array of confirmed information, for export and for import, the structure is different  
+  output: 1,  description in HTML style, to be displayed on wizard form
+*/
+function getReportHtmlForWizards(wizardName, array_confirmdList){
+   	
+    var html;
+    var num_potentialTables=0;
+    var num_tablesWithDeltaData=0;
+    var num_tablesNotSuggestedToImportHere=0;
+    var num_userForcedDisabledTables=0;
+    var num_userForcedEnabledTables=0;
+    var num_migrateTables=0;
+    var num_migrateUNLs=0;
+    var array_tablesNotSuggestedToImportHere=new Array();
+    var array_userForcedDisabledTables=new Array();
+    var array_userForcedEnabledTables=new Array();
+    var array_migrateTables=new Array();
+    var seconds_total=0;
+    
+  	html = lib.htmlTemplates.getBasicListTemplate();
+  	switch(wizardName){
+    case "Delta Migration by Bg UNLs (Confirm before Export)":
+      /* for confirm before export, the structure of 'array_cofirmedList'
+      &lt;table name&gt;$
+      &lt;timestamp field&gt;$
+      &lt;suggestion, such as 'export by default', 'need confirm'&gt;$
+      &lt;time estimation, in seconds&gt;$
+      &lt;unload or not, 'true' or 'false', if 'suggestion is 'export by default', it is 'true', otherwise it is false, but user can modify in next GUI&gt;$
+      &lt;comments, such as 'table structure are same', can be modified by user later&gt;
+      */
+      for(var i in array_confirmdList){
+        thisTableInfo=array_confirmdList[i];
+        tableName=thisTableInfo.split("$")[0];
+        timeStapmField=thisTableInfo.split("$")[1];
+        suggestion=thisTableInfo.split("$")[2];
+        secondsNeeded=thisTableInfo.split("$")[3];
+        migrateDecision=thisTableInfo.split("$")[4];
+        comment=thisTableInfo.split("$")[5];
+        
+        num_potentialTables++;
+        if(suggestion=="export by default"){
+          num_tablesWithDeltaData++;
+        }
+        if(migrateDecision=="true" &amp;&amp; suggestion!="export by default"){
+          num_userForcedEnabledTables++;
+        }
+        if(migrateDecision=="false" &amp;&amp; suggestion=="export by default"){
+          num_userForcedDisabledTables++;
+          array_userForcedDisabledTables.push(tableName);
+        }
+        if(migrateDecision=="true"){
+          num_migrateTables++;
+          array_migrateTables.push(tableName);
+          seconds_total+=parseFloat(secondsNeeded);
+        }
+      }
+      /****
+      Totally &lt;#&gt; tables with modification time field are checked in the current system: 
+
+- &lt;#&gt; tables have delta data
+
+- &lt;#&gt; tables are ignored by user
+
+&lt;#&gt; tables will export delta data:
+
+- Estimated export time is &lt;#&gt; seconds/minutes/hours
+      ****/
+
+      html+="&lt;p&gt;&lt;b&gt;Totally "+num_potentialTables+" tables containing modification time field are checked in this system: &lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;- "+num_tablesWithDeltaData+" tables have the delta data.&lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;- "+num_userForcedDisabledTables+" tables are ignored by the user.&lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;"+num_migrateTables+" tables will export the delta data.&lt;/b&gt;&lt;/p&gt;";
+      if(seconds_total&lt;60){
+        html+="&lt;p&gt;&lt;b&gt;- Estimated export time is 1 minute.&lt;/b&gt;&lt;/p&gt;";
+      }
+      else if(seconds_total&lt;3600){
+        minutes_total=seconds_total/60;
+        html+="&lt;p&gt;&lt;b&gt;- Estimated export time is "+Math.ceil(minutes_total)+" minutes&lt;/b&gt;&lt;/p&gt;";
+      }
+      else{
+        hours_total=seconds_total/3600;
+        html+="&lt;p&gt;&lt;b&gt;- Estimated export time is "+0.1*Math.round(10*hours_total)+" hours&lt;/b&gt;&lt;/p&gt;";
+      }
+      
+      break;
+    case "Delta Migration by Bg UNLs (Confirm before Import)":
+      /* for confirm before import, the structure of 'array_cofirmedList'
+      &lt;table name&gt;$
+      &lt;suggestion, such as 'import by default', 'need confirm'&gt;$
+      &lt;import or not, 'true' or 'false', if 'suggestion is 'import by default', it is 'true', otherwise it is false, but user can modify in next GUI&gt;$
+      &lt;comments, such as 'table structure are same', can be modified by user later&gt;
+      */
+      for(var i in array_confirmdList){
+        thisTableInfo=array_confirmdList[i];
+        tableName=thisTableInfo.split("$")[0];
+        suggestion=thisTableInfo.split("$")[1];
+        migrateDecision=thisTableInfo.split("$")[2];
+        comment=thisTableInfo.split("$")[3];
+        
+        num_potentialTables++;
+        if(suggestion=="import by default"){
+          num_tablesWithDeltaData++;
+        }
+        if(suggestion!="import by default"){
+          num_tablesNotSuggestedToImportHere++;
+          array_tablesNotSuggestedToImportHere.push(tableName+", suggestion:"+suggestion);
+        }
+        if(migrateDecision=="true" &amp;&amp; suggestion!="import by default"){
+          num_userForcedEnabledTables++;
+          array_userForcedEnabledTables.push(tableName+", user comments:"+comment);
+        }
+        if(migrateDecision=="false" &amp;&amp; suggestion=="import by default"){
+          num_userForcedDisabledTables++;
+          array_userForcedDisabledTables.push(tableName+", user comments:"+comment);
+        }
+        if(migrateDecision=="true"){
+          num_migrateTables++;
+          array_migrateTables.push(tableName);
+        }
+      }
+      html+="&lt;p&gt;&lt;b&gt;Totally "+num_potentialTables+" tables have delta data from the existing environment. &lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;- "+num_tablesNotSuggestedToImportHere+" tables are suggested not to import&lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;- "+num_userForcedDisabledTables+" tables are ignored by the user.&lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;- "+num_userForcedEnabledTables+" tables will be forced to import&lt;/b&gt;&lt;/p&gt;";
+      html+="&lt;p&gt;&lt;b&gt;"+num_migrateTables+" tables will import the delta data&lt;/b&gt;&lt;/p&gt;";
+      break;
+    default:
+      html+="";
+      break;
+    }
+    
+
+    return html;
+}
+
+/*
+  tool function to generate text descriptor of table structure
+    parse each field of table's 'dbdict' record, then record it as text
+    I use txt file to export, instead of export xml directly. The reason is 
+      1., for get a better understanding of the structure
+      2, in later version, only neccessary fields(such as name, type) will be exported and compared,
+  input:  1,  table name 
+  output: 1,  table structure descriptor, of below format, "." will be replaced ad "_"
+*/
+function getTableStructureFromDbdict(tableName){
+  return getTableStructureFromDbdict_2_0(tableName);
+}
+function getTableStructureFromDbdict_2_0(tableName){
+  /*
+    this version will export txt file of all feilds, include null fields, 
+    but with limited attribute only: name, type, sql type
+    level N fields will have 2*N space at the beginning of the line.
+  */
+  var descp="unknown, by dbdict '"+tableName+"'";
+  var curLevel=1;
+  var f=new SCFile("dbdict");
+  if(RC_SUCCESS==f.doSelect("name=\""+tableName+"\"")){
+    descp=""+f.name+"\n";
+    descp+="descriptor version:2.0\n";
+    descp+="level,index,name,type,sql type\n";
+    for(var i=0;i&lt;system.functions.lng(f.field);i++){
+      descp+=f.field[i].level+",";
+      descp+=f.field[i].index+",";
+      descp+=f.field[i].name+",";
+      descp+=f.field[i].type+",";
+      descp+=f.field[i].sql_field_options.sql_data_type+"\n";
+    }
+  }
+  return descp;
+}
+
+function getTableStructureFromDbdict_1_0(tableName){
+  /*
+    this version will export txt file of all feilds, include null fields
+    level N fields will have 2*N space at the beginning of the line.
+  */
+  var descp="unknown, by dbdict '"+tableName+"'";
+  var curLevel=1;
+  var f=new SCFile("dbdict");
+  if(RC_SUCCESS==f.doSelect("name=\""+tableName+"\"")){
+    descp=""+f.name+"\n";
+    descp+="descriptor version:1.0\n";
+    descp+=getFiledStructureUnder(f.field,curLevel+1)
+    descp+=getFiledStructureUnder(f.field,curLevel+1)
+  }
+  return descp;
+}
+function getFiledStructureUnder(node,level){
+  var IGNORE_NULL=false; // export null in structure descriptor ?
+	var ret="";
+  var objectType=typeof node;
+  if (node == null || node=="null")
+	{
+		if(IGNORE_NULL)
+      return "";
+    else
+      node="null";
+	}
+	if ( typeof node == "object" )
+	{
+    for(var i=0;i&lt;level;i++)
+      ret+="  "
+    ret+="object\n";
+    for(var i in node){
+      ret+=getFiledStructureUnder(node[i],level+1)
+    }
+    return ret;  
+	}
+  else{
+    
+    for(var i=0;i&lt;level;i++)
+      ret+="  "
+    ret+=node+"\n";
+    return ret;
+  }
+}
+function getTableStructureFromStructDescpFile(fileName){
+  // here just return file content
+  
+  var tableDescp=readFile(fileName,"t");
+  if(tableDescp=="" || tableDescp==null || tableDescp==-1)
+    return "N/A";
+  
+  return tableDescp; 
+  
+  
+  // here arrange the file content to an html 
+
+
+}
+function getCompareResultOfStructDescpFile(fileNameA,fileNameB){
+  var html=lib.htmlTemplates.getBasicListTemplate();
+
+  var tableDescpA=readFile(fileNameA,"t");
+  var tableDescpB=readFile(fileNameB,"t");
+  tableDescpA=tableDescpA.replace(/\r\n/g,"\n");
+  tableDescpB=tableDescpB.replace(/\r\n/g,"\n");
+  var tableDescpALines=tableDescpA.split("\n");
+  var tableDescpBLines=tableDescpB.split("\n");
+  var error_srcTableHasMoreFieldAtLine="";
+  var error_curTableFieldTypeChangedAtLine="";
+  var error_curTableFieldLengthShortenedAtLine="";
+  var error_curTableHasMoreFieldAtLine="";
+  var info_curTableFieldLengthExtendedAtLine="";
+  var info_curTableHasMoreFieldAtButtum="";
+
+  if(tableDescpALines[1].indexOf("descriptor version:2.0")&gt;=0 &amp;&amp; tableDescpBLines[1].indexOf("descriptor version:2.0")&gt;=0){
+  	var lineIndexA=3;
+  	var lineIndexB=3;
+  	var lineIndexAMax=system.functions.lng(tableDescpALines);
+  	var lineIndexBMax=system.functions.lng(tableDescpBLines);
+    var lineStructLevelA;
+    var lineStructIndexA;
+    var lineStructLevelB;
+    var lineStructIndexB;
+    var lineStructLevelA_prev=-1;
+    var lineStructIndexA_prev=-1;
+    var lineStructLevelB_prev=-1;
+    var lineStructIndexB_prev=-1;
+    
+  	htmlRowId=0;
+    html +="&lt;b&gt;Risk of importing the delta data to this table: &lt;/b&gt;&lt;br&gt;";
+    html +="&lt;auto-compare suggestion&gt;&lt;br&gt;&lt;br&gt;";
+    html +="&lt;b&gt;Detailed Comparision Result:&lt;/b&gt;";
+    html +="&lt;DIV class=\"DetailedFieldCompareResultTable\"&gt;&lt;TABLE class=\"listTable\" border=\"1\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\"&gt;";
+    newHtmlRow="&lt;tr&gt;";
+    newHtmlRow+="&lt;th id='col_1'&gt;&lt;font size='2'&gt;Field name (not include alias)&lt;/font&gt;&lt;/th&gt;";
+    newHtmlRow+="&lt;th id='col_2'&gt;&lt;font size='2'&gt;Comparision result&lt;/font&gt;&lt;/th&gt;";
+    newHtmlRow+="&lt;/tr&gt;";
+    html+=newHtmlRow;                              
+  	do{
+	  	// if this is the last empty line, skip it.
+      if((tableDescpALines[lineIndexA]=="" &amp;&amp; tableDescpBLines[lineIndexB]=="")
+        || (tableDescpALines[lineIndexA]==null &amp;&amp; tableDescpBLines[lineIndexB]==null)){
+	  		lineIndexA++;
+	  		lineIndexB++;
+        continue;
+      }
+      // if this is alias, skip it
+      while(tableDescpALines[lineIndexA].split(",")[0]==tableDescpALines[lineIndexA-1].split(",")[0] 
+      &amp;&amp; tableDescpALines[lineIndexA].split(",")[1]==tableDescpALines[lineIndexA-1].split(",")[1]){
+        print("skip alias in source: "+tableDescpALines[lineIndexA].split(",")[2]);  
+        lineIndexA++;
+      }
+      while(tableDescpBLines[lineIndexB].split(",")[0]==tableDescpBLines[lineIndexB-1].split(",")[0] 
+      &amp;&amp; tableDescpBLines[lineIndexB].split(",")[1]==tableDescpBLines[lineIndexB-1].split(",")[1]){
+        print("skip alias in current: "+tableDescpBLines[lineIndexB].split(",")[2]);  
+        lineIndexB++;
+      }
+      
+	  	// convert DB type in Oracle to that in Sql Server
+      var normalizedTableDescpALine=tableDescpALines[lineIndexA];
+      var normalizedTableDescpBLine=tableDescpBLines[lineIndexB];
+      
+      //  replace VARCHAR2 to varchar
+      normalizedTableDescpALine=normalizedTableDescpALine.replace(/,VARCHAR2\(/g,",VARCHAR(");
+      normalizedTableDescpBLine=normalizedTableDescpBLine.replace(/,VARCHAR2\(/g,",VARCHAR(");
+      //  replace DATE to DATETIME
+      normalizedTableDescpALine=normalizedTableDescpALine.replace(/,DATE$/g,",DATETIME");
+      normalizedTableDescpBLine=normalizedTableDescpBLine.replace(/,DATE$/g,",DATETIME");
+      //  replace CLOB to TEXT
+      normalizedTableDescpALine=normalizedTableDescpALine.replace(/,CLOB$/g,",TEXT");
+      normalizedTableDescpBLine=normalizedTableDescpBLine.replace(/,CLOB$/g,",TEXT");
+      //  replace BLOB to IMAGE
+      normalizedTableDescpALine=normalizedTableDescpALine.replace(/,BLOB$/g,",IMAGE");
+      normalizedTableDescpBLine=normalizedTableDescpBLine.replace(/,BLOB$/g,",IMAGE");
+
+	  	tableAFieldName=normalizedTableDescpALine.split(",")[2];
+	  	tableBFieldName=normalizedTableDescpBLine.split(",")[2];       
+      var srcSqlType=normalizedTableDescpALine.split(",")[4];
+      var curSqlType=normalizedTableDescpBLine.split(",")[4];
+      
+      if(normalizedTableDescpALine==normalizedTableDescpBLine){
+	  		print("field match: "+tableDescpALines[lineIndexA]);
+        if(tableDescpALines[lineIndexA].split(",")[4]!=tableDescpBLines[lineIndexB].split(",")[4]){
+          // add a new row in html table
+          strRowClass = htmlRowId%2==0 ? "evenRow" : "oddRow";
+          newHtmlRow = "&lt;TR valign=top CLASS=\""+ strRowClass +"\"&gt;";
+          newHtmlRow += "&lt;td width=40%&gt;&lt;font size='1'&gt;"+tableAFieldName+"&lt;/font&gt;&lt;/td&gt;";
+          newHtmlRow += "&lt;td width=60%&gt;&lt;font size='1'&gt;match (&lt;DB type 1&gt; to &lt;DB type 2&gt;)&lt;/font&gt;&lt;/td&gt;";
+          newHtmlRow += "&lt;/TR&gt;";
+          newHtmlRow=system.functions.strrep(newHtmlRow,"&lt;DB type 1&gt;",tableDescpALines[lineIndexA].split(",")[4]);
+          newHtmlRow=system.functions.strrep(newHtmlRow,"&lt;DB type 2&gt;",tableDescpBLines[lineIndexB].split(",")[4]);
+          html+=newHtmlRow;
+          htmlRowId++;
+          // new row added.
+        }
+        else{
+          // add a new row in html table
+          strRowClass = htmlRowId%2==0 ? "evenRow" : "oddRow";
+          newHtmlRow = "&lt;TR valign=top CLASS=\""+ strRowClass +"\"&gt;";
+          newHtmlRow += "&lt;td width=40%&gt;&lt;font size='1'&gt;"+tableAFieldName+"&lt;/font&gt;&lt;/td&gt;";
+          newHtmlRow += "&lt;td width=60%&gt;&lt;font size='1'&gt;match&lt;/font&gt;&lt;/td&gt;";
+          newHtmlRow += "&lt;/TR&gt;";
+          html+=newHtmlRow;
+          htmlRowId++;
+          // new row added.
+        } 
+	  		lineIndexA++;
+	  		lineIndexB++;
+	  	}
+	  	else if(tableAFieldName==tableBFieldName){
+	  		print("field name match: "+tableDescpALines[lineIndexA]+".");
+	  		
+        if(normalizedTableDescpALine.split(",")[3]!=normalizedTableDescpBLine.split(",")[3]){
+          // add a new row in html table
+          strRowClass = htmlRowId%2==0 ? "evenRow" : "oddRow";
+          newHtmlRow = "&lt;TR valign=top CLASS=\""+ strRowClass +"\"&gt;";
+          newHtmlRow += "&lt;td width=40%&gt;&lt;font size='1'&gt;&lt;field name&gt;&lt;/font&gt;&lt;/td&gt;";
+          newHtmlRow += "&lt;td width=60%&gt;&lt;font size='1'&gt;type changed from &lt;old type&gt; to &lt;new type&gt;&lt;/font&gt;&lt;/td&gt;";
+          newHtmlRow=system.functions.strrep(newHtmlRow,"&lt;field name&gt;",tableAFieldName);
+          newHtmlRow=system.functions.strrep(newHtmlRow,"&lt;old type&gt;",tableDescpALines[lineIndexA].split(",")[3]);
+          newHtmlRow=system.functions.strrep(newHtmlRow,"&lt;new type&gt;",tableDescpBLines[lineIndexB].split(",")[3]);
+          newHtmlRow += "&lt;/TR&gt;";
+          html+=newHtmlRow;
+          htmlRowId++;
+          // new row added.
+          error_curTableFieldTypeChangedAtLine+=";Level:"+tableDescpALines[lineIndexA].split(",")[0]+"Index:"+tableDescpALines[lineIndexA].split(",")[1];
+        }
+        else if(srcSqlType.indexOf("VARCHAR")&gt;=0 
+        &amp;&amp; curSqlType.indexOf("VARCHAR")&gt;=0){
+          var srcLength=parseInt(srcSqlType.match(/(\d)+/g)[0]);
+          var curLength=parseInt(curSqlType.match(/(\d)+/g)[0]);
+          
+          if(srcLength&gt;curLength){
+            // add a new row in html table
+            strRowClass = htmlRowId%2==0 ? "evenRow" : "oddRow";
+            newHtmlRow = "&lt;TR valign=top CLASS=\""+ strRowClass +"\"&gt;";
+            newHtmlRow += "&lt;td width=40%&gt;&lt;font size='1'&gt;&lt;field name&gt;&lt;/font&gt;&lt;/td&gt;";
+            newHtmlRow += "&lt;td width=60%&gt;&lt;font size='1' color='red'&gt;sql type changed from &lt;old type&gt; to &lt;new type&gt;&lt;/font&gt;&lt;/td&gt;";
+            newHtmlRow=system.functions.strrep(newHtmlRow,"&lt;field name&gt;",tableAFieldName);
+            newHtmlRow=system.functions.strrep(newHtmlRow,"&lt;old type&gt;",tableDescpALines[lineIndexA].split(",")[4]);
+            newHtmlRow=system.functions.strrep(newHtmlRow,"&lt;new type&gt;",tableDescpBLines[lineIndexB].split(",")[4]);
+            newHtmlRow += "&lt;/TR&gt;";
+            html+=newHtmlRow;
+            htmlRowId++;
+            // new row added.
+            error_curTableFieldLengthShortenedAtLine+=";Level:"+tableDescpALines[lineIndexA].split(",")[0]+"Index:"+tableDescpALines[lineIndexA].split(",")[1];
+          }
+          else if(srcLength&lt;curLength){
+            // add a new row in html table
+            strRowClass = htmlRowId%2==0 ? "evenRow" : "oddRow";
+            newHtmlRow = "&lt;TR valign=top CLASS=\""+ strRowClass +"\"&gt;";
+            newHtmlRow += "&lt;td width=40%&gt;&lt;font size='1'&gt;&lt;field name&gt;&lt;/font&gt;&lt;/td&gt;";
+            newHtmlRow += "&lt;td width=60%&gt;&lt;font size='1'&gt;sql type changed from &lt;old type&gt; to &lt;new type&gt;&lt;/font&gt;&lt;/td&gt;";
+            newHtmlRow=system.functions.strrep(newHtmlRow,"&lt;field name&gt;",tableAFieldName);
+            newHtmlRow=system.functions.strrep(newHtmlRow,"&lt;old type&gt;",tableDescpALines[lineIndexA].split(",")[4]);
+            newHtmlRow=system.functions.strrep(newHtmlRow,"&lt;new type&gt;",tableDescpBLines[lineIndexB].split(",")[4]);
+            newHtmlRow += "&lt;/TR&gt;";
+            html+=newHtmlRow;
+            htmlRowId++;
+            // new row added.
+            info_curTableFieldLengthExtendedAtLine+=";Level:"+tableDescpALines[lineIndexA].split(",")[0]+"Index:"+tableDescpALines[lineIndexA].split(",")[1];
+          }
+          else{
+            // add a new row in html table
+            strRowClass = htmlRowId%2==0 ? "evenRow" : "oddRow";
+            newHtmlRow = "&lt;TR valign=top CLASS=\""+ strRowClass +"\"&gt;";
+            newHtmlRow += "&lt;td width=40%&gt;&lt;font size='1'&gt;&lt;field name&gt;&lt;/font&gt;&lt;/td&gt;";
+            newHtmlRow += "&lt;td width=60%&gt;&lt;font size='1'&gt;match&lt;/font&gt;&lt;/td&gt;";
+            newHtmlRow=system.functions.strrep(newHtmlRow,"&lt;field name&gt;",tableAFieldName);
+            newHtmlRow += "&lt;/TR&gt;";
+            html+=newHtmlRow;
+            htmlRowId++;
+            // new row added.
+          }
+        
+        }
+        else if(srcSqlType!=curSqlType){
+          if(true){
+            // add a new row in html table
+            strRowClass = htmlRowId%2==0 ? "evenRow" : "oddRow";
+            newHtmlRow = "&lt;TR valign=top CLASS=\""+ strRowClass +"\"&gt;";
+            newHtmlRow += "&lt;td width=40%&gt;&lt;font size='1'&gt;&lt;field name&gt;&lt;/font&gt;&lt;/td&gt;";
+            newHtmlRow += "&lt;td width=60%&gt;&lt;font size='1' color='red'&gt;DB type changed from &lt;old type&gt; to &lt;new type&gt;&lt;/font&gt;&lt;/td&gt;";
+            newHtmlRow=system.functions.strrep(newHtmlRow,"&lt;field name&gt;",tableAFieldName);
+            newHtmlRow=system.functions.strrep(newHtmlRow,"&lt;old type&gt;",tableDescpALines[lineIndexA].split(",")[4]);
+            newHtmlRow=system.functions.strrep(newHtmlRow,"&lt;new type&gt;",tableDescpBLines[lineIndexB].split(",")[4]);
+            newHtmlRow += "&lt;/TR&gt;";
+            html+=newHtmlRow;
+            htmlRowId++;
+            // new row added.
+            error_curTableFieldTypeChangedAtLine+=";Level:"+tableDescpALines[lineIndexA].split(",")[0]+"Index:"+tableDescpALines[lineIndexA].split(",")[1];
+          
+          }
+        }
+        else{
+          // add a new row in html table
+          strRowClass = htmlRowId%2==0 ? "evenRow" : "oddRow";
+          newHtmlRow = "&lt;TR valign=top CLASS=\""+ strRowClass +"\"&gt;";
+          newHtmlRow += "&lt;td width=40%&gt;&lt;font size='1'&gt;&lt;field name&gt;&lt;/font&gt;&lt;/td&gt;";
+          newHtmlRow += "&lt;td width=60%&gt;&lt;font size='1'&gt;match&lt;/font&gt;&lt;/td&gt;";
+          newHtmlRow=system.functions.strrep(newHtmlRow,"&lt;field name&gt;",tableAFieldName);
+          newHtmlRow += "&lt;/TR&gt;";
+          html+=newHtmlRow;
+          htmlRowId++;
+          // new row added.
+        }
+	  		lineIndexA++;
+	  		lineIndexB++;
+	  	}
+	  	else{
+	  		// search below tableDescpB lines, if tableAFieldName exists?
+	  		var thisFieldInTableDescpAExistInB=-1;
+	  		for(var t=lineIndexB+1;t&lt;lineIndexBMax;t++){
+    	  	tableBFieldName=tableDescpBLines[t].split(",")[2];
+            
+	  			if(tableAFieldName==tableBFieldName){
+	  				thisFieldInTableDescpAExistInB=t;
+          }
+	  		}
+	  		
+	  		// if yes, guess tableDescpB has some additional fields, show each and lineIndexB++ 
+	  		if(thisFieldInTableDescpAExistInB&gt;0){
+	  			do{
+	  				tableBFieldName=tableDescpBLines[lineIndexB].split(",")[2];
+            print("new field in cur env: "+tableBFieldName);
+            if(lineIndexA==lineIndexAMax || tableDescpALines[lineIndexA]=="" || tableDescpALines[lineIndexA]==null){
+              // add a new row in html table
+              strRowClass = htmlRowId%2==0 ? "evenRow" : "oddRow";
+              newHtmlRow = "&lt;TR valign=top CLASS=\""+ strRowClass +"\"&gt;";
+              newHtmlRow += "&lt;td width=40%&gt;&lt;font size='1'&gt;&lt;field name&gt;&lt;/font&gt;&lt;/td&gt;";
+              newHtmlRow += "&lt;td width=60%&gt;&lt;font size='1'&gt;extra field in current env.&lt;/font&gt;&lt;/td&gt;";
+              newHtmlRow=system.functions.strrep(newHtmlRow,"&lt;field name&gt;",tableBFieldName);
+              newHtmlRow += "&lt;/TR&gt;";
+              html+=newHtmlRow;
+              htmlRowId++;
+              // new row added.
+              info_curTableHasMoreFieldAtButtum+=";Level:"+tableDescpBLines[lineIndexB].split(",")[0]+"Index:"+tableDescpBLines[lineIndexB].split(",")[1];
+            }
+            else{
+              // add a new row in html table
+              strRowClass = htmlRowId%2==0 ? "evenRow" : "oddRow";
+              newHtmlRow = "&lt;TR valign=top CLASS=\""+ strRowClass +"\"&gt;";
+              newHtmlRow += "&lt;td width=40%&gt;&lt;font size='1'&gt;&lt;field name&gt;&lt;/font&gt;&lt;/td&gt;";
+              newHtmlRow += "&lt;td width=60%&gt;&lt;font size='1' color='red'&gt;extra field in current env.&lt;/font&gt;&lt;/td&gt;";
+              newHtmlRow=system.functions.strrep(newHtmlRow,"&lt;field name&gt;",tableBFieldName);
+              newHtmlRow += "&lt;/TR&gt;";
+              html+=newHtmlRow;
+              htmlRowId++;
+              // new row added.
+              error_curTableHasMoreFieldAtLine+=";Level:"+tableDescpBLines[lineIndexB].split(",")[0]+"Index:"+tableDescpBLines[lineIndexB].split(",")[1];
+            }
+	  				lineIndexB++;
+	  			}while(lineIndexB&lt;thisFieldInTableDescpAExistInB)
+				  			
+	  		}
+	  		// if not, this is an additional field in tableDescpA  
+	  		else{
+	  			print("new field in source env: "+tableAFieldName);
+          // add a new row in html table
+          strRowClass = htmlRowId%2==0 ? "evenRow" : "oddRow";
+          newHtmlRow = "&lt;TR valign=top CLASS=\""+ strRowClass +"\"&gt;";
+          newHtmlRow += "&lt;td width=40%&gt;&lt;font size='1'&gt;&lt;field name&gt;&lt;/font&gt;&lt;/td&gt;";
+          newHtmlRow += "&lt;td width=60%&gt;&lt;font size='1' color='red'&gt;extra field in source env.&lt;/font&gt;&lt;/td&gt;";
+          newHtmlRow=system.functions.strrep(newHtmlRow,"&lt;field name&gt;",tableAFieldName);
+          newHtmlRow += "&lt;/TR&gt;";
+          html+=newHtmlRow;
+          htmlRowId++;
+          // new row added.
+          error_srcTableHasMoreFieldAtLine+=";Level:"+tableDescpALines[lineIndexA].split(",")[0]+"Index:"+tableDescpALines[lineIndexA].split(",")[1];
+	  			lineIndexA++;	
+	  		
+	  		}
+	  	} 
+  	
+  	}while(lineIndexA&lt;lineIndexAMax || lineIndexB&lt;lineIndexBMax)
+    html += "&lt;/TABLE&gt;&lt;/DIV&gt;";
+
+    var risksForAutoCompareSuggestion="";
+    if(error_srcTableHasMoreFieldAtLine!=""){
+      risksForAutoCompareSuggestion="&lt;font color=\"red\"&gt;Warning: Source table has extra fields.&lt;/font&gt;&lt;br&gt;";
+    }
+    if(error_curTableHasMoreFieldAtLine!=""){
+      risksForAutoCompareSuggestion+="&lt;font color=\"red\"&gt;Warning: Current table has extra fields not at buttum.&lt;/font&gt;&lt;br&gt;";
+    }
+    if(error_curTableFieldTypeChangedAtLine!=""){
+      risksForAutoCompareSuggestion+="&lt;font color=\"red\"&gt;Warning: Some fields' type changed.&lt;/font&gt;&lt;br&gt;";
+    }
+    if(error_curTableFieldLengthShortenedAtLine!=""){
+      risksForAutoCompareSuggestion+="&lt;font color=\"red\"&gt;Warning: Some fields are shortened.&lt;/font&gt;&lt;br&gt;";
+    }
+    if(risksForAutoCompareSuggestion==""){
+      if(info_curTableFieldLengthExtendedAtLine!="" &amp;&amp; info_curTableHasMoreFieldAtButtum!=""){
+        risksForAutoCompareSuggestion="None, some fields are extended and current table has more fields at buttum.&lt;br&gt;";
+      }
+      else if(info_curTableFieldLengthExtendedAtLine!=""){
+        risksForAutoCompareSuggestion="None, some fields are extended.&lt;br&gt;";
+      }
+      else if(info_curTableHasMoreFieldAtButtum!=""){
+        risksForAutoCompareSuggestion+="None, current table has more fields at buttum.&lt;br&gt;";
+      }
+      else
+        risksForAutoCompareSuggestion="None.&lt;br&gt;";
+    }
+    
+    html=system.functions.strrep(html,"&lt;auto-compare suggestion&gt;",risksForAutoCompareSuggestion);
+  	
+  } 
+  return html;
+}
+function compareTableStructureBetweenTxtFileAndCurrent(fileName){
+  var oldTableDescp=""+readFile(fileName,"t");
+  if(oldTableDescp==null || oldTableDescp==""){
+    print("Table structure descriptor missing:"+fileName);
+    return "descriptor missing";
+  }
+  var oldTableLines=oldTableDescp.split("\n");
+  if(system.functions.lng(oldTableLines)&lt;2){
+    print("can't get table structure in UNL folder:"+fileName);
+    return "can't compare";
+  }
+  var newTableDescp="Undefined, please specify descriptor version.";
+  var tableName=oldTableLines[0];
+  // for unix, it will use /n, but for windows, /r/n, 
+  //  so when migrate from windows to unix, need to remove /r in each txt line
+  if(tableName.indexOf("\r")&gt;=0){  
+    
+    tableName=system.functions.substr(tableName, 0,system.functions.lng(tableName)-1);
+    
+  }
+  if(oldTableLines[1].indexOf("descriptor version:1.0")&gt;=0)
+    newTableDescp=getTableStructureFromDbdict_1_0(tableName);
+  if(oldTableLines[1].indexOf("descriptor version:2.0")&gt;=0)
+    newTableDescp=getTableStructureFromDbdict_2_0(tableName);
+
+  var fileNameNew=fileName.replace("_unload_structure","_unload_structure_new"); 
+  writeFile(fileNameNew, 't', newTableDescp);
+          
+  if(system.functions.same(oldTableDescp,newTableDescp))
+    return "same";
+
+  
+  
+  return "mismatch";
+}
+
+/*********************************************
+ *  log tools, contains init(), add() and print() functions
+ *    version 1: keep logs in variable, failed, schedule use myMessageList_add() to add log, but foreground wizard can only get log from itself, not from backgroun schedule 
+ *    version 2: keep logs in SM table, failed, raw SM932 can create new DB, but TG DB can't add new table, maybe forbidened
+ *    version 3: keep logs in global variable, failed, same as version 1
+ *    version 4: background schedule write file, foreground wizard read file 
+ *********************************************/  
+// version 3
+system.vars.$myMessageListFlag=new Array();
+system.vars.$myMessageListTimestamp=new Array();
+system.vars.$myMessageListContent=new Array();
+function myMessageList_init(){
+  system.vars.$myMessageListFlag=new Array();
+  system.vars.$myMessageListTimestamp=new Array();
+  system.vars.$myMessageListContent=new Array();
+  
+	writeFile("../logs/delta_migration.log", 't', "");
+  
+}
+function myMessageList_add(newMsgFlag,newMsgContent){
+  if(newMsgFlag==null || newMsgFlag=="" || newMsgContent==null || newMsgContent=="")
+    return;
+    
+  system.vars.$myMessageListFlag.push(newMsgFlag);
+  system.vars.$myMessageListTimestamp.push(getCurrentTimeInFormatType6plusMillseconds());
+  system.vars.$myMessageListContent.push(newMsgContent);
+  
+    
+  // print on screen 
+  myMessageList_printInstentMsg(newMsgFlag,newMsgContent);
+  
+  // also add it to log file
+  var pid = system.functions.nullsub(system.functions.sysinfo_get("ClientPID"), "Unknown PID");
+	// date format is same as that in sm.log, mm/dd/yyyy hh:mm:ss
+	var dateString=DateTimeTool_convertDatetoString(new Date(),4);
+  
+	// write external log
+  var fullText = pid + "  " + dateString + " " + newMsgFlag+" " +newMsgContent + "\n"
+	writeFile("../logs/delta_migration.log", 'a', fullText);
+
+}
+function myMessageList_printAllMessage(){
+  print("***********************************")
+  print("All Delta Migration Tool Messages:")
+  for (var i in system.vars.$myMessageListContent){
+    print(system.vars.$myMessageListTimestamp[i]+"  "+system.vars.$myMessageListFlag[i]+":"+system.vars.$myMessageListContent[i]);
+  } 
+  print("***********************************")
+}
+/**
+*	 call 'message.fc' rad, print message of error, warning or info level
+*
+*    @param {Number} level	-  'info', 'warning' or 'error'
+*    @param {String} content  -  the message content
+**/
+function myMessageList_printInstentMsg(level, content) {
+    var rteReturnValue = new SCDatum();
+    var argNames = new SCDatum();
+    var argVals = new SCDatum();
+    var index=1;
+    if(level=="info")
+      index=1;
+    if(level=="warnning")
+      index=2;
+    if(level=="error")
+      index=3;
+
+    var argVal=new SCDatum();
+          argVal="index";
+          argNames.push(argVal);
+          argVal="text";
+          argNames.push(argVal);
+    
+    argVal=new SCDatum();
+          argVal=""+index;
+          argVals.push(argVal); 
+          argVal=content;
+          argVals.push(argVal);
+
+    system.functions.rtecall("callrad",rteReturnValue,"message.fc",argNames,argVals,false); 
+}
+/**
+*	 call 'msg' rad, send message to user
+*
+*    @param {String} user	-  the sm user name, eg: falcon
+*    @param {String} content  -  the message content
+**/
+function myMessageList_sendInstentMsg(user, content) {
+	var rteReturnValue = new SCDatum();
+	var rteNames = new SCDatum();
+	var rteValues = new SCDatum();
+	 
+	//Parameter names for RAD app message 
+	rteNames.push("text"); // message
+	rteNames.push("name"); // user
+
+	//Parameter values for RAD app message
+	rteValues.push(content);
+	rteValues.push(user);
+	
+	system.functions.rtecall("callrad", 
+	rteReturnValue, 
+	"msg", //RAD app name
+	rteNames, 
+	rteValues,
+	false, //false to run in same thread, true to run in new thread
+	true); //condition for executing the rad app
+
+}
+
+function getCurrentTimeInFormatType6plusMillseconds(){
+  var curDate=new Date();
+  var year=1900+curDate.getYear();
+  var month=1+curDate.getMonth();
+  var day=0+curDate.getDate();
+  var hour=0+curDate.getHours();
+  var minute=0+curDate.getMinutes();
+  var second=0+curDate.getSeconds();
+  var millsecond=0+curDate.getMilliseconds();
+  
+  if(month&lt;10) 
+  	mm="0"+month;
+  else
+  	mm=""+month;
+  	
+  if(day&lt;10) 
+  	dd="0"+day;
+  else
+  	dd=""+day;
+  	
+  if(hour&lt;10) 
+  	hh="0"+hour;
+  else
+  	hh=""+hour;
+  	
+  if(minute&lt;10) 
+  	MM="0"+minute;
+  else
+  	MM=""+minute;
+  
+  if(second&lt;10) 
+  	ss="0"+second;
+  else
+  	ss=""+second;
+  
+  if(millsecond&lt;10) 
+  	sss="0"+millsecond;
+  else
+  	sss=""+millsecond;
+  if(millsecond&lt;100) 
+  	sss="0"+sss;
+  	
+  return ""+year+"/"+mm+"/"+dd+" "+hh+":"+MM+":"+ss+"."+sss;
+}
+function myKpiList_init(){
+  var f=new SCFile("DeltaMigToolKPI");
+  if(RC_SUCCESS==f.doSelect("true")){
+    do{
+      f.doDelete();
+    }while(RC_SUCCESS==f.getNext())
+  }
+  return true;
+}
+function myKpiList_register(kpiName,tableName,query,estimatedSeconds,unlFileName,total,fromTime,toTime){
+  myMessageList_add("info","register "+kpiName);
+  var f=new SCFile("DeltaMigToolKPI");
+  f.kpiName=kpiName;
+  f.tableName=tableName;
+  f.query=query;
+  f.unlFileName=unlFileName;
+  f.completed=0;
+  f.total=total;
+  f.remainSeconds=estimatedSeconds;
+  // try to get fromTime and toTime accroding to kpi name
+  //  this is to keep the import in order
+  if(kpiName.indexOf("import_")==0 &amp;&amp; system.functions.lng(kpiName.match(/(\d)+/g))==4){
+    
+    var fromTimeDateString=kpiName.match(/(\d)+/g)[0];
+    var fromTimeTimeString=kpiName.match(/(\d)+/g)[1];
+    var toTimeDateString=kpiName.match(/(\d)+/g)[2];
+    var toTimeTimeString=kpiName.match(/(\d)+/g)[3];
+    f.fromTime=DateTimeTool_convertStringToDate(fromTimeDateString,fromTimeTimeString);
+    f.toTime=DateTimeTool_convertStringToDate(toTimeDateString,toTimeTimeString);  
+  }
+  
+  if(fromTime!=null &amp;&amp; fromTime!="")
+    f.fromTime=fromTime;
+  if(fromTime!=null &amp;&amp; fromTime!="")
+    f.toTime=toTime;
+    
+  
+  
+  var f2=new SCFile("DeltaMigToolKPI");
+  if(RC_SUCCESS==f2.doSelect("tableName=\""+f.tableName+"\" and not null(fromTime) and not null(toTime)")){
+    do{
+      
+      
+      
+      
+      
+      
+      if(f2.toTime-f.fromTime==0){
+        f.prevKpiName=f2.kpiName;
+        
+      }
+      else if(f2.fromTime-f.toTime==0){
+        f2.prevKpiName=f.kpiName;
+        f2.doUpdate();
+        
+      }
+      else{
+        
+      }
+    }while(RC_SUCCESS==f2.getNext())
+  }
+  sqltablename=null;  
+  var file = new SCFile("dbdict");
+  var rc = file.doSelect("name=\"" + tableName + "\"");
+  if(rc == RC_SUCCESS){
+    var sql_table_alias="m1";
+    for(var i=0;i&lt;file.field.length();i++){
+      if(file.field[i].name=="sysmodtime" || file.field[i].name=="SYSMODTIME"){
+        sql_table_alias=file.field[i].sql_field_options.sql_table_alias;
+        break;      
+      }
+    }
+    for(var i =0; i &lt; file.sql_tables.length(); i++){
+      if(file.sql_tables[i].sql_table_alias.toLowerCase() == sql_table_alias){
+        sqltablename = file.sql_tables[i].sql_table_name;
+        break;
+      }
+    }
+  }
+  if(sqltablename==null){
+    f.sysmodtimeIsInDB=false;
+  }else{
+    f.sysmodtimeIsInDB=true;
+  }
+  
+  f.sqlTableOfSysmodtime=sqltablename;  
+  f.doInsert();
+  
+  return;
+}
+function myKpiList_unregister(kpiName){
+  var f=new SCFile("DeltaMigToolKPI");
+  if(RC_SUCCESS==f.doSelect("kpiName=\""+kpiName+"\"")){
+    f.doDelete();  
+  }
+}
+function myKpiList_calculateRecordsNumber(){
+  var db_type=getDatabaseType();
+
+  var statements=new Array();
+  var statement="";
+  var f=new SCFile("DeltaMigToolKPI");
+  if(RC_SUCCESS==f.doSelect("sysmodtimeIsInDB=true and not null(fromTime) and not null(toTime)")){
+    do{
+      if(databaseTypeIsSqlServer(db_type)){
+        statement="update dmt set dmt.RECORDSNUMBER = (";
+        statement+= "select count(*) from &lt;tableName&gt;";
+        statement+= " where SYSMODTIME&gt;=dmt.FROMTIME";
+        statement+= " and SYSMODTIME&lt;dmt.TOTIME";
+        statement+= ") from &lt;DMT KPI table&gt; dmt where dmt.KPINAME='&lt;kpiName&gt;'";
+      }
+      if(databaseTypeIsOracle(db_type)){
+        statement="update &lt;DMT KPI table&gt; dmt set dmt.RECORDSNUMBER = (";
+        statement+= "select count(*) from &lt;tableName&gt;";
+        statement+= " where SYSMODTIME&gt;=dmt.FROMTIME";
+        statement+= " and SYSMODTIME&lt;dmt.TOTIME";
+        statement+= ") where dmt.KPINAME='&lt;kpiName&gt;'";
+      }
+      
+      if(databaseTypeIsDB2(db_type)){
+        statement="update &lt;DMT KPI table&gt; dmt set dmt.RECORDSNUMBER = (";
+        statement+= "select count(*) from &lt;tableName&gt;";
+        statement+= " where SYSMODTIME&gt;=dmt.FROMTIME";
+        statement+= " and SYSMODTIME&lt;dmt.TOTIME";
+        statement+= ") where dmt.KPINAME='&lt;kpiName&gt;'";
+      }
+      
+      statement=statement.replace(/&lt;tableName&gt;/g,f.sqlTableOfSysmodtime);
+      statement=statement.replace(/&lt;kpiName&gt;/g,f.kpiName);
+      statement=statement.replace(/&lt;DMT KPI table&gt;/g,"DELTAMIGTOOLKPIM1");
+      statements.push(statement);
+      
+     }while(RC_SUCCESS==f.getNext())
+  }
+  statements.push("commit");
+  
+  // use the query to get record number
+  var names = new SCDatum();
+  var values = new SCDatum();
+  var returns=new SCDatum();   
+  names.push("values");      
+  values.push(statements);
+  try {  
+    system.functions.rtecall("callrad", returns, "SQLexecute", names, values, false);   
+  } catch(e) {
+   print("Can't calulate record number for "+kpiName);
+  }
+}
+function myKpiList_getQueryForRecordNumberDuring(tableName,kpiName){
+  var ret="update dmt set dmt.RECORDSNUMBER = (";
+  ret+= "select count(*) from &lt;tableName&gt;";
+  ret+= " where sysmodtime&gt;=dmt.fromTime";
+  ret+= " and sysmodtime&lt;dmt.toTime";
+  ret+= ") from &lt;DMT KPI table&gt; dmt where dmt.KPINAME='&lt;kpiName&gt;'"
+  var sqltablename;
+  var dbtype;
+  
+  var file = new SCFile("dbdict");
+  var rc = file.doSelect("name=\"" + tableName + "\"");
+  if(rc == RC_SUCCESS){
+    var sql_table_alias="m1";
+    for(var i=0;i&lt;file.field.length();i++){
+      if(file.field[i].name=="sysmodtime" || file.field[i].name=="SYSMODTIME"){
+        sql_table_alias=file.field[i].sql_field_options.sql_table_alias;
+        break;      
+      }
+    }
+    for(var i =0; i &lt; file.sql_tables.length(); i++){
+      if(file.sql_tables[i].sql_table_alias.toLowerCase() == sql_table_alias){
+        sqltablename = file.sql_tables[i].sql_table_name;
+        dbtype = file.sql_tables[i].sql_db_type;
+        break;
+      }
+    }
+    ret=ret.replace(/&lt;tableName&gt;/g,sqltablename)
+  }
+
+  var rc = file.doSelect("name=\"DeltaMigToolKPI\"");
+  if(rc == RC_SUCCESS){
+    for(var i =0; i &lt; file.sql_tables.length(); i++){
+      if(file.sql_tables[i].sql_table_alias.toLowerCase() == "m1"){
+        sqltablename = file.sql_tables[i].sql_table_name;
+        dbtype = file.sql_tables[i].sql_db_type;
+        break;
+      }
+    }
+    ret=ret.replace(/&lt;DMT KPI table&gt;/g,sqltablename);
+  }
+  ret=ret.replace(/&lt;kpiName&gt;/g,kpiName);
+  return ret;
+}
+
+function myKpiList_update(FILE_PATH,unlFileName,completedOrNot,mode){
+  var f=new SCFile("DeltaMigToolKPI");
+  if(RC_SUCCESS==f.doSelect("unlFileName=\""+unlFileName+"\"")){
+    // check if previous task finished
+    if(mode=="import"){
+      var prevTaskFinished=true;
+      var f2=new SCFile("DeltaMigToolKPI");
+      if(RC_SUCCESS==f2.doSelect("kpiName=\""+f.prevKpiName+"\" and completed&lt;total")){
+        // schedule another task to import again
+        var fsche=new SCFile("schedule");
+        fsche.application = "bgload";
+        fsche.strings[0]=FILE_PATH+f.unlFileName;
+        fsche.strings[1]="database load/unload.winnt";
+        fsche.strings[2]="false";  
+        fsche.expiration = DateTimeTool_addSeconds(new Date(),3);
+        fsche.name = "load data - "+f.unlFileName;
+        fsche.javascript="lib.delta_migration_data_utility.myKpiList_update(\""+FILE_PATH+"\",\""+f.unlFileName+"\",1,\"import\");";
+        var rnd;
+        rnd=2+Math.floor(Math.random()*4);
+        fsche._class="bg_load_unload"+rnd;
+        fsche.doInsert();
+      }
+      else{
+        f.completed=completedOrNot;
+        f.doUpdate();
+        f.remainSeconds=0;
+        myMessageList_add("info",unlFileName+" completed.");
+      }
+    }
+    else{
+
+      var exportedUnl=readFile(FILE_PATH+f.unlFileName,"b");
+      if(exportedUnl==-1){
+        f.completed=completedOrNot;
+        f.remainSeconds=0;
+        f.unlFileName+="(0 record)";
+        f.doUpdate();
+        myMessageList_add("info",unlFileName+" completed.");
+      }else{
+        f.completed=completedOrNot;
+        f.remainSeconds=0;
+        f.doUpdate();
+        myMessageList_add("info",unlFileName+" completed.");
+
+        writeFile(FILE_PATH+f.tableName+"_unload_result.txt", 'a', f.unlFileName+"\n"); 
+        var existsTable=readFile(FILE_PATH+"table_exported.txt","t");
+        if(existsTable.indexOf("\n"+f.tableName+",")&lt;=0)
+          writeFile(FILE_PATH+"table_exported.txt","a",f.tableName+",sysmodtime\n");
+      }
+    }
+  }
+  else{
+    myMessageList_add("error","not find kpi for "+unlFileName+".");
+  }
+}
+function myKpiList_generateExportStatusReportHTML(htmlFilePathName){
+  return myKpiList_generateStatusReportHTML(htmlFilePathName,"export");
+}
+function myKpiList_generateImportStatusReportHTML(htmlFilePathName){
+  return myKpiList_generateStatusReportHTML(htmlFilePathName,"import");
+}
+function myKpiList_generateStatusReportHTML(htmlFilePathName,type){
+      
+  var f=new SCFile("DeltaMigToolKPI");
+  var f2=new SCFile("DeltaMigToolKPI");
+  var f3=new SCFile("DeltaMigToolKPI");
+  // clear old statistic result.
+  if(RC_SUCCESS==f.doSelect("kpiName#\""+type+"\"")){
+    do{
+      kpiName=f.kpiName;
+      tableName=kpiName.split("_")[1];
+      yyyymmdd=kpiName.split("_")[2];
+      if(tableName=="allTable" || yyyymmdd=="allTime"){
+        f.total=0;
+        f.completed=0;
+        f.remainSeconds=0;
+        f.doUpdate();
+      }
+    }while(RC_SUCCESS==f.getNext())
+    
+  }
+  // scan all UNL level KPI, to update higher level KPI 
+  if(RC_SUCCESS==f.doSelect("kpiName#\""+type+"\"")){
+    do{
+      kpiName=f.kpiName;
+      tableName=kpiName.split("_")[1];
+      yyyymmdd=kpiName.split("_")[2];
+      if(tableName!="allTable" &amp;&amp; yyyymmdd!="allTime"){
+        // update table level KPI
+        kpiName2=type+"_"+tableName+"_allTime";
+        if(RC_SUCCESS!=f2.doSelect("kpiName=\""+kpiName2+"\"")){
+          myKpiList_register(kpiName2,tableName,"",0,"",0);
+          f2.doSelect("kpiName=\""+kpiName2+"\"");
+        }
+        f2.total=f2.total+1;
+        f2.completed=f2.completed+f.completed;
+        
+        if(f.completed==0)
+          f2.remainSeconds+=f.remainSeconds;   
+        f2.doUpdate();
+        
+        // update highest level KPI 
+        kpiName3=type+"_allTable_allTime";
+        if(RC_SUCCESS!=f3.doSelect("kpiName=\""+kpiName3+"\"")){
+          myKpiList_register(kpiName3,"","",0,"",0);
+          f3.doSelect("kpiName=\""+kpiName3+"\"");
+        }
+        f3.total=f3.total+1;
+        f3.completed=f3.completed+f.completed;
+        if(f.completed==0)
+          f3.remainSeconds+=f.remainSeconds;   
+        f3.doUpdate();
+        
+      }
+    }while(RC_SUCCESS==f.getNext())
+  }
+  
+  var html;
+	html = lib.htmlTemplates.getBasicListTemplate();
+  
+  // check failed schedule
+  var errorList=new Array();
+  var fsche=new SCFile("schedule");
+  var qsche="";
+  if(type=="export")
+    qsche="name#\"unload data - \" and status#\"application failed\"";
+  else
+    qsche="name#\"load data - \" and status#\"application failed\"";
+  if(RC_SUCCESS==fsche.doSelect(qsche)){
+    do{
+      // for failed export/import, reschedule it later. 
+      errorList.push("schedule '"+fsche.name+"'' failed: "+fsche.status);  
+    }while(RC_SUCCESS==fsche.getNext())
+  }
+
+  // prepare highest level progress report
+  if(RC_SUCCESS==f3.doSelect("kpiName=\""+type+"_allTable_allTime\"")){
+      completePct=Math.floor(100.0*f3.completed/f3.total);
+      if(completePct&lt;100){
+        html+="&lt;script language='javascript'&gt;";
+        html+="var refresh = setTimeout(\"window.location.reload()\", 15000);";
+        html+="&lt;/script&gt;";
+      }
+      if(type=="export")
+        html+="&lt;h2&gt;General Status of Delta Migration Tool Exporting&lt;/h2&gt;";
+      else
+        html+="&lt;h2&gt;General Status of Delta Migration Tool Importing&lt;/h2&gt;";
+      
+      if(completePct&lt;100)
+        html+="&lt;h3&gt;Overall progress: &lt;completePct&gt;%   (&lt;remainTime&gt; remain...)&lt;/h3&gt;\n";
+      else
+        html+="&lt;h3&gt;Overall progress: &lt;completePct&gt;%&lt;/h3&gt;\n";
+      html+="&lt;p&gt;&lt;b&gt;&lt;/b&gt;&lt;/p&gt;\n";
+            
+      html=html.replace("&lt;completePct&gt;",completePct);
+      
+      var remainTime="?";
+      if(f3.remainSeconds&lt;=60){
+        remainTime="1 minute";
+      }
+      else if(f3.remainSeconds&lt;3600){
+        minutes_total=f3.remainSeconds/60;
+        remainTime=""+Math.ceil(minutes_total)+ " minutes";
+      }
+      else{
+        hours_total=f3.remainSeconds/3600;
+        remainTime=""+Math.ceil(hours_total)+ " hours";
+      }
+      html=html.replace("&lt;remainTime&gt;",remainTime);
+  }
+  // prepare error information if there's any
+  if(system.functions.lng(errorList)&gt;0){
+    html+="&lt;p&gt;&lt;/p&gt;\n";
+    html+="&lt;table id='errorList' width='100%' border='0'&gt;\n";
+    for(var i in errorList){
+      html+=" &lt;tr valign=top&gt;\n";
+      html+="   &lt;td&gt;&lt;font size='1' color='red'&gt;&amp;nbsp;"+errorList[i]+"&lt;/font&gt;&lt;/td&gt;\n";
+      html+=" &lt;/tr&gt;\n";
+    }
+    html+="&lt;/table&gt;\n";
+    html+="&lt;p&gt;&lt;b&gt;Please check related UNL files.&lt;/b&gt;&lt;/p&gt;\n";
+  
+  }
+  
+  // prepare table level progress report
+  if(RC_SUCCESS==f2.doSelect("kpiName#\""+type+"\"")){
+    html+="&lt;h3&gt;Table level progress:  &lt;finishedTablesNumber&gt;/&lt;overallTablesNumber&gt;&lt;/h3&gt;\n";
+    html+="&lt;table id='tableLevelReport' width='300' border='1' bordercolor='#aaaaaa'&gt;\n";
+    html+="  &lt;tr&gt;\n";
+    html+="   &lt;th width='250' id='col_1' style=\"color:white;font-size:15px;background-color:blue\"&gt;Table name&lt;/th&gt;\n";
+    html+="   &lt;th width='50' id='col_2' style=\"color:white;font-size:15px;background-color:blue\"&gt;Progress&lt;/th&gt;\n";
+    html+=" &lt;/tr&gt;\n";
+    var finishedTablesNumber=0;
+    var overallTablesNumber=0;
+    do{
+      kpiName=f2.kpiName;
+      tableName=kpiName.split("_")[1];
+      yyyymmdd=kpiName.split("_")[2];
+      if(tableName!="allTable" &amp;&amp; yyyymmdd=="allTime"){
+        completePct=Math.floor(100.0*f2.completed/f2.total);
+      
+        strRowClass = overallTablesNumber%2==1 ? "evenRow" : "oddRow";
+     
+        html+=" &lt;tr valign=top CLASS=\""+ strRowClass +"\"&gt;\n";
+        html+="   &lt;td&gt;&lt;font size='1' color='#666666'&gt;&amp;nbsp;"+tableName+"&lt;/font&gt;&lt;/td&gt;\n";
+        html+="   &lt;td&gt;&lt;font size='1' color='#666666'&gt;&amp;nbsp;"+completePct+"%&lt;/font&gt;&lt;/td&gt;\n";
+        html+=" &lt;/tr&gt;\n";
+      
+        overallTablesNumber++;
+        if(completePct==100)
+          finishedTablesNumber++;
+      }
+    }while(RC_SUCCESS==f2.getNext())
+    html+="&lt;/table&gt;\n";
+    html+="&lt;p&gt;&lt;b&gt;&lt;/b&gt;&lt;/p&gt;\n";
+    html=html.replace("&lt;overallTablesNumber&gt;",overallTablesNumber);
+    html=html.replace("&lt;finishedTablesNumber&gt;",finishedTablesNumber);
+  }
+  
+  // prepare UNL level progress report
+  if(RC_SUCCESS==f.doSelect("kpiName#\""+type+"\"")){
+    
+    html+="&lt;h3&gt;UNL file level progress:  &lt;finishedUnlNumber&gt;/&lt;overallUnlNumber&gt;&lt;/h3&gt;\n";
+    html+="&lt;table id='unlLevelReport' width='300' border='1' bordercolor='#aaaaaa'&gt;\n";
+    html+="  &lt;tr&gt;\n";
+    html+="   &lt;th width='250' id='col_1' style=\"color:white;font-size:15px;background-color:blue\"&gt;UNL file name&lt;/th&gt;\n";
+    html+="   &lt;th width='50' id='col_2' style=\"color:white;font-size:15px;background-color:blue\"&gt;Progress&lt;/th&gt;\n";
+    html+=" &lt;/tr&gt;\n";
+    var finishedUnlNumber=0;
+    var overallUnlNumber=0;
+    do{
+      kpiName=f.kpiName;
+      tableName=kpiName.split("_")[1];
+      yyyymmdd=kpiName.split("_")[2];
+      if(tableName!="allTable" &amp;&amp; yyyymmdd!="allTime"){
+        completePct=Math.floor(100.0*f.completed/f.total);
+      
+        strRowClass = overallUnlNumber%2==1 ? "evenRow" : "oddRow";
+     
+        html+=" &lt;tr valign=top CLASS=\""+ strRowClass +"\"&gt;\n";
+        html+="   &lt;td&gt;&lt;font size='1' color='#666666'&gt;&amp;nbsp;"+f.unlFileName+"&lt;/font&gt;&lt;/td&gt;\n";
+        html+="   &lt;td&gt;&lt;font size='1' color='#666666'&gt;&amp;nbsp;"+completePct+"%&lt;/font&gt;&lt;/td&gt;\n";
+        html+=" &lt;/tr&gt;\n";
+        
+        overallUnlNumber++;
+        if(completePct==100)
+          finishedUnlNumber++;
+      
+      }
+    }while(RC_SUCCESS==f.getNext())
+    html+="&lt;/table&gt;\n";
+    html+="&lt;p&gt;&lt;b&gt;&lt;/b&gt;&lt;/p&gt;\n";
+    
+    html=html.replace("&lt;overallUnlNumber&gt;",overallUnlNumber);
+    html=html.replace("&lt;finishedUnlNumber&gt;",finishedUnlNumber);
+
+  }
+  writeFile(htmlFilePathName, 't', html);
+}
+function myKpiList_overallStatusCompletedOrNot(type){
+  var f=new SCFile("DeltaMigToolKPI");
+  if(RC_SUCCESS==f.doSelect("kpiName=\""+type+"_allTable_allTime\"")){
+    if(f.completed==f.total &amp;&amp; f.total&gt;0){
+      return true;
+    }
+  }
+  return false;
+}
+function myKpiList_updateAndscheduleNextStatusReportUpdate(htmlFilePathName,type,CLASS_NAME){
+  // if overall status is not 100%, schedule next update
+  if(myKpiList_overallStatusCompletedOrNot(type)==false){
+      var scriptJS="lib.delta_migration_data_utility.myKpiList_updateAndscheduleNextStatusReportUpdate(\""+htmlFilePathName+"\",\""+type+"\",\""+CLASS_NAME+"\");";
+      scriptJS=system.functions.strrep(scriptJS,"\\","\\\\");
+			var scriptExpiry = new Date(); 
+			var nowPlusDelay = scriptExpiry.getMinutes() + 1;
+			scriptExpiry.setMinutes(nowPlusDelay);
+			var scriptName = "prepare real-time report for delta migration progress";
+			
+      var newSchedule = new SCFile( "schedule" );
+    	newSchedule._class = CLASS_NAME;
+    	newSchedule.name = scriptName;
+    	newSchedule.expiration = scriptExpiry;
+    	newSchedule.javascript = scriptJS;
+    
+    	newSchedule.doInsert();
+  }
+  else{
+    // assign new tasks to make bl_load_unload* restore triggers
+    var f=new SCFile("schedule");
+    f.expiration = new Date();
+    for(var i=2;i&lt;=5;i++){
+    f.name = "enable triggers - bg_load_unload"+i;
+      f.javascript="lib.delta_migration_data_utility.scheduler_enable_triggers(\"bg_load_unload"+i+"\");";
+      f._class="bg_load_unload"+i;
+      f.doInsert();
+    }
+  }
+  // update status report
+  lib.delta_migration_data_utility.myKpiList_generateStatusReportHTML(htmlFilePathName,type);
+
+}
+function triggers_turnoff(){
+		var ret;
+    system.functions.rtecall("trigger", ret, 0);			
+
+}
+function triggers_turnon(){
+		var ret;
+    system.functions.rtecall("trigger", ret, 1);			
+
+}
+function getCurrentOperatorTimezone(){
+  var f = new SCFile("operator");
+  var q = new QueryCond("name", EQ, system.functions.operator());
+  
+  if (f.doSelect("operator",q) == RC_SUCCESS){
+    if (f.time_zone)
+    {
+      return f.time_zone;
+    }
+  }
+  return "Not set";
+  
+}
+function getSystemDefaultTimezone(){
+  var f = new SCFile("info");
+  var q = new QueryCond("type", EQ, "company");
+  
+  if (f.doSelect(q) == RC_SUCCESS )
+    if (f.time_zone)
+      return f.time_zone;
+  
+  return "Not set";
+}
+function getCurrentOperatorDateFormat(){
+  var type=""+vars.$lo_operator.date_order;
+  
+  switch(type){
+  case "1":
+    return "mm/dd/yy hh:MM:ss";
+  case "2":
+    return "dd/mm/yy hh:MM:ss";
+  case "3":
+    return "yy/mm/dd hh:MM:ss";
+  case "4":
+    return "mm/dd/yyyy hh:MM:ss";
+  case "5":
+    return "dd/mm/yyyy hh:MM:ss";
+  case "6":
+    return "yyyy/mm/dd hh:MM:ss";
+  default:
+    return "Not set";
+  }    
+}
+function getSystemDefaultDateFormat(){
+  var f = new SCFile("info");
+  var q = new QueryCond("type", EQ, "company");
+  var type="?";
+  if (f.doSelect(q) == RC_SUCCESS )
+    if (f.time_zone)
+      type=""+f.date_order;
+  
+  switch(type){
+  case "1":
+    return "mm/dd/yy hh:MM:ss";
+  case "2":
+    return "dd/mm/yy hh:MM:ss";
+  case "3":
+    return "yy/mm/dd hh:MM:ss";
+  case "4":
+    return "mm/dd/yyyy hh:MM:ss";
+  case "5":
+    return "dd/mm/yyyy hh:MM:ss";
+  case "6":
+    return "yyyy/mm/dd hh:MM:ss";
+  default:
+    return "Not set";
+  }
+}
+function getDatabaseType(){
+  var ret="";
+  var file = new SCFile("dbdict");
+  var rc = file.doSelect("name=\"dbdict\"");
+  if(rc == RC_SUCCESS){
+   for(var i =0; i &lt; file.sql_tables.length(); i++){
+    if(file.sql_tables[i].sql_table_alias.toLowerCase() == "m1"){
+     tablename = file.sql_tables[i].sql_table_name;
+     ret = file.sql_tables[i].sql_db_type;
+     break;
+    }
+   }
+  }
+  return ret;
+}
+function databaseTypeIsSqlServer(db_type){
+  if(db_type.toLowerCase().indexOf("sql")== 0)
+    return true;
+  return false;
+}
+function databaseTypeIsOracle(db_type){
+  if(db_type.toLowerCase().indexOf("ora")== 0)
+    return true;
+  return false;
+}
+function databaseTypeIsDB2(db_type){
+  if(db_type.toLowerCase().indexOf("db2")== 0)
+    return true;
+  return false;
+}
+function DateTimeTool_addSeconds(start_date,add_seconds)
+{
+  var ret=new Date();
+  rs=start_date.getTime();
+  rs+=add_seconds*1000;
+  rs=Math.round(rs/1000)*1000;
+  ret.setTime(rs);
+  
+  return ret;
+}
+function DateTimeTool_convertDatetoString(date,dateOrder){
+	if ( date == null )
+		return null;
+	var  strMonth = system.functions.str( system.functions.month(date) );
+	var  strDay   = system.functions.str( system.functions.day(date) );
+	var  strYear  = system.functions.str( system.functions.year( date) );
+	var  strTime  = system.functions.str( system.functions.time( date ) );
+    var  strDate;
+
+	if (system.functions.lng(strMonth) == 1)
+	{
+        strMonth = "0" + strMonth;
+	}
+	if (system.functions.lng(strDay) == 1)
+	{
+        strDay = "0" + strDay;
+	}
+	
+	if (dateOrder == 1 )
+	{
+		strDate = strMonth + "/" + strDay + "/" + strYear.substr(2) +" " + strTime;
+	}
+	else if (dateOrder == 2 )
+	{
+		strDate = strDay + "/" + strMonth + "/" + strYear.substr(2) +" " + strTime;	
+	}
+	else if (dateOrder == 3 )
+	{
+		strDate = strYear.substr(2) + "/" + strMonth + "/" + strDay +" " + strTime;
+	}
+	else if (dateOrder == 4 )
+	{
+		strDate = strMonth + "/" + strDay + "/" + strYear +" " + strTime;
+	}
+	else if (dateOrder == 5 )
+	{
+		strDate = strDay + "/" + strMonth + "/" + strYear +" " + strTime;
+	}
+	else if (dateOrder == 6 )
+	{
+		strDate = strYear + "/" + strMonth + "/" + strDay +" " + strTime;	
+	}
+	return strDate;
+	
+}
+function DateTimeTool_convertStringToDate(yyyymmdd,hhmmss){
+  var yyyy=parseInt(yyyymmdd.substr(0,4));
+  var mm=parseInt(yyyymmdd.substr(4,2));
+  var dd=parseInt(yyyymmdd.substr(6,2));
+  var hh=parseInt(hhmmss.substr(0,2));
+  var minute=parseInt(hhmmss.substr(2,2));
+  var ss=parseInt(hhmmss.substr(4,2));
+  
+  var ret=new Date();
+  ret.setFullYear(yyyy,mm-1,dd);
+  ret.setHours(hh,minute,ss,0);
+  return ret;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+// UNUSED BACKUP FUNCTIONS
+
+
+
+function GetConfigurationFiles(){
+	
+	var files = new Array();
+	
+	files.push("category");
+	files.push("subcategory");
+	files.push("producttype");
+	files.push("problemtype");
+	
+	files.push("dept");
+	files.push("location");
+	
+	files.push("sla");
+	files.push("slo");
+
+	return files;
+}
+
+
+// unload data of transaction table
+function unload_delta_data(str_start_date)
+{
+  var files = GetTransactionFiles();
+  var query="sysmodtime&gt;='"+str_start_date+ "'";
+
+  for (var i in files)
+  {
+	  
+	  if (files[i]=="knownerrortask")
+	      query="update.time&gt;='"+str_start_date+ "'";
+	  
+	  unload_data_bg(files[i],query,DELTA_DATA_PATH);
+  }
+  		
+}
+
+function unload_data_bg(file_name,query,out_file_path)
+{
+  print("function unload_data(file_name) START - "+file_name);
+     
+  var output_file=FILE_PATH+out_file_path+"\\"+file_name+".unl";
+
+  var f=new SCFile("schedule");
+  f._class="bg_load_unload";
+  f.expiration = new Date();
+  f.application = "unload.background";
+  f.strings[2]=output_file;
+  f.strings[3]=query;
+  f.strings[4]=file_name;
+  f.name = "unload "+out_file_path+" - "+file_name;
+  f.javascript="print(\"**************** bg_unload "+file_name+" "+query+" ****************\")";
+   
+  f.doInsert();
+  
+  
+  writeFile(FILE_PATH+out_file_path+"\\"+out_file_path+".txt", 'a', file_name+".unl\n");
+  
+  print("function unload_data(file_name) END - "+file_name);
+  return "SUCCESS";
+}
+
+
+// unload data of configuration table
+function unload_configuration_data()
+{
+  var files = GetConfigurationFiles();
+
+  for (var i in files)
+  {
+	  
+	  unload_data_bg(files[i],"true","configuration_data");
+  }
+  		
+}
+
+// for data of transaction table
+function unload_data(file_name,ID_Start)
+{
+  print("function unload_data(ID_Start) START - "+ID_Start);
+  var query="";
+  
+  if (file_name=="incidents")
+     query="incident.id#\""+ID_Start+"\"";
+  else if (file_name=="probsummary")
+     query="number#\""+ID_Start+"\"";  
+  else if (file_name=="cm3r")
+     query="number#\""+ID_Start+"\"";  
+  else if (file_name=="cm3t")
+     query="number#\""+ID_Start+"\"";  
+  else if (file_name=="rootcause")
+     query="id#\""+ID_Start+"\"";        
+  else
+     return "";
+     
+  var output_file=FILE_PATH+"\\"+file_name+"\\"+file_name+"_"+ID_Start+".unl";
+
+  var f=new SCFile("schedule");
+  
+  f._class="bg_load_unload"; 
+  
+  f.expiration = new Date();
+  f.application = "unload.background";
+  f.strings[2]=output_file;
+  f.strings[3]=query;
+  f.strings[4]=file_name;
+  f.name = "data unload "+file_name+" - "+ID_Start;
+  f.javascript="print(\"**************** bg_unload "+file_name+" "+ID_Start+" ****************\")";
+  f.doInsert();
+  
+  
+  writeFile(FILE_PATH+"\\"+file_name+"\\"+file_name+".txt", 'a', file_name+"_"+ID_Start+".unl\n");
+  
+  print("function unload_data(file_name,ID_Start) END - "+ID_Start);
+  return "SUCCESS";
+}
+</script>
+    <package type="string">Upgrade</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:39</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;SYSATTACHMENTSService&quot;" recordid="SYSATTACHMENTSService">
+    <name type="string">SYSATTACHMENTSService</name>
+    <script type="string">var $ = lib.c.$;
+
+var SYSATTACHMENTSService = $({
+	countAttachment : function(topic) {
+		var count = $("SYSATTACHMENTS").count(
+				"segment=0 and topic =\"" + topic + "\"");
+		return count;
+	}
+});
+
+function getClass() {
+	return SYSATTACHMENTSService;
+}</script>
+    <package NullValue="1" type="string"/>
+    <sysmodtime type="dateTime">09/18/13 13:20:38</sysmodtime>
+    <sysmoduser type="string">shiji.shu</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

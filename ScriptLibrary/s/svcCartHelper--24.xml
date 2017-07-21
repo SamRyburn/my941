@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;svcCartHelper&quot;" recordid="svcCartHelper">
+    <name type="string">svcCartHelper</name>
+    <script type="string">/** @fileoverview svcCartHelper - contains functions used by the Service Catalog module when dealing with svcCart and svcCartItems
+*   @author Alex Corvino
+*/
+
+/**  This function is called to delete cart items that belong to the contact name supplied. 
+*	 This is called when first displaying the catalog when the requester should not have anything in the
+* 	 svcCart or svcCartItem table.
+*/
+function clearDeadCartItems ()
+{
+    var operator = system.functions.operator();   
+     
+    clearDeadCartItemsByOperator(operator);
+    
+    return;
+}
+
+
+var g_isClearedDeadCart = false;
+
+/**
+*   This function is use to support delete cart and related items by operator name
+*/
+function clearDeadCartItemsByOperator (sOperatorName)
+{
+	if (g_isClearedDeadCart){
+		return;
+	}
+	
+	g_isClearedDeadCart = true;
+	
+	
+    var operator = sOperatorName;
+    
+    if (sOperatorName == undefined || sOperatorName == null)
+    {
+      operator = system.functions.operator();
+    }
+
+	var fOperator = new SCFile("operator");
+	
+	fOperator.doSelect("name=\"" + operator + "\"");
+	
+	var fCart = new SCFile("svcCart");
+	var rc = fCart.doSelect("owner=\"" + fOperator.contact_name + "\" and sysmoduser=\"" + fOperator.name + "\" and null(submitted)");
+
+	 if (rc == RC_SUCCESS)
+    {
+    	rc = fCart.getFirst();
+    	var procs = system.functions.processes("ALL");
+    	while (rc == RC_SUCCESS)
+        {     
+         if( !isCartInActiveThreads(fCart,procs) )
+         {
+           var fCartItems = new SCFile("svcCartItem");
+           var rc_cartItem = fCartItems.doSelect("cartId=" + fCart.cartId);
+           while (rc_cartItem == RC_SUCCESS)
+           {
+             fCartItems.doDelete(); 
+             rc_cartItem = fCartItems.getNext();
+           }
+           fCart.doDelete();
+         }
+         rc = fCart.getNext();
+       }
+    } 
+	
+	return;
+}
+
+/**  This function is called check if a cart's user.tid is in the status table. Carts that are should
+*	 not be deleted because there's the possiblity that the cart is active in a different session.
+*
+*	@param {SCFile} fCart	-  The svcCart record
+*	@return True for a cart that is in an active thread false if not.
+*	@type Boolean
+*/
+function isCartInActiveThreads( fCart,procs )
+{
+ 
+   if (fCart.template == true )
+	{	
+		return true;
+	}
+	
+	
+	var operator = system.functions.operator();
+	
+	var length = procs.length();
+	if (procs == null)
+	   procs = system.functions.processes("ALL");
+	for (var x = 0; x &lt; length; x++)
+	{
+		var aProcs = procs[x].toArray();
+		
+		if (aProcs[6] == fCart.user_tid &amp;&amp; system.functions.str(aProcs).indexOf(operator) != -1)
+		{
+			return true;
+		} 
+	}	
+	
+	return false;
+}
+
+/**  This will return the TID associated with the PID passed to it. The PID must be from an active process.
+*
+*	@param {int} iPID	-  The PID
+*	@return the TID or -1 if one cannot be found
+*	@type int
+*/
+function getClientTIDFromPID( iPID )
+{
+	var procs = system.functions.processes("ACTIVE");
+	
+	for (var x = 0; x &lt; procs.length(); x++)
+	{
+		var aProcs = procs[x].toArray();
+				
+		if (aProcs[1] == iPID )
+		{
+			return aProcs[6];
+		} 
+	}	
+	
+	//unpossible!
+	return -1;
+}
+
+/** This is used by trigger.svcCartItem.after.update.
+*   When completed is set in cart item, check and set completed in its parent cart item.
+*  @param cartItem  -  The change cart item
+*  @param oldCartItem  - The same cart item before updated
+*/
+function updateCartItemAfterCompletedUpdate (cartItem, oldCartItem)
+{
+    if (cartItem.completed == oldCartItem.completed || cartItem.parentCartItemId == null)
+    {
+        return;
+    }
+
+    
+    // Get the parent cart item of this cart item
+    var fParentCartItem = new SCFile("svcCartItem");
+    var rc = fParentCartItem.doSelect("cartId=\"" + cartItem.cartId + "\" and cartItemId=\"" + cartItem.parentCartItemId + "\"");
+    if (rc != RC_SUCCESS) {
+        return;
+    }
+    
+    if (fParentCartItem.completed == cartItem.completed) 
+    {
+        return;
+    } 
+    else if (fParentCartItem.completed == true &amp;&amp; cartItem.completed == false)
+    {
+        fParentCartItem.completed = false;
+        fParentCartItem.doUpdate();
+        return;
+    }
+    
+    // Get all brother cart items
+    var fBrotherCartItem = new SCFile("svcCartItem");
+    rc = fBrotherCartItem.doSelect("cartId=\"" + cartItem.cartId + "\" and parentCartItemId=\"" + cartItem.parentCartItemId + "\"");
+    
+    var allCompleted = true;
+    while (rc == RC_SUCCESS)
+    {
+        if (fBrotherCartItem.completed == false)
+        {
+            allCompleted = false;
+            break;
+        }
+        rc = fBrotherCartItem.getNext();
+    }
+    
+    if (allCompleted == true)
+    {
+        fParentCartItem.completed = true;
+        fParentCartItem.doUpdate();
+    }
+}
+
+/** This is used by trigger.svcCartItem.after.update.
+*   When completed is set in cart item, set completed.time accordingly.
+*  @param cartItem  -  The change cart item
+*  @param oldCartItem  - The same cart item before updated
+*/
+function updateCompleteTimefieldAfterCompletedUpdate (cartItem, oldCartItem)
+{
+
+  if (cartItem.completed == oldCartItem.completed)
+    {
+        return;
+    }
+    var cartItemId;
+    if( cartItem != null &amp;&amp; cartItem.cartItemId != null)
+     cartItemId = cartItem.cartItemID;
+    else if( oldCartItem != null &amp;&amp; oldCartItem.cartItemId != null)
+     cartItemId = oldCartItem.cartItemID; 
+ // Get the  cart item record 
+ 
+    var fCartItem = new SCFile("svcCartItem");
+    var rc = fCartItem.doSelect( "cartItemId=\"" + cartItem.cartItemId + "\"");
+    if (rc != RC_SUCCESS) {
+        return;
+    }
+    
+ if(cartItem.completed == true &amp;&amp; (oldCartItem.completed == false || oldCartItem.completed == null))
+ {
+
+  fCartItem.completed_time = system.functions.tod();
+ 
+  fCartItem.doUpdate();  
+  cartItem.completed_time = fCartItem.completed_time;
+  return;
+ }
+ 
+ else if(oldCartItem.completed == true &amp;&amp; (cartItem.completed == false || cartItem.completed == null))
+ {
+ 
+  fCartItem.completed_time = null;
+  fCartItem.doUpdate();
+  cartItem.completed_time = fCartItem.completed_time;  
+  return;
+ }
+ 
+}
+
+/**
+ * check and update the Hashkey Configurations in info record if needed
+
+ */
+function UpdateInfoHashkeyConfigurations()
+{
+	var info = new SCFile("info");	
+	var rc = info.doSelect("type=\"company\" and format=\"info.company\"");
+
+	if ( rc == RC_SUCCESS )		
+	{
+		if (info["strong.queryhash.flag"] == null)
+		{
+		info["keep.old.queryhash.flag"] = true;
+		info["strong.queryhash.flag"] = true;		
+
+		var ret;	
+		system.functions.rtecall("trigger", ret, 0);			
+		var rc=	info.doUpdate();
+		system.functions.rtecall("trigger", ret, 1);
+	    }
+     }
+}
+
+//UpdateInfoHashkeyConfigurations();
+
+</script>
+    <package type="string">Service Catalog</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:44</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

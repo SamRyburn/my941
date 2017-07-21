@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptPackage">
+  <record id="name=&quot;smisplatform&quot;" recordid="smisplatform">
+    <name type="string">smisplatform</name>
+    <description NullValue="1" type="string"/>
+    <sysmodtime type="dateTime">12/25/12 18:51:22</sysmodtime>
+    <sysmoduser type="string">zhangqi</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+  </record>
+</recordset>

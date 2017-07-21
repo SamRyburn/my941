@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="eventregister">
+  <record id="evtype=&quot;WMI&quot; and evseq=1 and evappl=&quot;wmi.inventory.check&quot;" recordid="WMI - 1 - wmi.inventory.check">
+    <evtype type="string">WMI</evtype>
+    <evappl type="string">wmi.inventory.check</evappl>
+    <evcondition type="boolean">true</evcondition>
+    <evmap type="string">WMI add</evmap>
+    <evseq type="decimal">1</evseq>
+    <names sctype="array">
+      <names sctype="string">record</names>
+      <names sctype="string">prompt</names>
+      <names sctype="string">string1</names>
+      <names sctype="string">text</names>
+      <names sctype="string">query</names>
+      <names sctype="string">boolean1</names>
+      <names sctype="string">name</names>
+      <names sctype="string">cond.input</names>
+    </names>
+    <values sctype="array">
+      <values sctype="globalVar">$axces</values>
+      <values sctype="operator">evmap in $axces.register</values>
+      <values sctype="string">device</values>
+      <values sctype="string">add</values>
+      <values sctype="globalVar">$L.temp.query</values>
+      <values sctype="string">true</values>
+      <values sctype="string">icma</values>
+      <values sctype="operator">val("true", 4)</values>
+    </values>
+    <evgoto NullValue="1" type="string"/>
+    <evdelete type="boolean">false</evdelete>
+    <evftype type="string">input</evftype>
+    <evformat NullValue="1" type="string"/>
+    <evtranslate NullValue="1" type="string"/>
+    <comments sctype="array">
+      <comments sctype="string">eventin record</comments>
+      <comments sctype="string">eventmap name</comments>
+      <comments sctype="string">name of root file</comments>
+      <comments sctype="string">action to perform</comments>
+      <comments sctype="string">root file query</comments>
+      <comments sctype="string">write eventout?</comments>
+    </comments>
+    <evinit sctype="array">
+      <evinit sctype="operator">$axces.debug.on=true;$L.wmi.targetname=5 in $axces.fields;$L.wmi.result=nullsub(4 in $axces.fields, "SUCCESS")</evinit>
+      <evinit sctype="operator">$L.temp=2 in $axces.fields;$L.x=1;$L.temp.array={};$L.temp=$L.temp+"|"</evinit>
+      <evinit sctype="operator">while (index("|", $L.temp, $L.x)&gt;0) do ($L.y=index("|", $L.temp, $L.x)+1;$L.z=$L.y - $L.x - 1;if (substr($L.temp, $L.x, $L.z)~={"505054503030", "", " "}) then ($L.temp.array=insert($L.temp.array, 1, 1, substr($L.temp, $L.x, $L.z)));$L.x=$L.y)</evinit>
+      <evinit sctype="operator">if (lng(denull($L.temp.array))&gt;0 and $L.temp.array~={} and $L.temp.array~={""}) then ($L.temp.query="wmi.protocol.addr isin "+str($L.temp.array))</evinit>
+      <evinit sctype="operator">if ($L.wmi.result="SUCCESS") then ($L.temp.query=nullsub($L.temp.query+" or wmi.targetname=\""+$L.wmi.targetname+"\"", "wmi.targetname=\""+$L.wmi.targetname+"\""));if ($L.wmi.result~="SUCCESS" and not  (null($L.wmi.result))) then ($L.temp.query="wmi.targetname=\""+$L.wmi.targetname+"\"")</evinit>
+      <evinit sctype="operator">$L.temp.query=nullsub($L.temp.query, "false")</evinit>
+      <evinit sctype="operator">$L.string=""</evinit>
+      <evinit sctype="operator">$L.temp=2 in $axces.fields;$L.x=1;$L.temp.string="";$L.temp=$L.temp+"|"</evinit>
+      <evinit sctype="operator">while (index("|", $L.temp, $L.x)&gt;0) do ($L.y=index("|", $L.temp, $L.x)+1;$L.z=$L.y - $L.x - 1;if (substr($L.temp, $L.x, $L.z)~={"505054503030", "", " "}) then ($L.temp.string=$L.temp.string+substr($L.temp, $L.x, $L.z)+"|");$L.x=$L.y)</evinit>
+      <evinit sctype="operator">2 in $axces.fields=$L.temp.string</evinit>
+      <evinit sctype="operator">evlist in $L.event=$axces.fields</evinit>
+      <evinit sctype="operator">$bypass.failed.validation=true</evinit>
+    </evinit>
+    <evmaptype type="string">variable</evmaptype>
+    <evnullsub NullValue="1" type="boolean"/>
+    <sync.process type="boolean">true</sync.process>
+    <sysmodcount type="decimal">5</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">01/29/04 06:00:00</sysmodtime>
+  </record>
+</recordset>

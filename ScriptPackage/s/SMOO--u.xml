@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptPackage">
+  <record id="name=&quot;SMOO&quot;" recordid="SMOO">
+    <name type="string">SMOO</name>
+    <description type="string">SM OO Integration</description>
+    <sysmodtime type="dateTime">12/31/09 18:44:03</sysmodtime>
+    <sysmoduser type="string">yangweny</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+  </record>
+</recordset>

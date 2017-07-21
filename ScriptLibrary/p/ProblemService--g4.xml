@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;ProblemService&quot;" recordid="ProblemService">
+    <name type="string">ProblemService</name>
+    <script type="string">var $ = lib.c.$;
+var _denull = system.functions.denull;
+var _null = system.functions._null;
+var msg = system.functions.scmsg;
+
+var ProblemService = $(new function () {
+    var dataService = $("#dataService");
+    return {
+        isDuplicateProblem: function (currentrecord, record, parentrecord) {
+            var Dpbms = new Array();
+            var path;
+            vars.$L_sf = system.functions.rtecall("sort", vars.$L_rc, record.hasDuplicate_Problems, 0, 0);
+            Dpbms = _denull(record.hasDuplicate_Problems);
+            if (!_null(Dpbms)) {
+                for (var m = 0; m &lt; system.functions.lng(Dpbms); m++) {
+
+                    path = msg(353, "pm", [parentrecord, Dpbms[m]]);
+                    
+                    if (Dpbms[m] == currentrecord.id) {
+
+                        return path;
+                    } else {
+                        var childrecord = $("rootcause").select('id="' + Dpbms[m] + '"').uniqueResult();
+                        path = path + ";" + Dpbms[m];
+                        return this.isDuplicateProblem(currentrecord, childrecord, path);
+                    }
+                }
+            }
+            return null;
+        },
+        updateDuplicateProblems: function (record, oldrecord) {
+            var hasNewDpbms = new Array();
+            var hasDelDpbms = new Array();
+            var flag;
+            for (var i = 0; i &lt; record.hasDuplicate_Problems.length(); i++) {
+                flag = false;
+                for (var j = 0; j &lt; oldrecord.hasDuplicate_Problems.length(); j++) {
+                    if (oldrecord.hasDuplicate_Problems[j] == record.hasDuplicate_Problems[i]) {
+                        flag = true;
+                        break;
+                    }
+                }
+                if (flag == false || system.functions._null(oldrecord.hasDuplicate_Problems))
+                    hasNewDpbms.push(record.hasDuplicate_Problems[i]);
+            }
+            for (var i = 0; i &lt; oldrecord.hasDuplicate_Problems.length(); i++) {
+                flag = false;
+                for (var j = 0; j &lt; record.hasDuplicate_Problems.length(); j++) {
+                    if (oldrecord.hasDuplicate_Problems[i] == record.hasDuplicate_Problems[j]) {
+                        flag = true;
+                        break;
+                    }
+                }
+                if (flag == false || system.functions._null(record.hasDuplicate_Problems))
+                    hasDelDpbms.push(oldrecord.hasDuplicate_Problems[i]);
+            }
+            for (var m = 0; m &lt; hasDelDpbms.length; m++) {
+
+                var file = $("rootcause").select("id=\"" + hasDelDpbms[m] + "\"").uniqueResult();
+                if (file != null) {
+                    file.isDuplicate_Problem = null;
+                    dataService.updateWithoutTrigger(file);
+                }
+            }
+            for (var m = 0; m &lt; hasNewDpbms.length; m++) {
+
+                var file = $("rootcause").select("id=\"" + hasNewDpbms[m] + "\"").uniqueResult();
+                if (file != null) {
+                    var oldfile = $("rootcause").select("id=\"" + file.isDuplicate_Problem + "\"").uniqueResult();
+                    if (oldfile != null) {
+                        var hasDpbms = new Array();
+                        for (var i = 0; i &lt; oldfile.hasDuplicate_Problems.length(); i++) {
+                            if (oldfile.hasDuplicate_Problems[i] != file.id)
+                                hasDpbms.push(oldfile.hasDuplicate_Problems[i])
+                        }
+                        oldfile.hasDuplicate_Problems = hasDpbms;
+                        dataService.updateWithoutTrigger(oldfile);
+
+                    }
+                    file.isDuplicate_Problem = record.id;
+                    dataService.updateWithoutTrigger(file);
+                }
+            }
+
+
+        },
+        isDuplicateofProblem: function (currentrecord, record, childrecord) {
+            childrecord = childrecord || "";
+            var Dopbm = record.isDuplicate_Problem;
+            var path = msg(352, "pm", [Dopbm, record["id"] + ";" + childrecord]);
+            
+            if (!_null(Dopbm)) {
+
+                if (Dopbm == currentrecord.id) {
+                    return path;
+                } else {
+                    var parentrecord = $("rootcause").select('id="' + Dopbm + '"').uniqueResult();
+                    return this.isDuplicateofProblem(currentrecord, parentrecord, path);
+                }
+            }
+            return null;
+        },
+        updateDuplicateofProblem: function (record, oldrecord) {
+            vars.$L_sf = system.functions.rtecall("sort", vars.$L_rc, record.hasDuplicate_Problems, 0, 0);
+            record.hasDuplicate_Problems = _denull(record.hasDuplicate_Problems);
+            var hasDpbms = new Array();
+            if (system.functions._null(oldrecord.isDuplicate_Problem)) {
+
+                var file = $("rootcause").select("id=\"" + record.isDuplicate_Problem + "\"").uniqueResult();
+                if (file != null) {
+                    if (system.functions._null(file.hasDuplicate_Problems)) {
+                        hasDpbms.push(record.id);
+                        file.hasDuplicate_Problems = hasDpbms;
+                    } else {
+                        file.hasDuplicate_Problems.push(record.id);
+                    }
+                    dataService.updateWithoutTrigger(file);
+                }
+            } else {
+                var ret;
+                var file = $("rootcause").select("id=\"" + oldrecord.isDuplicate_Problem + "\"").uniqueResult();
+                if (file != null) {
+                    for (var i = 0; i &lt; file.hasDuplicate_Problems.length(); i++) {
+                        if (file.hasDuplicate_Problems[i] != record.id)
+                            hasDpbms.push(file.hasDuplicate_Problems[i])
+                    }
+                    file.hasDuplicate_Problems = hasDpbms;
+                    dataService.updateWithoutTrigger(file);
+                }
+
+            }
+        },
+        validateDuplicateProblems: function (file) {
+            vars.$L_sf = system.functions.rtecall("sort", vars.$L_rc, file.hasDuplicate_Problems, 0, 0);
+            file.hasDuplicate_Problems = _denull(file.hasDuplicate_Problems);
+            for (var i = 0; i &lt; file.hasDuplicate_Problems.length(); i++) {
+
+                var record = $("rootcause").select('id="' + file.hasDuplicate_Problems[i] + '"').uniqueResult();
+                
+                
+                if (_null(record)) return i;
+
+            }
+            return -1;
+        },
+        getAvailableCatsCount: function (filename, cattablename, catname, includeself) {
+            var sql = "active=true";
+            var _str = system.functions.str;
+            var area = lib.security.getArea(filename);
+            var allowedCategory = lib.security.getRights(area, "allowedCategory");
+            vars.$L_sf = system.functions.rtecall("sort", vars.$L_rc, allowedCategory, 0, 0);
+            allowedCategory = _denull(allowedCategory)
+            if (!includeself) {
+                sql += ' and name~="' + catname + '"';
+            }
+            if (!_null(allowedCategory)) sql += " and name isin " + _str(allowedCategory);
+            var count = $(cattablename).count(sql);
+            return system.functions.nullsub(count, 0);
+        },
+        getRelatedRecordCount: function (source, relatedfile) {
+            var sql = "source=\"" + source + "\"";
+            if (relatedfile != "") {
+                sql += " and depend.filename=\"" + relatedfile + "\"";
+            }
+            var count = $("screlation").count(sql);
+            return system.functions.nullsub(count, 0);
+        },
+        getLastTaskNo: function (id) {
+            var lastno = $("rootcausetask").count("parent.problem=\"" + id + "\"");
+            return system.functions.nullsub(lastno, 0);
+        },
+        initTaskId: function (file)
+        {
+            var lastTaskNo=this.getLastTaskNo(file['parent.problem']);
+            lastTaskNo = lastTaskNo + 1;
+			var taskIDTmp = lastTaskNo.toString();
+			var length = system.vars.$G_rc_global_environment.prefix_or_suffix || 3;
+			for (var i = taskIDTmp.length; i &lt; length; i++) {
+    			taskIDTmp = "0" + taskIDTmp;
+			}
+			return file['parent.problem'] + "-" + taskIDTmp;       
+        
+        },
+        setAffectCIs: function (file) {
+
+            var member = $.createSCArray();
+            for (var i = 0; i &lt; file.affected_ci.length(); i++) {
+                for (var j = 0; j &lt; vars.$affected_cis.length(); j++) {
+
+                    if (file.affected_ci[i].ci_device_name == vars.$affected_cis[j]) {
+                        member.push(file.affected_ci[i]);
+                        break;
+                    }
+                }
+            }
+            file.affected_ci = member;
+            file.affected_ci_count = _denull(file.affected_ci).length();
+        },
+        getAffectCIs: function (file) {
+            var member = new Array();
+            if (vars.$affected_cis == null) {
+                vars.$affected_cis = {};
+            }
+            if (file.affected_ci.length() &gt;= 0) {
+                member.length = 0;
+                for (var i = 0; i &lt; file.affected_ci.length(); i++) {
+                    member[i] = file.affected_ci[i].ci_device_name;
+                }
+                vars.$affected_cis = member;
+            }
+            file.affected_ci_count = _denull(file.affected_ci).length();
+        },
+        validateAffectCIs: function () {
+            vars.$L_sf = system.functions.rtecall("sort", vars.$L_rc, vars.$affected_cis, 0, 0);
+            vars.$affected_cis = _denull(vars.$affected_cis);
+            for (var i = 0; i &lt; vars.$affected_cis.length(); i++) {
+
+                var record = $("device").select('logical.name="' + vars.$affected_cis[i] + '"').uniqueResult();
+                if (_null(record)) return i;
+
+            }
+            return -1;
+        },
+
+        hasOpenDependRecord: function (rid, dependfname) {
+ 
+            var count = this.countOpenDependRecord(rid, dependfname);
+            if (system.functions.nullsub(count, 0) &gt; 0)
+                return true;
+            else
+                return false;
+
+        },
+        countOpenDependRecord: function (rid, dependfname) {
+        
+            var sql = "source=\"" + rid + "\" and depend.filename=\"" + dependfname + "\" and depend.active=true "
+            
+            var count = $("screlation").count(sql);
+            return count;
+        
+        },
+        hasOpenRelatedTask: function (file) {
+            var sql = "parent.problem=\"" + file["id"] + "\" and rcStatus~=\"Closed\" and rcStatus~=\"Cancelled\""
+            
+            var count = $("rootcausetask").count(sql);
+            if (system.functions.nullsub(count, 0) &gt; 0)
+                return true;
+            else
+                return false;
+
+        },
+        hasOpenKnownError: function (rid, filename) {
+            var sql = "source=\"" + rid + "\" and depend.filename=\"" + filename + "\" and depend.active=true "
+
+            
+            var hasOpenKe = false;
+            $("screlation").select(sql).iterate(function (record) {
+                var rcrecord = $("rootcause").select('id="' + record["depend"] + '"').uniqueResult();
+                if (rcrecord["isKnownError"]) {
+
+                    hasOpenKe = true;
+                    return true;
+                }
+            });
+            return hasOpenKe;
+
+        },
+
+             
+		/**
+		 *
+		 *  This function to copy fields defined in link from Problem to related open Known Errors
+		 *
+		 *  @date 6/26/2014
+		 *  @author Yuki
+		 *  @param   {ke}     - knownError record
+		 *  @param   {pbm}     - Problem record
+		 *  @returns {Object} 	  - Related Known Error record
+		 *
+		 */
+        copyLinkToKe: function (ke, pbm){
+	        var linkname = lib.settings.getSettingValue("Problem", "post.to.link.ke"); // independent, cascade
+	        var rteNames = new SCDatum();
+	        rteNames.push("file");
+	        rteNames.push("record");
+	        rteNames.push("name");
+
+	        var rteValues = new SCDatum();	        
+	       	rteValues.push(ke);
+	        rteValues.push(pbm);
+	        rteValues.push(linkname);
+
+	        // call rad "move.fields.by.link" to copy fields from problem to related known error
+	        system.functions.rtecall("callrad", new SCDatum(), "move.fields.by.link",	rteNames, rteValues, false);
+	      
+	        return ke;  
+        },
+        
+        
+        
+        reviewDetail: function (file, review) {
+            var operator = this.getUserName();
+            vars.$L_stamp = system.functions.str(system.functions.tod()) + " (" + operator + "):";
+            var jsdetail = new Array();
+            var jsstamp = new Array()
+            var AU = lib.ArrayUtil;
+            if (review!=null &amp;&amp; (_lng(_denull(review))!=0 )){
+                if (_null(file["review.detail.log"])) {
+                    file["review.detail.log"] = review
+                } else {
+                jsdetail = AU.toJsArray(_denull(review));
+                AU.addAll(jsdetail, AU.toJsArray(file["review.detail.log"]));
+                file["review.detail.log"] = jsdetail;
+                }
+            }
+            jsdetail = new Array()
+            jsdetail.push(vars.$L_stamp);
+            lib.ArrayUtil.addAll(jsdetail, AU.toJsArray(_denull(file["review.detail.log"])))
+            file["review.detail.log"] = jsdetail;
+            system.functions.cleanup(file['review.detail']);
+       }, 
+      
+ 
+        journalUpdate: function (file, scupdate) {
+            var operator = this.getUserName();
+            vars.$L_stamp = system.functions.str(system.functions.tod()) + " (" + operator + "):";
+            var jsupdate = new Array();
+            var jsstamp = new Array()
+            var AU = lib.ArrayUtil;
+            if (_null(file["update"])) {
+                file["update"] = scupdate
+            } else {
+                jsupdate = AU.toJsArray(scupdate);
+                AU.addAll(jsupdate, AU.toJsArray(file["update"]));
+                file["update"] = jsupdate;
+            }
+            jsupdate = new Array()
+            jsupdate.push(vars.$L_stamp);
+            lib.ArrayUtil.addAll(jsupdate, AU.toJsArray(file["update"]))
+            file["update"] = jsupdate
+        },
+        getUserName: function () {
+            var operator = system.functions.operator();
+            var env = vars.$G_rc_global_environment;
+            if (env["full.name"]) {
+                return vars.lo_ufname = vars.lo_ufname || (operator || "NULL");
+            } else {
+                return operator = operator || "NULL";
+
+            }
+        },
+		getWFPhase : function(problem) {
+		    var objectFile = $("Object").select("file.name=\"rootcause\"").uniqueResult();
+		    if (null==objectFile) {
+		        return null;
+		    }
+		    var categoryFile = $(objectFile.category_file_name).select("name=\"" + problem.category + "\"").uniqueResult();
+		    if (null==categoryFile) {
+		        return null;
+		    }
+		    return $("WorkflowPhase").select("tableName=\"rootcause\" and phaseName=\"" + problem.current_phase  + "\" and workflowName=\"" + categoryFile.workflow + "\"").uniqueResult();
+		},
+		clearActivityVarsOfProblem : function() {
+        	vars['$pm.activity']=[];
+        	vars['$rc.update']=[];        	
+        	var record=vars['$L.file'];
+        	if (record != null) {
+        		record['cust.visible']=false;
+        	}
+		}
+    };
+});
+
+function getClass() {
+    return ProblemService;
+}</script>
+    <package type="string">ProblemManagement</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:42</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

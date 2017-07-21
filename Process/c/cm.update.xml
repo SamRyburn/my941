@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="Process">
+  <record id="process=&quot;cm.update&quot;" recordid="cm.update">
+    <process type="string">cm.update</process>
+    <pre.expressions sctype="array">
+      <pre.expressions sctype="operator">if ($L.action={"next", "previous"} and $L.mode="update") then ($L.mode="browse")</pre.expressions>
+      <pre.expressions sctype="operator">$L.saved=true</pre.expressions>
+      <pre.expressions sctype="operator">$L.copy.number=NULL</pre.expressions>
+      <pre.expressions sctype="operator">id in $L.file=nullsub(id in $L.file, "")</pre.expressions>
+      <pre.expressions sctype="operator">if (not  (null($smart.search))) then ($smart.search.save1111=$smart.search)</pre.expressions>
+      <pre.expressions sctype="operator">if null($smart.search) then ($smart.search.save=$smart.search.save1111)</pre.expressions>
+      <pre.expressions sctype="operator">if (filename($L.file)="cm3r") then ($cm.update={};cleanup($cm.activity)) else (if (filename($L.file)="cm3t") then ($cmt.update={};cleanup($cmt.activity)))</pre.expressions>
+      <pre.expressions sctype="operator">if (filename($L.file)="cm3r") then ($SMOO=sysinfo.get("environment")#"scguiwweb" and SMOO in $G.system.info and OOCM in $G.system.info=true)</pre.expressions>
+      <pre.expressions sctype="operator">if (null(execute.mode in $L.file) and filename($L.file)="cm3r") then (execute.mode in $L.file="noauto")</pre.expressions>
+      <pre.expressions sctype="operator">cleanup($L.isexternalchange)</pre.expressions>
+      <pre.expressions sctype="operator">cleanup($kmfeedbacktext)</pre.expressions>
+      <pre.expressions sctype="operator">if ($G.legacy.change and filename($L.file)="cm3t") then ($tevents={, };$tevents.pntr=1)</pre.expressions>
+      <pre.expressions sctype="operator">if ($G.legacy.change and filename($L.file)="cm3r") then ($events={, };$events.pntr=1)</pre.expressions>
+      <pre.expressions sctype="operator">$taskXml=""</pre.expressions>
+      <pre.expressions sctype="operator">$mxGraphHiddenField=""</pre.expressions>
+    </pre.expressions>
+    <post.expressions sctype="array">
+      <post.expressions sctype="operator">if $G.ess then (view.default in $L.phase="ess.browse.change")</post.expressions>
+      <post.expressions sctype="operator">if ($L.exit="normal") then ($L.exit=NULL)</post.expressions>
+    </post.expressions>
+    <rad sctype="array">
+      <rad sctype="structure">
+        <application type="string">cmc.check.tasks</application>
+        <names sctype="array">
+          <names sctype="string">record</names>
+          <names sctype="string">boolean1</names>
+        </names>
+        <values sctype="array">
+          <values sctype="string">$L.file</values>
+          <values sctype="string">$L.has.tasks</values>
+        </values>
+        <rad.condition type="operator">filename($L.file)="cm3r"</rad.condition>
+        <pre.rad.expressions sctype="string"/>
+        <post.rad.expressions sctype="string"/>
+      </rad>
+      <rad sctype="structure">
+        <application type="string">cm3.review</application>
+        <names sctype="array">
+          <names sctype="string">file</names>
+          <names sctype="string">record</names>
+        </names>
+        <values sctype="array">
+          <values sctype="string">$L.file</values>
+          <values sctype="string">$L.phase</values>
+        </values>
+        <rad.condition type="operator">not  (same(number in $L.file, $L.review.number)) and open in $L.file.save=true</rad.condition>
+        <pre.rad.expressions sctype="string"/>
+        <post.rad.expressions sctype="array">
+          <post.rad.expressions sctype="operator">$L.review.number=number in $L.file</post.rad.expressions>
+        </post.rad.expressions>
+      </rad>
+      <rad sctype="structure">
+        <application type="string">script.execute</application>
+        <names sctype="array">
+          <names sctype="string">name</names>
+          <names sctype="string">file</names>
+          <names sctype="string">boolean1</names>
+        </names>
+        <values sctype="array">
+          <values sctype="string">upd.script in $L.phase</values>
+          <values sctype="string">$L.file</values>
+          <values sctype="string">val("false",4)</values>
+        </values>
+        <rad.condition type="operator">false and not  ($L.bg) and not  (null(upd.script in $L.phase)) and evaluate(upd.script.cond in $L.phase)</rad.condition>
+        <pre.rad.expressions sctype="string"/>
+        <post.rad.expressions sctype="string"/>
+      </rad>
+    </rad>
+    <next.process NullValue="1" sctype="array">
+      <next.process NullValue="1" type="string"/>
+    </next.process>
+    <process.condition NullValue="1" sctype="array">
+      <process.condition NullValue="1" type="boolean"/>
+    </process.condition>
+    <run.standard NullValue="1" type="boolean"/>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:01:03</sysmodtime>
+    <save.cursor.position NullValue="1" type="boolean"/>
+    <run.in.window NullValue="1" type="boolean"/>
+    <window.name NullValue="1" type="string"/>
+    <javascript.pre type="string">lib.changePlan.createXML(vars.$L_file);
+
+vars.$svc_options = vars.$L_file.svc_options;
+if (vars.$L_file.svc_options != null &amp;&amp; vars.$L_file.svc_options != "") {
+   vars.$svc_options = lib.dynamicFormGenerator.convertSvcOptionDate(vars.$L_file.svc_options, true);
+}</javascript.pre>
+    <javascript.post NullValue="1" type="string"/>
+    <baseMethod NullValue="1" type="string"/>
+  </record>
+</recordset>

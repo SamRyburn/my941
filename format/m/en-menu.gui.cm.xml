@@ -1,0 +1,719 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;menu.gui.cm&quot;" recordid="en - menu.gui.cm">
+    <name mandatory="true" type="string">menu.gui.cm</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">4</column>
+        <length type="decimal">25</length>
+        <window type="decimal">3</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Graph;X=7	Y=0	Height=5	Width=50	Bitmap=sc	Frame=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">56</column>
+        <length type="decimal">8</length>
+        <window type="decimal">3</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Home</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Home	X=110	Y=0	Height=5	Width=15	ButtonID=22	Bitmaps=home	BalloonHelp= Return to Home 	Style=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">63</column>
+        <length type="decimal">8</length>
+        <window type="decimal">3</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Mail</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Mail	X=125	Y=0	Height=5	Width=15	ButtonID=24	Bitmaps=mail	BalloonHelp=Check/Send Mail	Style=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">71</column>
+        <length type="decimal">8</length>
+        <window type="decimal">3</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Status</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Caption=Status	X=140	Y=0	Height=5	Width=15	ButtonID=23	Bitmaps=status	BalloonHelp=System Status	Style=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">2</column>
+        <length type="decimal">77</length>
+        <window type="decimal">16</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">NoteBook;X=2	Y=5	Height=32	Width=153	Elastic=3	Pages=Contract Management Menu;Supporting Data	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">5</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Contract Management Menu</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">page;Caption=Contract Management Menu	X=0	Y=0	Height=2	Width=9	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">4</column>
+        <length type="decimal">30</length>
+        <window type="decimal">3</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">$L.tab.2</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Input=$L.tab.2	X=6	Y=2	Height=6	Width=60	ButtonID=1	BalloonHelp=Edit the Contract Management control record.	Style=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">12</column>
+        <length type="decimal">22</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Edit Control Record</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Edit Control Record	X=23	Y=2	Height=2	Width=43	ForeColor=0	Bold=1	FontIncrease=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">39</column>
+        <length type="decimal">30</length>
+        <window type="decimal">3</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">$L.tab.1</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Input=$L.tab.1	X=76	Y=2	Height=6	Width=60	TabStop=1	ButtonID=7	BalloonHelp=Check for expired contracts	Style=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">47</column>
+        <length type="decimal">21</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Expired Contracts</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Expired Contracts	X=93	Y=2	Height=2	Width=42	ForeColor=0	Bold=1	FontIncrease=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">5</column>
+        <length type="decimal">6</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Graph;X=9	Y=3	Height=4	Width=12	Bitmap=cntl	Frame=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">40</column>
+        <length type="decimal">6</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Graph;X=79	Y=3	Height=4	Width=12	Bitmap=requestr	Frame=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">13</column>
+        <length type="decimal">20</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Modify the high level behavior of cost management.</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Wlabel;Caption=Modify the high level behavior of cost management.	X=25	Y=4	Height=4	Width=40	ForeColor=0	ArrayLength=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">4</column>
+        <length type="decimal">30</length>
+        <window type="decimal">3</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">$L.tab.1</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Input=$L.tab.1	X=6	Y=8	Height=6	Width=60	TabStop=1	ButtonID=6	BalloonHelp=Examine Service Contracts	Style=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">48</column>
+        <length type="decimal">20</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Display all contracts that have already expired.</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Wlabel;Caption=Display all contracts that have already expired.	X=95	Y=4	Height=4	Width=40	ForeColor=0	ArrayLength=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">12</column>
+        <length type="decimal">21</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Service Contracts</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Service Contracts	X=23	Y=8	Height=2	Width=42	ForeColor=0	Bold=1	FontIncrease=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">5</column>
+        <length type="decimal">6</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Graph;X=9	Y=9	Height=4	Width=12	Bitmap=costmgmt	Frame=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">39</column>
+        <length type="decimal">30</length>
+        <window type="decimal">3</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">$L.tab.1</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Input=$L.tab.1	X=76	Y=8	Height=6	Width=60	TabStop=1	ButtonID=8	BalloonHelp=Check for overspent contracts	Style=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">47</column>
+        <length type="decimal">21</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Overspent Contracts</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Overspent Contracts	X=93	Y=8	Height=2	Width=42	ForeColor=0	Bold=1	FontIncrease=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">13</column>
+        <length type="decimal">20</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Detailed information on your current service contracts.</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Wlabel;Caption=Detailed information on your current service contracts.	X=25	Height=4	Width=40	ForeColor=0	ArrayLength=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">40</column>
+        <length type="decimal">6</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Graph;X=79	Y=9	Height=4	Width=12	Bitmap=requestr	Frame=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">4</column>
+        <length type="decimal">30</length>
+        <window type="decimal">3</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">$L.tab.1</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Input=$L.tab.1	X=6	Y=14	Height=6	Width=60	TabStop=1	ButtonID=5	BalloonHelp=Examine Expense Lines	Style=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">48</column>
+        <length type="decimal">20</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Display all contracts that have exceeded their budget.</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Wlabel;Caption=Display all contracts that have exceeded their budget.	X=95	Height=4	Width=40	ForeColor=0	ArrayLength=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">12</column>
+        <length type="decimal">21</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Expense Lines</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Expense Lines	X=23	Y=14	Height=2	Width=42	ForeColor=0	Bold=1	FontIncrease=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">39</column>
+        <length type="decimal">30</length>
+        <window type="decimal">3</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">$L.tab.1</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Input=$L.tab.1	X=76	Y=14	Height=6	Width=60	TabStop=1	ButtonID=9	BalloonHelp=Check for contracts that have exceeded thier incident allocation	Style=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">47</column>
+        <length type="decimal">21</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Exceeded Incidents</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Exceeded Incidents	X=93	Y=14	Height=2	Width=42	ForeColor=0	Bold=1	FontIncrease=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">5</column>
+        <length type="decimal">6</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Graph;X=9	Y=15	Height=4	Width=12	Bitmap=explines	Frame=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">40</column>
+        <length type="decimal">6</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Graph;X=79	Y=15	Height=4	Width=12	Bitmap=requestr	Frame=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">13</column>
+        <length type="decimal">20</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Incurred costs and chargeback information.</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Wlabel;Caption=Incurred costs and chargeback information.	X=25	Y=16	Height=4	Width=40	ForeColor=0	ArrayLength=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">48</column>
+        <length type="decimal">20</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Contracts that have exceeded their incident allocation.</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Wlabel;Caption=Contracts that have exceeded their incident allocation.	X=95	Y=16	Height=4	Width=40	ForeColor=0	ArrayLength=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">11</line>
+        <column type="decimal">39</column>
+        <length type="decimal">30</length>
+        <window type="decimal">3</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">$L.tab.1</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Input=$L.tab.1	X=76	Y=20	Height=6	Width=60	TabStop=1	ButtonID=10	BalloonHelp=Check for contracts that have exceeded thier call allocation	Style=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">11</line>
+        <column type="decimal">47</column>
+        <length type="decimal">21</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Exceeded Calls</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Exceeded Calls	X=93	Y=20	Height=2	Width=42	ForeColor=0	Bold=1	FontIncrease=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">11</line>
+        <column type="decimal">40</column>
+        <length type="decimal">6</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Graph;X=79	Y=21	Height=4	Width=12	Bitmap=requestr	Frame=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">12</line>
+        <column type="decimal">48</column>
+        <length type="decimal">20</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Contracts that have exceeded their call allocation.</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Wlabel;Caption=Contracts that have exceeded their call allocation.	X=95	Y=22	Height=4	Width=40	ForeColor=0	ArrayLength=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">4</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Supporting Data</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">page;Caption=Supporting Data	X=0	Y=0	Height=1	Width=7	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">39</column>
+        <length type="decimal">30</length>
+        <window type="decimal">3</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">$L.tab.2</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Input=$L.tab.2	X=76	Y=2	Height=6	Width=60	ButtonID=14	BalloonHelp=View detailed information on parts usage.	Style=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">47</column>
+        <length type="decimal">21</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Part Usage Detail</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Part Usage Detail	X=93	Y=2	Height=2	Width=42	ForeColor=0	Bold=1	FontIncrease=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">40</column>
+        <length type="decimal">6</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Graph;X=79	Y=3	Height=4	Width=12	Bitmap=model	Frame=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">48</column>
+        <length type="decimal">20</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">View detailed information on parts usage.</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Wlabel;Caption=View detailed information on parts usage.	X=95	Y=4	Height=4	Width=40	ForeColor=0	ArrayLength=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">4</column>
+        <length type="decimal">30</length>
+        <window type="decimal">3</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">$L.tab.2</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Input=$L.tab.2	X=6	Y=8	Height=6	Width=60	ButtonID=2	BalloonHelp=Currency Conversion Rates	Style=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">12</column>
+        <length type="decimal">21</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Conversion Rates</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Conversion Rates	X=23	Y=8	Height=2	Width=42	ForeColor=0	Bold=1	FontIncrease=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">39</column>
+        <length type="decimal">30</length>
+        <window type="decimal">3</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">$L.tab.2</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Input=$L.tab.2	X=76	Y=8	Height=6	Width=60	ButtonID=13	BalloonHelp=View detailed information on labor performed.	Style=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">47</column>
+        <length type="decimal">21</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Labor Performed Detail</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Labor Performed Detail	X=93	Y=8	Height=2	Width=42	ForeColor=0	Bold=1	FontIncrease=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">5</column>
+        <length type="decimal">6</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Graph;X=9	Y=9	Height=4	Width=12	Bitmap=currconv	Frame=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">40</column>
+        <length type="decimal">6</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Graph;X=79	Y=9	Height=4	Width=12	Bitmap=work	Frame=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">13</column>
+        <length type="decimal">21</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Conversion rates for international currencies.</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Wlabel;Caption=Conversion rates for international currencies.	X=25	Height=4	Width=41	ForeColor=0	ArrayLength=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">48</column>
+        <length type="decimal">20</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">View detailed information on labor performed.</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Wlabel;Caption=View detailed information on labor performed.	X=95	Height=4	Width=40	ForeColor=0	ArrayLength=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">4</column>
+        <length type="decimal">30</length>
+        <window type="decimal">3</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input type="string">$L.tab.2</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Button;Input=$L.tab.2	X=6	Y=14	Height=6	Width=60	ButtonID=4	BalloonHelp=Currency Definitions	Style=1	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">12</column>
+        <length type="decimal">21</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Currency Definitions</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Currency Definitions	X=23	Y=14	Height=2	Width=42	ForeColor=0	Bold=1	FontIncrease=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">5</column>
+        <length type="decimal">6</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Graph;X=9	Y=15	Height=4	Width=12	Bitmap=currency	Frame=0	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">13</column>
+        <length type="decimal">21</length>
+        <window type="decimal">2</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Abbreviations and display formats for different currencies.</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Wlabel;Caption=Abbreviations and display formats for different currencies.	X=25	Y=16	Height=4	Width=41	ForeColor=0	ArrayLength=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">prietke</editor>
+    <last.update type="dateTime">12/14/04 03:39:57</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">19</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">12/22/04 06:33:33</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="Process">
+  <record id="process=&quot;kmknowledgebase.onsave&quot;" recordid="kmknowledgebase.onsave">
+    <process type="string">kmknowledgebase.onsave</process>
+    <pre.expressions NullValue="1" sctype="array">
+      <pre.expressions NullValue="1" type="expression"/>
+    </pre.expressions>
+    <post.expressions NullValue="1" sctype="array">
+      <post.expressions NullValue="1" type="expression"/>
+    </post.expressions>
+    <rad sctype="array">
+      <rad sctype="structure">
+        <application type="string">object.yes.no</application>
+        <names sctype="array">
+          <names sctype="string">text</names>
+          <names sctype="string">prompt</names>
+        </names>
+        <values sctype="array">
+          <values sctype="string">$L.message</values>
+          <values sctype="string">$L.response</values>
+        </values>
+        <rad.condition type="globalVar">$L.serverchanged</rad.condition>
+        <pre.rad.expressions sctype="string"/>
+        <post.rad.expressions sctype="string"/>
+      </rad>
+    </rad>
+    <next.process NullValue="1" sctype="array">
+      <next.process NullValue="1" type="string"/>
+    </next.process>
+    <process.condition NullValue="1" sctype="array">
+      <process.condition NullValue="1" type="boolean"/>
+    </process.condition>
+    <run.standard type="boolean">true</run.standard>
+    <sysmodcount type="decimal">82</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">10/15/14 14:58:01</sysmodtime>
+    <save.cursor.position NullValue="1" type="boolean"/>
+    <run.in.window NullValue="1" type="boolean"/>
+    <window.name NullValue="1" type="string"/>
+    <javascript.pre type="string">vars.$L_oktocontinue=true;
+vars.$L_serverchanged = false;
+system.library.KMCollection_Create.addTriggers();
+if (vars.$L_file.kbtype != "sclib")
+{
+	vars.$L_file.mastermimelist = "";
+	var result = 0;
+  	var webLib = new SCFile("kmknowledgebase");
+  	var webFind = webLib.doSelect("kbname = \""+vars.$L_file.kbname+"\"");
+	if (system.library.KMCollection_WebCrawl.didJobChange(webLib, vars.$L_file))
+	{
+	  	//print("job changed, call delete job here using old record info in case crawl host changed");
+	  	result = system.library.KMCollection_WebCrawl.deleteJob(webLib);
+	}
+	result = system.library.KMCollection_WebCrawl.createJob(vars.$L_file);
+	if (result &lt;-1)
+	{
+ 	 var errormsg = "";
+ 	 if (system.library.KMSearchInterface.isJobHTTPException(result) || system.library.KMSearchInterface.isJobIOException(result) )
+	 	errormsg = system.functions.scmsg(230, "km");
+	 if (system.library.KMSearchInterface.isJobNullPointerException(result))
+	 	errormsg = system.functions.scmsg(231, "km");	
+	 if (system.library.KMSearchInterface.isJobNotFound(result))
+	 	errormsg = system.functions.scmsg(226, "km");
+	 if (system.library.KMSearchInterface.isSchedulerException(result))
+	 	errormsg = system.functions.scmsg(227, "km");
+	 if (system.library.KMSearchInterface.isJobNameInvalid(result))
+	 	errormsg = system.functions.scmsg(228, "km");
+	 if (system.library.KMSearchInterface.isJobStopException(result))
+	 	errormsg = system.functions.scmsg(229, "km");
+	 system.library.KMUtils.domessageBox(errormsg);
+	}
+}
+// check that servername did not change
+var kbLib = new SCFile("kmknowledgebase");
+var kbFind = kbLib.doSelect("kbname = \""+vars.$L_file.kbname+"\"");
+if (kbLib.searchservername != vars.$L_file.searchservername)
+{
+	var arrayArgs = new SCDatum();
+	arrayArgs.setType(8);  //type array
+	
+	vars.$L_message = system.functions.scmsg(249, "km", arrayArgs);
+	vars.$L_serverchanged = true;
+	vars.$L_oldsearchserver = kbLib.searchservername;
+
+}
+</javascript.pre>
+    <javascript.post type="string">if (!vars.$L_serverchanged)
+	vars.$L_action="save";
+if (vars.$L_serverchanged)
+	if (vars.$L_response == "yes")
+	{
+		// delete collection here from old search server
+		print("delete collection here: "+vars.$L_oldsearchserver);
+		system.library.KMCollection_Remove.removeCollection();
+		vars.$L_action="save";
+	}
+	else
+		vars.$L_action="display";</javascript.post>
+    <baseMethod NullValue="1" type="string"/>
+  </record>
+</recordset>

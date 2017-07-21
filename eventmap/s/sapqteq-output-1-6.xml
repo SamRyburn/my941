@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="eventmap">
+  <record id="evmap=&quot;sapqteq&quot; and evtype=&quot;output&quot; and evseq=1 and evindex=6" recordid="sapqteq - output - 1 - 6">
+    <evmap type="string">sapqteq</evmap>
+    <evindex type="decimal">6</evindex>
+    <evnullsub NullValue="1" type="string"/>
+    <evmaptyp type="string">variable</evmaptyp>
+    <evfile type="string">ocmq</evfile>
+    <evfield type="globalVar">$L.requested.date</evfield>
+    <evcalc sctype="array">
+      <evcalc sctype="operator">if (not  (null(requested.date in $axces.source))) then ($L.requested.date=str(year(requested.date in $axces.source)))</evcalc>
+      <evcalc sctype="operator">if (not  (null(requested.date in $axces.source))) then (if (month(requested.date in $axces.source)&lt;10) then $L.requested.date+="0";$L.requested.date+=str(month(requested.date in $axces.source)))</evcalc>
+      <evcalc sctype="operator">if (not  (null(requested.date in $axces.source))) then (if (day(requested.date in $axces.source)&lt;10) then $L.requested.date+="0";$L.requested.date+=str(day(requested.date in $axces.source)))</evcalc>
+    </evcalc>
+    <evtype type="string">output</evtype>
+    <evsepchar NullValue="1" type="string"/>
+    <evdtype type="decimal">2</evdtype>
+    <evquery NullValue="1" type="boolean"/>
+    <evxlate NullValue="1" type="string"/>
+    <evinit NullValue="1" sctype="array">
+      <evinit NullValue="1" type="expression"/>
+    </evinit>
+    <evseq type="decimal">1</evseq>
+    <evlength NullValue="1" type="decimal"/>
+    <evitmlng NullValue="1" type="decimal"/>
+    <evmapcond NullValue="1" type="boolean"/>
+    <eveltype NullValue="1" type="decimal"/>
+    <sysmodcount type="decimal">3</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">02/25/03 07:33:31</sysmodtime>
+    <evsepchar.struc NullValue="1" type="string"/>
+  </record>
+</recordset>

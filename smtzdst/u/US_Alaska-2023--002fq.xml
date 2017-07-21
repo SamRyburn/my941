@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="smtzdst">
+  <record id="tzname=&quot;US/Alaska&quot; and dstyear=2023" recordid="">
+    <tzname type="string">US/Alaska</tzname>
+    <dstyear type="decimal">2023</dstyear>
+    <dstbegin type="dateTime">03/11/23 19:00:00</dstbegin>
+    <dstend type="dateTime">11/04/23 20:00:00</dstend>
+    <isdst type="decimal">1</isdst>
+  </record>
+</recordset>

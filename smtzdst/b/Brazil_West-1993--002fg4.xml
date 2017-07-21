@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="smtzdst">
+  <record id="tzname=&quot;Brazil/West&quot; and dstyear=1993" recordid="">
+    <tzname type="string">Brazil/West</tzname>
+    <dstyear type="decimal">1993</dstyear>
+    <dstbegin type="dateTime">10/16/93 18:00:00</dstbegin>
+    <dstend type="dateTime">12/31/93 16:59:59</dstend>
+    <isdst type="decimal">1</isdst>
+  </record>
+</recordset>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="RuleSet">
+  <record id="id=&quot;rm.notification.fulfilled&quot;" recordid="rm.notification.fulfilled">
+    <id type="string">rm.notification.fulfilled</id>
+    <name type="string">Send Fulfilled Notification</name>
+    <tablename sctype="array">
+      <tablename sctype="string">request</tablename>
+    </tablename>
+    <rule sctype="array">
+      <rule sctype="structure">
+        <ruleId type="decimal">1</ruleId>
+        <isGroup type="boolean">true</isGroup>
+        <parentGroup type="decimal">0</parentGroup>
+        <ruleXML type="string">&lt;ruleGroup/&gt;</ruleXML>
+        <ruleDesc type="string">Notification is triggered when request status is "Fulfilled"</ruleDesc>
+        <condition type="operator">not  (same(status in $L.file.save, "Closed")) and status in $L.file="Fulfilled"</condition>
+        <conditionDesc type="string">( Status in SavedRecord != "Closed" AND Status in CurrentRecord = "Fulfilled")</conditionDesc>
+        <conditionXML type="string">&lt;XmlCondition&gt;&lt;collection logical="" negate=""&gt;&lt;condition logical="" negate="false"&gt;&lt;operand type="field"&gt;&lt;TableName&gt;SavedRecord&lt;/TableName&gt;&lt;FieldName caption="Status"&gt;status&lt;/FieldName&gt;&lt;/operand&gt;&lt;Comparison&gt;neq&lt;/Comparison&gt;&lt;Value dataType="string"&gt;Closed&lt;/Value&gt;&lt;/condition&gt;&lt;condition logical="AND" negate="false"&gt;&lt;operand type="field"&gt;&lt;TableName&gt;CurrentRecord&lt;/TableName&gt;&lt;FieldName caption="Status"&gt;status&lt;/FieldName&gt;&lt;/operand&gt;&lt;Comparison&gt;equals&lt;/Comparison&gt;&lt;Value dataType="string"&gt;Fulfilled&lt;/Value&gt;&lt;/condition&gt;&lt;/collection&gt;&lt;/XmlCondition&gt;</conditionXML>
+        <fullDesc type="string">[Notification is triggered when request status is "Fulfilled" (when ( Status in SavedRecord != "Closed" AND Status in CurrentRecord = "Fulfilled"))]</fullDesc>
+        <level type="decimal">0</level>
+        <type type="string">ruleGroup</type>
+        <ruleJSON NullValue="1" type="string"/>
+      </rule>
+      <rule sctype="structure">
+        <ruleId type="decimal">2</ruleId>
+        <isGroup type="boolean">false</isGroup>
+        <parentGroup type="decimal">1</parentGroup>
+        <ruleXML NullValue="1" type="string"/>
+        <ruleDesc type="string">Send HTML Email: RM Resolution to Requestor</ruleDesc>
+        <condition type="operator">not  (same(contact.name in $L.file.requestor.name.contacts.contact.name, NULL))</condition>
+        <conditionDesc type="string">( Contact Name in Requestor in CurrentRecord != NULL)</conditionDesc>
+        <conditionXML type="string">&lt;XmlCondition&gt;&lt;collection logical="" negate=""&gt;&lt;condition logical="" negate="false"&gt;&lt;operand type="crosstablefield"&gt;&lt;TableName&gt;CurrentRecord&lt;/TableName&gt;&lt;FieldName caption="Requestor"&gt;requestor.name&lt;/FieldName&gt;&lt;relation&gt;&lt;TargetTable Caption="contacts"&gt;contacts&lt;/TargetTable&gt;&lt;TargetField caption="contact.name"&gt;contact.name&lt;/TargetField&gt;&lt;FieldName caption="Contact Name"&gt;contact.name&lt;/FieldName&gt;&lt;/relation&gt;&lt;/operand&gt;&lt;Comparison&gt;neq&lt;/Comparison&gt;&lt;Value dataType="string"&gt;NULL&lt;/Value&gt;&lt;/condition&gt;&lt;/collection&gt;&lt;/XmlCondition&gt;</conditionXML>
+        <fullDesc type="string">-  Send HTML Email: RM Resolution to Requestor (when ( Contact Name in Requestor in CurrentRecord != NULL))</fullDesc>
+        <level type="decimal">1</level>
+        <type type="string">sendHTMLEmail</type>
+        <ruleJSON type="string">{"type":"sendHTMLEmail","tempName":"RM Fulfilled","recipient":"Current Record","field":{"value":"requestor.name","type":"contacts"}}</ruleJSON>
+      </rule>
+      <rule sctype="structure">
+        <ruleId type="decimal">3</ruleId>
+        <isGroup type="boolean">false</isGroup>
+        <parentGroup type="decimal">1</parentGroup>
+        <ruleXML NullValue="1" type="string"/>
+        <ruleDesc type="string">Send HTML Email: RM Resolution to Request coordinator</ruleDesc>
+        <condition type="operator">not  (same(contact.name in $L.file.coordinator.name.operator.name, NULL))</condition>
+        <conditionDesc type="string">( Contact Name in Request Coordinator in CurrentRecord != NULL)</conditionDesc>
+        <conditionXML type="string">&lt;XmlCondition&gt;&lt;collection logical="" negate=""&gt;&lt;condition logical="" negate="false"&gt;&lt;operand type="crosstablefield"&gt;&lt;TableName&gt;CurrentRecord&lt;/TableName&gt;&lt;FieldName caption="Request Coordinator"&gt;coordinator.name&lt;/FieldName&gt;&lt;relation&gt;&lt;TargetTable Caption="operator"&gt;operator&lt;/TargetTable&gt;&lt;TargetField caption="name"&gt;name&lt;/TargetField&gt;&lt;FieldName caption="Contact Name"&gt;contact.name&lt;/FieldName&gt;&lt;/relation&gt;&lt;/operand&gt;&lt;Comparison&gt;neq&lt;/Comparison&gt;&lt;Value dataType="string"&gt;NULL&lt;/Value&gt;&lt;/condition&gt;&lt;/collection&gt;&lt;/XmlCondition&gt;</conditionXML>
+        <fullDesc type="string">-  Send HTML Email: RM Resolution to Request coordinator (when ( Contact Name in Request Coordinator in CurrentRecord != NULL))</fullDesc>
+        <level type="decimal">1</level>
+        <type type="string">sendHTMLEmail</type>
+        <ruleJSON type="string">{"type":"sendHTMLEmail","tempName":"RM Fulfilled","recipient":"Current Record","field":{"value":"coordinator.name","type":"operator"}}</ruleJSON>
+      </rule>
+    </rule>
+    <lastRuleId type="decimal">3</lastRuleId>
+    <isAction NullValue="1" type="boolean"/>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:01:15</sysmodtime>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

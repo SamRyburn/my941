@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;KMAdmin&quot;" recordid="KMAdmin">
+    <name type="string">KMAdmin</name>
+    <script type="string">/*   @author Tony Bray
+*/
+
+/**
+*   @class KMAdmin
+*   @constructor
+*/
+// vars.$G_km_globalenv.km_adminport
+
+
+/* all functions return 0 for succes, -1 for errors
+*/
+function KMAdmin() 
+{
+ 
+}
+
+
+function kmtriggerAfterAdd(filename, record)
+{
+// function moved to KMCollection_Update_Triggers!
+	system.library.KMCollection_Update_Triggers.kmtriggerAfterAdd(filename, record);
+}
+
+function kmtriggerBeforeUpdate(filename, record)
+{
+// function moved to KMCollection_Update_Triggers!
+	system.library.KMCollection_Update_Triggers.kmtriggerBeforeUpdate(filename, record);
+}
+
+function kmtriggerAfterUpdate(filename, record)
+{
+// function moved to KMCollection_Update_Triggers!
+	system.library.KMCollection_Update_Triggers.kmtriggerAfterUpdate(filename, record);
+}
+
+function kmtriggerBeforeDelete(filename, record)
+{
+// function moved to KMCollection_Update_Triggers!
+	system.library.KMCollection_Update_Triggers.kmtriggerBeforeDelete(filename, record);
+}
+
+
+function kmaltriggerAfterUpdate(filename, record)
+{
+// function moved to KMCollection_Update_Triggers!
+   system.library.KMCollection_Update_Triggers.kmaltriggerAfterUpdate(filename, record);
+}
+
+function kmjvmconnect()
+{
+  
+  var result = 0;
+  result = system.functions.plugin("KMPLUGIN","kmjvmConnect");
+  if (result == -1)
+      {
+      
+        return -1;
+      }
+      else
+      {
+        return 0;
+      }
+}
+
+function kmjvmdisconnect()
+{
+    var result = 0;
+    result = system.functions.plugin("KMPLUGIN","kmjvmDisconnect");
+    return result;
+}
+
+function kmadminlock()
+{
+	var lockFile = new SCFile("kmadminlock");
+	var lockFind = lockFile.doSelect("id = \"kmadmin\"");
+	if (lockFind == RC_SUCCESS)
+	{
+		lockFind = lockFile.getFirst();
+		if (lockFind == RC_SUCCESS)
+		{
+			if (Lock("KMAdmin") == 0)
+			{
+			    return 0;
+				
+		    }
+		    else
+				return -1; // cannot lock it
+		}
+	    else // kmadminlock record not found; add a default for the stop flag
+	    {
+	    	lockFile.id = "kmadmin";
+	  	    lockFile.stop = false;
+	  	    lockFile.doInsert();
+	  	    
+	  	    if (Lock("KMAdmin") == 0)
+			{
+			    return 0;
+		    }
+		    else
+				return -1; // cannot lock it
+	  	        	
+	    }
+	}
+	else // kmadminlock record not found; add a default for the stop flag
+    {
+    	lockFile.id = "kmadmin";
+  	    lockFile.stop = false;
+  	    lockFile.doInsert(); 
+  	    if (Lock("KMAdmin") == 0)
+		{
+		    return 0;
+			result = system.functions.plugin("KMPLUGIN","kmjvmConnect");
+			
+	    }
+	    else
+			return -1; // cannot lock it
+  	       	
+    }
+	
+	return 0;
+}
+
+function kmadminunlock() // use this function to override a bad lock
+{
+	if (Unlock("KMAdmin") &gt; 0)
+		return -1;
+    else
+      return 0;
+}
+
+/*
+* QCCR1E54429
+* This function is just a proxy call to support upgraded sysytems.  On an upgraded
+* system, the KMUpdate schedule record would not be changed and would still contain
+* a call to system.library.KMAdmin.refreshIndexes() instead of system.library.KMCollection_Update.refreshIndexes();
+*/
+function refreshIndexes()
+{
+	system.library.KMCollection_Update.refreshIndexes();
+}
+</script>
+    <package type="string">KMAdmin</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:41</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

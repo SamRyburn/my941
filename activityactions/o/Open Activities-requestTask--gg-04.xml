@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="activityactions">
+  <record id="name=&quot;Open Activities&quot; and table=&quot;requestTask&quot;" recordid="Open Activities - requestTask">
+    <name type="string">Open Activities</name>
+    <condition type="operator">$L.mode="add"</condition>
+    <activities sctype="array">
+      <activities sctype="structure">
+        <activityname type="string">Assignee</activityname>
+        <activitycondition type="operator">not  (null(assigned.to in $L.file)) and null(assigned.to in $L.file.save)</activitycondition>
+        <activitydescription type="string">{"The request task is assigned to " + assigned.to in $L.file + " ." }</activitydescription>
+        <activitynotification NullValue="1" type="string"/>
+      </activities>
+      <activities sctype="structure">
+        <activityname type="string">Assignment Group</activityname>
+        <activitycondition type="operator">not  (null(assigned.group in $L.file)) and null(assigned.group in $L.file.save)</activitycondition>
+        <activitydescription type="string">{"The request task is assigned to group " +  assigned.group in $L.file + " ."}</activitydescription>
+        <activitynotification NullValue="1" type="string"/>
+      </activities>
+      <activities sctype="structure">
+        <activityname type="string">Open</activityname>
+        <activitycondition type="operator">$L.mode="add"</activitycondition>
+        <activitydescription type="string">description in $L.file</activitydescription>
+        <activitynotification NullValue="1" type="string"/>
+      </activities>
+    </activities>
+    <mode type="string">add</mode>
+    <table type="string">requestTask</table>
+    <sysmodtime type="dateTime">07/16/17 17:00:21</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+  </record>
+</recordset>

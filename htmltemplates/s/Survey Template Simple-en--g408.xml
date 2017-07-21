@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="htmltemplates">
+  <record id="name=&quot;Survey Template Simple&quot; and language=&quot;en&quot;" recordid="Survey Template Simple - en">
+    <id type="string">943</id>
+    <type NullValue="1" type="string"/>
+    <name type="string">Survey Template Simple</name>
+    <expression NullValue="1" type="string"/>
+    <content NullValue="1" sctype="array">
+      <content NullValue="1" type="string"/>
+    </content>
+    <module type="string">survey</module>
+    <cap.exec NullValue="1" sctype="array">
+      <cap.exec NullValue="1" type="string"/>
+    </cap.exec>
+    <active type="boolean">true</active>
+    <htmlcode type="string">&lt;div style="MARGIN: 0in 0in 0pt"&gt;Dear &amp;lt;&lt;em&gt;Name&lt;/em&gt;&amp;gt;&lt;/div&gt;
+&lt;div style="TEXT-ALIGN: right; MARGIN: 0in 0in 0pt" align="right"&gt;&lt;strong&gt;Record number: &amp;lt;&lt;em&gt;Record number&lt;/em&gt;&amp;gt;&lt;/strong&gt;&lt;/div&gt;
+&lt;div style="MARGIN: 0in 0in 0pt"&gt;&amp;nbsp;&lt;/div&gt;
+&lt;div style="MARGIN: 0in 0in 0pt"&gt;Recently, you raised a record with &amp;lt;&lt;em&gt;Company name&lt;/em&gt;&amp;gt; &amp;lt;&lt;em&gt;Department name&lt;/em&gt;&amp;gt; services. Now that your issue is resolved, we ask you to complete a short survey to help us gauge your level of satisfaction with the service that you received.&lt;/div&gt;
+&lt;div style="MARGIN: 0in 0in 0pt"&gt;To access the survey, please click the following link:&lt;/div&gt;
+&lt;div style="MARGIN: 0in 0in 0pt"&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;&lt;em&gt;&lt;a href="http://xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/"&gt;&lt;font color="#0000ff"&gt;http://xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&lt;/font&gt;&lt;/a&gt;&lt;/em&gt;&amp;gt;&lt;/div&gt;
+&lt;div style="MARGIN: 0in 0in 0pt"&gt;&amp;nbsp;&lt;/div&gt;
+&lt;div style="MARGIN: 0in 0in 0pt"&gt;Thanks in advance for your support,&lt;/div&gt;
+&lt;div style="MARGIN: 0in 0in 0pt"&gt;&amp;lt;&lt;em&gt;Name&lt;/em&gt;&amp;gt;&lt;/div&gt;</htmlcode>
+    <language type="string">en</language>
+    <mandant NullValue="1" sctype="array">
+      <mandant NullValue="1" type="string"/>
+    </mandant>
+    <test.record NullValue="1" type="string"/>
+    <mail.title type="string">Record Survey</mail.title>
+  </record>
+</recordset>

@@ -1,0 +1,1495 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;patchrelHelper&quot;" recordid="patchrelHelper">
+    <name type="string">patchrelHelper</name>
+    <script type="string">var $ = lib.c.$;
+
+// APM logger
+var logger = getLog("APM");
+
+
+function getVersionDate(version)
+{
+	var vDate = null;
+		
+	// 2015.8.31
+	if (version.indexOf("9.41.") == 0)
+	{
+		vDate = new Date(2015, 7, 31);
+	}
+
+	else 
+	{
+		vDate = new Date();
+	}
+		
+	return new XMLDate(vDate).getDatum();
+}
+
+
+function getBaseAppVersion()
+{
+	// base app version that patch utility relies on
+	return "9.40";
+}
+
+function getAppVersionForDiff()
+{
+	// base app version that patch from
+	return "SM" + getBaseAppVersion();
+}
+
+function getBaseSignatureVersion()
+{
+	// base signature version
+	return "SM9.40.0015";
+}
+
+function getSchemaChangeList()
+{
+	var list = 
+	[
+		// 1, special change, dbdict 'datadict' has been updated, which need to be put in the first place
+		"datadict",
+		
+		// 2.changes not shown in signature comparison, e.g. field length enlarge, field case.insensitive update 
+
+		// 3.datadict change only, without dbdict change, especially for those have value set for new "reference.table" field
+		"changeModel", "cigroup", "cirelationship", "cm3rpage", "cm3tpage", "contacts", "core", "dataModEvent", "dataModEventRel", 
+		"dataModEventRelItem", "downtime", "imTask", "knownerror", "knownerrortask", "ocml", "outage", "outagedetail", 
+		"outageevent", "patcotask", "patcotaskhistorydetail", "pcfiles", "pcsoftware", "problem", "protocore", 
+		"requestTaskCIModEvent", "rootcausetask", "sdCategory", "slamonthly", "sloavail", "Subscription", "svcCatAddSubmitItem", 
+		"timeperiodDefinition"		
+	];
+	
+	var fPatches = new SCFile("smpatches", SCFILE_READONLY);
+	var sql = "filename=\"dbdict\"";
+	
+	var rcPatches = fPatches.doSelect(sql);
+	
+	// loop smpatches records of dbdict
+	while (rcPatches == RC_SUCCESS)
+	{
+		var filename = fPatches.tag.slice(7);
+		
+		if (!lib.ArrayUtil.contains(list, filename))
+		{
+			list.push(filename);
+		}
+		
+		rcPatches = fPatches.getNext();
+	}
+	
+	return list;
+}
+
+
+function comparePatchVersion(current, target)
+{
+	if (current == getAppVersionForDiff())
+	{
+		return -1;
+	}
+	
+	// in case the current version is like 9.4x.xxxx PROD?
+	if (current.indexOf(target) == 0)
+	{
+		return 0;
+	}
+	
+	var v1 = getMajorPatchVersion(current);	
+	var v2 = getMajorPatchVersion(target);	
+
+	if (v1 == v2)
+	{
+		v1 = getMinorPatchVersion(current);	
+		v2 = getMinorPatchVersion(target);	
+	}
+	
+	var n1 = Number(v1);
+	var n2 = Number(v2);
+	
+	return n1-n2;
+}
+
+function getMajorPatchVersion(version)
+{
+	// e.g. if version is "9.40.0015", return "40"
+	if (version.length &lt;= 3)
+	{
+		return 0;
+	}
+		
+	return version.slice(2, 4);
+}
+
+function getMinorPatchVersion(version)
+{
+	// e.g. if version is "9.40.0015", return "0015"
+	var length = getBaseAppVersion().length;
+	
+	if (version.length &lt;= length)
+	{
+		return 0;
+	}
+		
+	return version.slice(length+1);
+}
+
+
+function cleanupVersion()
+{
+	var fVersion = new SCFile("scversion");
+	var rc=fVersion.doSelect(true);
+	
+	var strVersion=fVersion.application_version.slice(0, fVersion.application_version.indexOf("-"));
+	
+	fVersion.application_version=strVersion;
+	fVersion.doUpdate();
+}
+
+function getAppPatchRelVersionMsg( bProd )
+{
+	var fAppsVer=new SCFile("scversion", SCFILE_READONLY);
+	var rc = fAppsVer.doSelect(true);
+
+    if (!bProd)
+    {
+    	return "Application Version "+fAppsVer.application_version + " Build HP";
+    }
+    
+    else
+    {
+    	return "Application Version "+fAppsVer.application_version + " Build PROD";
+    }
+}
+
+function getDtaPrefix()
+{
+	return "HPPCHREL";
+}
+
+function addFileToTOC( strFileName )
+{
+	var fPatchRelTOC=new SCFile("patchreltoc");
+	fPatchRelTOC.name=strFileName;
+	fPatchRelTOC.complete=false;
+	fPatchRelTOC.doInsert();
+}
+
+function getNextFileFromTOC()
+{
+	var fPatchRelTOC=new SCFile("patchreltoc", SCFILE_READONLY);
+	var rc=fPatchRelTOC.doSelect("complete&lt;&gt;true");
+	
+	if (rc == RC_SUCCESS)
+	{
+		return fPatchRelTOC.name;
+	}
+	
+	return null;
+}
+
+function setFileDoneInTOC( strFileName )
+{
+	var fPatchRelTOC=new SCFile("patchreltoc");
+	fPatchRelTOC.doSelect("name=\"" + strFileName +"\"");
+	
+	fPatchRelTOC.complete=true;
+	fPatchRelTOC.doUpdate();
+}
+
+
+/**
+ * create a folder (and its parent folder if parent folder is specified and not created yet.
+ *
+ * return 
+ *	true, if the folder is created successfully;
+ *	false, otherwise.
+ */
+function createFolder(folder) 
+{
+	if (makeDir(folder) == 0) 
+	{
+		logger.info("Folder created: \"" + folder + "\".");
+	  	return true;
+	} 
+	else 
+	{
+	  	logger.error("Folder creation failed for the folder: \"" + folder 
+	  		+ "\". Please specify the right path or make suer that you have write access to this folder.");
+
+		return false;
+	}	
+}
+
+
+/**
+ * Files those need to handle tag specially
+ *
+ * @returns {Array}
+ */
+function getSpecialTagFiles()
+{
+	return ["svcSrcSurveyConfig", "svcAdvanceSearchConfig", "uimcompdefinitions", "uimpages"];
+}
+
+
+/**
+ * Convert special tag
+ *
+ * @param {SCFile} file
+ * @param {String} tag
+ * @returns {String} 
+ */
+function handleSpecialTag(file, tag) 
+{
+	var filename = system.functions.filename(file);
+	
+	// if the unique key is counter, change tag, the key is same as those defined in related signaturemake
+	var list = getSpecialTagFiles();	
+	if (!lib.ArrayUtil.contains(list, filename))
+	{
+		return tag;
+	}
+
+	// the tag style is filename;value1;value2;... 
+	var newtag = filename;
+
+	var make = $("signaturemake", SCFILE_READONLY).setFields(["key"]).select("table.name=\"" + filename + "\"").uniqueResult();
+	var key = make.key;
+		
+	var i;
+	var length = key.length();
+	for (i = 0; i &lt; length; i++)
+	{
+		newtag += (";" + file[key[i]]); 
+	}
+		
+	return newtag;
+}
+
+
+/**
+ * Convert special tag query
+ *
+ * @param {String} tagquery
+ * @param {String} filename
+ * @param {String} tag
+ * @returns {String} 
+ */
+function handleSpecialTagQuery(tagquery, filename, tag)
+{
+	// update erddef query sql, remove counter
+	if (filename == "erddef")
+	{
+		var index = tagquery.indexOf(" and counter=");
+		if (index &gt; 0)
+		{
+			tagquery = tagquery.slice(0, index);
+		}
+	}
+	
+	/*
+     * reset tag query
+	 *
+	 * the tag style is filename;value1;value2;...
+	 * rebuild the tagquery to key1=value1 and key2=value2 and...
+	 */
+	var list = getSpecialTagFiles();	
+	if (!lib.ArrayUtil.contains(list, filename)) 
+	{
+		return tagquery;
+	}
+	
+	var newquery = "";
+	var values = tag.split(";");
+
+	var make = $("signaturemake", SCFILE_READONLY).setFields(["key"]).select("table.name=\"" + filename + "\"").uniqueResult();
+	var key = make.key;
+		
+	var i;
+	var length = key.length();
+	for (i = 0; i &lt; length; i++)
+	{
+		if (i &gt; 0)
+		{
+			newquery += " and ";
+		}
+		//TODO need to check field type is string
+		newquery += (key[i] + "=\"" + values[i+1] + "\"");
+	}
+	 
+	return newquery;	
+}
+
+
+/**
+  * rename file according to the prefix
+  *
+  * @param {String}	file	original file
+  * @param {String}	prefix	prefix for rename
+  *
+  * @returns {Number}
+  *		0 rename successful for common files
+  *		1 rename successful for special files
+  *		-1 rename failed
+  */
+function rename(file, prefix)
+{
+	var increase = lib.upgradeHelper.getNumberTypeFieldIncreaseValueForRename();
+	
+	var filename = system.functions.filename(file);
+	
+	if (filename == "activitySurveyDefinition")
+	{
+		file.number = prefix + file.number;
+		file.thenumber = prefix + file.thenumber;
+	}
+	else if (filename == "activitytype")
+	{
+		file.activity_name = prefix + file.activity_name;
+	}
+	else if (filename == "application")
+	{
+		if (file.format == filename)
+		{
+			file.format = prefix + file.format;
+		}
+		
+		file.applcation = prefix + file.applcation;
+	}
+	else if (filename == "calendarFilterEditForm")
+	{
+		file.id = prefix + file.id;
+		file.fieldId = prefix + file.fieldId;
+	}
+	else if (filename == "calholidays")
+	{
+		file.holiday = prefix + file.holiday;
+	}
+	else if (filename == "civisualizationdevice")
+	{
+		file.uniqueID = prefix + file.uniqueID;
+	}	
+	else if (filename == "cm3messages")
+	{
+		file.event = prefix + file.event;
+	}
+	else if (filename == "currency")
+	{
+		file.currency_code = prefix + file.currency_code;
+		file.name = prefix + file.name;
+	}
+	else if (filename == "datadict")
+	{
+		file.name = prefix + file.name;
+		file.sqlbasename = prefix + file.sqlbasename;
+	}	
+	else if (filename == "dbdict")
+	{
+		file.name = prefix + file.name;	
+	}
+	else if (filename == "devtype")
+	{
+		file.device_name = prefix + file.device_name;
+		file.format_name = prefix + file.format_name;
+	}
+	else if (filename == "displayevent" || filename == "displayoption")
+	{
+		file.id = prefix + file.id;
+	}
+	else if (filename == "extaccess")
+	{
+		file.object_name = prefix + file.object_name;
+	}
+	else if (filename == "help")
+	{
+		file.term = prefix + file.term;
+		file.file_name = prefix + file.file_name;
+		file.field_name = prefix + file.field_name;
+	}
+	else if (filename == "htmltemplates")
+	{
+		file.name = prefix + file.name;
+	}
+	else if (filename == "idoladapter")
+	{
+		file.category_group_name = prefix + file.category_group_name;
+	}
+	else if (filename == "idolDataFilter")
+	{
+		file.ID += increase;
+	}
+	else if (filename == "idolindex")
+	{
+		file.index_id += increase;
+		file.table_name = prefix + file.table_name;
+	}
+	else if (filename == "idolpbmhunter")
+	{
+		file.pbmhunter_id = prefix + file.pbmhunter_id;
+		file.table_name = prefix + file.table_name;
+		file.database_name = prefix + file.database_name;
+	}
+	else if (filename == "idolserverinfo")
+	{
+		file.server_url += prefix;
+	}
+	else if (filename == "imArea")
+	{
+		file.area_name = prefix + file.area_name;
+	}
+	else if (filename == "imCategory")
+	{
+		file.name = prefix + file.name;
+	}
+	else if (filename == "imSubcategory")
+	{
+		file.subcategory_name = prefix + file.subcategory_name;
+	}
+	else if (filename == "inbox")
+	{
+		file.inbox_name = prefix + file.inbox_name;
+		file.inbox_id += increase;  // not good way
+	}
+	else if (filename == "kmattachments")
+	{
+		file.name = prefix + file.name;
+	}
+	else if (filename == "kmdoctype")
+	{
+		file.name = prefix + file.name;
+	}
+	else if (filename == "kmprofile")
+	{
+		file.id = prefix + file.id;
+		file.name = prefix + file.name;
+	}
+	else if (filename == "notification")
+	{
+		file.name = prefix + file.name;
+		file.id = prefix + file.id;
+	}
+	else if (filename == "schedule")
+	{
+		file.schedule_id += increase;
+		file.name = prefix + file.name;
+	}
+	else if (filename == "screlationtype")
+	{
+		file.name = prefix + file.name;
+		file.value = prefix + file.value;
+	}
+	else if (filename == "secRights")
+	{
+		file.role = prefix + file.role;
+	}
+	else if (filename == "settingsConfig")
+	{
+		file.id = prefix + file.id;
+	}
+	else if (filename == "slacontrol")
+	{
+		file.unique_key += increase;
+	}
+	else if (filename == "smartsearchpreconditions")
+	{
+		file.id += increase;
+	}
+	else if (filename == "svcAdvanceSearchConfig")
+	{
+		file.file_name = prefix + file.file_name;
+	}
+	else if (filename == "svcCatInterface")
+	{
+		file.interface_name = prefix + file.interface_name;
+	}	
+	else if (filename == "svcSrcConfig")
+	{
+		file.name = prefix + file.name;
+		file.screen_type = prefix + file.screen_type;
+	}	
+	else if (filename == "svcSrcSurveyConfig")
+	{
+		file.id += increase;
+		file.dest_file_name = prefix + file.dest_file_name;
+	}	
+	else if (filename == "SurveyParameterMapping" || filename == "SurveyRecipientMapping")
+	{
+		file.id = prefix + file.id;
+		file.module = prefix + file.module;
+	}		
+	else if (filename == "timeperiodCalendarMapping")
+	{
+		file.id = prefix + file.id;
+		file.tableName = prefix + file.tableName;
+	}
+	else if (filename == "timeperiodCategory")
+	{
+		file.id = prefix + file.id;
+		file.name = prefix + file.name;
+	}
+	else if (filename == "uimcompdefinitions")
+	{
+		file.unique_id = prefix + file.unique_id;
+	}
+	else if (filename == "uimpages")
+	{
+		file.unique_id = prefix + file.unique_id;
+	}
+	else if (filename == "unitofmeasure")
+	{
+		file.unit_of_measure = prefix + file.unit_of_measure;
+	}
+	else if (filename == "Workflow")
+	{
+		file.name = prefix + file.name;
+	}
+	else if (filename == "WorkflowPhase")
+	{
+		file.phaseName = prefix + file.phaseName;
+		file.workflowName = prefix + file.workflowName;
+	}
+	// normal file
+	else
+	{
+		if (typeof file[0] == 'string')
+		{
+			file[0] = prefix + file[0];
+			return 0;
+		}
+		else
+		{
+			error(system.functions.scmsg(125, "patchrel", [filename]));
+			return -1;
+		}
+	}
+	
+	return 1;
+}
+
+
+/**
+  * Pre processing for patch application..
+  * This function will be called in the Process patchrel.execute
+  *
+  * @param module, module name of the release package. "APM" for patch release, and all others for content release.
+  */
+function preProcessForPatch(module)
+{
+	// stop inactivity timer	
+	stopInactivityTimer();
+	
+	// fix system dirty data
+	fixSystemData();
+	
+	if (module == null || module == "APM")
+	{
+		if (vars.$G_current_version.indexOf("9.40.") == 0)
+		{
+			// remove "RuleSetrevision" because 940 OOB dbdict is incorrect
+			lib.RAD.run("sm.patchrel.fremove.file", ["names,1"], ["RuleSetrevision"], [lib.DataTypeConst.typeCharacter()]);
+
+			// update "cm3t" dbdict because 940 OOB is incorrect
+			var filename = "cm3t";
+			var rc = lib.upgradeDbdictMerge.sortDbdictFieldIndex(filename, 1);
+			if (rc == RC_SUCCESS)
+			{
+				info(system.functions.scmsg(201, "object", ["dbdict", filename]));
+			}
+			else
+			{
+				error(system.functions.scmsg(121, "patchrel", ["dbdict", filename]));
+			}
+			
+			// delete "kmquery" dbdict because the structure is incorrect if customer added new kmknowledgebase record
+			filename = "kmquery";
+			var fDbdict = $("dbdict").select("name=\"" + filename + "\"").uniqueResult();
+			rc = fDbdict.doDelete();
+			if (rc == RC_SUCCESS)
+			{
+				info(system.functions.scmsg(203, "object", ["dbdict", filename]));
+			}
+			else
+			{
+				error(system.functions.scmsg(122, "patchrel", ["dbdict", filename]));
+			}			
+		}				
+	}
+	// Content Pack
+	else 
+	{
+		lib.ContentPackHelper.preProcessForPatch(module);	
+	}
+}
+
+
+/**
+ * Fix system dirty data
+ */
+function fixSystemData()
+{
+	// fix Counters
+	lib.upgradeCommonHelper.fixCounters("APM");
+	
+	// fix numbers	
+	lib.upgradeCommonHelper.fixNumbers("APM");
+	
+	// synchronize unique key
+	lib.patchrelKeyChanges.synchronizeDatadictUniqueKey(true);
+	lib.patchrelKeyChanges.synchronizeObjectUniqueKey(true);		
+}
+
+
+/**
+ * Refresh Data
+ */
+function refreshData()
+{
+}
+
+
+/**
+ * Create background schedules
+ */
+function createSchedules()
+{
+	var scheduleObjs = 
+	{
+		"adds":
+		[
+			{
+				name: "KMAttachment",
+				_class: "KMAttachment",
+				sched_class: "KMAttachment",
+				description: "",
+				repeat: "00 00:05:00",
+				javascript: "lib.IDOL_Utilities.scheduleKMAttachment();"
+			},
+			{
+				name: "KMAttachmentStatus",
+				_class: "KMAttachment",
+				sched_class: "KMAttachment",
+				description: "",
+				repeat: "00 00:05:00",
+				javascript: "lib.IDOL_Utilities.scheduleKMAttachmentStatus();"
+			},
+			{
+				name: "Process Time Duration Reporting Data",
+				_class: "timedurationdata",
+				sched_class: "timedurationdata",
+				description: "",
+				repeat: "00 00:05:00",
+				javascript: "lib.timeDurationEtl.doWork();"
+			},
+			{
+				name: "background purge/archive TodoAlertList",
+				_class: "report",
+				sched_class: "report",
+				description: "",
+				repeat: "1 00:00:00",
+				application: "pa.main.appl.bg",
+				strings:
+				[
+      				"TodoAlertList",
+      				"TodoAlertList",
+      				"record.update.time&lt;tod()-'14 00:00:00'",
+      				"",
+      				"purge",
+      				"append",
+      				"create",
+      				"update",
+      				"",
+      				"false",
+      				"winnt",
+      				"",
+      				"",
+      				"",
+      				"",
+      				"false"	
+				]
+			}
+		],
+		"updates":
+		[
+			{
+				name: "KMUpdate",				
+				javascript:	"lib.IDOL_Utilities.scheduleKMUpdate();"
+			}
+		]
+	};
+	
+	lib.upgradeCommonHelper.createSchedules(scheduleObjs, "APM");
+}
+
+
+/**
+  * Post processing for patch application. Detailed post processing will be dependent on module.
+  * This function will be called in the rad:sm.patchrel.apply.post.
+  *
+  * @param module, module name of the release package. "APM" for patch release, and all others for content release.
+  */
+function postProcessForPatch(module)
+{	
+	// fix system dirty data
+	fixSystemData();
+
+	if (module == null || module == "APM")
+	{
+		// refresh Data
+		refreshData();
+		
+		// rebuild kmquery dbdict
+		var rc = lib.KMknowledgebase.rebuildKmqueryDbdict();
+		if (rc == RC_SUCCESS)
+		{
+			detailLog(system.functions.scmsg(201, "object", ["dbdict", "kmquery"]));
+		}
+		else if (rc != RC_NO_MORE)
+		{
+			errorLog(system.functions.scmsg(121, "patchrel", ["dbdict", "kmquery"]));
+		}
+		
+		// set Catalog items mandatory options
+		lib.svcCatUpdateUserOptions.setAllMandatoryOptions();
+
+		// refresh relation
+		lib.RelationManagerEnablement.enableRelationManager();
+				
+		// create background schedules
+		createSchedules();
+
+		// enhance default security policy
+		if (isOOBEnvironment())
+		{
+			enhanceSecurityPolicy();
+		}
+		
+		// remove abandoned inbox
+		lib.InboxHelper.removeAbandonedInboxRecords();
+		
+		// cleanup legacy UCMDB web service data
+		lib.DisplayName.cleanUpUCMDBIntegrationWebService();
+		
+		// update idol
+		lib.idolUpgrade.upgrade();
+		lib.upgradeKeyChanges.addKey({"table":"dept", "keyType":8, "columns":["seq.id"]});
+		lib.upgradeKeyChanges.addKey({"table":"svcDisplay", "keyType":8, "columns":["displayId"]});
+		
+		// update CI displayName
+		lib.DisplayName.batchUpdateCIDisplayNameByLogicalName();
+		lib.upgradeKeyChanges.updateKey({"table":"device", "keyType":0, "columns":["network.name", "logical.name"], "updateTo":["network.name", "display.name"]});
+		lib.upgradeKeyChanges.addKey({"table":"device", "keyType":4, "columns":["display.name"]});
+		
+		// expire globallists
+		expireGlobalLists();
+	}
+	// Content Pack
+	else 
+	{
+		lib.ContentPackHelper.postProcessForPatch(module);	
+	}
+}
+
+
+/**
+ * check if current database is OOB environment
+ */
+function isOOBEnvironment()
+{
+	/*
+	 * There is no specific record that could distinguish 
+	 * OOB environment and customer production environment.
+	 *
+	 * Here we use interaction/incident number to check.
+	 */
+	var number = new SCFile("number", SCFILE_READONLY);
+	number.setFields(["number"]);
+	
+	// check interaction number
+	var rc = number.doSelect("name=\"incidents\"");	
+	if (rc != RC_SUCCESS || number.number &gt; 10500)
+	{
+		return false;
+	} 
+	
+	// check incident number
+	rc = number.doSelect("name=\"incident management\"");
+	if (rc != RC_SUCCESS || number.number &gt; 10300)
+	{
+		return false;
+	} 
+
+	// check info company	
+	var company = new SCFile("info", SCFILE_READONLY);
+	var query = "type=\"company\" and comp.name=\"advantage inc.\"";
+
+	rc = company.doSelect(query);
+	if (rc != RC_SUCCESS || company.min_pwd_len &gt; 0 || company.no_null_password)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+
+/**
+ * Enhance default security policy
+ */
+function enhanceSecurityPolicy() 
+{
+	// update OOB company password policy
+	var company = new SCFile("info");
+	var compName = "advantage inc.";
+	var query = "type=\"company\" and comp.name=\"" + compName + "\"";
+
+	var rc = company.doSelect(query);
+	if (rc == RC_SUCCESS)
+	{
+		company.min_pwd_len = 10;
+		company.max_pwd_len = 128;
+		company.no_null_password = true;
+		company.require_alpha = true;
+		company.alpha_min = 1;
+		company.require_mixed_case = true;
+		company.require_non_alpha = true;
+		company.symbolic_min = 1;
+		company.pwd_reset_type = "prompt";
+		company.keep_history = true;
+		company.pwd_history_type = "limited.hist";
+		company.use_max_pwd_life = "time";
+		company.password_date = new XMLDate("P90D").getDatum();
+		company.user_lockout = true;
+	
+		rc = company.doUpdate();
+		if (rc == RC_SUCCESS)
+		{
+			info(system.functions.scmsg(201, "object", ["company", compName]));
+			
+			// update operator falcon
+			var operator = new SCFile("operator");
+			rc = operator.doSelect("name=\"falcon\"");
+			if (rc == RC_SUCCESS &amp;&amp; !operator.never_expire_pass)
+			{
+				operator.password_date = new Date();
+				rc = operator.doUpdate();
+				if (rc == RC_SUCCESS)
+				{
+					info(system.functions.scmsg(201, "object", ["operator", "falcon"]));			
+				}	
+				else
+				{
+					error(system.functions.scmsg(121, "patchrel", ["operator", "falcon"]));
+				}
+			}			
+		}
+		else
+		{
+			error(system.functions.scmsg(121, "patchrel", ["company", compName]));
+		}		
+	}
+	
+	// start inactivity timer by default
+	startInactivityTimer();
+}
+
+
+/**
+ * Start inactivity timer
+ */
+function startInactivityTimer()
+{
+	var info = lib.InactiveTimerSetup.getInfo();
+	var process = info.process_start_infos;
+	var status = process[0][1][0];
+	
+	if (status == "inactive")
+	{
+		var idletime = process[1][1][0];
+		var warntime = process[2][1][0];
+		var excludeList = process[3][1];
+		
+		lib.InactiveTimerSetup.startInactiveTimer(idletime, warntime, excludeList);
+	}
+}
+
+
+/**
+ * Stop inactivity timer
+ */
+function stopInactivityTimer()
+{
+	var info = lib.InactiveTimerSetup.getInfo();
+	var process = info.process_start_infos;
+	var status = process[0][1][0];
+	
+	if (status == "active")
+	{
+		lib.InactiveTimerSetup.stopInactiveTimer();
+	}
+}
+
+
+/**
+ * Expire globallists
+ */
+function expireGlobalLists()
+{
+	info(system.functions.scmsg(419, "upg"));
+	
+	// update expiration date if build at startup with filename
+	// exclude "Startup Lists" because it will cause issue occasionally
+	var query = "not null(filename) and build.startup = true and name ~= \"Startup Lists\"";
+	$("globallists").select(query).iterate(function(list)
+	{
+		list.expiration = new Date();
+		var rc = list.doUpdate();
+		
+		if (rc != RC_SUCCESS)
+		{
+			error(system.functions.scmsg(121, "patchrel", ["globallists", list.name]));
+		}				
+	});
+
+	info(system.functions.scmsg(420, "upg"));
+}	
+
+
+/**
+  * Post processing for load application data. Detailed post processing will be dependent on module.
+  * This function will be called in the rad:sm.patchrel.wizard, between load data and process data
+  *
+  * @param module, module name of the release package. "APM" for patch release, and all others for content release.
+  */
+function postProcessLoadData(module)
+{	
+	if (module == null || module == "APM")
+	{
+		// clean useless data if PD enabled already
+		if (lib.ProcessDesignerEnablement.isPDEnabled())
+		{
+			lib.ContentPackHelper.cleanProcessDesignerPatchData();
+		}
+	}
+}
+
+
+/**
+	convert the version string to a abbreviated one..
+	
+	@param version, the version string to be converted,
+	@param type, the type of the abbreviated version used for.
+	
+	@return, a abbreviated version string.
+						
+	@author Liu,Yong-Liang
+*/
+function convertTargetVersion(version,type){
+	var versionarray=version.split(" ");
+	if(versionarray.length&gt;1){
+		if(type=="history"){
+			return lib.ContentPackHelper.getContentModuleShortName(versionarray[0])+" "+versionarray[1];
+		}
+		else {
+			return "CP" + lib.ContentPackHelper.getContentModuleShortName(versionarray[0]) + versionarray[1];
+		}
+	}else{
+		return version;
+	}
+}
+
+
+/**
+	convert the version string to a abbreviated one..
+	@param currentVersion, the current version string to be converted,	
+	@param targetVersion, the target version string to be converted,
+	@param type, the type of the abbreviated version used for.
+	
+	@return, a abbreviated version string.
+						
+	@author Liu,Yong-Liang
+*/
+function convertCurrentVersion(currentVersion,targetVersion,type){
+	if(currentVersion=="Not previously installed"){
+		var versionarray=targetVersion.split(" ");
+		if(versionarray.length&gt;1){
+			if(type=="history"){
+				return lib.ContentPackHelper.getContentModuleShortName(versionarray[0]);
+			}else{
+				return "CP";
+			}
+		}else{
+			if(type=="history"){
+				return targetVersion;
+			}else{
+				return "AP";
+			}
+		}
+	}else{
+		return convertTargetVersion(currentVersion,type);
+	}
+	
+}
+
+
+function getDataForDiff( strFileName, strTargetQuery, strPrefix )
+{
+	if (strTargetQuery == null)
+	{
+		return null;
+	}
+
+	//print(strTargetQuery);
+	
+	var strSourceQuery;
+	
+	if (strFileName == "currency")
+	{
+		strSourceQuery = buildRenamedQueryOnFields( strTargetQuery, strPrefix, ["currency.code", "name"] );
+	}	
+	else if (strFileName == "format")
+	{
+		strSourceQuery = buildRenamedQueryOnFields( strTargetQuery, strPrefix, ["name"] );
+	}
+	else if (strFileName == "help")
+	{
+		strSourceQuery = buildRenamedQueryOnFields( strTargetQuery, strPrefix, ["field.name", "file.name", "term"] );
+	}
+	else if (strFileName == "idolindex")
+	{
+		strSourceQuery = buildRenamedQueryOnFields( strTargetQuery, strPrefix, ["table.name"] );
+	}	
+	else if (strFileName == "notification")
+	{
+		strSourceQuery = buildRenamedQueryOnFields( strTargetQuery, strPrefix, ["name", "id"] );
+	}	
+	else if (strFileName == "scmessage")
+	{
+		strSourceQuery = buildRenamedQueryOnFields( strTargetQuery, strPrefix, ["syslanguage"] );
+	}
+	else if (strFileName == "unitofmeasure")
+	{
+		strSourceQuery = buildRenamedQueryOnFields( strTargetQuery, strPrefix, ["unit.of.measure"] );
+	}	
+	else if (strFileName == "WorkflowPhase")
+	{
+		strSourceQuery = buildRenamedQueryOnFields( strTargetQuery, strPrefix, ["phaseName", "workflowName"] );
+	}	
+	else
+	{
+		strSourceQuery = buildRenamedQuery( strTargetQuery, strPrefix );
+	}
+		
+	//print(strSourceQuery);
+	
+	var strSrc 	= lib.xmlHelpers.getXmlFromRecord( strFileName, strSourceQuery );
+	var strTgt 	= lib.xmlHelpers.getXmlFromRecord( strFileName, strTargetQuery );
+	
+	if (strSrc == null)
+	{
+		return null;
+	}
+		
+	strSrc = lib.xmlHelpers.removePrefixFromXML(strPrefix, strSrc.toXMLString());
+		
+	if (strSrc == null || strTgt == null)
+	{
+		return null;
+	}
+	
+	var xmlDiff	= new XML("mergedata");
+	var xmlSrc 	= new XML("source");
+	var xmlTgt 	= new XML("target");
+	
+	xmlSrc.setAttributeValue("name", strSourceQuery);
+	xmlSrc.setText(strSrc.replace(/&gt;&lt;/g, "&gt;\n&lt;"));	
+	
+	xmlTgt.setAttributeValue("name", strTargetQuery);
+	xmlTgt.setText(strTgt.toXMLString().replace(/&gt;&lt;/g, "&gt;\n&lt;"));	
+	
+	xmlDiff=lib.xmlHelpers.addChildElement(xmlDiff, xmlSrc);
+	xmlDiff=lib.xmlHelpers.addChildElement(xmlDiff, xmlTgt);
+		
+	return xmlDiff.toXMLString();
+}
+
+/**
+ * Build renamed query
+ *
+ * param {String} strQuery
+ * param {String} strPrefix
+ * returns {String} renamed query
+ */
+function buildRenamedQuery( strQuery, strPrefix ) 
+{
+	var iIndex = strQuery.indexOf("\"");
+	
+	var strFront, strBack;
+	
+	// string type, field="value"
+	if (iIndex &gt;= 0)
+	{
+		strFront = strQuery.slice(0, iIndex + 1);
+		strBack = strQuery.slice(iIndex + 1);
+
+		return strFront + strPrefix + strBack;	
+	}
+	// number type, field=value
+	else
+	{
+		iIndex = strQuery.indexOf("=");
+		strFront = strQuery.slice(0, iIndex + 1);
+		strBack = strQuery.slice(iIndex + 1);
+		strBack = parseInt(strBack, 0) + lib.upgradeHelper.getNumberTypeFieldIncreaseValueForRename();
+
+		return strFront + strBack;
+	}	
+}
+
+function buildRenamedQueryOnFields( strQuery, strPrefix, strFields )
+{
+	var query = strQuery, i;
+	for (i = 0; i &lt; strFields.length; i++)
+	{
+		query = buildRenamedQueryOnField( query, strPrefix, strFields[i] );
+	}
+	return query;
+}
+
+function buildRenamedQueryOnField( strQuery, strPrefix, strField )
+{
+	var subs = ["=\"", " = \""];
+	var sub = subs[0];
+	var i, iIndex;
+	
+	for (i = 0; i &lt; subs.length; i++)
+	{
+		iIndex = strQuery.indexOf(strField + subs[i]);
+		if (iIndex &gt;= 0)
+		{			
+			sub = subs[i];
+			break;
+		}
+	}
+
+	var strFront, strBack;
+	if (iIndex &gt;= 0)
+	{
+		strFront = strQuery.slice(0, iIndex + strField.length + sub.length);	
+		strBack = strQuery.slice(iIndex + strField.length + sub.length);
+		strQuery = strFront + strPrefix + strBack;	
+	}
+	else 
+	{
+		iIndex = strQuery.indexOf("null(" + strField + ")");	
+		if (iIndex &gt;= 0)
+		{
+			strFront = strQuery.slice(0, iIndex);	
+			strBack = strQuery.slice(iIndex + strField.length + 6);
+			strQuery = strFront + strField + "=\"" + strPrefix + "null\"" + strBack;	
+		}
+	}
+		
+	return strQuery;
+}
+
+
+function getCurrentVersionString()
+{
+	var fVer = new SCFile("scversion", SCFILE_READONLY);
+	fVer.doSelect(true);
+	
+	return fVer.application_version;
+}
+
+function getNameFromTOCFile( strTOCFilename )
+{
+	var iIndex = strTOCFilename.indexOf(".dta");
+	return strTOCFilename.slice(0, iIndex);
+}
+
+function saveMergeXML( strFileName, strTargetQuery, strMergeXML )
+{
+	return lib.xmlHelpers.saveMergeXML( strFileName, strTargetQuery, strMergeXML );
+}
+
+
+function convertSelectedArray ( fReturnArray, fStringArray )
+{
+	if (fStringArray == null)
+	{
+		return;
+	}
+	
+	var length = fStringArray.length(), i;
+	for (i = 0; i &lt; length; i++)
+	{
+		if (fStringArray[i] == "true" || fStringArray[i] == true)
+		{
+			fReturnArray.push(true);
+		}
+		else
+		{
+			fReturnArray.push(false);		
+		}
+	}
+}
+
+function saveLangInfo ()
+{
+	var fPatchInfo = new SCFile("patchrelinfo");
+	var aSelected = new SCDatum();
+	
+	fPatchInfo.version="SELECTED LANGUAGE";
+	fPatchInfo.lang_selected[0] = vars.$wiz_selected;
+	fPatchInfo.lang_selected[1] = vars.$wiz_language;
+	fPatchInfo.lang_selected[2] = vars.$wiz_codes;
+	
+	fPatchInfo.doSave();	
+}
+
+function convertStringToArray ( strInput, aOutput )
+{
+	var aArray = strInput.split("!!");
+	
+	var i;
+	for (i = 0; i &lt; aArray.length; i++)
+	{
+		var value = aArray[i];
+		if (value == "true")
+		{
+			aOutput.push(true);
+		}
+		else if (value == "false")
+		{
+			aOutput.push(false);		
+		}
+		else
+		{
+			aOutput.push(aArray[i]);
+		}
+	}
+}
+
+function loadLangData ()
+{
+	var fPatchInfo = new SCFile("patchrelinfo", SCFILE_READONLY);
+	
+	if (fPatchInfo.doSelect("version=\"SELECTED LANGUAGE\"") == RC_SUCCESS)
+	{
+		vars.$wix_selected = fPatchInfo.lang_selected[1];
+		vars.$wiz_language = fPatchInfo.lang_selected[2];
+		vars.$wiz_codes    = fPatchInfo.lang_selected[3];
+	}
+}
+
+
+/**
+ * Get all supported languages
+ */
+function getLanguages()
+{
+	return ["ar", "cs", "de", "es", "fr", "he", "hu", "it", "ja", "ko", "nl", "pl", "pt-Br", "ru", "tr", "zh-Hans"];
+}
+
+/**
+ * Get upgrade field value
+ * @param table: the name of datadict
+ * @param name: the name of the column
+ * @param field: the value of the fields in the same row
+ * @param value: the original value
+ */
+function getUpgradeFieldValue(table, name, field, value){
+	return lib.upgradeHelper.getUpgradeFieldValue(table, name, field, value);
+}
+
+
+/**
+ * Purge Non-English Format Records For RAD Parameter Panels
+ *
+ * This function reads all the records in the code file and deletes 
+ * the corresponding NON-ENGLISH (ie, syslanguage not "en") record(s) 
+ * in the format file. The effect of this is that RAD applications 
+ * should ONLY have an ENGLISH version of its parameter format.
+ *
+ * The reason for getting rid of these non-English parameter formats 
+ * for RAD applications is because they cause confusion. For examle, 
+ * say a RAD application is modified so that it now accepts a new 
+ * parameter. When the RAD application is compiled, the RTE compiles 
+ * ONLY the English version of the format, leaving the non-English 
+ * parameter formats alone. Because of this, these formats are now 
+ * obsolete (in fact, they are no longer valid because they are not 
+ * aware of this new parameter).
+ */
+function purgeNonEnglishParameterFormat()
+{
+	var fCode = new SCFile("code", SCFILE_READONLY);
+	fCode.setFields(["application"]);
+
+	var rcCode = fCode.doSelect(true);
+	while (rcCode == RC_SUCCESS)
+	{
+		var fFormat = new SCFile("format");
+		var query = "name=\"" + fCode.application + "\" and syslanguage~=\"en\"";
+		var rcFormat = fFormat.doSelect(query);
+		
+		while (rcFormat == RC_SUCCESS)
+		{
+			// delete non-English parameter format
+			var rc = fFormat.doDelete();
+			if (rc == RC_SUCCESS)
+			{
+				info(system.functions.scmsg(203, "object", ["format", fFormat.syslanguage + "-" + fFormat.name]));
+			}
+			else
+			{
+				error(system.functions.scmsg(122, "patchrel", ["format", fFormat.syslanguage + "-" + fFormat.name]));
+			}		
+			
+			rcFormat = fFormat.getNext();
+		}
+		
+		rcCode = fCode.getNext();
+	}
+}
+
+
+/**
+ * Get post upgrade prompt message
+ *
+ * @param {String} module
+ * @returns {String}
+ */
+function getPostUpgradePromptMessage(module)
+{
+	if (module == null || module == "APM")
+	{
+		return lib.upgradeCommonHelper.getPostUpgradePromptMessage();
+	}
+	else
+	{
+		return "";
+	}
+}
+
+
+/**
+ * print information message
+ */
+function info(msg)
+{
+	print(msg);
+	
+	detailLog(msg);
+	logger.debug(msg);
+}
+
+
+/**
+ * print error message
+ */
+function error(msg)
+{
+	var rc;
+	system.functions.rtecall("msg", rc, msg, 3);
+
+	errorLog(msg);
+	logger.warn(msg);	
+}
+
+
+/**
+ * write detail log
+ *
+ * @param {String} msg	-  The log statements
+ */
+function detailLog(msg) 
+{
+	var path = getLogPath();
+	if (path == null || path.length == 0)
+	{
+		return;
+	}
+		
+	writeLog(msg, path + "detail.log");
+}
+
+
+/**
+ * write error log
+ *
+ * @param {String} msg	-  The log statements
+ */
+function errorLog(msg) 
+{
+	var path = getLogPath();
+	if (path == null || path.length == 0)
+	{
+		return;
+	}
+		
+	writeLog(msg, path + "except.log"); 
+}
+
+
+/**
+ * get log message path
+ *   
+ * @return the log path. eg: apm package path.
+ */
+function getLogPath() 
+{
+	var status = $("patchrelstatus", SCFILE_READONLY).select("true").uniqueResult();
+	if (status)
+	{
+		return status.path;
+	}
+	
+	return null;
+}
+
+
+/**
+ * write log function does same works like RAD: sm.patchrel.log
+ *   
+ * @param content  string --&gt;  log content
+ * @param logFile  string --&gt;  log file name
+ */
+function writeLog(content, logFile) 
+{
+	var fullText = lib.upgradeCommonLib.formatDate(system.functions.tod(),"yyyy-mm-dd HH:MM:ss") + " " + content + "\n";
+	
+	// write external log
+	writeFile(logFile, 'a', fullText);
+}
+
+
+/**
+ * Check if current build is a release buld
+ */
+function isReleaseBuild()
+{
+	var scversion = $("scversion", SCFILE_READONLY).select("true").uniqueResult();
+	var version = scversion['application.version'];
+	
+	// 1. check string "SNAPSHOT"
+	if (version.indexOf("SNAPSHOT") &gt; 0)
+	{
+		return false;
+	}
+		
+	// 2. check minor minor version
+	var buildno = version.slice(5);
+	return buildno != "0000";
+}
+</script>
+    <package type="string">Patch Release</package>
+    <sysmodtime type="dateTime">07/16/17 16:56:39</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">71</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

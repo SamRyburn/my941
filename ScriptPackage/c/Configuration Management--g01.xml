@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptPackage">
+  <record id="name=&quot;Configuration Management&quot;" recordid="Configuration Management">
+    <name type="string">Configuration Management</name>
+    <description NullValue="1" type="string"/>
+    <sysmodtime type="dateTime">04/26/05 04:33:40</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+  </record>
+</recordset>

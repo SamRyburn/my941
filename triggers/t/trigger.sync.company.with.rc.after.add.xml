@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="triggers">
+  <record id="trigger.name=&quot;trigger.sync.company.with.rc.after.add&quot;" recordid="trigger.sync.company.with.rc.after.add">
+    <trigger.name type="string">trigger.sync.company.with.rc.after.add</trigger.name>
+    <trigger.type type="decimal">2</trigger.type>
+    <table.name type="string">company</table.name>
+    <application.name NullValue="1" type="string"/>
+    <sysmodcount type="decimal">3</sysmodcount>
+    <sysmoduser type="string">zhichao.fei</sysmoduser>
+    <sysmodtime type="dateTime">03/09/11 19:11:46</sysmodtime>
+    <javascript type="string">var company = record.company;
+var ucmdbCustomerId = record.ucmdb_customer_id;
+var showCompany = record.show_company;
+var isUcmdbSynced = system.functions.nullsub(record.ucmdb_synced,false);
+
+if (vars.$G_multi &amp;&amp; vars.$G_system_info.SMtoRC) {
+	if (showCompany == "Y")
+		system.library.multiTenantRC.syncCompanyAfterAddOrUpdate(company, ucmdbCustomerId);
+}
+</javascript>
+  </record>
+</recordset>

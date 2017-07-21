@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="menu">
+  <record id="name=&quot;INCIDENT MANAGEMENT REPORTS&quot;" recordid="INCIDENT MANAGEMENT REPORTS">
+    <name type="string">INCIDENT MANAGEMENT REPORTS</name>
+    <option sctype="array">
+      <option sctype="decimal">1</option>
+      <option sctype="decimal">2</option>
+      <option sctype="decimal">3</option>
+      <option sctype="decimal">4</option>
+      <option sctype="decimal">5</option>
+      <option sctype="decimal">6</option>
+      <option sctype="decimal">7</option>
+      <option sctype="decimal">8</option>
+      <option sctype="decimal">9</option>
+      <option sctype="decimal">10</option>
+      <option sctype="decimal">11</option>
+    </option>
+    <description sctype="array">
+      <description sctype="string">Alert Status Report</description>
+      <description sctype="string">Assignment Group Report</description>
+      <description sctype="string">Incident Mgmt Menu</description>
+      <description sctype="string">Document Report by Category</description>
+      <description sctype="string">Excessive Reassignment</description>
+      <description sctype="string">Open Document Report</description>
+      <description sctype="string">Shift Change Report</description>
+      <description sctype="string">Incident Report-Component</description>
+      <description sctype="string">Incident Report-Vendor</description>
+      <description sctype="string">Incident Report-Assignment</description>
+      <description sctype="string">Incident Report-Location</description>
+    </description>
+    <command sctype="array">
+      <command sctype="string">asr</command>
+      <command sctype="string">agr</command>
+      <command sctype="string"/>
+      <command sctype="string">drc</command>
+      <command sctype="string">err</command>
+      <command sctype="string">odr</command>
+      <command sctype="string">scr</command>
+      <command sctype="string">ircomp</command>
+      <command sctype="string">irvend</command>
+      <command sctype="string">irassg</command>
+      <command sctype="string">irloc</command>
+    </command>
+    <condition sctype="array">
+      <condition sctype="operator">index("IncidentAdmin", $lo.ucapex)&gt;0 or index("SysAdmin", $lo.ucapex)&gt;0 or index("incident management", $lo.ucapex)&gt;0</condition>
+      <condition sctype="operator">index("IncidentAdmin", $lo.ucapex)&gt;0 or index("SysAdmin", $lo.ucapex)&gt;0 or index("incident management", $lo.ucapex)&gt;0</condition>
+      <condition sctype="operator">index("IncidentAdmin", $lo.ucapex)&gt;0 or index("SysAdmin", $lo.ucapex)&gt;0 or index("incident management", $lo.ucapex)&gt;0</condition>
+      <condition sctype="operator">index("IncidentAdmin", $lo.ucapex)&gt;0 or index("SysAdmin", $lo.ucapex)&gt;0 or index("incident management", $lo.ucapex)&gt;0</condition>
+      <condition sctype="operator">index("IncidentAdmin", $lo.ucapex)&gt;0 or index("SysAdmin", $lo.ucapex)&gt;0 or index("incident management", $lo.ucapex)&gt;0</condition>
+      <condition sctype="operator">index("IncidentAdmin", $lo.ucapex)&gt;0 or index("SysAdmin", $lo.ucapex)&gt;0 or index("incident management", $lo.ucapex)&gt;0</condition>
+      <condition sctype="operator">index("IncidentAdmin", $lo.ucapex)&gt;0 or index("SysAdmin", $lo.ucapex)&gt;0 or index("incident management", $lo.ucapex)&gt;0</condition>
+      <condition sctype="operator">index("IncidentAdmin", $lo.ucapex)&gt;0 or index("SysAdmin", $lo.ucapex)&gt;0 or index("incident management", $lo.ucapex)&gt;0</condition>
+      <condition sctype="operator">index("IncidentAdmin", $lo.ucapex)&gt;0 or index("SysAdmin", $lo.ucapex)&gt;0 or index("incident management", $lo.ucapex)&gt;0</condition>
+      <condition sctype="operator">index("IncidentAdmin", $lo.ucapex)&gt;0 or index("SysAdmin", $lo.ucapex)&gt;0 or index("incident management", $lo.ucapex)&gt;0</condition>
+      <condition sctype="operator">index("IncidentAdmin", $lo.ucapex)&gt;0 or index("SysAdmin", $lo.ucapex)&gt;0 or index("incident management", $lo.ucapex)&gt;0</condition>
+    </condition>
+    <application sctype="array">
+      <application sctype="string">report.exerciser</application>
+      <application sctype="string">report.exerciser</application>
+      <application sctype="string">menu.manager</application>
+      <application sctype="string">report.exerciser</application>
+      <application sctype="string">report.exerciser</application>
+      <application sctype="string">report.exerciser</application>
+      <application sctype="string">report.exerciser</application>
+      <application sctype="string">report.exerciser</application>
+      <application sctype="string">report.exerciser</application>
+      <application sctype="string">report.exerciser</application>
+      <application sctype="string">report.exerciser</application>
+    </application>
+    <pname sctype="array">
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+    </pname>
+    <pvalue sctype="array">
+      <pvalue sctype="string">alert.status</pvalue>
+      <pvalue sctype="string">assignment.group</pvalue>
+      <pvalue sctype="string">INCIDENT MANAGEMENT</pvalue>
+      <pvalue sctype="string">problem.category.report</pvalue>
+      <pvalue sctype="string">excessive.reassignment</pvalue>
+      <pvalue sctype="string">document.no</pvalue>
+      <pvalue sctype="string">shift.change</pvalue>
+      <pvalue sctype="string">problem.response.analysis.component</pvalue>
+      <pvalue sctype="string">problem.response.analysis.vendor</pvalue>
+      <pvalue sctype="string">problem.response.analysis.assign</pvalue>
+      <pvalue sctype="string">problem.response.analysis.location</pvalue>
+    </pvalue>
+    <system NullValue="1" sctype="array">
+      <system NullValue="1" type="string"/>
+    </system>
+    <format.name NullValue="1" type="string"/>
+    <thread sctype="array">
+      <thread sctype="string"/>
+      <thread sctype="string"/>
+      <thread sctype="operator">gui()</thread>
+    </thread>
+    <sysmodcount type="decimal">5</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">05/13/05 05:17:16</sysmodtime>
+    <group NullValue="1" sctype="array">
+      <group NullValue="1" type="string"/>
+    </group>
+    <icon NullValue="1" sctype="array">
+      <icon NullValue="1" type="string"/>
+    </icon>
+  </record>
+</recordset>

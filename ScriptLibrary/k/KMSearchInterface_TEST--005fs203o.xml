@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;KMSearchInterface_TEST&quot;" recordid="KMSearchInterface_TEST">
+    <name type="string">KMSearchInterface_TEST</name>
+    <script type="string">print("Engine Name: " + system.library.KMSearchInterface.getEngineName());
+print("initializeEngine: " + system.library.KMSearchInterface.initializeEngine("&lt;SMSearchEngineConfiguration&gt;&lt;host&gt;localhost&lt;/host&gt;&lt;port&gt;8983&lt;/port&gt;&lt;/SMSearchEngineConfiguration&gt;"));
+print("configureIndex: " + system.library.KMSearchInterface.configureIndex("&lt;KMIndexConfiguration&gt;&lt;id type='string'/&gt;&lt;/KMIndexConfiguration&gt;"));
+print("createIndex: " + system.library.KMSearchInterface.createIndex("MyIndexName"));
+print("deleteIndex: " + system.library.KMSearchInterface.deleteIndex("MyIndexName"));
+print("openIndex: " + system.library.KMSearchInterface.openIndex("MyIndexName"));
+print("closeIndex: " + system.library.KMSearchInterface.closeIndex("MyIndexName"));
+print("addDocument: " + system.library.KMSearchInterface.addDocument("MyIndexName", "&lt;KMDOCUMENT&gt;TEST&lt;/KMDOCUMENT&gt;")); 
+print("deleteDocument: " + system.library.KMSearchInterface.deleteDocument("MyIndexName", "KM12345"));
+
+var statsarray = system.library.KMSearchInterface.getIndexStatistics("Knowledge_Library");
+var numRows = statsarray.length();
+for(var i=0; i &lt; numRows; i++)
+{
+	print("statsarray[" + i + "]: " + statsarray[i]);
+}
+
+var colls = new Datum();
+colls.setType(8);
+colls.push("Knowledge_Library");
+
+var fields = new Datum();
+fields.setType(8);
+fields = system.library.KMSearch.getHitListFields("Default");
+//searchIndexes(strQuery, strQueryType, strQueryFields, strStartDoc, strMaxDocsToRetrieve, strMaxDocsToSearch, aCollections, aFields, strFilterQueries)
+var hitarray = system.library.KMSearchInterface.searchIndexes("TEST QUERY", "standard", "", "1", "10", "200", colls, fields, "");
+
+numRows = hitarray.length();
+for(var i=0; i &lt; numRows; i++)
+{
+	print("hitarray[" + i + "]: " + hitarray[i]);
+}
+
+//test pingEngine
+var args = new Datum();
+args.setType(8);
+args.push("http://localhost:8983/solr");
+var pingResponse = system.library.KMSearchInterface.pingEngine(args);
+if(pingResponse == RC_SUCCESS)
+	print("pingResponse: SUCCESS");
+else
+	print("pingResponse: FAILED (rc="+pingResponse+")");
+
+
+print(system.library.KMSearchInterface.createJob("TEST", "&lt;kmknowledgebase&gt;&lt;name&gt;TEST&lt;/name&gt;&lt;/kmknowledgebase&gt;"));
+print(system.library.KMSearchInterface.deleteJob("TEST"));
+print(system.library.KMSearchInterface.startJob("&lt;jobinfo&gt;&lt;crawlhost&gt;hostname&lt;/crawlhost&gt;&lt;crawlport&gt;8080&lt;/crawlport&gt;&lt;crawlinstance&gt;crawlinstance&lt;/crawlinstance&gt;&lt;jobname&gt;Test_Job&lt;/jobname&gt;&lt;/jobinfo&gt;"));
+print(system.library.KMSearchInterface.stopJob("&lt;jobinfo&gt;&lt;crawlhost&gt;hostname&lt;/crawlhost&gt;&lt;crawlport&gt;8080&lt;/crawlport&gt;&lt;crawlinstance&gt;crawlinstance&lt;/crawlinstance&gt;&lt;jobname&gt;Test_Job&lt;/jobname&gt;&lt;/jobinfo&gt;"));
+print(system.library.KMSearchInterface.getJobStatus("TEST"));
+</script>
+    <package NullValue="1" type="string"/>
+    <sysmodtime type="dateTime">10/11/17 18:53:23</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">17</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;KMSearchUtils_TEST&quot;" recordid="KMSearchUtils_TEST">
+    <name type="string">KMSearchUtils_TEST</name>
+    <script type="string">var strHTML = "&lt;BODY&gt;&lt;TITLE&gt;HELLO WORLD&lt;/TITLE&gt;&lt;/BODY&gt;";
+print(system.library.KMSearchUtils.htmlToText(strHTML));
+
+var rc = system.library.KMSearchUtils.writeUtfFile("hello.html", strHTML);
+print(rc);</script>
+    <package NullValue="1" type="string"/>
+    <sysmodtime type="dateTime">01/29/10 07:18:05</sysmodtime>
+    <sysmoduser type="string">jantonecchia</sysmoduser>
+    <sysmodcount type="decimal">6</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

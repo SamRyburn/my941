@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ModuleStatus">
+  <record id="module=&quot;imTask&quot; and status=&quot;Cancelled&quot;" recordid="imTask - Cancelled">
+    <status type="string">Cancelled</status>
+    <sysmodtime type="dateTime">09/18/13 13:20:14</sysmodtime>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">shiji.shu</sysmoduser>
+    <module type="string">imTask</module>
+    <tablename type="string">imTask</tablename>
+    <sort.order type="decimal">7</sort.order>
+  </record>
+</recordset>

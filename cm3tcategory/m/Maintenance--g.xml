@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="cm3tcategory">
+  <record id="name=&quot;Maintenance&quot;" recordid="Maintenance">
+    <name mandatory="true" type="string">Maintenance</name>
+    <phases sctype="array">
+      <phases sctype="string">Maintenance</phases>
+    </phases>
+    <avail.cond mandatory="true" type="boolean">true</avail.cond>
+    <active type="boolean">true</active>
+    <description type="string">General Maintenance Changes</description>
+    <assign.number type="boolean">false</assign.number>
+    <request.phases sctype="array">
+      <request.phases sctype="string">Change Implementation</request.phases>
+      <request.phases sctype="string">Change Assessment &amp; Planning</request.phases>
+    </request.phases>
+    <is.parent NullValue="1" type="boolean"/>
+    <sysmodcount type="decimal">2</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">12/07/14 20:39:48</sysmodtime>
+    <company NullValue="1" type="string"/>
+    <default.template NullValue="1" type="string"/>
+    <workflow type="string">Maintenance</workflow>
+  </record>
+</recordset>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="smtzdst">
+  <record id="tzname=&quot;Europe/Eastern&quot; and dstyear=1971" recordid="">
+    <tzname type="string">Europe/Eastern</tzname>
+    <dstyear type="decimal">1971</dstyear>
+    <dstbegin type="dateTime">03/27/71 20:00:00</dstbegin>
+    <dstend type="dateTime">09/25/71 20:00:00</dstend>
+    <isdst type="decimal">1</isdst>
+  </record>
+</recordset>

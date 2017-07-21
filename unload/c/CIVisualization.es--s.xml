@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="unload">
+  <record id="name=&quot;CIVisualization.es&quot;" recordid="CIVisualization.es">
+    <name mandatory="true" type="string">CIVisualization.es</name>
+    <unload type="boolean">true</unload>
+    <purge type="boolean">false</purge>
+    <record sctype="array">
+      <record sctype="structure">
+        <filename type="string">Object</filename>
+        <query type="string">file.name#"civis"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">Process</filename>
+        <query type="string">process="launch.decorator.wizard"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">Process</filename>
+        <query type="string">process="launch.decorator.wizard2"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">Process</filename>
+        <query type="string">process#"civis"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">Process</filename>
+        <query type="string">process="am.visualize.ci"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">Process</filename>
+        <query type="string">process="test.image"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">Process</filename>
+        <query type="string">process#"launch.decorator.field.selector"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">Process</filename>
+        <query type="string">process="init.decorator.view"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">Process</filename>
+        <query type="string">process="decorator.search.init"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">Process</filename>
+        <query type="string">process="cm.visualize.ci"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">RAD</filename>
+        <query type="string">application.name="us.launch.civisual"</query>
+        <datamap type="boolean">true</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">RAD</filename>
+        <query type="string">application.name="civiz.parse.eval.helper"</query>
+        <datamap type="boolean">true</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">ScriptLibrary</filename>
+        <query type="string">name#"ciVis"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">ScriptLibrary</filename>
+        <query type="string">name#"ciViz"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">ScriptLibrary</filename>
+        <query type="string">name="testAddCIVisData"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">States</filename>
+        <query type="string">state="decorator.view"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">States</filename>
+        <query type="string">state="decorator.list"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">States</filename>
+        <query type="string">state="decorator.search"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">States</filename>
+        <query type="string">state#"civ"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">civisualizationadmin</filename>
+        <query type="string">true</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">civisualizationbounds</filename>
+        <query type="string">true</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">civisualizationcat</filename>
+        <query type="string">true</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">civisualizationdecorator</filename>
+        <query type="string">true</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">civisualizationdevice</filename>
+        <query type="string">true</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">civisualizationlabel</filename>
+        <query type="string">true</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">civisualizationline</filename>
+        <query type="string">true</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">civisualizationrelationship</filename>
+        <query type="string">true</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">civisualizationshape</filename>
+        <query type="string">true</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">dbdict</filename>
+        <query type="string">name#"civisualization"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">displayscreen</filename>
+        <query type="string">screen.id="decorator.view"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">displayscreen</filename>
+        <query type="string">screen.id="decorator.search"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">displayscreen</filename>
+        <query type="string">screen.id="am.display.joinfile"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">displayscreen</filename>
+        <query type="string">screen.id#"civis"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">extaccess</filename>
+        <query type="string">service.name#"CIVis"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">format</filename>
+        <query type="string">name#"civ" and syslanguage="es"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">format</filename>
+        <query type="string">name="menu.gui.civisual" and syslanguage="es"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">format</filename>
+        <query type="string">name="menu.gui.icm" and syslanguage="es"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">format</filename>
+        <query type="string">name="chm.prompt.ci" and syslanguage="es"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">help</filename>
+        <query type="string">file.name#"civis" and syslanguage="es"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">menu</filename>
+        <query type="string">name="CM MAIN"</query>
+        <datamap type="boolean">true</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">menu</filename>
+        <query type="string">name="CI Visualization Admin"</query>
+        <datamap type="boolean">true</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">scmessage</filename>
+        <query type="string">class="civiz" and syslanguage="es"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">scmessage</filename>
+        <query type="string">class="tablename" and message.id#"civis" and syslanguage="es"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">scmessage</filename>
+        <query type="string">class="am" and message.id&gt;70 and message.id&lt;74 and syslanguage="es"</query>
+        <datamap NullValue="1" type="boolean"/>
+      </record>
+      <record sctype="structure">
+        <filename type="string">unload</filename>
+        <query type="string">name#"CIVisualization"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">wizard</filename>
+        <query type="string">name#"CIV"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">wizard</filename>
+        <query type="string">name#"CHM Prompt"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+    </record>
+    <protected.formats NullValue="1" sctype="array">
+      <protected.formats NullValue="1" type="string"/>
+    </protected.formats>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">02/02/07 08:14:26</sysmodtime>
+  </record>
+</recordset>

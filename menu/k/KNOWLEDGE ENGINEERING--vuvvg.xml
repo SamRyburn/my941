@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="menu">
+  <record id="name=&quot;KNOWLEDGE ENGINEERING&quot;" recordid="KNOWLEDGE ENGINEERING">
+    <name type="string">KNOWLEDGE ENGINEERING</name>
+    <option sctype="array">
+      <option sctype="decimal">1</option>
+      <option sctype="decimal">2</option>
+      <option sctype="decimal">3</option>
+      <option sctype="decimal">4</option>
+    </option>
+    <description sctype="array">
+      <description sctype="string">Generate Knowledge Base</description>
+      <description sctype="string">Solution Candidates</description>
+      <description sctype="string">Administration Menu</description>
+      <description sctype="string">Edit Knowledge Records</description>
+    </description>
+    <command sctype="array">
+      <command sctype="string">gen core</command>
+      <command sctype="string">sol cans</command>
+      <command sctype="string"/>
+      <command sctype="string">edit gkn</command>
+    </command>
+    <condition sctype="array">
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0</condition>
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0</condition>
+      <condition sctype="boolean">true</condition>
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0</condition>
+    </condition>
+    <application sctype="array">
+      <application sctype="string">ke.gencore.verify</application>
+      <application sctype="string">se.search.engine</application>
+      <application sctype="string">menu.manager</application>
+      <application sctype="string">database</application>
+    </application>
+    <pname sctype="array">
+      <pname sctype="string"/>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+    </pname>
+    <pvalue sctype="array">
+      <pvalue sctype="string"/>
+      <pvalue sctype="string">protocore</pvalue>
+      <pvalue sctype="string">ADMINISTRATION MENU</pvalue>
+      <pvalue sctype="string">core</pvalue>
+    </pvalue>
+    <system NullValue="1" sctype="array">
+      <system NullValue="1" type="string"/>
+    </system>
+    <format.name NullValue="1" type="string"/>
+    <thread sctype="array">
+      <thread sctype="string"/>
+      <thread sctype="string"/>
+      <thread sctype="operator">gui()</thread>
+    </thread>
+    <sysmodcount type="decimal">9</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">04/26/05 04:34:48</sysmodtime>
+    <group NullValue="1" sctype="array">
+      <group NullValue="1" type="string"/>
+    </group>
+    <icon NullValue="1" sctype="array">
+      <icon NullValue="1" type="string"/>
+    </icon>
+  </record>
+</recordset>

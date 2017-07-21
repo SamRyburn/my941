@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="Process">
+  <record id="process=&quot;kmdocument.search.approved&quot;" recordid="kmdocument.search.approved">
+    <process type="string">kmdocument.search.approved</process>
+    <pre.expressions NullValue="1" sctype="array">
+      <pre.expressions NullValue="1" type="expression"/>
+    </pre.expressions>
+    <post.expressions sctype="array">
+      <post.expressions sctype="operator">$L.exit="display"</post.expressions>
+    </post.expressions>
+    <rad sctype="array">
+      <rad sctype="structure">
+        <application type="string">se.search.engine</application>
+        <names sctype="array">
+          <names sctype="string">text</names>
+          <names sctype="string">query</names>
+          <names sctype="string">types</names>
+        </names>
+        <values sctype="array">
+          <values sctype="string">$L.into.object</values>
+          <values sctype="string">$L.queryStr</values>
+          <values sctype="string">$L.into.format</values>
+        </values>
+        <rad.condition type="globalVar">$haveresults</rad.condition>
+        <pre.rad.expressions sctype="array">
+          <pre.rad.expressions sctype="operator">$L.into.format="kmdocument.list"</pre.rad.expressions>
+          <pre.rad.expressions sctype="operator">$L.into.object="kmdocument"</pre.rad.expressions>
+        </pre.rad.expressions>
+        <post.rad.expressions sctype="string"/>
+      </rad>
+    </rad>
+    <next.process NullValue="1" sctype="array">
+      <next.process NullValue="1" type="string"/>
+    </next.process>
+    <process.condition NullValue="1" sctype="array">
+      <process.condition NullValue="1" type="boolean"/>
+    </process.condition>
+    <run.standard NullValue="1" type="boolean"/>
+    <sysmodcount type="decimal">41</sysmodcount>
+    <sysmoduser type="string">Zhang, Ming-Di</sysmoduser>
+    <sysmodtime type="dateTime">05/14/13 15:27:08</sysmodtime>
+    <save.cursor.position NullValue="1" type="boolean"/>
+    <run.in.window NullValue="1" type="boolean"/>
+    <window.name NullValue="1" type="string"/>
+    <javascript.pre type="string">	vars.$haveresults = false;
+	vars.$addone = false;
+	var searchAppDocs = new SCFile("kmdocument");
+	vars.$L_queryStr = "true";
+
+	if (vars.$L_file.id != null)
+		vars.$L_queryStr += " and id = \""+vars.$L_file.id+"\"";
+
+	if (vars.$L_file.doctype != null)
+		vars.$L_queryStr += " and doctype = \""+vars.$L_file.doctype+"\"";
+
+	if (vars.$L_file.locale != null)
+		vars.$L_queryStr += " and locale = \""+vars.$L_file.locale+"\"";
+
+	if (vars.$L_file.title != null)
+		vars.$L_queryStr += " and title like \"*"+vars.$L_file.title+"*\"";
+
+	if (vars.$L_file.summary != null)
+		vars.$L_queryStr += " and summary like \"*"+vars.$L_file.summary+"*\"";
+
+	/**
+*	add for 87717, generate query string for published kmdocument searching
+*	Zhang, Ming-Di
+*	2012/11/14
+*/
+	if (system.functions.index("SysAdmin", vars.$lo_ucapex) &gt; 0 ||
+	    system.functions.index("KMAdmin", vars.$lo_ucapex) &gt; 0 ) {
+		vars.$L_queryStr += " and status isin {\"external\",\"internal\"}";
+	} else if (vars.$L_file.status == null || vars.$L_file.status == "all") {
+		//vars.$L_queryStr += " and (status=\"external\" or status=\"internal\")";	
+		vars.$L_queryStr += " and ( ( status=\"external\" ";
+		vars.$L_queryStr += lib.KMSecurity.getCatsQueryForDocument(vars.$G_viewext);
+		vars.$L_queryStr += ") or ";
+		vars.$L_queryStr += " (status=\"internal\"";
+		vars.$L_queryStr += lib.KMSecurity.getCatsQueryForDocument(vars.$G_viewintext);
+		vars.$L_queryStr += ") )";
+	} else if (vars.$L_file.status == "external") { 
+		//vars.$L_queryStr += " and status=\"external\"";
+		//vars.$L_queryStr += " and ( status=\"external\" and categories # " + system.functions.str(vars.$G_viewext) + ")";
+		vars.$L_queryStr += " and ( status=\"external\" ";
+		vars.$L_queryStr += lib.KMSecurity.getCatsQueryForDocument(vars.$G_viewext);
+		vars.$L_queryStr += ") ";
+	} else if (vars.$L_file.status == "internal") {
+		//vars.$L_queryStr += " and ( status=\"internal\" and categories # " + system.functions.str(vars.$G_viewext) + ")";
+		//vars.$L_queryStr += " and status=\"internal\"";
+		vars.$L_queryStr += " and ( status=\"internal\" ";
+		vars.$L_queryStr += lib.KMSecurity.getCatsQueryForDocument(vars.$G_viewintext);
+		vars.$L_queryStr += ") ";
+	}
+
+	if (vars.$L_file.author != null)
+		vars.$L_queryStr += " and author = \""+vars.$L_file.author+"\"";
+		
+	var number_categories = system.functions.lng(system.functions.denull(vars.$L_file.categories));
+	if (number_categories &gt; 0)
+	{
+		var connector = " and (";
+		for (var i = 0; i &lt; number_categories; ++i)
+		{
+			if (vars.$L_file.categories[i] != null)
+			{
+				vars.$L_queryStr += connector + "categories # \"" + vars.$L_file.categories[i] + "\"";
+				connector = " or ";				
+			}
+		}
+		vars.$L_queryStr += ")";	
+	}
+	//print ("$L.queryStr  is " + vars.$L_queryStr );
+	
+	var rc = searchAppDocs.doSelect(vars.$L_queryStr);
+	if( rc == RC_SUCCESS )
+	{
+		vars.$haveresults = true;
+		vars.$L_mode = "display";
+	}
+	else
+		print(system.functions.scmsg(166, "km")); // No approved documents found
+</javascript.pre>
+    <javascript.post NullValue="1" type="string"/>
+    <baseMethod NullValue="1" type="string"/>
+  </record>
+</recordset>

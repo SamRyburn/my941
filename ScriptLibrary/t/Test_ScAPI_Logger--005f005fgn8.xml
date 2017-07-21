@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;Test_ScAPI_Logger&quot;" recordid="Test_ScAPI_Logger">
+    <name type="string">Test_ScAPI_Logger</name>
+    <script type="string">/*
+ * Unit test for Test_ScAPI_WebService_Interface
+ */
+
+function Test_ScAPI_Logger() {}
+
+Test_ScAPI_Logger.prototype = {
+	debug: 0,
+	info: 1,
+	warn: 2,
+	error:3,
+	log: null,
+    setup: function () {
+    	this.log = lib.ScAPI_Logger.log(); 	
+    },
+
+    teardown:function () {
+    	this.log = null;
+    },
+
+   	testIsDebug: function () {
+   		
+   		this.log.setLogLevel(this.debug);
+ 		lib.SMTFCore.assertTrue(this.log.isDebug());
+ 		
+ 		this.log.setLogLevel(this.info);
+ 		lib.SMTFCore.assertTrue(!this.log.isDebug());
+ 		
+ 		this.log.setLogLevel(this.warn);
+ 		lib.SMTFCore.assertTrue(!this.log.isDebug());
+ 		
+ 		this.log.setLogLevel(this.error);
+ 		lib.SMTFCore.assertTrue(!this.log.isDebug());
+   	},
+   	
+   	testIsInfo: function() {
+   		this.log.setLogLevel(this.debug);
+   		
+ 		lib.SMTFCore.assertTrue(this.log.isInfo());
+ 		
+ 		this.log.setLogLevel(this.info);
+ 		lib.SMTFCore.assertTrue(this.log.isInfo());
+ 		
+ 		this.log.setLogLevel(this.warn);
+ 		lib.SMTFCore.assertTrue(!this.log.isInfo());
+ 		
+ 		this.log.setLogLevel(this.error);
+ 		lib.SMTFCore.assertTrue(!this.log.isInfo());
+   	},
+   	
+   	testIsWarn: function() {
+   	
+   		this.log.setLogLevel(this.debug);
+ 		lib.SMTFCore.assertTrue(this.log.isWarn());
+ 		
+ 		this.log.setLogLevel(this.info);
+ 		lib.SMTFCore.assertTrue(this.log.isWarn());
+ 		
+ 		this.log.setLogLevel(this.warn);
+ 		lib.SMTFCore.assertTrue(this.log.isWarn());
+ 		
+ 		this.log.setLogLevel(this.error);
+ 		lib.SMTFCore.assertTrue(!this.log.isWarn());
+   	},
+   	
+   	testIsError: function() {
+   		this.log.setLogLevel(this.debug);
+ 		lib.SMTFCore.assertTrue(this.log.isError());
+ 		
+ 		this.log.setLogLevel(this.info);
+ 		lib.SMTFCore.assertTrue(this.log.isError());
+ 		
+ 		this.log.setLogLevel(this.warn);
+ 		lib.SMTFCore.assertTrue(this.log.isError());
+ 		
+ 		this.log.setLogLevel(this.error);
+ 		lib.SMTFCore.assertTrue(this.log.isError());
+   	}
+   	
+   
+
+}</script>
+    <package type="string">ScAPI</package>
+    <sysmodtime type="dateTime">11/15/09 15:19:44</sysmodtime>
+    <sysmoduser type="string">xingjia</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

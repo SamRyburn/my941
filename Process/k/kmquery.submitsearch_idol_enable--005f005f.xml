@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="Process">
+  <record id="process=&quot;kmquery.submitsearch_idol_enable&quot;" recordid="kmquery.submitsearch_idol_enable">
+    <process type="string">kmquery.submitsearch_idol_enable</process>
+    <pre.expressions sctype="array">
+      <pre.expressions sctype="operator">$L.passedquery=null($queryfile)</pre.expressions>
+      <pre.expressions sctype="operator">$newsearch=nullsub($newsearch, true)</pre.expressions>
+    </pre.expressions>
+    <post.expressions sctype="array">
+      <post.expressions sctype="operator">$L.exit="display"</post.expressions>
+      <post.expressions sctype="operator">if (not  (null($queryfile))) then cleanup($queryfile)</post.expressions>
+      <post.expressions sctype="operator">$L.format="kmknowledgebase.search.g"</post.expressions>
+      <post.expressions sctype="operator">cleanup($newsearch)</post.expressions>
+      <post.expressions sctype="operator">cursor.field.name.set("FocusField")</post.expressions>
+    </post.expressions>
+    <rad NullValue="1" sctype="array">
+      <rad sctype="structure">
+        <application NullValue="1" type="string"/>
+        <names NullValue="1" sctype="array">
+          <names NullValue="1" type="string"/>
+        </names>
+        <values NullValue="1" sctype="array">
+          <values NullValue="1" type="string"/>
+        </values>
+        <rad.condition NullValue="1" type="boolean"/>
+        <pre.rad.expressions NullValue="1" sctype="array">
+          <pre.rad.expressions NullValue="1" type="expression"/>
+        </pre.rad.expressions>
+        <post.rad.expressions NullValue="1" sctype="array">
+          <post.rad.expressions NullValue="1" type="expression"/>
+        </post.rad.expressions>
+      </rad>
+    </rad>
+    <next.process NullValue="1" sctype="array">
+      <next.process NullValue="1" type="string"/>
+    </next.process>
+    <process.condition NullValue="1" sctype="array">
+      <process.condition NullValue="1" type="boolean"/>
+    </process.condition>
+    <run.standard NullValue="1" type="boolean"/>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:01:04</sysmodtime>
+    <save.cursor.position NullValue="1" type="boolean"/>
+    <run.in.window NullValue="1" type="boolean"/>
+    <window.name NullValue="1" type="string"/>
+    <javascript.pre type="string">var _ = lib.Underscore.require(),
+    IDOLKMQueryFactory = lib.IDOLKMQueryFactory.require();
+
+var fKMQuery = vars.$L_file,
+    clientType = vars.$G_client_type;
+
+var IDOLKMQuery = IDOLKMQueryFactory.create(clientType, fKMQuery);
+var result = IDOLKMQuery.search();
+if (vars.$G_client_type !== "mobile") {
+	var html = result.html, 
+    	pagination = result.page;
+
+	var currentPage = pagination.currentPage,
+    	lastPage = pagination.lastPage,
+    	total = pagination.total;
+
+	vars.$L_currentpage = currentPage;
+	vars.$L_lastpage = lastPage;
+	vars.$L_pageXofY = funcs.scmsg(201, "km", [currentPage, lastPage]);
+	vars.$L_showpager = (total &gt; 0);
+	vars.$L_showprevious = (currentPage &gt; 1);
+	vars.$L_shownext = (currentPage &lt; lastPage);
+
+	vars.$allwords = fKMQuery.allwords;
+	vars.$exactphrase = fKMQuery.exactphrase;
+	vars.$anywords = fKMQuery.anywords;
+	
+	fKMQuery.results = html;
+} else {
+	vars.$L_file.results = result;
+}
+
+var query = _.compact([fKMQuery.submitstring, fKMQuery.filterqueries]).join(' ');
+lib.KMSearchHistory.addSearchHistory(query, total, fKMQuery.contexttag);
+
+</javascript.pre>
+    <javascript.post type="string">vars.$G_advsearch=false;</javascript.post>
+    <baseMethod NullValue="1" type="string"/>
+  </record>
+</recordset>

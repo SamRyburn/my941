@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;ocmq.open.sap.quote.g&quot;" recordid="en - ocmq.open.sap.quote.g">
+    <name mandatory="true" type="string">ocmq.open.sap.quote.g</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">1</column>
+        <length type="decimal">78</length>
+        <window type="decimal">17</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">NoteBook;Name=NoteBook1	Pages=Request Mgmt Quote	Height=34	Name=NoteBook1	Width=156	X=0	Y=5		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">4</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Request Mgmt Quote</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">page;Name=page2	Height=1	Name=page2	Width=7	X=0	Y=0	Caption=Request Mgmt Quote		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">2</column>
+        <length type="decimal">15</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Requestor Data</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Requestor Data	Name=Label3	ForeColor=0	Height=2	Name=Label3	Width=30	X=2	Y=0		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">2</column>
+        <length type="decimal">15</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Name:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Name:	Name=Label4	ForeColor=0	Height=2	Name=Label4	Width=30	X=2	Y=3		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">17</column>
+        <length type="decimal">19</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">requestor.name</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Fill;Name=Fill5	ArrayLength=1	Height=2	Name=Fill5	FillButtonID=9	ThirdButtonID=8	Mandatory=1	ComboButtonVisible=0	Width=38	X=32	Y=3		Input=requestor.name	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">40</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Ship to Data</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Ship to Data	Name=Label6	ForeColor=0	Height=2	Name=Label6	Width=36	X=78	Y=3		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">2</column>
+        <length type="decimal">15</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Department:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Department:	Name=Label7	ForeColor=0	Height=2	Name=Label7	Width=30	X=2	Y=5		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">17</column>
+        <length type="decimal">19</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">requestor.dept</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text8	Height=2	Name=Text8	Width=38	X=32	Y=5		Input=requestor.dept	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">40</column>
+        <length type="decimal">23</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">What is the shipping location ID?</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=What is the shipping location ID?	Name=Label9	ForeColor=0	Height=2	Name=Label9	Width=46	X=78	Y=5		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">63</column>
+        <length type="decimal">11</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">ship.to.code</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Fill;ButtonBitmap=4	Name=Fill10	ArrayLength=1	ButtonID=7	Height=2	Name=Fill10	FillButtonID=7	ThirdButtonID=8	ComboButtonVisible=0	FillButtonBitmap=4	Width=22	X=124	Y=5		Input=ship.to.code	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">2</column>
+        <length type="decimal">14</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Company:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Company:	Name=Label11	ForeColor=0	Height=2	Name=Label11	Width=28	X=2	Y=7		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4352</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">17</column>
+        <length type="decimal">19</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">company</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Fill;Name=Fill12	ArrayLength=1	Height=2	Name=Fill12	FillButtonID=9	ThirdButtonID=8	CaseConversion=1	ComboButtonVisible=0	TabStop=5	Width=38	X=32	Y=7		Input=company	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">68</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">40</column>
+        <length type="decimal">7</length>
+        <window type="decimal">5</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">ship.to.code</input>
+        <output NullValue="1" type="string"/>
+        <format type="string">ocmq.open.quote.sub</format>
+        <property type="string">SubFormat;Name=SubFormat13	VirtualJoin=1	Height=10	Name=SubFormat13	ReadOnly=1	Format=ocmq.open.quote.sub	Width=14	X=78	Y=8		Input=ship.to.code	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">2</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Required date:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Required date:	Name=Label14	ForeColor=0	Height=2	Name=Label14	Width=26	X=2	Y=9		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">17</column>
+        <length type="decimal">19</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">requested.date</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text15	Height=2	Name=Text15	MaxChars=19	Width=38	X=32	Y=9		Input=requested.date	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">2</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Valid to date:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Valid to date:	Name=Label16	ForeColor=0	Height=2	Name=Label16	Width=26	X=2	Y=11		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">17</column>
+        <length type="decimal">19</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">erp.valid.to</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text17	Height=2	Name=Text17	Mandatory=1	MaxChars=19	Width=38	X=32	Y=11		Input=erp.valid.to	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">2</column>
+        <length type="decimal">14</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Sales Organization:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Sales Organization:	Name=Label18	ForeColor=0	Height=2	Name=Label18	Width=28	X=2	Y=13		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">17</column>
+        <length type="decimal">8</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">erp.sales.org</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Fill;Name=Fill19	ArrayLength=1	Height=2	Name=Fill19	FillButtonID=9	ThirdButtonID=8	Mandatory=1	ComboButtonVisible=0	Width=16	X=32	Y=13		Input=erp.sales.org	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">2</column>
+        <length type="decimal">14</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Distribution Channel:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Distribution Channel:	Name=Label20	ForeColor=0	Height=2	Name=Label20	Width=28	X=2	Y=15		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">17</column>
+        <length type="decimal">8</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">erp.dist.channel</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Fill;Name=Fill21	ArrayLength=1	Height=2	Name=Fill21	FillButtonID=9	ThirdButtonID=8	Mandatory=1	ComboButtonVisible=0	Width=16	X=32	Y=15		Input=erp.dist.channel	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">2</column>
+        <length type="decimal">14</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Division:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Division:	Name=Label22	ForeColor=0	Height=2	Name=Label22	Width=28	X=2	Y=17		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">17</column>
+        <length type="decimal">8</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">erp.division</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Fill;Name=Fill23	ArrayLength=1	Height=2	Name=Fill23	FillButtonID=9	ThirdButtonID=8	Mandatory=1	ComboButtonVisible=0	Width=16	X=32	Y=17		Input=erp.division	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">10</line>
+        <column type="decimal">2</column>
+        <length type="decimal">14</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Sold-to Party:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Sold-to Party:	Name=Label24	ForeColor=0	Height=2	Name=Label24	Width=28	X=2	Y=19		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">10</line>
+        <column type="decimal">17</column>
+        <length type="decimal">8</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">erp.sold.to</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Fill;Name=Fill25	ArrayLength=1	Height=2	Name=Fill25	FillButtonID=9	ThirdButtonID=8	Mandatory=1	ComboButtonVisible=0	Width=16	X=32	Y=19		Input=erp.sold.to	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">12</line>
+        <column type="decimal">2</column>
+        <length type="decimal">54</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Please describe in general terms the item(s) you are requesting:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Please describe in general terms the item(s) you are requesting:	Name=Label26	ForeColor=0	Height=2	Name=Label26	Width=108	X=2	Y=22		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">512</flags>
+        <line type="decimal">13</line>
+        <column type="decimal">2</column>
+        <length type="decimal">75</length>
+        <window type="decimal">3</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">description</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">MultiText;Name=MultiText27	Height=6	Name=MultiText27	Width=149	X=2	Y=24		Input=description	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">1</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">end;X=1	Y=1	Height=2	Width=2	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">ffaegh</editor>
+    <last.update type="dateTime">08/20/07 03:45:09</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">14</sysmodcount>
+    <sysmoduser type="string">ffaegh</sysmoduser>
+    <sysmodtime type="dateTime">08/20/07 03:45:09</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

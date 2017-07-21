@@ -1,0 +1,537 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;sd.interaction.logging.mobile&quot;" recordid="en - sd.interaction.logging.mobile">
+    <name mandatory="true" type="string">sd.interaction.logging.mobile</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">81</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Detail</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;ArrayLength=0	canCollapse=0	floatGroup=1	Height=58	Name=	isExpanded=1	Width=162	X=0	Y=-1	Caption=Detail		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Interaction ID:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Interaction ID:	Name=	?Caption=	ForeColor=0	Height=2	Name=label1410332983105	labelfor=	Width=25			X=1	Y=1		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">14</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">incident.id</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=	Height=2	Name=input1410332983173	ReadOnly=1	TabStop=-1	Width=40			X=27	Y=1		Input=incident.id	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">1</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Phase:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Phase:	Name=	Bold=0	?Visible=	ForeColor=0	Height=2	Name=label1410332997799	Width=25			X=1	Y=3		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4100</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">14</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">current.phase</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComFill;Name=	dataType=string	?ValueList=	Height=2	Name=comfill1410332997863	FillButtonID=9	ThirdButtonID=8	ReadOnly=1	ComboButtonVisible=0	FillButtonVisible=0	ThirdButtonVisible=0	Width=40			X=27	Y=3		Input=current.phase	DisplayList=$G.sdWfPhases.local	ValueList=$G.sdWfPhases	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">1</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Status:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Status:	Name=	?Visible=	ForeColor=0	Height=2	Name=label1410332997976	Width=25			X=1	Y=5		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">14</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">open</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;BoxLines=	Name=	ArrayLength=1	Height=2	Name=select1410332998068	Mandatory=0	ReadOnly=0	SelectOnly=1	TabStop=4	Width=40			X=27	Y=5		Input=open	DisplayList=$Interaction.statusDisplayList	ValueList=$Interaction.statusValueList	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">1</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Approval Status:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Approval Status:	Name=	Bold=0	?Visible=	ForeColor=0	Height=2	Name=label1410332998243	Width=25			X=1	Y=7		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">14</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">approval.status</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=	AccessibleDescription=	Height=2	Name=input1410332998402	ReadOnly=1	TabStop=-1	Width=40			X=27	Y=7		Input=approval.status	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">1</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Contact:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Contact:	Name=	Height=2	Name=label1410333018092	Width=25			X=1	Y=9		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">14</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">callback.contact</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComFill;Name=	PopupSubformEnabled=1	PopupSubformFormat=popup.contact.info	PopupSubformInput=callback.contact	ArrayLength=1	autocomplete=1	?%opupSubformEnabled=true	Height=2	Name=comfill1410333018141	FillButtonID=9	ThirdButtonID=8	Mandatory=1	ComboButtonVisible=0	ThirdButtonBitmap=4	ThirdButtonVisible=1	TabStop=5	Width=40			X=27	Y=9		Input=callback.contact	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">1</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Service Recipient:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Service Recipient:	Name=	?Caption=	ForeColor=0	Height=2	Name=label1410333018273	labelfor=	Width=25			X=1	Y=11		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4352</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">14</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">contact.name</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComFill;Name=	PopupSubformEnabled=1	PopupSubformFormat=popup.contact.info	PopupSubformInput=contact.name	ArrayLength=1	autocomplete=1	?%opupSubformEnabled=true	?ReadOnly=	Height=2	Name=comfill1410333018389	FillButtonID=9	ThirdButtonID=8	Mandatory=1	CaseConversion=1	ComboButtonVisible=0	ThirdButtonBitmap=4	TabStop=2	Width=40			X=27	Y=11		Input=contact.name	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">68</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">1</column>
+        <length type="decimal">36</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">callback.contact</input>
+        <output NullValue="1" type="string"/>
+        <format type="string">sd.interaction.subform.location</format>
+        <property type="string">SubFormat;DisplayUsingTable=1	Name=	VirtualJoin=1	ArrayLength=1	Height=2	Name=subview1410333018819	ReadOnly=1	Format=sd.interaction.subform.location	Width=71			X=1	Y=13		Input=callback.contact	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">1</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Notify By:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Notify By:	Name=	ForeColor=0	Height=2	Name=label1410333018994	labelfor=	Width=25			X=1	Y=15		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">8</line>
+        <column type="decimal">14</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">callback.type</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;BoxLines=	Name=	ArrayLength=1	Height=2	Name=select1410333019227	Mandatory=1	SelectOnly=1	TabStop=4	Width=40			X=27	Y=15		Input=callback.type	DisplayList=E-mail;Telephone;None	ValueList=E-mail;Telephone;None	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">1</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Category:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Category:	Name=	ForeColor=0	Height=2	Name=label1410333042329	labelfor=	Visible=1	Width=25			X=1	Y=17		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4100</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">14</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">category</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComFill;Name=	dataType=string	?Caption=	?DisplayList=	?ValueList=	Height=2	Name=comfill1410333042464	FillButtonID=9	ThirdButtonID=8	ReadOnly=1	ComboButtonVisible=0	FillButtonVisible=0	ThirdButtonVisible=0	Width=40			X=27	Y=17		Input=category	DisplayList=$G.sdCategories.local	ValueList=$G.sdCategories	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">10</line>
+        <column type="decimal">1</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Subcategory:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Subcategory:	Name=	ForeColor=0	Height=2	Name=label1410333042619	labelfor=	Visible=1	Width=25			X=1	Y=19		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">10</line>
+        <column type="decimal">14</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">subcategory</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComFill;Name=	ArrayLength=1	autocomplete=1	?Mandatory=	Height=2	Name=comfill1410333042758	FillButtonID=9	ThirdButtonID=8	Mandatory=0	ComboButtonVisible=0	ThirdButtonBitmap=4	ThirdButtonVisible=1	TabStop=5	Width=40			X=27	Y=19		Input=subcategory	DisplayList=$G.sdSubcategories.local	ValueList=$G.sdSubcategories	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">11</line>
+        <column type="decimal">1</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Area:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Area:	Name=	ForeColor=0	Height=2	Name=label1410333042953	Width=25			X=1	Y=21		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">11</line>
+        <column type="decimal">14</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">product.type</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComFill;Name=	ArrayLength=1	autocomplete=1	?ValueList=	Height=2	Name=comfill1410333043157	FillButtonID=9	ThirdButtonID=8	Mandatory=0	ComboButtonVisible=0	Data Changed Event=0	ThirdButtonBitmap=4	ThirdButtonVisible=1	TabStop=5	Width=40			X=27	Y=21		Input=product.type	DisplayList=$G.sdAreas.local	ValueList=$G.sdAreas	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">12</line>
+        <column type="decimal">1</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Affected Service:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Affected Service:	Name=	ForeColor=0	Height=2	Name=label1410333043416	labelfor=	Visible=1	Width=25			X=1	Y=23		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">12</line>
+        <column type="decimal">14</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">affected.item</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComFill;Name=	ArrayLength=1	autocomplete=1	?Mandatory=[category]&lt;&gt;"service catalog" &amp; [source.service]&lt;&gt;"support catalog"	Height=2	Name=comfill1410333043687	FillButtonID=9	ThirdButtonID=8	Mandatory=1	ComboButtonVisible=0	ThirdButtonBitmap=4	ThirdButtonVisible=1	TabStop=5	Width=40			X=27	Y=23		Input=affected.item	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">13</line>
+        <column type="decimal">1</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Affected CI:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Affected CI:	Name=	?FontIncrease=	?Visible=	ForeColor=0	Height=2	Name=label1410333044012	labelfor=	Visible=1	Width=25			X=1	Y=25		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">13</line>
+        <column type="decimal">14</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">logical.name</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComFill;Name=	PopupSubformEnabled=1	PopupSubformFormat=popup.ci.info	PopupSubformInput=logical.name	ArrayLength=1	autocomplete=1	?Caption=	?%opupSubformEnabled=true	Height=2	Name=comfill1410333044356	FillButtonID=9	ThirdButtonID=8	ComboButtonVisible=0	ThirdButtonBitmap=4	ThirdButtonVisible=1	TabStop=6	Width=40			X=27	Y=25		Input=logical.name	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">14</line>
+        <column type="decimal">1</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Impact:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Impact:	Name=	Height=2	Name=label1410333044754	labelfor=ImpactScope	Width=25			X=1	Y=27		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">14</line>
+        <column type="decimal">14</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">initial.impact</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;BoxLines=3	Name=	Height=2	Name=select1410333045165	Mandatory=1	SelectOnly=1	Width=40			X=27	Y=27		Input=initial.impact	DisplayList=$G.init.impact.disp	ValueList=$G.init.impact	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">15</line>
+        <column type="decimal">1</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Urgency:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Urgency:	Name=	ForeColor=0	Height=2	Name=label1410333046150	Visible=1	Width=25			X=1	Y=29		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">15</line>
+        <column type="decimal">14</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">severity</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;BoxLines=4	Name=	Height=2	Name=select1410333045644	Mandatory=1	SelectOnly=1	Width=40			X=27	Y=29		Input=severity	DisplayList=$G.urgency.disp	ValueList=$G.urgency	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">16</line>
+        <column type="decimal">1</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Folder:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Folder:	Name=	?Visible=[$G.folderEntitlement]=true	ForeColor=0	Height=2	Name=label1410333046640	Visible=1	Width=25			X=1	Y=31		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">16</line>
+        <column type="decimal">14</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">folder</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComboBox;Name=	ArrayLength=1	?Visible=[$G.folderEntitlement]=true	Height=2	Name=select1410333047192	Mandatory=1	SelectOnly=1	TabStop=15	Width=40			X=27	Y=31		Input=folder	ValueList=$L.tableAccess.folders	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">17</line>
+        <column type="decimal">1</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Title:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Title:	Name=	Height=2	Name=label1410333078499	labelfor=Title	Width=25			X=1	Y=33		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">17</line>
+        <column type="decimal">14</column>
+        <length type="decimal">58</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">title</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=	?Mandatory=	Height=2	Name=input1410333078702	Mandatory=1	MaxChars=250	Width=116			X=27	Y=33		Input=title	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">19</line>
+        <column type="decimal">1</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Description:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Description:	Name=	Height=2	Name=label1410333078921	labelfor=Description	Width=25			X=1	Y=36		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">512</flags>
+        <line type="decimal">19</line>
+        <column type="decimal">14</column>
+        <length type="decimal">58</length>
+        <window type="decimal">6</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">description</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">MultiText;Name=	?Mandatory=	Height=11	Name=textarea1410333079147	Mandatory=1	MaxChars=4000	Width=116			X=27	Y=36		Input=description	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">25</line>
+        <column type="decimal">1</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Solution:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Solution:	Name=	?Caption=	ForeColor=0	Height=2	Name=label1410333079434	labelfor=	Width=25			X=1	Y=48		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">512</flags>
+        <line type="decimal">25</line>
+        <column type="decimal">14</column>
+        <length type="decimal">58</length>
+        <window type="decimal">4</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">resolution</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">MultiText;Name=	?Mandatory=[$action]="first.call.close"	Height=8	Name=textarea1410333079740	TabStop=20	Width=116			X=27	Y=48		Input=resolution	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">30</line>
+        <column type="decimal">1</column>
+        <length type="decimal">81</length>
+        <window type="decimal">18</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Attachments</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Frame;Height=36	Name=fieldset1410333110753	Width=162	X=0	Y=58	Caption=Attachments		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">31</line>
+        <column type="decimal">2</column>
+        <length type="decimal">80</length>
+        <window type="decimal">14</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format type="string">sd.interaction.subform.attachments</format>
+        <property type="string">SubFormat;Name=	Height=28	Name=subview1410333122019	scElastic=both	Format=sd.interaction.subform.attachments	Width=159			X=2	Y=61		</property>
+      </field>
+    </field>
+    <file.name type="string">incidents</file.name>
+    <editor type="string">yangweny</editor>
+    <last.update type="dateTime">09/09/14 19:12:24</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">09/16/14 17:54:40</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

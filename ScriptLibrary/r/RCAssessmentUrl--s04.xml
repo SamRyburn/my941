@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;RCAssessmentUrl&quot;" recordid="RCAssessmentUrl">
+    <name type="string">RCAssessmentUrl</name>
+    <script type="string">//get the RC Assessment URL for specified change
+//@Param {cm3r, cm3t} file:A change or change task record
+function getChangeUrl(file){
+	var url = getAssessmentBaseURL();
+	if(url == null){
+		return null;
+	}
+    url = url + "&amp;refId=" + file.number;	   
+    	
+	var rcSdName = lib.RCConfiguration.getServiceDeskName();
+		
+	if(rcSdName!=null)
+	{
+	   url = url +"&amp;serviceDesk="+rcSdName;
+	}	
+	return url;
+}
+
+function getAssessmentBaseURL(){	
+	var url = lib.RCConfiguration.getServerUrl();	
+	if(url!=null){
+		url += "/assess.html?";
+		url += lib.RCUrl.getCommonParameters();
+	}	
+	return url;
+}
+</script>
+    <package type="string">Integration</package>
+    <sysmodtime type="dateTime">12/25/12 19:13:20</sysmodtime>
+    <sysmoduser type="string">zhangqi</sysmoduser>
+    <sysmodcount type="decimal">26</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

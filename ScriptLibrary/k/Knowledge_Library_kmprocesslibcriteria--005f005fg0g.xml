@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;Knowledge_Library_kmprocesslibcriteria&quot;" recordid="Knowledge_Library_kmprocesslibcriteria">
+    <name type="string">Knowledge_Library_kmprocesslibcriteria</name>
+    <script type="string">// This script builds and returns a string of library-specific query values 
+//   using the KMQuery object. The values in KMQuery were entered by the user  
+//   under the tabs in the Advanced Search screen.
+// Tailor this script if this knowledgebase has a tab in the Advanced Search screen.
+/**
+
+ **/
+var search = lib.KMSearch;
+/**
+ QCCR1E83877 OVSM KM: Advanced Search on Title searches incorrectly depending on term and case
+ reimplemented the search criteria, add fieldmapping to define the relation between kmquery field and search engine field.
+ every element in fieldmapping stands for one relation.
+ first record in the relation stands for the kmquery field
+ secord means the search engine field
+ third one defines if the field reuqests fullmatch.
+ **/
+this.fieldmapping = [
+    ['kmlib_id','id',false],
+    ['kmlib_locale','locale',false],
+    ['kmlib_title','title',false],
+    ['kmlib_author','author',false],
+    ['kmlib_doctype','doctype',true],
+    ['kmlib_status','status',true],
+    ['kmlib_publishedto','publishedto',false],
+    ['kmlib_summary','summary',false]
+];
+/**
+ QCCR1E83877 OVSM KM: Advanced Search on Title searches incorrectly depending on term and case
+ remove the criteria parsing for K2 since no K2 support since 9.30
+ **/
+function ProcessLibCriteria(KMQuery,kbname)
+{
+    var strQuery = "";
+    if("IDOL"  != vars.$G_kmsearchengine){
+        strQuery = search.processSolr(KMQuery, fieldmapping, this);
+    }
+    else
+    {
+        var idolSearch = lib.KMQuery_IDOL.require();
+        strQuery = idolSearch.processIDOL(KMQuery, fieldmapping, this,kbname);
+    }
+    return strQuery;
+}
+
+/**
+ QCCR1E83877 OVSM KM: Advanced Search on Title searches incorrectly depending on term and case
+ defines the special query mapping which are not simply field:value,
+ this function will be called in KMSearch.processSolr() function.
+ **/
+function processSpecial(KMQuery){
+    var strQuery = "";
+
+    if("IDOL"  != vars.$G_kmsearchengine){
+        if(KMQuery.kmlib_beforecreationdate != null){
+            strQuery += " creationdate: [* TO " + system.library.KMUtils.getUTCDateTimeString(KMQuery.kmlib_beforecreationdate) + "]";
+            strQuery += " AND ";
+        }
+        if(KMQuery.kmlib_aftercreationdate != null){
+            strQuery += " creationdate: [" + system.library.KMUtils.getUTCDateTimeString(KMQuery.kmlib_aftercreationdate) + " TO *]";
+            strQuery += " AND ";
+        }
+
+        //this item is not displayed on the Advanced Search UI but is Searchable through the HotNews button
+        if(KMQuery.kmlib_hotnews != null || KMQuery.kmlib_hotnews == true)
+        {
+            //QCCR1E68963 BEGIN
+            strQuery += " (";
+            strQuery += "hotnews: true AND hotnews_start_date: [* TO " + system.library.KMUtils.getUTCDateTimeString(system.functions.tod() ) + "] ";
+            strQuery += "AND hotnews_end_date: [" + system.library.KMUtils.getUTCDateTimeString(system.functions.tod())+ " TO *]";
+            //remove the empty valid-from and valid-end
+            //if either of them is empty,
+            //the date range will not be clear, hotnews search will not show the result
+            strQuery += ")";
+            //QCCR1E68963 END
+            strQuery += " AND ";
+        }
+        //handle the category filtering
+        KMQuery.categories = system.functions.denull(KMQuery.categories);
+        var kmcats = "";
+        if (KMQuery.categories.length() &gt; 0) {
+            for( var i=0; i &lt; KMQuery.categories.length(); i++ )
+            {
+                if( i == 0)
+                {
+                    if (kmcats.length == 0)
+                        kmcats += " (";
+                }
+                else
+                    kmcats += " OR ";
+
+                kmcats += " kmsearchcategory: "+KMQuery.categories[i].replace(/:/g,"\\:") + "*";
+
+                if(i == KMQuery.categories.length()-1)
+                    kmcats += " )";
+            }
+            strQuery += kmcats;
+            if(strQuery) strQuery += " AND ";
+        }
+        ///////////////////////////////////////////////////////////////////////////////////////
+        //QCRQ1E99949 As an agreement operator, I can create knowledge doc base on Agreement.//
+        ///////////////////////////////////////////////////////////////////////////////////////
+        var NULLFUNC = system.functions._null;
+
+        KMQuery.kmlib_tags = system.functions.denull(KMQuery.kmlib_tags);
+        var temp = new SCDatum();
+        temp.setType(8);
+        for(var i=0; i&lt;KMQuery.kmlib_tags.length(); i++){
+            if(!NULLFUNC(KMQuery.kmlib_tags[i])){
+                temp.push(KMQuery.kmlib_tags[i]);
+            }
+        }
+
+        var kmtags = "";
+        if(temp.length() &gt;0) {
+            for( var i=0; i&lt; temp.length(); i++ ){
+
+                if( i == 0){
+                    if (kmtags.length == 0){
+                        kmtags += " (";
+                    }
+                }else{
+                    kmtags += " OR ";
+                }
+
+                kmtags += " tags: "+temp[i].replace(/:/g,"\\:");
+                if(i == temp.length()-1){
+                    kmtags += " )";
+                }
+            }
+
+            strQuery += kmtags;
+            if(strQuery) strQuery += " AND ";
+        }
+    }
+    else //IDOL
+    {
+        var buff = [];
+        var idolQuery = lib.KMQuery_IDOL.require();
+        if(KMQuery.kmlib_beforecreationdate != null){
+            var epochSeconds = idolQuery.getEpochSeconds( KMQuery.kmlib_beforecreationdate);
+            buff.push('RANGE{.,'+epochSeconds+'}:'+idolQuery.dateField("creationdate"));
+        }
+        if(KMQuery.kmlib_aftercreationdate != null){
+            var epochSeconds = idolQuery.getEpochSeconds( KMQuery.kmlib_aftercreationdate);
+            buff.push('RANGE{'+epochSeconds+',.}:'+idolQuery.dateField("creationdate"));
+        }
+
+        //this item is not displayed on the Advanced Search UI but is Searchable through the HotNews button
+        if(KMQuery.kmlib_hotnews != null || KMQuery.kmlib_hotnews == true)
+        {
+            var tod = idolQuery.getEpochSeconds(system.functions.tod());
+            var hotnews = [];
+            hotnews.push('MATCH{true}:'+idolQuery.normalField("hotnews", "Knowledge_Library"));
+            hotnews.push('RANGE{.,'+tod+'}:'+idolQuery.dateField("hotnews_start_date"));
+            hotnews.push('RANGE{'+tod+',.}:'+idolQuery.dateField("hotnews_end_date"));
+            buff.push('('+hotnews.join('+AND+') +')');
+            hotnews = null;
+        }
+
+        //handle the category filtering
+        KMQuery.categories = system.functions.denull(KMQuery.categories);
+        var kmcats = [];
+        if (KMQuery.categories.length() &gt; 0) {
+
+            for( var i=0; i &lt; KMQuery.categories.length(); i++ )
+            {
+                kmcats.push(KMQuery.categories[i]+'*');
+            }
+            var strCats ="WILD{"+kmcats.join(',')+"}:KMSEARCHCATEGORY_MATCH";
+            kmcats = null;
+            buff.push(strCats);
+        }
+        ///////////////////////////////////////////////////////////////////////////////////////
+        //QCRQ1E99949 As an agreement operator, I can create knowledge doc base on Agreement.//
+        ///////////////////////////////////////////////////////////////////////////////////////
+        var NULLFUNC = system.functions._null;
+
+        KMQuery.kmlib_tags = system.functions.denull(KMQuery.kmlib_tags);
+        var temp = [];
+        for(var i=0; i&lt;KMQuery.kmlib_tags.length(); i++){
+            if(!NULLFUNC(KMQuery.kmlib_tags[i])){
+                temp.push(KMQuery.kmlib_tags[i]);
+            }
+        }
+
+        var kmtags = "";
+        if(temp.length &gt;0) {
+            buff.push("MATCH{"+temp.join(',')+'}:'+idolQuery.normalField("tags","Knowledge_Library"));
+        }
+
+        strQuery = buff.join('+AND+');
+        buff = null;
+    }
+    /////////////////////////////////////////////////////////////////////
+    return strQuery;
+}
+
+
+function getFieldMapping() {
+    return fieldmapping;
+}</script>
+    <package type="string">KnowledgeManagement</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:41</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

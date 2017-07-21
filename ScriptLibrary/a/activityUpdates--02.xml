@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;activityUpdates&quot;" recordid="activityUpdates">
+    <name type="string">activityUpdates</name>
+    <script type="string">var $=lib.c.$;
+function relatedRecordUpdate(id, filename, relatedFile, activityType, activityText, custVisible) {
+   if (id == null)
+    return false;
+
+ var relation = new SCFile("screlation");
+ var sql;
+ var relatedFileAlias = relatedFile;
+ var filenameAlias = filename;
+ var unique = "number";
+
+
+ if (relatedFileAlias == "probsummary")
+  relatedFileAlias = "problem";
+  
+ if (filenameAlias == "probsummary")
+  filenameAlias = "problem";
+
+ if (relatedFile == "rootcause" || relatedFile == "knownerror")
+  unique = "id";
+  
+ if (relatedFile == "incidents" )
+  unique = "incident.id";
+
+
+   sql = "depend=\"" + id + "\" and " +
+        "depend.filename=\""+ filenameAlias +"\" and "+
+        "source.filename=\""+ relatedFileAlias +"\" and "+
+        "source.active=true\""
+
+
+
+ if ( relation.doSelect( sql ) == RC_SUCCESS )
+ {
+  do
+  {
+      
+   var record = new SCFile(relatedFile);
+   var record_id = relation.source;
+   if ( record.doSelect("" + unique +"=\"" + record_id + "\"" ) == RC_SUCCESS )
+   {
+                system.library.activityUpdatesTailoring.setSpecificFields(record, relatedFile, activityType, custVisible);
+                updateRecord(record, activityType, activityText, custVisible);
+    
+    /// QCRQ1E97738, to send notification HTML email to interaction's contacts, modified by wangxun(xunw@hp.com), 
+    if(relatedFile==="incidents" &amp;&amp; custVisible===true &amp;&amp; filename!="rootcause"){
+    	lib.RequestUtil.sendEmailToRelatedIntertion(record, record);
+    }
+    /// modified by wangxun
+    
+    if (relatedFileAlias == "rootcause" &amp;&amp; filenameAlias == "knownerror" &amp;&amp; activityType == "Error Closure")
+    {
+    	var screlation = new SCFile("screlation");
+    	
+    	sql = "depend.filename=\""+ filenameAlias +"\" and "+
+    	"depend.active=true and "+
+    	"source = \"" + record_id + "\" and " +
+        "source.filename=\""+ relatedFileAlias +"\" and "+
+        "source.active=true"
+        
+           if (screlation.doSelect( sql ) == RC_NO_MORE)
+        {
+        	if ( system.library.context.GenerateCount(screlation) == 0 )
+  			{		
+    			var strCurPhase = "XX";
+    			
+    			while (record.current_phase != strCurPhase)
+    			{
+    				strCurPhase = record.current_phase;
+    				record.doAction("nextphase");
+    			}
+    		}
+    	}
+    }
+   }
+  }
+  while (relation.getNext() == RC_SUCCESS);
+ }
+ system.vars.$G_bg_activity_type=null;
+ system.functions.cleanup(system.vars.$G_bg_activity_text);
+ return true;
+}
+
+function updateFromQuery(filename, query, activityType, activityText, custVisible) {
+    custVisible = ((custVisible == true || custVisible == "true") ? true : false);
+    var record = new SCFile(filename);
+    if (record.doSelect(query) == RC_SUCCESS) {
+        system.library.activityUpdatesTailoring.setSpecificFields(record, filename, activityType, custVisible);
+        updateRecord(record, activityType, activityText, custVisible);
+    }
+}
+
+function updateRecord(record, activityType, activityText, custVisible) {
+
+ setActivityFields( activityType, activityText );
+ 
+    //Journal Update 
+    if (system.functions.filename(record) === "request") {
+        lib.RequestUtil.journalAction(record, vars['$G.bg.activity.text']);
+    } else if (system.functions.filename(record) === "probsummary") { //do nothing, IM module have done this.
+    } else if (system.functions.filename(record) === "cm3r") {
+        if (record.update_action == null) {
+            record.update_action = [""];
+        }
+
+        var len = activityText.length();
+        if (len &gt; 0) {
+            for (var i = len - 1; i &gt;= 0; i--) {
+                record.update_action = system.functions.insert(record.update_action, 1, 1, activityText[i]);
+            }
+        }
+    } else if (system.functions.filename(record) === "rootcause") {
+        $("#problemService").journalUpdate(record, vars['$G.bg.activity.text']);
+    }
+ 
+ var bypassAuthcheckOrig=vars.$bypass_bg_authcheck;
+ var bypassValidationOrig=vars.$bypass_failed_validation;
+ 
+ vars.$bypass_bg_authcheck = true;
+ vars.$bypass_failed_validation = true;     	    
+    	    
+ vars.$sync_activity=true;
+ var result = record.doAction("save");
+  vars.$sync_activity=false;
+ vars.$bypass_bg_authcheck = bypassAuthcheckOrig;
+ vars.$bypass_failed_validation = bypassValidationOrig;
+    	    
+ 
+ if (result == RC_CANT_HAVE || result == 51 )
+        scheduleActivityUpdate(record, activityType, activityText, custVisible);
+
+}
+
+function scheduleActivityUpdate(record, type, text, custVisible) {
+    var schedule = new SCFile("schedule");
+  schedule._class = "linker";
+
+
+  var time = new Date();
+  var sched = new Date(time.getTime() + 60*1000);
+  schedule.expiration = sched;
+
+  schedule.name = "Interoperability Record - Activity Update";
+  schedule.application = "sc.activity.bg.update";
+
+  var dTag = new Datum()
+  system.functions.tag(dTag, record);
+
+  schedule.strings[0] = dTag;
+  schedule.strings[1] = type;
+    schedule.strings[2] = custVisible ? ("" + custVisible) : "";
+  schedule.strings1 = text;
+
+  if ( schedule.doInsert() == RC_SUCCESS)
+   return true;
+  return false;
+
+}
+
+
+function initActivityFields()
+{
+ vars.$G_bg_activity_type = "External Update";
+ vars.$G_bg_activity_text[0] = "External Update";
+}
+
+function setActivityFields( activityType, activityText)
+{
+ if ( activityType != null )
+  vars.$G_bg_activity_type = activityType;
+ if ( activityText != null )
+  vars.$G_bg_activity_text = activityText;
+}
+
+function readActivityType()
+{
+ return vars.$G_bg_activity_type;
+}
+
+function readActivityAction()
+{
+ return vars.$G_bg_activity_text;
+}
+
+function cleanActivityFields()
+{
+ system.functions.cleanup(vars.$G_bg_activity_text);
+ system.functions.cleanup(vars.$G_bg_activity_type);
+}
+
+
+
+
+</script>
+    <package type="string">Activities</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:37</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem type="boolean">true</prgnsystem>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

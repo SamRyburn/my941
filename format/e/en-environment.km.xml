@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;environment.km&quot;" recordid="en - environment.km">
+    <name mandatory="true" type="string">environment.km</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">5</column>
+        <length type="decimal">5</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Name:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Name:	Height=2	Name=	Width=10	X=9	Y=0		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">11</column>
+        <length type="decimal">40</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">name</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Height=2	Name=	ReadOnly=1	Width=80	X=21	Y=0		Input=name	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">15</column>
+        <length type="decimal">1</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">allow.access</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;%arse=1	Height=2	Name=	MaxChars=1	Width=2	X=29	Y=4		Input=allow.access	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">17</column>
+        <length type="decimal">54</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Allow Operator Access without Profile Record?</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Allow Operator Access without Profile Record?	?Caption=	Height=2	Name=	Width=108	X=33	Y=4		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">15</column>
+        <length type="decimal">1</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">skip.warning</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;%arse=1	Height=2	Name=	MaxChars=1	Width=2	X=29	Y=8		Input=skip.warning	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">17</column>
+        <length type="decimal">34</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Skip Inefficient Query Warning?</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Skip Inefficient Query Warning?	Height=2	Name=	Width=68	X=33	Y=8		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">15</column>
+        <length type="decimal">1</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">allow.partial</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;%arse=1	Height=2	Name=	MaxChars=1	Width=2	X=29	Y=12		Input=allow.partial	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">17</column>
+        <length type="decimal">28</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Allow Inefficient Queries?</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Allow Inefficient Queries?	Height=2	Name=	Width=56	X=33	Y=12		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">15</column>
+        <length type="decimal">1</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input type="string">use.kmcategory</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=	%arse=1	Height=2	Name=input1137289730433	MaxChars=1	Width=2	X=29	Y=16		Input=use.kmcategory	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">9</line>
+        <column type="decimal">17</column>
+        <length type="decimal">57</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Use Knowledge Management Categories, not Incident Categories</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Use Knowledge Management Categories, not Incident Categories	Name=	?Caption=	Height=2	Name=label1137289777246	Width=113	X=33	Y=16	Caption=Use Knowledge Management Categories, not Incident Categories		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">11</line>
+        <column type="decimal">15</column>
+        <length type="decimal">30</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Host Name of KM Search Engine Server:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Host Name of KM Search Engine Server:	Height=2	Name=	Width=59	X=29	Y=20		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">11</line>
+        <column type="decimal">44</column>
+        <length type="decimal">27</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=input1129867272460	Height=2	Name=input1129867272460	Width=53	X=87	Y=20		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">13</line>
+        <column type="decimal">15</column>
+        <length type="decimal">30</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">KM Search Engine Server Port Number:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=KM Search Engine Server Port Number:	Height=2	Name=	Width=59	X=29	Y=24		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">13</line>
+        <column type="decimal">58</column>
+        <length type="decimal">13</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Height=2	Name=	Width=26	X=114	Y=24		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">15</line>
+        <column type="decimal">15</column>
+        <length type="decimal">40</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Max Number Documents Returned from a Search:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Max Number Documents Returned from a Search:	Height=2	Name=	Width=80	X=29	Y=28		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">15</line>
+        <column type="decimal">58</column>
+        <length type="decimal">14</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Height=2	Name=	Width=27	X=114	Y=28		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">17</line>
+        <column type="decimal">15</column>
+        <length type="decimal">42</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Default Expiration Period (0 if document never expires):</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Default Expiration Period (0 if document never expires):	Name=label1129867704165	Height=2	Name=label1129867704165	Width=83	X=29	Y=32		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">17</line>
+        <column type="decimal">58</column>
+        <length type="decimal">14</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">1</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Height=2	Name=	Width=27	X=114	Y=32		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">17</line>
+        <column type="decimal">72</column>
+        <length type="decimal">6</length>
+        <window type="decimal">0</window>
+        <attribute type="decimal">2</attribute>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">days</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=days	Name=label1129867880496	?Caption=	Height=2	Name=label1129867880496	Width=11	X=143	Y=32		</property>
+      </field>
+    </field>
+    <file.name type="string">environment</file.name>
+    <editor type="string">sjames</editor>
+    <last.update type="dateTime">01/14/06 10:51:17</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">2</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">01/24/06 10:12:11</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="htmltemplates">
+  <record id="name=&quot;RM Withdrawal&quot; and language=&quot;en&quot;" recordid="RM Withdrawal - en">
+    <id type="string">852</id>
+    <type NullValue="1" type="string"/>
+    <name type="string">RM Withdrawal</name>
+    <expression type="string">//Prepare url for web access
+//#################################################################################################################
+//This is the url for index.do. if you want to generate url for ess.do, please use getESSURLFromQuery instead
+var file_name = system.functions.filename($RECORD);
+var record_name = system.functions.scmsg(file_name,"tablename");
+var record_title = record_name+" "+$RECORD.number;
+var record_query = "number=\""+$RECORD.number+"\"";
+var web_url = lib.urlCreator.getURLFromQuery(file_name,record_query,record_title);
+//var web_url = lib.urlCreator.getESSURLFromQuery(file_name,record_query,record_title);
+//#################################################################################################################
+
+
+//#################################################################################################################
+//Generate Priority readable label
+
+var _priority = $RECORD.priority;
+var priority="";
+
+switch(true)
+{
+  case _priority==1:
+        priority = "1 - Critical"; break;
+  case _priority==2:
+        priority = "2 - High"; break;
+  case _priority==3:
+        priority = "3 - Average"; break;
+  case _priority==4:
+        priority = "4 - Low"; break;                
+}
+</expression>
+    <content NullValue="1" sctype="array">
+      <content NullValue="1" type="string"/>
+    </content>
+    <module type="string">request</module>
+    <cap.exec NullValue="1" sctype="array">
+      <cap.exec NullValue="1" type="string"/>
+    </cap.exec>
+    <active type="boolean">true</active>
+    <htmlcode type="string">&lt;table style="width: 98%;"&gt;
+	&lt;tbody&gt;
+		&lt;tr&gt;
+			&lt;td align="left" valign="top"&gt;
+				&lt;table style="width: 600px;"&gt;
+					&lt;tbody&gt;
+						&lt;tr&gt;
+							&lt;td valign="top"&gt;
+								&lt;table cellpadding="10" cellspacing="10" style="font-family: arial;" width="100%"&gt;
+									&lt;tbody&gt;
+										&lt;tr&gt;
+											&lt;td align="left" style="width: 100%;" valign="top"&gt;
+												&lt;h1 style="color: rgb(0, 51, 102); font-size: 24px;"&gt;
+													HP Service Manager&lt;/h1&gt;
+												&lt;table border="0" cellpadding="0" cellspacing="0" width="100%"&gt;
+													&lt;tbody&gt;
+														&lt;tr&gt;
+															&lt;td colspan="2" height="10" style="background-color: rgb(207, 224, 241);"&gt;
+																&amp;nbsp;&lt;/td&gt;
+														&lt;/tr&gt;
+														&lt;tr&gt;
+															&lt;td style="background-color: rgb(207, 224, 241);" width="10"&gt;
+																&amp;nbsp;&lt;/td&gt;
+															&lt;td style="font-family: arial; background-color: rgb(207, 224, 241);"&gt;
+																Request &lt;a href="{web_url}" style="color: rgb(0, 0, 255); font-family: arial;" target="_blank"&gt;{$RECORD.number}&lt;/a&gt;&amp;nbsp;has been withdrawn by customer.&lt;/td&gt;
+														&lt;/tr&gt;
+														&lt;tr&gt;
+															&lt;td colspan="2" height="10" style="background-color: rgb(207, 224, 241);"&gt;
+																&amp;nbsp;&lt;/td&gt;
+														&lt;/tr&gt;
+													&lt;/tbody&gt;
+												&lt;/table&gt;
+											&lt;/td&gt;
+										&lt;/tr&gt;
+										&lt;tr&gt;
+											&lt;td align="left" style="width: 100%;" valign="top"&gt;
+												&lt;div style="padding: 0px; margin-top: -24px; position: relative;"&gt;
+													&lt;h2 style="color: rgb(0, 51, 102); font-size: 18px;"&gt;
+														Details&lt;/h2&gt;
+												&lt;/div&gt;
+											&lt;/td&gt;
+										&lt;/tr&gt;
+									&lt;/tbody&gt;
+								&lt;/table&gt;
+								&lt;table align="center" cellpadding="6" cellspacing="2" style="font-family: arial; font-size: 11px;" width="94%"&gt;
+									&lt;tbody&gt;
+										&lt;tr bgcolor="#f8f9f9"&gt;
+											&lt;td align="right" width="20%"&gt;
+												Title&lt;/td&gt;
+											&lt;td&gt;
+												{$RECORD.brief_description}&lt;/td&gt;
+										&lt;/tr&gt;
+										&lt;tr bgcolor="#eaeff3"&gt;
+											&lt;td align="right"&gt;
+												Description&lt;/td&gt;
+											&lt;td&gt;
+												{$RECORD.description}&lt;/td&gt;
+										&lt;/tr&gt;
+										&lt;tr bgcolor="#f8f9f9"&gt;
+											&lt;td align="right"&gt;
+												Category&lt;/td&gt;
+											&lt;td&gt;
+												{$RECORD.category}&lt;/td&gt;
+										&lt;/tr&gt;
+										&lt;tr bgcolor="#eaeff3"&gt;
+											&lt;td align="right"&gt;
+												Subcategory&lt;/td&gt;
+											&lt;td&gt;
+												{$RECORD.subcategory}&lt;/td&gt;
+										&lt;/tr&gt;
+										&lt;tr bgcolor="#f8f9f9"&gt;
+											&lt;td align="right"&gt;
+												Request Model&lt;/td&gt;
+											&lt;td&gt;
+												{$RECORD.model}&lt;/td&gt;
+										&lt;/tr&gt;
+										&lt;tr bgcolor="#eaeff3"&gt;
+											&lt;td align="right"&gt;
+												Status&lt;/td&gt;
+											&lt;td&gt;
+												{$RECORD.status}&lt;/td&gt;
+										&lt;/tr&gt;
+										&lt;tr bgcolor="#f8f9f9"&gt;
+											&lt;td align="right"&gt;
+												Priority&lt;/td&gt;
+											&lt;td&gt;
+												{priority}&lt;/td&gt;
+										&lt;/tr&gt;
+									&lt;/tbody&gt;
+								&lt;/table&gt;
+								&lt;div style="font-family: arial; font-size: 11px; margin-top: 20px; margin-left: 20px; position: relative;"&gt;
+									&lt;p style="font-weight: bold;"&gt;Request&amp;nbsp;Management Team&lt;/p&gt;
+									&lt;p style="color: rgb(153, 153, 153);"&gt;Sent from HP Service Manager. Do not reply to this email.&lt;/p&gt;
+								&lt;/div&gt;
+							&lt;/td&gt;
+						&lt;/tr&gt;
+					&lt;/tbody&gt;
+				&lt;/table&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;</htmlcode>
+    <language type="string">en</language>
+    <mandant NullValue="1" sctype="array">
+      <mandant NullValue="1" type="string"/>
+    </mandant>
+    <test.record type="string">RF10001</test.record>
+    <mail.title type="string">Request {$RECORD.number} has been withdrawn by customer.</mail.title>
+  </record>
+</recordset>

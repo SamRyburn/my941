@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ModuleStatus">
+  <record id="module=&quot;incidents&quot; and status=&quot;Canceled&quot;" recordid="incidents - Canceled">
+    <status type="string">Canceled</status>
+    <sysmodtime type="dateTime">07/16/17 17:01:01</sysmodtime>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <module type="string">incidents</module>
+    <tablename type="string">incidents</tablename>
+    <sort.order type="decimal">15</sort.order>
+  </record>
+</recordset>

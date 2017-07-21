@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ioevents">
+  <record id="filename=&quot;activityservicemgt&quot;" recordid="activityservicemgt">
+    <filename type="string">activityservicemgt</filename>
+    <actions sctype="array">
+      <actions sctype="structure">
+        <name type="string">SD.update.to.IM.ChM.RM.PbM</name>
+        <condition type="operator">$G.ess and type in $L.file="Update from customer"</condition>
+      </actions>
+    </actions>
+    <sysmodtime type="dateTime">07/14/14 15:25:29</sysmodtime>
+    <sysmoduser type="string">wangxun</sysmoduser>
+    <sysmodcount type="decimal">5</sysmodcount>
+  </record>
+</recordset>

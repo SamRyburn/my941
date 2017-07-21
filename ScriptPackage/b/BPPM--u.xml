@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptPackage">
+  <record id="name=&quot;BPPM&quot;" recordid="BPPM">
+    <name type="string">BPPM</name>
+    <description NullValue="1" type="string"/>
+    <sysmodtime type="dateTime">06/02/08 08:35:12</sysmodtime>
+    <sysmoduser type="string">sanderson</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+  </record>
+</recordset>

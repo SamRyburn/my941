@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;UserOption&quot;" recordid="UserOption">
+    <name type="string">UserOption</name>
+    <script type="string">
+/**
+ * @fileOverview  Proivde the functions to Copy UserOption from svcCartItem to userOption Table
+ * @author Mi Quan
+ * @date Dec. 2014/4/25
+ */
+
+
+/**
+ * @public
+ * @description  copy useroption from svcCartItem to userOption table
+ * @param {String} record - svcCartItem
+ * @param {String} approverOld - Approver
+ * 
+ */ 
+
+function syncSvcCartItemToUserOption(record) {
+
+	var svcCartId;
+	var svcCartItemId;
+	var interactionId;
+	var ticketId;
+	var catalogId;
+	var options = new Array();
+	var isBundle = record.bundle;
+	
+	ticketId= record.action_id;
+	svcCartId = record.cartId;
+	svcCartItemId =record.cartItemId;
+	catalogId= record.svcCatalogId;
+	catalogName = getCatalogNamebyId(catalogId);
+	interactionId = record.sdID;
+	
+	if(isBundle!=null &amp;&amp; isBundle==true){
+		updateToUserOption(ticketId,svcCartId,svcCartItemId,catalogName,catalogId,
+							 interactionId,"item options", "", [record.bundle_options], false);	
+	}else {
+		options = getOptionsFromXml(record.options);
+		
+	
+		for(i=0;i&lt;options.length;i++){	 
+		
+			updateToUserOption(ticketId,svcCartId,svcCartItemId,catalogName,catalogId,
+								 interactionId,options[i][0], options[i][1], options[i][2], options[i][3]);
+		}
+	
+	}	
+	
+	
+	
+
+}
+
+/**
+ * @private
+ * @description  copy useroption from svcCartItem to userOption table
+ * @param {String} catalogId - service catalog Id
+ * @return {String} svcCatalog Name - svcCatalog Name
+ * 
+ */ 
+function getCatalogNamebyId(catalogId) {
+
+  	var sql = "id=" + catalogId;    
+    var svcCatalog = new SCFile("svcCatalog", SCFILE_READONLY);
+    svcCatalog.setFields("name");
+    var rc = svcCatalog.doSelect(sql);	
+    
+	if(rc == RC_SUCCESS ){
+
+		return svcCatalog.name;
+	}else {
+
+		return null;
+	}
+}
+
+
+/**
+ * @private
+ * @description  generate  useroption record
+ * @param {String} ticketId - TicketId
+ * @param {String} svcCartId - svcCart Id
+ * @param {String} svcCartItemId - svcCartItem Id
+ * @param {String} catalogName - service catalog Name
+ * @param {String} catalogId - service catalog Id
+ * @param {String} InteractionId - Interaction Id
+ * @param {String} optionName - User Option name
+ * @param {String} optionLabel - User Option label
+ * @param {Array} optionValue - User Option value
+ * @param {Booelean} isMulti - Whether the value isMulti
+ 
+ */
+function updateToUserOption(ticketId, svcCartId, svcCartItemId, catalogName, catalogId, 
+							   InteractionId, optionName, optionLabel, optionValue,isMulti) {
+
+
+	var userOption=new SCFile("userOption");
+
+	userOption.Ticket_ID = ticketId;
+	userOption.svcCart_ID = svcCartId.toString();
+	userOption.svcCart_Item_ID = svcCartItemId.toString();
+	userOption.CatalogItem_Name = catalogName;
+	userOption.CatalogItem_ID = catalogId.toString() ;
+	userOption.Interaction_ID = InteractionId.toString() ;	
+	userOption.Option_Name = optionName;
+	userOption.Option_Label = optionLabel ;	 
+	userOption.Option_Value = optionValue ;
+	userOption.IsMulti = isMulti ;
+	
+  	userOption.doSave();
+}
+
+
+ 
+
+/**
+ * @private
+ * @description  Parse User Option xml. Return Structure:optionName,OptionLable, OptionValue.
+ * @param {String} xml - UserOpiton XMl
+ * @return {Array} result - Structure:optionName,OptionLable, OptionValue.
+ */
+function getOptionsFromXml(xml){
+	
+	
+ 	var xmlObject = new XML();
+ 	xmlObject.setContent(xml);
+  	var parent = xmlObject.getParentNode();
+  	var form = parent.getFirstChildElement();
+  	var node = form.getFirstChildElement();
+	
+	var result = new Array();
+	var label;
+	var id;
+	var vtemp ;
+	 
+	while ( node != null )	{
+	
+  		var line  = new Array();	
+  		var value = new Array();
+  		var isMulti=false;
+  		
+  		vtemp = node.getValue();  		
+  		id =node.getAttributeValue("id"); 
+  		label = node.getAttributeValue("label"); 
+    		
+   		if(node.getAttributeValue("multiSelections")!=null &amp;&amp; node.getAttributeValue("multiSelections")!="" ) {  			
+   			value = vtemp.split("\n");  
+   			isMulti = true;   			
+  		}else {
+  			value.push(vtemp);
+  		}
+  		
+  		line[0]=id;
+  		line[1]=label;
+  		line[2]=value;  
+  		line[3]=isMulti;	
+   		result.push(line);
+  		node = node.getNextSiblingElement();  		
+  		
+  	} 
+	//print("result"+result); 
+	return result;
+}
+
+function initFileFields(tableName){
+	vars.$fieldValueList=[];
+	vars.$fieldDisplayList=[];
+	if(tableName!=="" &amp;&amp; tableName!==null &amp;&amp; tableName!==undefined){
+    	var valueList=[];
+    	var displayList=[];
+    	var fieldName="";
+   	 	var caption="";
+    	var captionStr="";
+    	var smDatadict=lib.dbdictHelper.initDatadictFile(tableName);
+    	var smFile=lib.dbdictHelper.initDbdictFile(tableName);
+   	 	var fieldList=smDatadict.fields;
+   	 	var sysFieldType=smDatadict.sysFieldType;
+   	 	var avail=smDatadict.avail;
+   	 	var invisible=smDatadict.invisible;
+   	 	var captions=smDatadict.captions;
+    	var len=system.functions.lng(fieldList);
+    	var displayLable = lib.DisplayName.getDisplayLable(tableName);
+    	for(var i=0;i&lt;len;i++){
+        	fieldName=fieldList[i];
+        	if(sysFieldType[i]!==4 &amp;&amp; avail[i]===true &amp;&amp; invisible!==true){        		
+        		if(!lib.DisplayName._isAlias(smFile,fieldName) || displayLable == fieldName ){
+        			valueList.push(fieldName);
+            		caption=captions[i];
+            		//support localization
+            		captionStr = system.functions.scmsg(caption, "sccaption");
+            		if (captionStr.indexOf("Could not be found") === -1) {
+                		caption=captionStr;
+            		}
+            		displayList.push(caption);
+            	}
+        	}
+    	}
+    	//sort array a~z
+    	var temp=new SCDatum(8);
+    	temp.push(valueList);
+    	temp.push(displayList);
+    	var retcode;
+    	system.functions.rtecall("sort", retcode, temp, 0, 0);
+    	valueList=temp[0];
+    	displayList=temp[1];
+    	vars.$fieldValueList=valueList;
+    	vars.$fieldDisplayList=displayList;
+    }
+}
+
+
+</script>
+    <package type="string">BaseUtilities</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:45</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

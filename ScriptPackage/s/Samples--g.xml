@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptPackage">
+  <record id="name=&quot;Samples&quot;" recordid="Samples">
+    <name type="string">Samples</name>
+    <description NullValue="1" type="string"/>
+    <sysmodtime type="dateTime">03/23/05 04:23:22</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+  </record>
+</recordset>

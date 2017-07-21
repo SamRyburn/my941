@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="menu">
+  <record id="name=&quot;ENV RECORDS&quot;" recordid="ENV RECORDS">
+    <name type="string">ENV RECORDS</name>
+    <option sctype="array">
+      <option sctype="decimal">3</option>
+      <option sctype="decimal">10</option>
+      <option sctype="decimal">11</option>
+      <option sctype="decimal">12</option>
+    </option>
+    <description sctype="array">
+      <description sctype="string"/>
+      <description sctype="string">Configuration Management Environment</description>
+      <description sctype="string">Contract Management Environment</description>
+      <description sctype="string">Knowledge Management Environment</description>
+    </description>
+    <command sctype="array">
+      <command sctype="string">Back</command>
+    </command>
+    <condition sctype="array">
+      <condition sctype="boolean">true</condition>
+      <condition sctype="operator">lioption("Inventory Management") and (index("SysAdmin", $lo.ucapex)&gt;0 or index("ICMAdmin", $lo.ucapex)&gt;0 or index("inventory management", $lo.ucapex)&gt;0)</condition>
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0 or index("ICMAdmin", $lo.ucapex)&gt;0 or index("inventory management", $lo.ucapex)&gt;0</condition>
+      <condition sctype="operator">lioption("Knowledge Management") and not  (null(contents($G.km.environment))) and (index("SysAdmin", $lo.ucapex)&gt;0 or index("KMAdmin", $lo.ucapex)&gt;0 or environment.profiles in $G.km.environment=true)</condition>
+    </condition>
+    <application sctype="array">
+      <application sctype="string">menu.manager</application>
+      <application sctype="string">query.stored</application>
+      <application sctype="string">query.stored</application>
+      <application sctype="string">check.km.environment</application>
+    </application>
+    <pname sctype="array">
+      <pname sctype="string">name</pname>
+      <pname sctype="string">text</pname>
+      <pname sctype="string">text</pname>
+    </pname>
+    <pvalue sctype="array">
+      <pvalue sctype="string">SYSTEM ADMINISTRATION</pvalue>
+      <pvalue sctype="string">icmenvironment</pvalue>
+      <pvalue sctype="string">ctenvironment</pvalue>
+    </pvalue>
+    <system NullValue="1" sctype="array">
+      <system NullValue="1" type="string"/>
+    </system>
+    <format.name type="string">menu.gui.env.recs</format.name>
+    <thread NullValue="1" sctype="array">
+      <thread NullValue="1" type="boolean"/>
+    </thread>
+    <sysmodcount type="decimal">42</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">12/07/14 20:39:59</sysmodtime>
+    <group NullValue="1" sctype="array">
+      <group NullValue="1" type="string"/>
+    </group>
+    <icon NullValue="1" sctype="array">
+      <icon NullValue="1" type="string"/>
+    </icon>
+  </record>
+</recordset>

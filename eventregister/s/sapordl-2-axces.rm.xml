@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="eventregister">
+  <record id="evtype=&quot;sapordl&quot; and evseq=2 and evappl=&quot;axces.rm&quot;" recordid="sapordl - 2 - axces.rm">
+    <evtype type="string">sapordl</evtype>
+    <evappl type="string">axces.rm</evappl>
+    <evcondition type="boolean">true</evcondition>
+    <evmap type="string">sapordl</evmap>
+    <evseq type="decimal">2</evseq>
+    <names sctype="array">
+      <names sctype="string">record</names>
+      <names sctype="string">text</names>
+      <names sctype="string">prompt</names>
+      <names sctype="string">query</names>
+      <names sctype="string">string1</names>
+      <names sctype="string">name</names>
+    </names>
+    <values sctype="array">
+      <values sctype="globalVar">$axces</values>
+      <values sctype="string">update</values>
+      <values sctype="operator">evmap in $axces.register</values>
+      <values sctype="string">number=12 in  evlist in $axces</values>
+      <values sctype="string">ocml</values>
+      <values sctype="string">falcon</values>
+    </values>
+    <evgoto NullValue="1" type="string"/>
+    <evdelete type="boolean">false</evdelete>
+    <evftype type="string">input</evftype>
+    <evformat NullValue="1" type="string"/>
+    <evtranslate NullValue="1" type="string"/>
+    <comments NullValue="1" sctype="array">
+      <comments NullValue="1" type="string"/>
+    </comments>
+    <evinit sctype="array">
+      <evinit sctype="operator">$axces.debug.on=true</evinit>
+      <evinit sctype="string">$bypass.failed.validation=true</evinit>
+    </evinit>
+    <evmaptype type="string">variable</evmaptype>
+    <evnullsub NullValue="1" type="boolean"/>
+    <sync.process NullValue="1" type="boolean"/>
+    <sysmodcount type="decimal">5</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">01/29/04 06:00:04</sysmodtime>
+  </record>
+</recordset>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ModuleStatus">
+  <record id="module=&quot;request&quot; and status=&quot;Open&quot;" recordid="request - Open">
+    <status type="string">Open</status>
+    <sysmodtime type="dateTime">02/10/14 18:09:56</sysmodtime>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">leo.wang</sysmoduser>
+    <module type="string">request</module>
+    <tablename type="string">request</tablename>
+    <sort.order NullValue="1" type="decimal"/>
+  </record>
+</recordset>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="Process">
+  <record id="process=&quot;mysm.components.checker&quot;" recordid="mysm.components.checker">
+    <process type="string">mysm.components.checker</process>
+    <pre.expressions sctype="array">
+      <pre.expressions sctype="operator">$L.comp.msg=NULL</pre.expressions>
+      <pre.expressions sctype="operator">if null(name in $L.file) then ($L.comp.msg=scmsg(4, "mysm"))</pre.expressions>
+      <pre.expressions sctype="operator">if (null($L.comp.msg) and null($L.comp.table)) then ($L.comp.msg=scmsg(5, "mysm"))</pre.expressions>
+      <pre.expressions sctype="operator">if (null($L.comp.msg) and null($L.comp.group)) then ($L.comp.msg=scmsg(8, "mysm"))</pre.expressions>
+      <pre.expressions sctype="operator">if (null($L.comp.msg) and null($L.comp.chart.type)) then ($L.comp.msg=scmsg(6, "mysm"))</pre.expressions>
+    </pre.expressions>
+    <post.expressions NullValue="1" sctype="array">
+      <post.expressions NullValue="1" type="expression"/>
+    </post.expressions>
+    <rad sctype="array">
+      <rad sctype="structure">
+        <application type="string">mb.ok</application>
+        <names sctype="array">
+          <names sctype="string">text</names>
+        </names>
+        <values sctype="array">
+          <values sctype="string">$L.comp.msg</values>
+        </values>
+        <rad.condition type="operator">not  (null($L.comp.msg))</rad.condition>
+        <pre.rad.expressions sctype="array"/>
+        <post.rad.expressions sctype="array"/>
+      </rad>
+    </rad>
+    <next.process NullValue="1" sctype="array">
+      <next.process NullValue="1" type="string"/>
+    </next.process>
+    <process.condition NullValue="1" sctype="array">
+      <process.condition NullValue="1" type="boolean"/>
+    </process.condition>
+    <run.standard NullValue="1" type="boolean"/>
+    <sysmodcount type="decimal">1</sysmodcount>
+    <sysmoduser type="string">xingjia</sysmoduser>
+    <sysmodtime type="dateTime">04/01/11 13:53:12</sysmodtime>
+    <save.cursor.position NullValue="1" type="boolean"/>
+    <run.in.window NullValue="1" type="boolean"/>
+    <window.name NullValue="1" type="string"/>
+    <javascript.pre type="string">//Check if the specified name already exist.
+if (!vars.$L_comp_msg &amp;&amp; !lib.MySMHelper.isUniqueName(vars.$L_file.name)) {
+	vars.$L_comp_msg = system.functions.scmsg(4,"mysm");
+}
+
+</javascript.pre>
+    <javascript.post NullValue="1" type="string"/>
+    <baseMethod NullValue="1" type="string"/>
+  </record>
+</recordset>

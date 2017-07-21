@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="displayoption">
+  <record id="id=&quot;kne.view_postknowledge&quot;" recordid="kne.view_postknowledge">
+    <screen.id type="string">kne.view</screen.id>
+    <language type="string">ENG</language>
+    <gui.option type="decimal">644</gui.option>
+    <txt.option type="decimal">8</txt.option>
+    <txt.bank type="decimal">2</txt.bank>
+    <labels sctype="structure">
+      <default type="string">Post to Knowledge</default>
+      <txt.alternative NullValue="1" type="string"/>
+      <balloon NullValue="1" type="string"/>
+    </labels>
+    <condition type="operator">$L.update.condition and kne.post.to.knowledge in $G.rc.environment and $L.mode~#"add"</condition>
+    <action type="string">postknowledge</action>
+    <post.expressions NullValue="1" sctype="array">
+      <post.expressions NullValue="1" type="expression"/>
+    </post.expressions>
+    <rad sctype="structure">
+      <application NullValue="1" type="string"/>
+      <new.thread NullValue="1" type="boolean"/>
+      <names NullValue="1" sctype="array">
+        <names NullValue="1" type="string"/>
+      </names>
+      <values NullValue="1" sctype="array">
+        <values NullValue="1" type="string"/>
+      </values>
+    </rad>
+    <condition.txt type="string">$L.update.condition and kne.post.to.knowledge in $G.rc.environment and $L.mode~#"add"</condition.txt>
+    <post.rad.expressions NullValue="1" sctype="array">
+      <post.rad.expressions NullValue="1" type="expression"/>
+    </post.rad.expressions>
+    <action.conditions NullValue="1" sctype="array">
+      <action.conditions NullValue="1" type="boolean"/>
+    </action.conditions>
+    <user.condition NullValue="1" type="boolean"/>
+    <user.condition.txt NullValue="1" type="string"/>
+    <unique.id type="decimal">11927</unique.id>
+    <gui.sig type="decimal">1024709202</gui.sig>
+    <text.sig type="decimal">3866982310</text.sig>
+    <comments NullValue="1" sctype="array">
+      <comments NullValue="1" type="string"/>
+    </comments>
+    <sysmodcount type="decimal">1</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">01/04/05 03:08:27</sysmodtime>
+    <modify.record type="boolean">true</modify.record>
+    <javascript.pre NullValue="1" type="string"/>
+    <javascript.post NullValue="1" type="string"/>
+    <id type="string">kne.view_postknowledge</id>
+  </record>
+</recordset>

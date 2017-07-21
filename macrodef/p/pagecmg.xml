@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="macrodef">
+  <record id="macro.type=&quot;pagecmg&quot;" recordid="pagecmg">
+    <macro.type type="string">pagecmg</macro.type>
+    <initializations sctype="array">
+      <initializations sctype="operator">$L.target="assignment";$L.text=""</initializations>
+      <initializations sctype="operator">$L.msg="fixed";$L.msg.type="alphanumeric"</initializations>
+      <initializations sctype="operator">$L.message="";$L.num.message="";$L.combo=""</initializations>
+      <initializations sctype="operator">$L.group.type="a"</initializations>
+    </initializations>
+    <post sctype="array">
+      <post sctype="operator">expressions in $L.file={};application in $L.file="macro.pagecmg";$L.temp="";edit.inits in $L.file={}</post>
+      <post sctype="operator">$L.temp="$L.parms=insert($L.parms,1,1,\"string1\");$L.values=insert($L.values,1,1,\""+$L.msg.type+"\")"</post>
+      <post sctype="operator">expressions in $L.file=insert(expressions in $L.file, 1, 1, parse($L.temp, 11))</post>
+      <post sctype="operator">if ($L.target="assignment") then ($L.temp="$L.parms=insert($L.parms,1,1,\"name\");$L.values=insert($L.values,1,1,\""+$L.text+"\")")</post>
+      <post sctype="operator">if ($L.target="assignmentinfile") then ($L.temp="$L.parms=insert($L.parms,1,1,\"name\");$L.values=insert($L.values,1,1,"+$L.combo+" in $L.new)")</post>
+      <post sctype="operator">expressions in $L.file=insert(expressions in $L.file, 1, 1, parse($L.temp, 11))</post>
+      <post sctype="operator">$L.temp="$L.parms=insert($L.parms,1,1,\"cond.input\");$L.values=insert($L.values,1,1,\""+str(nullsub($L.reviewers, "false"))+"\")";expressions in $L.file=insert(expressions in $L.file, 1, 1, parse($L.temp, 11))</post>
+      <post sctype="operator">$L.temp="$L.parms=insert($L.parms,1,1,\"boolean1\");$L.values=insert($L.values,1,1,\""+str(nullsub($L.approvers, "false"))+"\")";expressions in $L.file=insert(expressions in $L.file, 1, 1, parse($L.temp, 11))</post>
+      <post sctype="operator">if ($L.group.type~="") then ($L.temp="$L.parms=insert($L.parms,1,1,\"prompt\");$L.values=insert($L.values,1,1,\""+str($L.group.type)+"\")";expressions in $L.file=insert(expressions in $L.file, 1, 1, parse($L.temp, 11)))</post>
+      <post sctype="operator">if ($L.msg="fixed") then ($L.temp2="$L.parms=insert($L.parms,1,1,\"text\");$L.values=insert($L.values,1,1,\""+str($L.message)+"\");$L.parms=insert($L.parms,1,1,\"names,1\");$L.values=insert($L.values,1,1,\""+str($L.num.message)+"\")")</post>
+      <post sctype="operator">if ($L.msg="expressions") then ($L.temp2="$L.parms=insert($L.parms,1,1,\"text\");$L.values=insert($L.values,1,1,$L.message);$L.parms=insert($L.parms,1,1,\"names,1\");$L.values=insert($L.values,1,1,$L.num.message)")</post>
+      <post sctype="operator">expressions in $L.file=insert(expressions in $L.file, 1, 1, parse($L.temp2, 11))</post>
+      <post sctype="operator">if ($L.msg="expressions") then (expressions in $L.file=denull(a in $L.file)+denull(b in $L.file)+expressions in $L.file)</post>
+      <post sctype="operator">expressions in $L.file=insert(expressions in $L.file, 1, 1, parse("$L.parms={};$L.values={}", 11))</post>
+      <post sctype="operator">$L.temp="$L.target=\""+$L.target+"\"";edit.inits in $L.file=insert(edit.inits in $L.file, 1, 1, parse($L.temp, 11))</post>
+      <post sctype="operator">$L.temp="$L.msg=\""+$L.msg+"\"";edit.inits in $L.file=insert(edit.inits in $L.file, 1, 1, parse($L.temp, 11))</post>
+      <post sctype="operator">$L.temp="$L.msg.type=\""+$L.msg.type+"\"";edit.inits in $L.file=insert(edit.inits in $L.file, 1, 1, parse($L.temp, 11))</post>
+      <post sctype="operator">$L.temp="$L.num.message=\""+$L.num.message+"\"";edit.inits in $L.file=insert(edit.inits in $L.file, 1, 1, parse($L.temp, 11))</post>
+      <post sctype="operator">$L.temp="$L.message=\""+$L.message+"\"";edit.inits in $L.file=insert(edit.inits in $L.file, 1, 1, parse($L.temp, 11))</post>
+      <post sctype="operator">$L.temp="$L.combo=\""+$L.combo+"\"";edit.inits in $L.file=insert(edit.inits in $L.file, 1, 1, parse($L.temp, 11))</post>
+      <post sctype="operator">$L.temp="$L.text=\""+$L.text+"\"";edit.inits in $L.file=insert(edit.inits in $L.file, 1, 1, parse($L.temp, 11))</post>
+      <post sctype="operator">$L.temp="$L.group.type=\""+$L.group.type+"\"";edit.inits in $L.file=insert(edit.inits in $L.file, 1, 1, parse($L.temp, 11))</post>
+      <post sctype="operator">$L.temp="$L.approvers=val(\""+$L.approvers+"\",4)";edit.inits in $L.file=insert(edit.inits in $L.file, 1, 1, parse($L.temp, 11))</post>
+      <post sctype="operator">$L.temp="$L.reviewers=val(\""+$L.reviewers+"\",4)";edit.inits in $L.file=insert(edit.inits in $L.file, 1, 1, parse($L.temp, 11))</post>
+    </post>
+    <watches sctype="array">
+      <watches sctype="operator">if ($L.target="number") then (set.property("text.label", "Caption", "Page which Number?");set.property("text.box", "ReadOnly", "No");set.property("combo.label", "Caption", "");set.property("combo.box", "ReadOnly", "Yes"))</watches>
+      <watches sctype="operator">if ($L.target="numberinfile") then (set.property("combo.label", "Caption", "Page which Number?");set.property("text.box", "ReadOnly", "Yes");set.property("text.label", "Caption", "");set.property("combo.box", "ReadOnly", "No"))</watches>
+      <watches sctype="operator">if ($L.target="operator") then (set.property("text.label", "Caption", "Page Which Operator?");set.property("text.box", "ReadOnly", "No");set.property("combo.label", "Caption", "");set.property("combo.box", "ReadOnly", "Yes"))</watches>
+      <watches sctype="operator">if ($L.target="operatorinfile") then (set.property("combo.label", "Caption", "Page Which Operator?");set.property("combo.box", "ReadOnly", "No");set.property("text.label", "Caption", "");set.property("text.box", "ReadOnly", "Yes"))</watches>
+      <watches sctype="operator">if ($L.target="contact") then (set.property("text.label", "Caption", "Page Which Contact?");set.property("text.box", "ReadOnly", "No");set.property("combo.label", "Caption", "");set.property("combo.box", "ReadOnly", "Yes"))</watches>
+      <watches sctype="operator">if ($L.target="contactinfile") then (set.property("combo.label", "Caption", "Page Which Contact?");set.property("combo.box", "ReadOnly", "No");set.property("text.label", "Caption", "");set.property("text.box", "ReadOnly", "Yes"))</watches>
+      <watches sctype="operator">if ($L.msg="fixed") then (set.property("expression.box", "ReadOnly", "Yes");set.property("message.box", "ReadOnly", "No"))</watches>
+      <watches sctype="operator">if ($L.msg="expressions") then (set.property("expression.box", "ReadOnly", "No");set.property("message.box", "ReadOnly", "Yes"))</watches>
+    </watches>
+    <parameter.format type="string">macro.pagecmg.params.1.g</parameter.format>
+    <query.type type="string">character</query.type>
+    <macro.name type="string">Page a ChM Message Group</macro.name>
+    <global.lists NullValue="1" sctype="array">
+      <global.lists NullValue="1" type="string"/>
+    </global.lists>
+    <query2.type NullValue="1" type="string"/>
+    <run.before NullValue="1" type="boolean"/>
+    <sysmodcount type="decimal">6</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">10/25/05 03:23:37</sysmodtime>
+  </record>
+</recordset>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;IDOLImageOCRService&quot;" recordid="IDOLImageOCRService">
+    <name type="string">IDOLImageOCRService</name>
+    <script type="string">var _ = lib.Underscore.require(),
+    XQuery = lib.XQuery.require(),
+    IDOLConfig = lib.IDOLConfigure.require(),
+    IDOLRequest = lib.IDOLRequest.require();
+
+var logger = getLog('IDOLImageOCRService');
+
+var IDOLImageOCRService = (function() {
+  /**
+   * The 'Analyze' action of IDOL Image Server has performance issue
+   * use 'OCR' action instead
+   */
+  
+  function synchronousParseOCR(endpoint, image, languages) {
+    if (!image) return null;
+    var params = {
+      action : 'ocr',
+      imagedata : base64Encode(image),
+      OutputType : 'Text'
+    };
+
+    if (!_.isEmpty(languages)) {
+      params.languages = languages.join(',');
+    }
+  
+    var doc = IDOLRequest.doIDOLPost(endpoint, params);
+    var text = XQuery.queryText('responsedata/page', doc);
+    logger.trace("ocr results:\n" + text);
+    return text;
+  }
+  return {
+    synchronousParse : synchronousParseOCR
+  };
+})();
+
+function require() {
+  return IDOLImageOCRService;
+}
+
+function synchronousParse(image, languages) {
+  var endpoint = IDOLConfig.getImageEndPoint();
+  if (languages &amp;&amp; !_.isArray(languages)) {
+    languages = [languages];
+  }
+  return IDOLImageOCRService.synchronousParse(endpoint, image, languages);
+}</script>
+    <package type="string">IDOL</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:40</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

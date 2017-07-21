@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="displayscreen">
+  <record id="screen.id=&quot;svcCat.display.catalog&quot; and language=&quot;ENG&quot;" recordid="svcCat.display.catalog - ENG">
+    <screen.id type="string">svcCat.display.catalog</screen.id>
+    <screen.id.copy type="string">svcCat.display.catalog</screen.id.copy>
+    <language type="string">ENG</language>
+    <title type="globalVar">$L.title</title>
+    <form type="globalVar">$L.format</form>
+    <io type="boolean">true</io>
+    <time NullValue="1" type="dateTime"/>
+    <initialization sctype="structure">
+      <expressions sctype="array">
+        <expressions sctype="operator">for $L.i = 1 to $L.show do (if (not  (null($L.i in $L.current.items.name))) then ($L.temp="$L.item."+$L.i+"=\""+strrep($L.i in $L.current.items.name, "\"", "\\\"")+"\"");$L.void=evaluate(parse($L.temp, 11)))</expressions>
+        <expressions sctype="operator">for $L.i = 1 to $L.show do (if (not  (null($L.i in $L.current.items.image))) then ($L.temp="$L.image."+$L.i+"=\""+$L.i in $L.current.items.image+"\"");$L.void=evaluate(parse($L.temp, 11)))</expressions>
+        <expressions sctype="operator">for $L.i = 1 to 6 do (if (not  (null($L.i in $L.favorites.display))) then ($L.temp="$L.favorite."+$L.i+"=\""+strrep($L.i in $L.favorites.display, "\"", "\\\"")+"\"");$L.void=evaluate(parse($L.temp, 11)))</expressions>
+        <expressions sctype="operator">for $L.i = 1 to 6 do (if (not  (null($L.i in $L.favorites.image))) then ($L.temp="$L.favorite.image."+$L.i+"=\""+$L.i in $L.favorites.image+"\"");$L.void=evaluate(parse($L.temp, 11)))</expressions>
+        <expressions sctype="operator">for $L.i = 1 to $L.show do (if (not  (null($L.i in $L.current.desc))) then ($L.temp="$L.desc."+$L.i+"=\""+strrep($L.i in $L.current.desc, "\"", "\\\"")+"\"");$L.void=evaluate(parse($L.temp, 11)))</expressions>
+        <expressions sctype="operator">for $L.i = 1 to $L.show do (if (not  (null($L.i in $L.current.cost))) then ($L.temp="$L.cost."+$L.i+"=\""+$L.i in $L.current.cost+"\"");$L.void=evaluate(parse($L.temp, 11)))</expressions>
+        <expressions sctype="operator">for $L.i = 1 to 6 do (if (not  (null($L.i in $L.favorites.one.click))) then ($L.temp="$L.favorites.one.click."+$L.i+"="+val(nullsub($L.i in $L.favorites.one.click, false), 4)+"");$L.void=evaluate(parse($L.temp, 11)))</expressions>
+        <expressions sctype="operator">for $L.i = 1 to $L.show do (if (not  (null($L.i in $L.one.click))) then ($L.temp="$L.one.click."+$L.i+"="+val(nullsub($L.i in $L.one.click, false), 4)+"");$L.void=evaluate(parse($L.temp, 11)))</expressions>
+        <expressions sctype="operator">if nullsub(non.cart in $L.file, false) then ($L.valueCat=$G.svcCat.noncart.category.values) else ($L.valueCat=$G.svcCat.category.values)</expressions>
+        <expressions sctype="operator">if nullsub(non.cart in $L.file, false) then if (nullsub($G.my.language, "en")="en" or nullsub($G.svc.noncart.category.localized, false)) then ($L.displayCat=$G.svcCat.noncart.category.display.values) else ($L.displayCat={};$L.success=rtecall("rinit", $L.ret, $L.svcDisplay, "svcDisplay");for $L.i = 1 to lng($G.svcCat.noncart.category.values) do ($L.success=rtecall("select", $L.ret, $L.svcDisplay, "name=\""+$L.i in $G.svcCat.noncart.category.values+"\"");if ($L.ret=3) then ($L.displayCat=insert($L.displayCat, 0, 1, $L.i in $G.svcCat.noncart.category.display.values)) else ($L.displayCat=insert($L.displayCat, 0, 1, displayName in $L.svcDisplay)));$G.svcCat.noncart.category.display.values=$L.displayCat;$G.svc.noncart.category.localized=true) else if (nullsub($G.my.language, "en")="en" or nullsub($G.svc.category.localized, false)) then ($L.displayCat=$G.svcCat.category.display.values) else ($L.displayCat={};$L.success=rtecall("rinit", $L.ret, $L.svcDisplay, "svcDisplay");for $L.i = 1 to lng($G.svcCat.category.values) do ($L.success=rtecall("select", $L.ret, $L.svcDisplay, "name=\""+$L.i in $G.svcCat.category.values+"\"");if ($L.ret=3) then ($L.displayCat=insert($L.displayCat, 0, 1, $L.i in $G.svcCat.category.display.values)) else ($L.displayCat=insert($L.displayCat, 0, 1, displayName in $L.svcDisplay)));$G.svcCat.category.display.values=$L.displayCat;$G.svc.category.localized=true)</expressions>
+        <expressions sctype="operator">$search.string=nullsub($search.string, "")</expressions>
+      </expressions>
+      <msg.condition NullValue="1" type="boolean"/>
+      <message NullValue="1" type="string"/>
+    </initialization>
+    <screen.id.alias type="string">svcCat.display.catalog</screen.id.alias>
+    <on.enter.key type="string">do nothing</on.enter.key>
+    <window.structure sctype="structure">
+      <open.window NullValue="1" type="boolean"/>
+      <parent.name NullValue="1" type="string"/>
+      <window.name NullValue="1" type="string"/>
+      <window.position type="string">left</window.position>
+      <window.percent NullValue="1" type="decimal"/>
+      <window.lines NullValue="1" type="decimal"/>
+    </window.structure>
+    <screen.id.copy.old type="string">svcCat.display.catalog</screen.id.copy.old>
+    <more.window NullValue="1" type="boolean"/>
+    <user.options NullValue="1" type="boolean"/>
+    <sysmodcount type="decimal">22</sysmodcount>
+    <sysmoduser type="string">xxia</sysmoduser>
+    <sysmodtime type="dateTime">12/19/11 17:18:41</sysmodtime>
+    <object.related NullValue="1" type="boolean"/>
+    <javascript NullValue="1" type="string"/>
+    <search.only NullValue="1" type="boolean"/>
+  </record>
+</recordset>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="scmessage">
+  <record id="syslanguage=&quot;en&quot; and class=&quot;mysm&quot; and message.id=&quot;7&quot;" recordid="en - mysm - 7">
+    <syslanguage type="string">en</syslanguage>
+    <message.id type="string">7</message.id>
+    <severity NullValue="1" type="decimal"/>
+    <message type="string">The new component will be shown in the component gallery in a few minutes.</message>
+    <class type="string">mysm</class>
+    <comments NullValue="1" sctype="array">
+      <comments NullValue="1" type="string"/>
+    </comments>
+    <sysmodtime type="dateTime">03/30/11 15:09:06</sysmodtime>
+    <sysmodcount type="decimal">1</sysmodcount>
+    <sysmoduser type="string">xingjia</sysmoduser>
+  </record>
+</recordset>

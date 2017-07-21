@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptPackage">
+  <record id="name=&quot;Initialization&quot;" recordid="Initialization">
+    <name type="string">Initialization</name>
+    <description type="string">Initialization functions used when you first login to the system.</description>
+    <sysmodtime type="dateTime">04/26/05 04:33:40</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+  </record>
+</recordset>

@@ -1,0 +1,548 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;IDOL_Help&quot;" recordid="IDOL_Help">
+    <name type="string">IDOL_Help</name>
+    <script type="string">var _ = lib.Underscore.require(),
+    IDOLHTALauncher = lib.IDOLHTALauncher.require();
+
+var logger = getLog('IDOL_Help');
+
+function canOpenPH4Incident() {
+  return !!(vars.$lo_idol_enabled &amp;&amp; lib.IDOL_Utilities.hasIDOLRight());
+}
+
+function canOpenPH() {
+  return !!(vars.$lo_idol_enabled &amp;&amp; lib.IDOL_Utilities.hasIDOLRight());
+}
+
+function canOpenSmartTicket() {
+  return !!(vars.$lo_idol_enabled &amp;&amp; lib.IDOL_Utilities.hasIDOLRight());
+}
+
+function canOpenSmartTicket4ESS() {
+  return !!(vars.$lo_idol_enabled &amp;&amp; vars.$lo_idol_img_enabled);
+}
+
+function resetHTA() {
+  _.each([
+    "$idol.tableAccess.folders",
+    "$search.field.keyword",
+    "$search.field.fromdate",
+    "$search.field.todate",
+    "$search.field.advquery.cond",
+    "$idol.state",
+    "$idol.event.params",
+    "$idol.hot.topic.json.data"
+  ], function(name) { vars[name] = null; });
+}
+
+function cleanup() {
+  _.each([
+    "$idol.state",
+    "$idol.event.params",
+    "$idol.hot.topic.json.data"
+  ], function(name) { vars[name] = null; });
+}
+
+function isPDEnabled(filename) {
+  var obj = new Query('Object', new QueryCond('file.name', EQ, filename))[0];
+  return obj &amp;&amp; !!obj["workflowLocation"];
+}
+
+function initializeHTA() {
+  var IDOLSMProfile = lib.IDOLSMProfile.require(),
+      IDOLModuleConfiguration = lib.IDOLModuleConfiguration.require();
+
+  var filename = vars['$L.filename'];
+  var config = IDOLModuleConfiguration.get(filename);
+  vars['$idol.hta.customizedQuery.isEnabled'] = _.result(IDOLModuleConfiguration, 'isCustomizedQueryEnabled');
+  // XXX: should pass ds as parameter
+  vars['$L.screen.id'] = _.result(config, 'displayscreen');
+  // TODO: may use docEngine to get then environment ($L.env)
+  vars["$idol.tableAccess.folders"] = IDOLSMProfile.getTableAccessFolders(filename);
+  vars['$idol.' + filename + '.pd.isEnabled'] = isPDEnabled(filename);
+}
+
+//Set the default value for launch problem hunter rad
+function setDefault4LaunchProblemHunter() {
+  resetHTA();
+  initializeHTA();
+}
+
+//This is for click search button in problem hunter format
+function clickSearch4ProblemHunter() {
+  var keyword = vars['$search.field.keyword'],
+      range = [ vars['$search.field.fromdate'], vars['$search.field.todate'] ],
+      criteria = vars['$L.file'],
+      customQuery = vars['$search.field.advquery.cond'];
+
+  var IDOLQueryEvaluator = lib.IDOLQueryEvaluator.require(),
+      IDOLFieldProcessor = lib.IDOLFieldProcessor.require();
+
+  try {
+    cleanup();
+
+    var jsonData = IDOLHTALauncher.searchHotTopic(keyword, range, criteria, customQuery);
+    vars["$idol.hot.topic.json.data"] = jsonData;
+
+    if ( !jsonData &amp;&amp; customQuery ) {
+      // Check whether there is any field which is not indexed
+      var ast = parseQuery(customQuery);
+      var fieldsInQuery = IDOLQueryEvaluator.collectFieldNames(ast);
+
+      if ( fieldsInQuery &amp;&amp; fieldsInQuery.length &gt; 0 ) {
+        var fname = funcs.filename(criteria);
+        var spec = IDOLFieldProcessor.create(fname);
+        var indexFields = spec.propertyfields;
+        if ( indexFields &amp;&amp; spec.timefield ) {
+          indexFields.push(spec.timefield);
+        }
+
+        var notIndexFields = _.difference(fieldsInQuery, indexFields);
+        if ( notIndexFields &amp;&amp; notIndexFields.length &gt; 0 ) {
+          var tmpRet = new Datum();
+          var fieldCaptions = getFieldsCaption( fname, notIndexFields).join(', ');
+          var message = funcs.scmsg('fields.not.indexed', 'idol', [ fieldCaptions ] );
+          funcs.rtecall("msg", tmpRet, message, 1, null, null, 1);
+        }
+      }
+    }
+  } catch(e) {
+    var error = e.message || e.toString();
+    error = funcs.scmsg(1017, "idol", [error]);
+    funcs.msg(error, 3);
+  }
+}
+
+function getFieldCaption( filename, fieldName ) {
+  var ret = funcs.get_field_caption(fieldName, filename);
+  if (ret.indexOf("Could not be found") &gt;= 0) {
+    ret = fieldName;
+  }
+  return ret;
+}
+
+function getFieldsCaption( filename, fieldNameList ) {
+  var ret = [];
+  _.each( fieldNameList, function( fieldName ){
+    if (fieldName) {
+      ret.push(getFieldCaption(filename, fieldName));
+    }
+  });
+
+  return ret;
+}
+
+function getHTMLContent4ProblemHunter() {
+  var data  = vars["$idol.hot.topic.json.data"],
+      state = vars["$idol.state"],
+      filename = funcs.filename(vars["$L.file"]);
+  return IDOLHTALauncher.generateHotTopic(filename, data, state);
+}
+
+function getProcessName4ProblemHunter() {
+  var JSON = lib.JSON.json();
+  var event = JSON.parse(vars['$idol.event.params']);
+  var next = IDOLHTALauncher.getTicketsHandler.apply(null, event);
+  var process = next.process,
+      params = next.params;
+
+  vars["$L.idol.selected.filename"] = params.filename;
+  vars["$L.idol.selected.query"] = params.query;
+  vars["$L.idol.selected.topic"] = params.topic;
+  return process;
+}
+
+function createTicket(record, filename, query) {
+  var IDOLTicketHandler = lib.IDOLTicketHandler.require();
+  var depend = new SCFile(filename), rc;
+  rc = depend.doSelect(query);
+  if (rc === RC_SUCCESS) {
+    return IDOLTicketHandler.build(record, depend);
+  }
+  return record;
+}
+
+function createProblem() {
+  return createTicket.apply(null, arguments);
+}
+function createChange() {
+  return createTicket.apply(null, arguments);
+}
+function createIncident() {
+  return createTicket.apply(null, arguments);
+}
+
+function hasRecord4HTA(fileName, query) {
+  var bRtn = false;
+  
+  var objFile = new SCFile(fileName, SCFILE_READONLY);
+  
+  if (objFile.doSelect(query) == RC_SUCCESS) {
+    bRtn = true;
+  }
+  
+  return bRtn;
+}
+
+function deleteRelatedRecords(id) {
+  var objFile = new SCFile("screlation");
+  var sql = "source=\""+id+"\" or depend=\""+id+"\" ";
+  
+  if (objFile.doSelect(sql) == RC_SUCCESS) {
+    do
+    {
+      objFile.doDelete();
+    }while (objFile.getNext() == RC_SUCCESS)
+  }
+}
+
+function updateRelatedRecords(id) {
+  var objFile = new SCFile("screlation");
+  var sql = "source=\""+id+"\" or depend=\""+id+"\" ";
+  
+  if (objFile.doSelect(sql) == RC_SUCCESS) {
+    do
+    {
+      objFile.doSave();
+    }while (objFile.getNext() == RC_SUCCESS)
+  }
+}
+
+//Set the default value for launch quick ticket rad 
+function setDefault4QuickNewInteraction() {
+  vars["$idol.category"] = [];
+  vars["$idol.subcategory"] = [];
+  vars["$idol.product.type"] = [];
+  vars["$idol.affected.item"] = [];
+}
+
+function clearFields4QuickTicket() {
+
+  var objFile = vars["$L.file"];
+
+  objFile["callback.contact"] = null;
+  objFile["description"] = null;
+  objFile["title"] = null;
+  objFile["contact.name"] = null;
+  objFile["callback.type"] = null;
+  objFile["initial.impact"] = null;
+  objFile["severity"] = null;
+
+  objFile["category"] = null;
+  objFile["subcategory"] = null;
+  objFile["product.type"] = null;
+  objFile["affected.item"] = null;
+
+  objFile["resolution"] = null;
+
+  vars["$idol.category"] = [];
+  vars["$idol.subcategory"] = [];
+  vars["$idol.product.type"] = [];
+  vars["$idol.affected.item"] = [];
+  vars["$L.classification.clicked"] = false;
+}
+
+function setDefFields4QuickTicket() {
+  var objFile = vars["$L.file"];
+
+  objFile["contact.name"] = objFile["callback.contact"];
+  objFile["callback.type"] = "Telephone";
+  if(objFile["description"]!=null) {
+    objFile["title"] = objFile["description"][0];
+  }
+  objFile["initial.impact"] = "3";
+  objFile["severity"] = "3";
+}
+
+function isPDEnabled4SDModule() {
+  var isPDEnv = false;
+
+  var objFile = new SCFile("Object");
+  var sql = "file.name=\"incidents\"";
+
+  if (objFile.doSelect(sql) == RC_SUCCESS) {
+    if (objFile["workflowLocation"]!=null &amp;&amp; objFile["workflowLocation"]!="") {
+      isPDEnv = true;
+    }
+  }
+
+  return isPDEnv;
+}
+
+function isPDEnabled4IMModule(filename) {
+  var isPDEnv = false;
+
+  var objFile = new SCFile("Object");
+  var sql = "file.name=\""+filename+"\"";
+
+  if (objFile.doSelect(sql) == RC_SUCCESS) {
+    if (objFile["workflowLocation"]!=null &amp;&amp; objFile["workflowLocation"]!="") {
+      isPDEnv = true;
+    }
+  }
+
+  return isPDEnv;
+}
+
+function smartFill4SD() {
+  if (vars.$lo_idol_enabled) {
+    vars["$L.file"].category = null;
+    vars["$L.file"].subcategory = null;
+    vars["$L.file"].product_type = null;
+    vars["$L.file"].affected_item = null;
+
+    vars["$idol.category"] = [];
+    vars["$idol.subcategory"] = [];
+    vars["$idol.product.type"] = [];
+    vars["$idol.affected.item"] = [];
+    vars["$idol.affected.item.key"] = [];
+    vars["$idol.affected.item.display"] = [];
+
+    var company = "";
+    if (vars['$G.multi']) {
+      company = vars["$L.file"].company;
+    }
+
+    tryFillIncidentsByIdol(vars["$L.file"], 3, company, true);
+    //Added for logical name
+    var tableName=funcs.filename(vars["$L.file"]);
+    var DiplayNameHelp = lib.DisplayName;
+    var formInputs=DiplayNameHelp.getFormInputs(vars["$L.format"]);
+    if(formInputs!==null &amp;&amp; formInputs!==""){
+      for(var i=0;i&lt;formInputs.length;i++){
+        if(formInputs[i].indexOf("$idol.")===0){
+          var field=formInputs[i].substr(formInputs[i].indexOf(".")+1);
+          var refTable=DiplayNameHelp.getRefTable(field, tableName);
+          if(refTable!==null &amp;&amp; refTable!==""){
+            var values=vars["$idol." + field];
+            if(values!==null &amp;&amp; values!==""){
+              DiplayNameHelp.getDisplayNamesByIds(refTable,values,vars["$idol.affected.item.key"],vars["$idol.affected.item.display"]);
+            }
+          }
+        }
+      }
+    }
+    //End for logical name
+  }
+}
+
+function setQuickTicketValue4SD() {
+  var objFile = vars["$L.file"];
+
+  if (vars.$lo_idol_enabled) {
+    var company = "";
+    if (vars.$G_multi) company = vars.$lo_operator.company;
+
+    vars["$L.fill.file"] = new SCFile("incidents");
+    vars["$L.fill.file"].description = objFile.description;
+    vars["$L.fill.file"].callback_contact = objFile.callback_contact;
+
+    tryFillIncidentsByIdol(vars["$L.fill.file"], 3, company, false);
+
+    if (objFile.category==null || objFile.category=="")
+    {
+      objFile["category"] = vars["$L.fill.file"].category;
+      objFile["subcategory"] = vars["$L.fill.file"].subcategory;
+      objFile["product.type"] = vars["$L.fill.file"].product_type;
+    }
+    if (objFile.affected_item==null || objFile.affected_item=="")
+    {
+      objFile["affected.item"] = vars["$L.fill.file"].affected_item;
+    }
+  }
+
+  setDefFields4QuickTicket();
+
+  vars["$L.qt.file"] = new SCFile("incidents");
+  funcs.fduplicate(vars["$L.qt.file"], objFile);
+}
+
+function tryFillIncidentsByIdol(in_file, numresult, company, bInfo)
+{
+  if (in_file['callback.contact'] == null || in_file['callback.contact'] == "")
+  {
+    if (bInfo==true) funcs.msg(funcs.scmsg(40,"idol"),3);
+    if (bInfo==true) funcs.cursor_field_name_set("description");
+    return;
+  }
+
+  if (in_file.description!=null &amp;&amp; in_file.description!="")
+  {
+    if (funcs.str(in_file.description)=="{}")
+    {
+      if (bInfo==true) funcs.msg(funcs.scmsg(20,"idol"),3);
+      if (bInfo==true) funcs.cursor_field_name_set("description");
+      return;
+    }
+  }
+  else
+  {
+    if (bInfo==true) funcs.msg(funcs.scmsg(20,"idol"),3);
+    if (bInfo==true) funcs.cursor_field_name_set("description");
+    return;
+  }
+
+  fillIncidentsByIdol(in_file, numresult, company);
+}
+
+
+//using IDOL to fill record's fields
+function fillIncidentsByIdol(in_file, numresult, company)
+{
+  var fadapter = new SCFile(lib.IDOL_Constant.getCategoryConfigFileName());
+  var file_name = funcs.filename(in_file);
+
+  var rc = fadapter.doSelect("table.name=\"" + file_name + "\" and is.active=true");
+  while(rc == RC_SUCCESS)
+  {
+    var targetFields;
+
+    if (!fadapter['level2.field'] &amp;&amp; !fadapter['level3.field']) {
+      targetFields = lib.acicategory.getCategoryByContent(in_file,fadapter.adapter_id,lib.IDOL_Utilities.suggestNumberBeforeFilter(),company);
+      targetFields = lib.IDOL_Utilities.filterIdolIndex(in_file, fadapter['level1.field'], numresult, targetFields);
+    } else {
+      targetFields = lib.acicategory.getCategoryByContent(in_file,fadapter.adapter_id,numresult,company);
+    }
+
+    if (fadapter.level1_field != null)
+    {
+      if (targetFields.length&gt;=1)
+      {
+        var strLevel1FieldName = fadapter.level1_field.toString();
+
+        in_file[strLevel1FieldName] = targetFields[0][0];
+
+        vars["$idol." + strLevel1FieldName] = [];
+        for(var i=0;i&lt;targetFields.length;i++)
+        {
+          vars["$idol." + strLevel1FieldName].push(targetFields[i][0]);
+        }
+      }
+    }
+    if (fadapter.level2_field != null)
+    {
+      if (targetFields.length&gt;=1)
+      {
+        var strLevel2FieldName = fadapter.level2_field.toString();
+
+        in_file[strLevel2FieldName] = targetFields[0][1];
+
+        vars["$idol." + strLevel2FieldName] = [];
+        for(var i=0;i&lt;targetFields.length;i++)
+        {
+          vars["$idol." + strLevel2FieldName].push(targetFields[i][1]);
+        }
+      }
+    }
+    if (fadapter.level3_field != null)
+    {
+      if (targetFields.length&gt;=1)
+      {
+        var strLevel3FieldName = fadapter.level3_field.toString();
+
+        in_file[strLevel3FieldName] = targetFields[0][2];
+
+        vars["$idol." + strLevel3FieldName] = [];
+        for(var i=0;i&lt;targetFields.length;i++)
+        {
+          vars["$idol." + strLevel3FieldName].push(targetFields[i][2]);
+        }
+      }
+    }
+    rc = fadapter.getNext();
+  }
+}
+
+function checkMultiLevelField(fieldName)
+{
+  var position = funcs.index(fieldName, vars['$fieldNames4Rule']);
+
+  if (position==null || position&lt;=0)
+  {
+    var fieldCaption = funcs.get_field_caption(fieldName);
+    vars['$fieldNames4Rule'].push(fieldName);
+    vars['$fieldCaptions4Rule'].push(fieldCaption);
+  }
+}
+
+/**
+ *   Retrieve all hot topic in IDOL configuration
+ **/
+function getAllHTA4GUI() {
+  var objFile = new SCFile("idolpbmhunter", SCFILE_READONLY);
+  var sql = "true";
+
+  vars["$htalist.tablenames"] = [];
+  vars["$htalist.indexstatus"] = [];
+  vars["$htalist.lastindextimes"] = [];
+
+  if (objFile.doSelect(sql) == RC_SUCCESS) {
+    do {
+      vars["$htalist.tablenames"].push(objFile.table_name);
+      vars["$htalist.indexstatus"].push(getHTAIndexStatus(objFile.table_name));
+      vars["$htalist.lastindextimes"].push(getHTALastIndexTime(objFile.table_name));
+    } while (objFile.getNext() === RC_SUCCESS);
+  }
+}
+
+function getHTAIndexStatus(pTableName)
+{
+  var strStatus = "";
+  var ar = [];
+  ar = lib.aciindex.getIndexStatus(pTableName);
+  if (ar != null)
+  {
+    strStatus = ar[1];
+  }
+
+  return strStatus;
+}
+
+function getHTALastIndexTime(pTableName)
+{
+  var strLastIndexTime = "";
+  var idolIndex = new SCFile('idolindex', SCFILE_READONLY);
+  var IDOLCommon = lib.IDOLCommon.require();
+  idolIndex.setFields(['last.index.time']);
+  var queryCond = new QueryCond('table.name', EQ, pTableName)
+    .and(new QueryCond("feature", EQ, IDOLCommon.FEATURES.HTA));
+  var rc = idolIndex.doSelect(queryCond);
+  if (rc === RC_SUCCESS) {
+    strLastIndexTime = idolIndex['last.index.time'];
+  }
+
+  return strLastIndexTime;
+}
+
+function getHTAByTableName(pTableName)
+{
+  var objFile = new SCFile('idolpbmhunter');
+  var rc = objFile.doSelect('table.name="' + pTableName + '"');
+  return rc === RC_SUCCESS ? objFile : null;
+}
+
+function selectHTAInList()
+{
+  var index = funcs.cursor_line(1);
+  vars['$L.has.error.msg'] = false;
+
+  if (index &gt; vars['$htalist.tablenames'].length() || index &lt; 1) {
+    vars['$L.error.msg'] = funcs.scmsg('699', 'idol');
+    funcs.msg(vars['$L.error.msg'],3);
+    vars['$L.has.error.msg'] = true;
+  } else {
+    var strTableName = vars['$htalist.tablenames'][index - 1];
+    vars['$L.hta.file'] = getHTAByTableName(strTableName);
+  }
+}
+
+</script>
+    <package type="string">IDOL</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:39</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">false</sysrestricted>
+  </record>
+</recordset>

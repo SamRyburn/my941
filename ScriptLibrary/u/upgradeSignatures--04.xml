@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;upgradeSignatures&quot;" recordid="upgradeSignatures">
+    <name type="string">upgradeSignatures</name>
+    <script type="string">var versions=[ "SM7.10", 
+               "7.11.000", 
+               "7.11.001", 
+               "7.11.002", 
+               "7.11.003", 
+               "9.20.000", 
+               "9.21.001", 
+               "9.21.002", 
+               "9.21.003",
+               "9.30.000",
+               "9.30.000 PDCP2",
+               "9.30.001",
+               "9.30.002",
+               "9.30.003",
+               "9.31.0022",
+               "9.31.0022 PDCP3",
+               "9.31.0022 PDCP4",
+               "9.32.0016",
+               "9.32.0016 PDCP3",
+               "9.32.0016 PDCP4",
+               "9.33.0035",
+               "9.33.0035 PDCP3",
+               "9.33.0035 PDCP4",
+               "9.34.0032",
+               "9.34.0032 PDCP3",
+               "9.34.0032 PDCP4"
+              ];
+
+                   
+var languages=["en", "ar", "cs", "de", "es", "fr", "he", "hu", "it", "ja", "ko", "nl", "pl", "pt-Br", "ru", "zh-Hans"];
+
+var isIIA=false;
+
+var indexVersion=getVersionIndex();
+version_date=system.functions.str(system.functions.tod());
+
+var enableUpdate=false;
+
+var add_count=0;
+var update_count=0;
+var none_count=0;
+
+function getTag(file)
+{
+    var tag = new SCDatum();
+    system.functions.rtecall("tag", 1, tag, file);
+    var tagStr = tag.getText();
+    return tagStr;
+}
+
+function getTagQuery(filename, tag)
+{
+    var fileTag = new SCFile(filename);
+    
+    var query=new SCDatum();    
+    var ret =0;
+    system.functions.rtecall("tagquery", ret, fileTag, query, tag);
+	return query.getText();
+}
+
+function existTable(table) {
+    var dbdict=new SCFile("dbdict");
+    var rc=dbdict.doSelect("name=\""+table+"\"");
+    if (rc==RC_SUCCESS)
+        return true;
+    print("Table "+table+" doesn't exist.");
+    return false;
+}
+
+function ignoreTable(table) {
+    if (table=="pdpatches") {
+        print("Table "+table+" is ignored.");
+        return true;
+    }
+    return false
+}
+
+
+function makeSignatures(table, query, language) {
+    if (table == null || !existTable(table) || ignoreTable(table))
+        return;
+    
+    var sql="true";
+    if (query != null) {
+        sql=query;
+    }
+    if (language != null) {
+        if (sql.length&gt;0)
+            sql=sql+" and ";
+        sql=sql+"syslanguage=\""+language+"\"";
+    }
+    
+    var sigmake=new SCFile("signaturemake");
+    var rc=sigmake.doSelect("table.name=\""+table+"\"");
+    
+    
+    if (rc != RC_SUCCESS)
+        return;
+        
+    var include=sigmake.fieldarray_type;
+    
+    var file=new SCFile(table);
+    rc=file.doSelect(sql);
+    
+    var count=0;
+    while (rc == RC_SUCCESS) {
+        count=count+1;
+        
+        var name="";
+        var oldname="";
+        
+        if (table=="inbox")
+            name=file["inbox.id"];
+        
+        for (var i=0; i&lt;sigmake.key.length(); i++) {
+            
+            if ((table == "help" || table == "format" || table == "scmessage") &amp;&amp; sigmake.key[i]=="syslanguage") {
+                continue;
+            }
+            if (table=="inbox")
+                break;
+            if (file[sigmake.key[i]]==null)
+                name+="NULL";
+            else 
+                name+=file[sigmake.key[i]];
+            
+        }
+        
+        if (table == "help" || table == "format" || table == "scmessage") {
+            oldname=name+file.syslanguage;
+            name=file.syslanguage+name;        
+        }
+        
+        
+        var signature;
+        var fields = sigmake.fields;
+        if (include == null) {
+            signature=system.functions.make_sig(file);
+        } else {
+            signature=system.functions.make_sig(file, sigmake.fields, include);
+        }
+        if (signature != null) {
+            var tag=getTag(file);
+            if (table=="inbox")
+                tag=table+";"+file["inbox.id"];
+            insertSignature(table, name, signature, indexVersion, oldname, tag);
+        }
+        
+        if (count % 1000==0)
+            print("Make "+count+" Signatures for table "+table+(language!=null? " language "+language : "")+".");
+        rc=file.getNext();
+    }
+    print("Make "+count+" Signatures for table "+table+(language!=null? " language "+language : "")+".");
+    system.functions.rtecall("log", 1, "[Finish] Table "+table+" count "+count+" is finished.");
+}
+
+function length(array) 
+{
+	if (array == null)
+		return 0;
+		
+	if (array instanceof Array)
+		return array.length;
+		
+	return array.length();
+}
+
+function indexOfArray(array, value)
+{
+	if (array==null || length(array)==0 || value == null)
+		return -1;
+
+	for (var i=0; i &lt; length(array); i++)
+	{
+		if (array[i] == value)
+			return i;
+	}
+	
+	return -1;
+}
+
+function getRecord(table, query)
+{
+	var file = new SCFile(table);
+	var rc = file.doSelect(query);
+	if(rc == RC_SUCCESS){
+		return file;
+	}
+	return null;
+}
+
+function parseVersion(version)
+{
+	if(version != null)
+	{
+		if (version.indexOf("SM7.0")==0 || version.indexOf("SM7-")==0 
+		|| version.indexOf("SM 7.0")==0 || version.indexOf("7.0")==0
+		|| version.indexOf("7.0-")==0)
+		{
+			version="SM7";
+		}			
+	}
+	return version;	
+} 
+
+
+function getCurrentVersion() {
+    var pdVersion=getPdVersion();
+    var scversion=getSCVersion();
+    if (pdVersion=="")
+        return scversion;
+    return scversion+" "+pdVersion;
+}
+
+function getSCVersion()
+{
+	var scversionFile = getRecord("scversion", "true");
+	if(scversionFile != null &amp;&amp; scversionFile.application_version != null)
+	{
+		return parseVersion(scversionFile.application_version);
+	}else
+	{
+		return "Unknown";
+	}
+}
+
+function getPdVersion() {
+    var pdversion=""
+    
+    var dbdict=getRecord("dbdict", "name=\"contentversion\"");
+    if (dbdict == null) 
+        return "";
+    var pdversionFile = getRecord("contentversion", "module=\"Process_Designer\"");
+    
+    if(pdversionFile != null &amp;&amp; pdversionFile.version != null) {
+        switch (pdversionFile.version) {
+            case "9.30.1":
+                 pdversion="PDCP2";
+                 break;
+            case "9.30.2":
+                 pdversion="PDCP3";
+                 break;
+            case "9.30.3":
+                 pdversion="PDCP4";
+                 break;
+        }
+    }
+    return pdversion;
+}
+
+function getVersionIndex() {
+    var currVer=getCurrentVersion();
+    
+    if (currVer=="SM7" &amp;&amp; isIIA) {
+        currVer="SM7IIA";
+    }
+    
+    var index=indexOfArray(versions, currVer);
+    return index;
+}
+
+function insertSignature(table, name, signature, verindex, oldname, tag) {
+    if (!isSignatureNew(table, name, signature, verindex, oldname, tag)) {
+        return;
+    }
+    var file=new SCFile("signatures");
+    file.object_type=table;
+    file.object_name=name;
+    file.type="Release";
+    file.signature=signature;
+    file.release_version=versions[verindex];
+    
+    file.tag=tag;
+    file.signature_date=system.functions.val(version_date, 3);
+    add_count++;
+    system.functions.rtecall("log", 1, "[Add] Signature "+signature+" of table "+table+" name "+name+" for "+versions[verindex]+" tag:"+tag+" is added.");
+    if (enableUpdate) {
+        system.functions.rtecall("log", 1, "Execute insert");
+        file.doInsert();
+    }
+}
+
+function updateSignature(file, signature, verindex) {
+    system.functions.rtecall("log", 1, "[Update] Signature "+signature+" of table "+file.object_type+" name "+file.object_name+" with signature "+signature+" for "+versions[verindex]+" is updated from signature "+file.signature+" for "+file.release_version);
+    file.release_version=versions[verindex];
+    file.signature_date=system.functions.val(version_date, 3);
+    update_count++;
+    if (enableUpdate) {
+        system.functions.rtecall("log", 1, "Execute update");
+        file.doUpdate();
+    }
+}
+
+function escapeQuote(str) {
+    if (str != null &amp;&amp; str.length&gt;0) {
+		str = str.replace(/"/g, "\\\"");
+	}
+	return  str;
+}
+
+function isSignatureNew(table, name, signature, verindex, oldname, tag) {
+    var query="object.type=\""+table+"\" and object.name=\""+escapeQuote(name)+"\" and signature="+signature;
+    if (table == "help" || table == "format" || table == "scmessage") {
+        query="object.type=\""+table+"\" and (object.name=\""+escapeQuote(name)+"\" or object.name=\""+escapeQuote(oldname)+"\") and signature="+signature;
+    }
+    var file=new SCFile("signatures");
+    var rc=file.doSelect(query);
+    if (rc==RC_SUCCESS) {
+        if (file.release_version==null || file.release_version.length==0 || verindex&lt;indexOfArray(versions, file.release_version)) {
+            file.tag=tag;
+            updateSignature(file, signature, verindex);
+        } else {
+            none_count++;
+            system.functions.rtecall("log", 1, "[None] Signature "+signature+" of table "+table+" name "+name+" is not changed");
+        }
+        return false;
+    }
+    return true;
+}
+
+function updateSignatureName(table) {
+   var sigmake = getSignatureMake(table);
+   if (sigmake == null)
+       return;
+   var file = new SCFile(table);
+   var rc = file.doSelect("true");
+   while (rc == RC_SUCCESS) {
+       var oldname = getSignatureName(file, sigmake, true, table);
+       var newname = getSignatureName(file, sigmake, false, table);
+       var sig = new SCFile("signatures");
+       var rc1 = sig.doSelect("object.type=\""+table+"\" and object.name=\""+oldname+"\"");
+       while (rc1 == RC_SUCCESS) {
+           sig.object_name=newname;
+           if (!hasDuplicateSignature(sig)) {
+               system.functions.rtecall("log", 1, "[Update] Signature "+sig.signature+" of table "+sig.object_type+" name "+oldname+" for "+sig.release_version+" is updated to name "+sig.object_name);
+               if (enableUpdate) {
+                   system.functions.rtecall("log", 1, "Execute update");
+                   sig.doUpdate();
+               }
+           }
+           rc1 = sig.getNext();
+       }
+       rc = file.getNext();
+   }
+}
+
+function getSignatureName(file, sigmake, old, table) {
+    var name="";
+    for (var i=0; i&lt;sigmake.key.length(); i++) {
+        
+        if (table == "help" &amp;&amp; sigmake.key[i] == "syslanguage")
+            continue;
+        if (file[sigmake.key[i]]==null)
+            name+="NULL";
+        else 
+            name+=file[sigmake.key[i]];
+            
+    }
+    
+    if (table == "help") {
+       if (old) {
+           name+=file.syslanguage;
+       } else {
+           name=file.syslanguage+name;
+       }
+    }
+    
+    return name;
+}
+
+function getSignatureMake(table) {
+    var sigmake = new SCFile("signaturemake");
+    var rc = sigmake.doSelect("table.name=\""+table+"\"");
+    if (rc == RC_SUCCESS) {
+        return sigmake;
+    }
+    return null;
+}
+
+function hasDuplicateSignature(sigrecord) {
+    var sig = new SCFile("signatures");
+    var rc = sig.doSelect("object.type=\""+sigrecord.object_type+"\" and object.name=\""+sigrecord.object_name+"\" and signature="+sigrecord.signature);
+    if (rc == RC_SUCCESS) {
+        system.functions.rtecall("log", 1, "[Duplicated]Signature "+sig.signature+" of table "+sig.object_type+" name "+sig.object_name+" has duplicated signature in "+sig.release_version);
+        var index1 = indexOfArray(versions, sigrecord.release_version);
+        var index2 = indexOfArray(versions, sig.release_version);
+        if (index1 &lt; index2) {
+            system.functions.rtecall("log", 1, "Update high version to lower");
+            sig.release_version = sigrecord.release_version;
+            sig.release_date = sigrecord.signature_date;
+            if (enableUpdate) {
+                system.functions.rtecall("log", 1, "Execute update");
+                sig.doUpdate();
+            }
+        } else if (index1 == index2) {
+            system.functions.rtecall("log", 1, "Strange Same");
+        } else {
+            system.functions.rtecall("log", 1, "Do nothing");
+        }
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function updatePatchSignatures(name) {
+    var patch=new SCFile("patches");
+    var rc=patch.doSelect("name=\""+name+"\"");
+    if (rc==RC_SUCCESS) {
+        makeSignatures("code", patch.applicaton_sql);
+        for (var j=0; j&lt;languages.length; j++) {
+            makeSignatures("format", patch.format_sql, languages[j]);
+        }
+        
+        for (var i=0; i&lt;system.functions.lng(patch.secondary); i++) {
+            var dbdict=patch.secondary[i].dbdict;
+            if (dbdict=="code" || dbdict=="format" || dbdict=="pdpatches")
+                continue;
+            if (dbdict=="help" || dbdict=="scmessage") {
+                for (var j=0; j&lt;languages.length; j++) {
+                    makeSignatures(dbdict, patch.secondary[i].query, languages[j]);
+                }
+            } else {
+                makeSignatures(dbdict, patch.secondary[i].query);
+            }
+        }
+        
+    }
+    system.functions.rtecall("log", 1, "[Total] Signatures Add: "+add_count+" Update: "+update_count+" None: "+none_count);
+}
+
+function getObjectNameFromTag(table, tag) {
+    return tag.replace(/;/g, "").substring(table.length);
+}
+
+function updatePdPatchSignatures() {
+    var pdpatch=new SCFile("pdpatches");
+    var rc=pdpatch.doSelect("filename~=\"datadict\" and action~=\"remove\"");
+    while (rc==RC_SUCCESS) {
+        var query=getTagQuery(pdpatch.filename, pdpatch.tag);
+        if (pdpatch.filename=="inbox") {
+            var objname=getObjectNameFromTag(pdpatch.filename, pdpatch.tag);
+            query="inbox.id="+objname;
+        }
+        makeSignatures(pdpatch.filename, query);
+        rc=pdpatch.getNext();
+    }
+    system.functions.rtecall("log", 1, "[Total] Signatures Add: "+add_count+" Update: "+update_count+" None: "+none_count);
+}
+
+enableUpdate=true;
+isIIA=false;
+/**
+for (var j=0; j&lt;languages.length; j++) {
+    makeSignatures("format", "true", languages[j]);
+}
+/*
+makeSignatures("currency");
+makeSignatures("assignment");
+makeSignatures("inbox");
+makeSignatures("scripts");
+makeSignatures("code"); */
+/*
+updatePatchSignatures("SM94");
+updatePdPatchSignatures();
+*/
+</script>
+    <package type="string">Upgrade</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:45</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

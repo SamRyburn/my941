@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;Test_ScAPI_WSInterface_Item&quot;" recordid="Test_ScAPI_WSInterface_Item">
+    <name type="string">Test_ScAPI_WSInterface_Item</name>
+    <script type="string">/*
+ * Unit test for Test_ScAPI_WebService_Interface
+ */
+
+function Test_ScAPI_WSInterface_Item() {}
+
+Test_ScAPI_WSInterface_Item.prototype = {
+	
+    setup: function () {
+    	vars.$L_file = new SCFile("joinsvcDisplay");
+    	
+    },
+
+    teardown:function () {
+    	vars.$L_file = null;
+    },
+
+   	testGetItem: function() {
+   		//xingjia  only can retrieve item with 'svcCatEmployeeRequester' permission. and his currency is HKD
+   		vars.$L_file["x.requestFor"] = "xingjia";
+   		vars.$L_file.name = "Business Call from Home";   		
+   		
+   		lib.ScAPI_WSInterface_Item.getItem();
+   		
+   		lib.SMTFCore.assertEquals("HK$ 0.00", vars.$L_file["x.unitCost"]);
+   		
+   		lib.SMTFCore.assertEquals("&lt;validations/&gt;", vars.$L_file["option.validations"]);
+		lib.SMTFCore.assertEquals("&lt;form/&gt;", vars.$L_file.options);   		
+   		
+   		
+   	}
+   	
+
+}</script>
+    <package type="string">ScAPI</package>
+    <sysmodtime type="dateTime">11/15/09 15:19:46</sysmodtime>
+    <sysmoduser type="string">xingjia</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

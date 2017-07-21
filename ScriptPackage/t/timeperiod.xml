@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptPackage">
+  <record id="name=&quot;timeperiod&quot;" recordid="timeperiod">
+    <name type="string">timeperiod</name>
+    <description NullValue="1" type="string"/>
+    <sysmodtime type="dateTime">03/16/14 22:11:29</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">2</sysmodcount>
+  </record>
+</recordset>

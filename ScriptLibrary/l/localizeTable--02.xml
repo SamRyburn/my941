@@ -1,0 +1,634 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;localizeTable&quot;" recordid="localizeTable">
+    <name type="string">localizeTable</name>
+    <script type="string">function createAllEntries( filename, fieldname )
+{	
+	if ( fieldname == null )
+	{
+		fieldname = "name";
+	}
+
+	var record = new SCFile( filename );
+	if ( record.doSelect( "true" ) == RC_SUCCESS )
+	{
+		do
+		{
+			createEntry( record,  filename, fieldname );
+		}
+		while ( record.getNext() == RC_SUCCESS );
+	}
+}
+
+function createEntry( record, filename, fieldname )
+{
+	var activeLanguage = new Array();
+	activeLanguage = getActiveLanguages();
+	
+	var tag = getRecordTag( record );
+	
+	var field = record[fieldname];
+	
+	for ( var i=0;i&lt; activeLanguage.length;++i )
+	{
+			
+		addMessageRecord( filename, tag, field, activeLanguage[i] );
+	}
+}
+
+function addMessageRecord( filename, tag, text, language )
+{
+	var PREFIX = "local";
+	var message = new SCFile("scmessage");
+	var msgclass = PREFIX + ":" + filename;
+	var sql = "syslanguage=\"" + language +"\" and class=\""+ msgclass + "\" and message.id=\""+ tag +"\""; 
+	
+	if ( message.doSelect( sql ) != RC_SUCCESS )
+	{
+		message.syslanguage = language;
+		message._class = msgclass;
+		message.message_id = tag;
+		message.message = text;
+
+		
+		message.doInsert();
+	}
+}
+
+function updateEntry( record, oldrecord, filename, fieldname )
+{
+	var oldValue = oldrecord[fieldname];
+	var newValue = record[fieldname];
+
+	var oldTag = getRecordTag( oldrecord );
+	var tag = getRecordTag( record );
+
+	if ( oldValue != newValue || oldTag != tag )
+	{
+		removeEntry( filename, oldrecord );
+	
+		var activeLanguage = new Array();
+		activeLanguage = getActiveLanguages();
+		
+		
+		
+		var field = record[fieldname];
+		
+		for ( var i=0;i&lt; activeLanguage.length;++i )
+		{
+			addMessageRecord( filename, tag, field, activeLanguage[i] );
+		}
+	}
+}
+
+function removeEntry( filename, record )
+{
+	var PREFIX = "local";
+	var message = new SCFile("scmessage");
+	var msgclass = PREFIX + ":" + filename;
+	var tag = getRecordTag( record );
+	
+	var sql = "syslanguage~=\"xxx\" and class=\""+ msgclass + "\" and message.id=\""+ tag +"\""; 
+	
+	if ( message.doSelect( sql ) == RC_SUCCESS )
+	{
+		do
+		{
+			message.doDelete();
+		}
+		while ( message.getNext() == RC_SUCCESS );
+	}
+}
+
+function removeAllEntries( filename )
+{
+	if ( filename != null )
+	{
+		var PREFIX = "local";
+		var message = new SCFile("scmessage");
+		var msgclass = PREFIX + ":" + filename;
+		var sql = "syslanguage~=\"xxx\" and class=\""+ msgclass + "\"";
+		
+		if ( message.doSelect( sql ) == RC_SUCCESS )
+		{
+			do
+			{
+				message.doDelete();
+			}
+			while ( message.getNext() == RC_SUCCESS );
+		}
+	}
+}
+
+function createLocalLists( globalList, filename, tags, values )
+{
+	removeAllLocalLists( globalList.name );
+
+	var activeLanguage = getActiveLanguages();
+	
+	for ( var i in activeLanguage )
+	{
+		var PREFIX = "local";
+		var localList = new SCFile( "locallist" );
+		localList.name = globalList.name;
+		localList.syslanguage = activeLanguage[i];
+		
+		var list = globalList.display_list;
+		for ( var index = 0, indexLoopTimes = tags.length(); index &lt; indexLoopTimes; index++ )
+		{
+			var msgclass = PREFIX + ":" + filename;
+			var id = tags[index];
+	
+			var value = getLocalValue( msgclass, id, activeLanguage[i], values[index] );
+			localList.display_list[index] = value;
+		}
+		localList.display_list_str = system.functions.str( localList.display_list );
+		localList.doInsert();
+	}
+	
+}
+
+function getLocalValue( msgclass, id, language, defaultValue )
+{
+	var message = new SCFile("scmessage");
+	var sql = "syslanguage=\"" + language +"\" and class=\""+ msgclass + "\" and message.id=\""+ id +"\""; 
+	if ( message.doSelect( sql ) == RC_SUCCESS )
+	{
+		var msg = message.message;
+		if ( msg != null )
+			return msg;
+		else
+			return defaultValue;
+	}
+	
+	return defaultValue;
+}
+
+function getActiveLanguages()
+{
+	var language = new SCFile("language");
+	var activeLanguage = new Array();
+	var sql = "active=true";
+
+	if ( language.doSelect( sql ) == RC_SUCCESS )
+	{
+		do
+		{
+			
+			activeLanguage.push( language.unique_id );
+		}
+		while ( language.getNext() == RC_SUCCESS );
+	}
+	
+	return activeLanguage;
+}
+
+function getRecordTag( record )
+{
+	var tag = new SCDatum();
+	system.functions.tag(tag, record);
+
+	var index = system.functions.index(";" , tag) + 1;
+	
+	if ( index &gt;= 0 )
+	{
+		var lng = system.functions.lng(tag);
+		tag = system.functions.substr( tag, index, lng );
+	}
+	return tag;
+}
+
+function removeAllLocalLists( name )
+{
+	var localList = new SCFile( "locallist" );
+	var sql = "name=\""+name+"\" and syslanguage~=\"xxx\"";
+	
+	if ( localList.doSelect( sql ) == RC_SUCCESS )
+	{
+		do
+		{
+			localList.doDelete();
+		}
+		while ( localList.getNext() == RC_SUCCESS );
+	}
+}
+
+function getLocalizedValues( name, defaults )
+{
+	var localList = new SCFile( "locallist" );
+	var sql = "name=\""+name+"\"";
+	if ( localList.doSelect(sql) == RC_SUCCESS )
+	{
+		return system.functions.str( localList.display_list );
+	}
+	return defaults;
+	
+}
+
+function createTriggers( filename )
+{
+	createAddTrigger( filename );
+	createUpdateTrigger( filename );
+	createDeleteTrigger( filename );
+}
+
+function removeTriggers( filename )
+{
+	if ( filename != null )
+	{
+		var trigger = new SCFile("triggers");
+		var triggerNameAdd = "trigger.localize."+filename+".add";
+		var triggerNameUpdate = "trigger.localize."+filename+".update";
+		var triggerNameDelete = "trigger.localize."+filename+".delete";
+		var sql = "trigger.name=\""+ triggerNameAdd +"\" or trigger.name=\""+ 
+			triggerNameUpdate +"\" or trigger.name=\""+ triggerNameDelete +"\"";
+		if ( trigger.doSelect( sql ) == RC_SUCCESS )
+		{
+			do
+			{
+				trigger.doDelete();
+			}
+			while ( trigger.getNext() == RC_SUCCESS );
+		}
+	}
+}
+
+function createAddTrigger( filename )
+{
+	if ( filename != null )
+	{
+		var trigger = new SCFile("triggers");
+		var triggerName = "trigger.localize."+filename+".add";
+		var sql = "trigger.name=\""+ triggerName +"\"";
+		if ( trigger.doSelect( sql ) != RC_SUCCESS )
+		{
+			trigger.trigger_name = triggerName;
+			trigger.trigger_type = 2;
+			trigger.table_name = filename;
+						
+			trigger.javascript = "lib.localizeTable.onAddTrigger( record );"
+			
+			trigger.doInsert();	
+		}
+	}
+}
+
+function createUpdateTrigger( filename )
+{
+	if ( filename != null )
+	{
+		var trigger = new SCFile("triggers");
+		var triggerName = "trigger.localize."+filename+".update";
+		var sql = "trigger.name=\""+ triggerName +"\"";
+		if ( trigger.doSelect( sql ) != RC_SUCCESS )
+		{
+			trigger.trigger_name = triggerName;
+			trigger.trigger_type = 4;
+			trigger.table_name = filename;
+						
+			trigger.javascript = "lib.localizeTable.onUpdateTrigger( record, oldrecord );"
+			
+			trigger.doInsert();	
+		}
+	}
+}
+
+function createDeleteTrigger( filename )
+{
+	if ( filename != null )
+	{
+		var trigger = new SCFile("triggers");
+		var triggerName = "trigger.localize."+filename+".delete";
+		var sql = "trigger.name=\""+ triggerName +"\"";
+		if ( trigger.doSelect( sql ) != RC_SUCCESS )
+		{
+			trigger.trigger_name = triggerName;
+			trigger.trigger_type = 6;
+			trigger.table_name = filename;
+						
+			trigger.javascript = "lib.localizeTable.onDeleteTrigger( record );"
+			
+			trigger.doInsert();	
+		}
+	}
+}
+
+
+function onAddTrigger( record )
+{
+
+	var filename = system.functions.filename( record );
+	var fieldname = getLocalizedField( filename );
+
+	createEntry( record, filename, fieldname );
+}
+
+function onUpdateTrigger( record, oldrecord )
+{
+	var filename = system.functions.filename( record );
+	var fieldname = getLocalizedField( filename );
+
+	updateEntry( record, oldrecord, filename, fieldname );
+}
+
+function onDeleteTrigger( record )
+{
+	var filename = system.functions.filename( record );
+	var fieldname = getLocalizedField( filename );
+	removeEntry( filename, record );
+}
+
+function getLocalizedField( filename )
+{
+	var datapolicy = new SCFile("datadict");
+	if ( filename != null )
+	{
+		var sql = "name=\""+filename+"\"";
+		if ( datapolicy.doSelect( sql ) == RC_SUCCESS )
+		{
+			if ( datapolicy.localizedField != null )
+			{
+				return datapolicy.localizedField;
+			}
+		}
+	}
+	return "name";
+}
+
+function runLocalizationUtil( utilRecord )
+{
+	var formNames = utilRecord.formatName;
+	var fieldNames = utilRecord.fieldName;
+	var globalNames = utilRecord.globalList;
+
+	var datapolicy = new SCFile("datadict");
+	if ( utilRecord.tableName != null )
+	{
+		var sql = "name=\""+ utilRecord.tableName + "\"";
+		if ( datapolicy.doSelect( sql ) == RC_SUCCESS )
+		{
+			var modified = false;
+			for ( var x in fieldNames )
+			{
+				var idx = system.functions.index( fieldNames[x], datapolicy.fields );
+				var index = idx - 1;
+				if ( index &gt; -1 &amp;&amp; datapolicy.globallist[index] != globalNames[x] )
+				{
+					datapolicy.globallist = system.functions._delete( datapolicy.globallist, idx );
+					datapolicy.globallist = system.functions.insert( datapolicy.globallist, idx, 1, globalNames[x] );
+					modified = true;
+				}
+			}
+			if ( modified )
+			{
+				var rc = datapolicy.doUpdate();
+				print( system.functions.scmsg( 167, "ScriptLibrary", [datapolicy.name] ) );				
+			}
+		}
+		
+		for ( var i in formNames )
+		{
+			updateForm( formNames[i], fieldNames, globalNames );
+		}
+	}
+}
+
+function updateForm( formName, fieldNames, listNames )
+{
+	var form = new SCFile("format");
+	var modified = false;
+	if ( formName == null || fieldNames == null || listNames == null )
+	{
+		return false;
+	}
+	
+	var formSQL = "name=\""+formName+"\" and syslanguage~=\"xxx\"";
+	
+	if ( form.doSelect( formSQL ) == RC_SUCCESS )
+	{
+		do
+		{
+			var lng = form.field.length();
+			var flng = fieldNames.length();
+
+			for (var f = 0; f &lt; flng; f++ )
+			{
+				var fieldName = fieldNames[f];
+				var listName = listNames[f];
+
+				for (var i = 0; i &lt; lng; i++)
+				{
+					if ( form.field[i].input == fieldName )
+					{
+						if ( form.field[i].property != null )
+						{
+							var prop = translateFieldProperty( form.field[i].property, listName );
+							if ( prop != form.field[i].property &amp;&amp; prop != null )
+							{
+								form.field[i].property = prop;
+								modified = true;
+							}
+						}
+					}
+				}
+			}
+		
+			if ( modified )
+			{
+				form.doUpdate();
+				print( system.functions.scmsg( 166, "ScriptLibrary", [form.name] ) );				
+			}
+		}
+		while (form.getNext() == RC_SUCCESS );
+	}
+	
+}
+
+function translateFieldProperty( property, listName )
+{
+	var tab = "\t";
+	var displayList;
+	var valueList;
+	var index = system.functions.index( ";" , property);
+	var list = new SCFile("globallists");
+	if ( listName == null )
+		return property;
+		
+	var listSQL = "name=\""+listName+"\"";
+	if ( list.doSelect( listSQL) == RC_SUCCESS )
+	{
+		displayList = list.display_variable;
+		valueList = list.list_variable;
+	}
+	else
+	{
+		return property
+	}
+	
+	
+	if ( index &gt; 0 )
+	{
+		var lng = system.functions.lng( property );
+		var header = system.functions.substr( property, 1, index - 1 );
+		if ( header == "Text")
+			header = "ComboBox";
+		
+		var propstring = system.functions.substr( property, index + 1, lng );
+		var props = propstring.split( tab );
+		var hasDisplay=false;
+		var hasValue=false;
+		var hasCombo=false;
+		
+		for ( var i in props )
+		{
+			var x = system.functions.index( "=", props[i] );
+			var l = system.functions.lng( props[i] );
+			var type = system.functions.substr( props[i], 1, x - 1 );
+
+			if ( type == "ValueList" )
+			{
+				props[i] = "ValueList="+valueList;
+				hasValue = true;
+			}
+			if ( type == "DisplayList" ) 
+			{
+				if ( displayList != null )
+				{
+					props[i] = "DisplayList="+displayList;
+					hasDisplay = true;
+				}
+				else
+				{
+					props[i] = null;
+				}
+			}
+			if ( header == "ComFill" &amp;&amp; type == "ComboButtonVisible" )
+			{
+				props[i] = "ComboButtonVisible=1";
+				hasCombo = true;
+			}
+		}
+		
+		if ( !hasValue )
+		{
+			props.push( "ValueList="+valueList );
+		}
+		if ( !hasDisplay &amp;&amp; displayList != null)
+		{
+			props.push( "DisplayList="+displayList );
+		}
+		if ( header == "ComFill" &amp;&amp; !hasCombo )
+		{
+			props.push( "ComboButtonVisible=1" );
+		}
+		
+		var temp;
+		temp = header + ";";
+		
+		for ( var i in props )
+		{
+			if ( props[i] != null )
+			{
+				if ( i &gt; 0 )
+				{
+					temp+=tab;
+				}
+				temp += props[i];
+			}
+		}
+		
+		property = temp;
+	}
+	
+	return property;
+}
+
+function localizeList( ids, labels, language, msgclass, actionType )
+{
+	if ( language == null )
+	{
+		language = $G.my.language;
+	}
+	
+	if ( actionType == "add" || actionType == "addonly" )
+	{
+		
+		for (var i in ids )
+		{
+			var lang = new SCFile("language");
+			var langSql = "active=true";
+			if ( lang.doSelect( langSql ) == RC_SUCCESS )
+			{
+				
+				do
+				{
+					var msg = new SCFile("scmessage");
+					var sql = "syslanguage=\""+lang.unique_id+"\" and class=\""+ msgclass +"\" and message.id=\""+ ids[i] +"\"";
+					if ( msg.doSelect(sql) == RC_SUCCESS )
+					{
+						if ( msg.syslanguage == language &amp;&amp; actionType == "add" )
+						{
+							msg.message = labels[i];
+						}
+						msg.doUpdate();
+					}
+					else
+					{
+						msg.syslanguage = lang.unique_id;
+						msg._class = msgclass;
+						msg.message_id = system.functions.str( ids[i] )
+						msg.message = labels[i];
+						msg.doInsert();
+					}
+				}
+				while ( lang.getNext() == RC_SUCCESS );
+			}
+		}
+	}
+	if ( actionType == "update" )
+	{
+		for (var i in ids )
+		{
+			var msg = new SCFile("scmessage");
+			var sql = "syslanguage=\""+language+"\" and class=\""+ msgclass +"\" and message.id=\""+ ids[i] +"\"";
+			if ( msg.doSelect(sql) == RC_SUCCESS )
+			{
+				msg.message = labels[i];
+				msg.doUpdate();
+			}
+			else
+			{
+				msg.syslanguage = language;
+				msg._class = msgclass;
+				msg.message_id = system.functions.str( ids[i] );
+				msg.message = labels[i];
+				msg.doInsert();
+			}
+		}
+	}
+	if ( actionType == "delete" )
+	{
+		for (var i in ids )
+		{
+			var msg = new SCFile("scmessage");
+			var sql = "syslanguage~=\"xxx\" and class=\""+ msgclass +"\" and message.id=\""+ ids[i] +"\"";
+			if ( msg.doSelect(sql) == RC_SUCCESS )
+			{
+				do
+				{
+					msg.doDelete();
+				}
+				while ( msg.getNext() == RC_SUCCESS );
+			}
+		}
+	}
+
+}</script>
+    <package type="string">BaseUtilities</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:42</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

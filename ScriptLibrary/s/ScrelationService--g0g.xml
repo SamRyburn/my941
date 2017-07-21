@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;ScrelationService&quot;" recordid="ScrelationService">
+    <name type="string">ScrelationService</name>
+    <script type="string">var $ = lib.c.$;
+
+var ScrelationService = $({
+	countRelatedRecords : function(source, qry) {
+		qry = qry || "";
+		var count = $("screlation").count("source=\"" + source + "\"" + qry);
+		return count;
+	}
+});
+
+function getClass() {
+	return ScrelationService;
+}</script>
+    <package NullValue="1" type="string"/>
+    <sysmodtime type="dateTime">09/18/13 13:20:38</sysmodtime>
+    <sysmoduser type="string">shiji.shu</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

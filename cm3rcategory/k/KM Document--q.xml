@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="cm3rcategory">
+  <record id="name=&quot;KM Document&quot;" recordid="KM Document">
+    <name mandatory="true" type="string">KM Document</name>
+    <phases sctype="array">
+      <phases sctype="string">KM 1 Triage</phases>
+      <phases sctype="string">KM 2 Revise</phases>
+      <phases sctype="string">KM 3 Review Read-only</phases>
+      <phases sctype="string">KM 4 Conclude</phases>
+    </phases>
+    <avail.cond mandatory="true" type="boolean">true</avail.cond>
+    <active type="boolean">true</active>
+    <description type="string">Maintain a Knowledge Document</description>
+    <assign.number type="boolean">true</assign.number>
+    <sysmodcount type="decimal">2</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">12/07/14 20:39:48</sysmodtime>
+    <company NullValue="1" type="string"/>
+    <default.template NullValue="1" type="string"/>
+    <workflow type="string">KM Document</workflow>
+  </record>
+</recordset>

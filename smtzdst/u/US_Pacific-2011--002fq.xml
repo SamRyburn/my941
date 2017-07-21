@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="smtzdst">
+  <record id="tzname=&quot;US/Pacific&quot; and dstyear=2011" recordid="">
+    <tzname type="string">US/Pacific</tzname>
+    <dstyear type="decimal">2011</dstyear>
+    <dstbegin type="dateTime">03/12/11 19:00:00</dstbegin>
+    <dstend type="dateTime">11/05/11 20:00:00</dstend>
+    <isdst type="decimal">1</isdst>
+  </record>
+</recordset>

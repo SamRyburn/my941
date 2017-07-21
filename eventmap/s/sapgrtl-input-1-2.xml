@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="eventmap">
+  <record id="evmap=&quot;sapgrtl&quot; and evtype=&quot;input&quot; and evseq=1 and evindex=2" recordid="sapgrtl - input - 1 - 2">
+    <evmap type="string">sapgrtl</evmap>
+    <evindex type="decimal">2</evindex>
+    <evnullsub NullValue="1" type="string"/>
+    <evmaptyp type="string">variable</evmaptyp>
+    <evfile type="string">ocml</evfile>
+    <evfield type="globalVar">$L.sap.post.date</evfield>
+    <evcalc sctype="array">
+      <evcalc sctype="operator">$L.year=str(year(tod()))</evcalc>
+      <evcalc sctype="operator">$L.month=str(month(tod()));if (lng($L.month)&lt;2) then ($L.month="0"+$L.month)</evcalc>
+      <evcalc sctype="operator">$L.day=str(day(tod()));if (lng($L.day)&lt;2) then ($L.day="0"+$L.day)</evcalc>
+      <evcalc sctype="operator">$L.sap.post.date=$L.year+$L.month+$L.day</evcalc>
+    </evcalc>
+    <evtype type="string">input</evtype>
+    <evsepchar NullValue="1" type="string"/>
+    <evdtype type="decimal">2</evdtype>
+    <evquery NullValue="1" type="boolean"/>
+    <evxlate NullValue="1" type="string"/>
+    <evinit NullValue="1" sctype="array">
+      <evinit NullValue="1" type="expression"/>
+    </evinit>
+    <evseq type="decimal">1</evseq>
+    <evlength NullValue="1" type="decimal"/>
+    <evitmlng NullValue="1" type="decimal"/>
+    <evmapcond NullValue="1" type="boolean"/>
+    <eveltype NullValue="1" type="decimal"/>
+    <sysmodcount type="decimal">3</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">02/25/03 07:34:12</sysmodtime>
+    <evsepchar.struc NullValue="1" type="string"/>
+  </record>
+</recordset>

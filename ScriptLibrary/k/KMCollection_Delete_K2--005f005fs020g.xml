@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;KMCollection_Delete_K2&quot;" recordid="KMCollection_Delete_K2">
+    <name type="string">KMCollection_Delete_K2</name>
+    <script type="string">function deleteCollection(strCollectionAlias)
+{
+		  // delete collection if it exists
+		  var strServerAlias = "";
+  	      strServerAlias = vars.$G_km_globalenv.km_host;
+  	      var result = 0;
+  		  if (system.functions._null(strServerAlias))
+  		  {
+    			system.library.KMUtils.domessageBox(system.functions.scmsg(65, "km"));
+	    		system.library.KMCollection_Update_Utils.logUnexpectedError("reindex 1");			
+    			return -1;
+  		  }
+
+  			if ( strServerAlias.length &gt; 0 )
+			{
+		  		result = system.library.KMAdmin.kmjvmconnect();
+		  		if (result != 0)
+		  		{
+		  		    print("error on kmjvmconnect");
+	    			system.library.KMCollection_Update_Utils.logUnexpectedError("reindex 2");			
+    				return -1;
+		  		}
+		  		else
+		  		{
+		    
+  	      		result = system.library.KMCollection_Update_Utils_K2.adminConnect(strServerAlias, vars.$G_km_globalenv.km_adminport);
+		  		result = system.library.KMCollection_Update_Utils_K2.deleteCollection(strServerAlias, strCollectionAlias);
+		  		// done with admin server, disconnect...
+		  		result = system.library.KMCollection_Update_Utils_K2.adminDisconnect();
+		  		result = system.library.KMAdmin.kmjvmdisconnect();
+		  		return result;
+		  		}
+		  	}
+}</script>
+    <package type="string">KMAdmin</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:41</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

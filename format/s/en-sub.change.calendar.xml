@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;sub.change.calendar&quot;" recordid="en - sub.change.calendar">
+    <name mandatory="true" type="string">sub.change.calendar</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">112</length>
+        <window type="decimal">22</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">VO</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">calendar;Name=calendar1359512865323	date=$start.date	defaultView=$default.view	Height=44	Name=calendar1359512865323	predefinedQuery=$predefined.query.string	supportedViews=	Width=223	X=0	Y=1		</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">System.Admin</editor>
+    <last.update type="dateTime">05/07/13 17:55:43</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">10</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">05/07/13 18:28:42</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

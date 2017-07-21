@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptPackage">
+  <record id="name=&quot;KMAdmin&quot;" recordid="KMAdmin">
+    <name type="string">KMAdmin</name>
+    <description NullValue="1" type="string"/>
+    <sysmodtime type="dateTime">12/25/12 18:27:42</sysmodtime>
+    <sysmoduser type="string">zhangqi</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+  </record>
+</recordset>

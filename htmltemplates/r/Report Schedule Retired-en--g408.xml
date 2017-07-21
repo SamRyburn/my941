@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="htmltemplates">
+  <record id="name=&quot;Report Schedule Retired&quot; and language=&quot;en&quot;" recordid="Report Schedule Retired - en">
+    <id type="string">844</id>
+    <type NullValue="1" type="string"/>
+    <name type="string">Report Schedule Retired</name>
+    <expression type="string">//Prepare url for web access
+//#################################################################################################################
+//This is the url for index.do. if you want to generate url for ess.do, please use getESSURLFromQuery instead
+var file_name = system.functions.filename($RECORD);
+var record_name = system.functions.scmsg(file_name,"tablename");
+var record_title = record_name+" "+$RECORD.id;
+var record_query = "id=\""+$RECORD.id+"\"";
+//var web_url = lib.urlCreator.getURLFromQuery(file_name,record_query,record_title);
+
+//#################################################################################################################
+//Generate Impact, Urgency, and Priority readable label
+
+
+//Check if system require fulll operator name and if need append timezone to date time.
+var operator = getContactName( system.functions.operator() );
+var owner = getContactName($RECORD.owner);
+var schedulename = $RECORD.name;
+
+//Email Title &amp; Email body title
+//var _phase = $RECORD.current_phase;
+
+//email_title = "Report schedule \"" + schedulename  + "\" (ID: " + $RECORD.id + ") phase " + _phase + " has been retired by "+ operator +".";
+//email_body_title = "Report schedule " + "&lt;a style=\"COLOR: #00f; FONT-FAMILY: arial\" target=\"_blank\" href=\"" + web_url + "\"&gt;"  + "\"" + schedulename  + "\" (ID: " + $RECORD.id + ") &lt;/a&gt; phase " + _phase + " has been retired by "+ operator +".";
+//system.functions.scmsg("retire_email_body_title", "Reporting", [web_url, schedulename, $RECORD.id, _phase, operator] );
+email_title = system.functions.scmsg("retire_email_title", "Reporting", [schedulename, $RECORD.id, operator] );
+email_body_title = email_title;
+
+function getContactName( loginName )
+{
+  var q = 'SELECT contact.name FROM operator WHERE name ="' + loginName + '"';
+  var f = new SCFile("operator");
+  var rc = f.doSelect(q);
+
+  var ret = loginName;
+  if ( rc == RC_SUCCESS )
+  {
+    ret = f.contact_name;
+  }
+  delete f;
+
+  return ret;
+}
+</expression>
+    <content NullValue="1" sctype="array">
+      <content NullValue="1" type="string"/>
+    </content>
+    <module type="string">general</module>
+    <cap.exec NullValue="1" sctype="array">
+      <cap.exec NullValue="1" type="string"/>
+    </cap.exec>
+    <active type="boolean">true</active>
+    <htmlcode type="string">&lt;table style="WIDTH: 98%"&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;td valign="top" align="left"&gt;
+            &lt;table style="WIDTH: 600px"&gt;
+                &lt;tbody&gt;
+                    &lt;tr&gt;
+                        &lt;td valign="top"&gt;
+                        &lt;table style="FONT-FAMILY: arial" cellspacing="10" cellpadding="10" width="100%"&gt;
+                            &lt;tbody&gt;
+                                &lt;tr&gt;
+                                    &lt;td style="WIDTH: 100%" valign="top" align="left"&gt;
+                                    &lt;h1 style="FONT-SIZE: 24px; COLOR: #036"&gt;HP Service Manager&lt;/h1&gt;
+                                    &lt;table cellspacing="0" cellpadding="0" width="100%" border="0"&gt;
+                                        &lt;tbody&gt;
+                                            &lt;tr&gt;
+                                                &lt;td style="BACKGROUND-COLOR: #cfe0f1" height="10" colspan="2"&gt;&amp;nbsp;&lt;/td&gt;
+                                            &lt;/tr&gt;
+                                            &lt;tr&gt;
+                                                &lt;td style="BACKGROUND-COLOR: #cfe0f1" width="10"&gt;&amp;nbsp;&lt;/td&gt;
+                                                &lt;td style="FONT-FAMILY: arial; BACKGROUND-COLOR: #cfe0f1"&gt;Report schedule {$RECORD.name} has been retired by {operator}.&lt;/td&gt;
+                                            &lt;/tr&gt;
+                                            &lt;tr&gt;
+                                                &lt;td style="BACKGROUND-COLOR: #cfe0f1" height="10" colspan="2"&gt;&amp;nbsp;&lt;/td&gt;
+                                            &lt;/tr&gt;
+                                        &lt;/tbody&gt;
+                                    &lt;/table&gt;
+                                    &lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr&gt;
+                                    &lt;td style="WIDTH: 100%" valign="top" align="left"&gt;
+                                    &lt;div style="POSITION: relative; PADDING-BOTTOM: 0px; PADDING-TOP: 0px; PADDING-LEFT: 0px; MARGIN-TOP: -24px; PADDING-RIGHT: 0px"&gt;
+                                    &lt;h2 style="FONT-SIZE: 18px; COLOR: #036"&gt;Details&lt;/h2&gt;
+                                    &lt;/div&gt;
+                                    &lt;/td&gt;
+                                &lt;/tr&gt;
+                            &lt;/tbody&gt;
+                        &lt;/table&gt;
+                        &lt;table style="FONT-SIZE: 11px; FONT-FAMILY: arial" cellspacing="2" cellpadding="6" width="94%" align="center"&gt;
+                            &lt;tbody&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td width="20%" align="right"&gt;Name&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.name}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Description&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.description}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;Owner&lt;/td&gt;
+                                    &lt;td&gt;{owner}&lt;/td&gt;
+                                &lt;/tr&gt;
+                            &lt;/tbody&gt;
+                        &lt;/table&gt;
+                        &lt;div style="FONT-SIZE: 11px; FONT-FAMILY: arial; POSITION: relative; MARGIN-LEFT: 20px; MARGIN-TOP: 20px"&gt;
+                        &lt;p style="COLOR: #999"&gt;Sent from HP Service Manager. Do not reply to this email.&lt;/p&gt;
+                        &lt;/div&gt;
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                &lt;/tbody&gt;
+            &lt;/table&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;</htmlcode>
+    <language type="string">en</language>
+    <mandant NullValue="1" sctype="array">
+      <mandant NullValue="1" type="string"/>
+    </mandant>
+    <test.record type="string">C10001</test.record>
+    <mail.title type="string">{email_title}</mail.title>
+  </record>
+</recordset>

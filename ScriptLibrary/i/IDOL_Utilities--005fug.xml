@@ -1,0 +1,1187 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;IDOL_Utilities&quot;" recordid="IDOL_Utilities">
+    <name type="string">IDOL_Utilities</name>
+    <script type="string">//using IDOL to fill record's fields
+function fillIncidentsByIdol(in_file,numresult,company, isbg)
+{
+  var fadapter = new SCFile(lib.IDOL_Constant.getCategoryConfigFileName());
+  var file_name = system.functions.filename(in_file);
+  
+  var rc = fadapter.doSelect("table.name=\"" + file_name + "\" and is.active=true");
+  while(rc == RC_SUCCESS)
+  {
+	var i;
+    
+    var isContinue = true;
+    //if run in background and the fields are filled, do not overwrite by idol
+    if (isbg) {
+      isContinue = false;
+      var fields = [fadapter['level1.field'], fadapter['level2.field'], fadapter['level3.field']];
+      for (i = 0; i &lt; fields.length; i++) {
+        if (fields[i] &amp;&amp; !in_file[fields[i]]) {
+          isContinue = true;
+        }
+      }
+    }
+
+    if (isContinue) {
+      var targetFields;
+      //if the adatper only has one field, call link to filter
+      if (!fadapter['level2.field'] &amp;&amp; !fadapter['level3.field']) {
+          targetFields = lib.acicategory.getCategoryByContent(in_file,fadapter.adapter_id,suggestNumberBeforeFilter(),company);
+          targetFields = filterIdolIndex(in_file, fadapter['level1.field'], numresult, targetFields);
+      } else {
+          targetFields = lib.acicategory.getCategoryByContent(in_file,fadapter.adapter_id,numresult,company);
+      }
+      
+      
+      if (fadapter.level1_field != null)
+      {
+        if (targetFields.length&gt;=1)
+        {
+          var lstTop = [];
+          
+          in_file[fadapter.level1_field.toString()]=targetFields[0][0] + "";
+          
+          for(i=0;i&lt;targetFields.length;i++)
+          {
+            lstTop.push(targetFields[i][0]);
+          }
+          vars["$idol." + fadapter.level1_field.toString()]=lstTop;
+        }
+      }
+      
+      if (fadapter.level2_field != null)
+      {
+        if (targetFields.length&gt;=1)
+        {
+          var lstTop = [];
+          in_file[fadapter.level2_field.toString()]=targetFields[0][1] + "";
+          
+          for(i=0;i&lt;targetFields.length;i++)
+          {
+            lstTop.push(targetFields[i][1]);
+          }
+          vars["$idol." + fadapter.level2_field.toString()]=lstTop;
+        }
+      }
+      if (fadapter.level3_field != null)
+      {
+        if (targetFields.length&gt;=1)
+        {
+          var lstTop = [];
+          in_file[fadapter.level3_field.toString()]=targetFields[0][2] + "";
+          
+          for(i=0;i&lt;targetFields.length;i++)
+          {
+            lstTop.push(targetFields[i][2]);
+          }
+          vars["$idol." + fadapter.level3_field.toString()]=lstTop;
+        }
+      }
+    }
+    
+    rc = fadapter.getNext();
+  }
+}
+
+/**
+*   Call the related master link to filter the auto filled record
+*
+*   @param {in_file} - SCFile of current record
+*   @param {field} - field name of current record
+*   @param {numresult} - result number
+*   @param {suggestCat} - Array of auto filled category without filtering
+*   @return - Filered by link
+*   @type - Array
+**/
+function filterIdolIndex(in_file, field, numresult, suggestCat) {
+    if (!suggestCat || suggestCat.length === 0) {
+        return [];
+    }
+    var availCat = []; //available categories by link
+    
+    //retrieve link by file name
+    var link = new SCFile('link');
+    var rc = link.doSelect('name = "' + system.functions.filename(in_file) + '"');
+    //if no link found, return the top numresult
+    if (rc !== RC_SUCCESS) {
+        return suggestCat.slice(0,numresult);
+    }
+    
+    //get the source field and targe field in link
+    var sourceFields = link['source.fields'];
+    var targetField;
+    var length = sourceFields.length();
+    for (i = 0; i &lt; length; i++) {
+        if (sourceFields[i] === field) {
+            targetField = link['target.fields'][i];
+        }
+    }
+    
+    //if no sorece field or target field, return the top numresult without filtering
+    if (targetField === undefined) {
+        return suggestCat.slice(0,numresult);
+    }
+    
+    var category = [];
+
+    var fieldWrapper = {isArray: false};
+    fieldWrapper['field'] = field;
+    //get link line
+    var linkObj = lib.LinkUtil.getLink(in_file, system.functions.filename(in_file), fieldWrapper);
+    if (linkObj){
+        //append the query as ' and *** isin {}'
+        var isinQuery = ' and ' + linkObj.targetField + ' isin {"' + suggestCat.join('","')  + '"}';
+        if (/^\$/.test(linkObj.query)) {
+            // The query expression is defined as a variable
+            vars[linkObj.query] += isinQuery;
+        } else {
+            linkObj.query += isinQuery;
+        }
+
+        var result = lib.LinkUtil.getSCFileByLink(in_file, linkObj, [targetField], fieldWrapper, false, false);
+        //if cannot find any available category by link, return empty
+        if (result) {
+            var file = result.file;
+            var rc = file &amp;&amp; RC_SUCCESS;
+            while (rc === RC_SUCCESS) {
+                availCat.push(file[targetField]);
+                rc = file.getNext();
+            }
+        
+        	var i,j;
+            for (i = 0; i &lt; suggestCat.length; i++) {
+                if (category.length &gt;= numresult) {
+                    break;
+                }
+                
+                for (j = 0; j &lt; availCat.length; j++) {
+                    if (availCat[j] === suggestCat[i][0]) {
+                        category.push([availCat[j]]);
+                        break;
+                    }
+                }
+            }
+        }
+        return category;
+    }
+    
+    return suggestCat.slice(0,numresult);
+}
+
+//using for get all configed index status by id
+function getIndexStatus()
+{
+	var i;
+    for (i = 1; i &lt; 6 ; i++) {
+        vars["$ilstitem" + i]="";
+        vars["$ilstvalue" + i]="";
+    }
+    var f = new SCFile("idolindex");
+    var rc = f.doSelect(true);
+    
+    if (vars['$index.page.start'] &gt; 1) {
+        vars['$L.show.prev.index'] = true;
+    } else {
+        vars['$L.show.prev.index'] = false;
+    }
+    
+    vars.$ilstnumber = 0;
+    var index = 0;
+    while(rc == RC_SUCCESS)
+    {
+        index ++;
+        if (index &gt;= vars['$index.page.start']){
+            vars.$ilstnumber += 1;
+            if (vars.$ilstnumber &gt; 5) {
+                vars['$L.show.more.index'] = true;
+                break;
+            }
+            var itemname;
+            var itemvalue;
+            var ar = [];
+            ar = lib.aciindex.getIndexStatus(f.table_name);
+            
+            itemname = f.table_name;
+            itemvalue = ar[1];
+            vars["$ilstitem" + vars.$ilstnumber]=itemname + "";
+            vars["$ilstvalue" + vars.$ilstnumber]=itemvalue + "";
+        }
+        vars['$L.show.more.index'] = false;
+        rc = f.getNext();
+    }
+}
+
+
+ //using for get all configed categorization test status by id
+function getTestStatus()
+{
+	var i;
+    for (i = 1; i &lt; 11 ; i++) {
+        vars["$tstlstitem" + i]="";
+        vars["$tstlstvalue" + i]="";
+    }
+    
+    vars.$tstlstnumber = 0;
+    var index = 0;
+    var f = new SCFile("idoladapter");
+    var rc = f.doSelect(true);
+    
+    if (vars['$adapter.page.start'] &gt; 1) {
+        vars['$L.show.prev'] = true;
+    } else {
+        vars['$L.show.prev'] = false;
+    }
+    
+    while(rc == RC_SUCCESS)
+    {
+        index ++;
+        
+        if (index &gt;= vars['$adapter.page.start']){
+            vars.$tstlstnumber += 1;
+            if (vars.$tstlstnumber &gt; 10) {
+                vars['$L.show.more'] = true;
+                break;
+            }
+            var itemname;
+            var itemvalue;
+            var ar = [];
+            ar = lib.acicategory.getCategoryGroupTestRunningStatus(f.adapter_id);
+            
+            itemname = f.category_group_name;
+            itemvalue = ar[1];
+            vars["$tstlstitem" + vars.$tstlstnumber] = itemname + "";
+            vars["$tstlstvalue" + vars.$tstlstnumber] = itemvalue + "";
+        }
+        vars['$L.show.more'] = false;
+        rc = f.getNext();
+        
+    }
+}
+ 
+
+ //using for get all configed categorization training status by id
+function getTrainingStatus()
+{
+	var i;
+    for (i = 1; i &lt; 11 ; i++) {
+        vars["$tlstitem" + i]="";
+        vars["$tlstvalue" + i]="";
+    }
+    vars.$tlstnumber = 0;
+    var index = 0;
+    var f = new SCFile("idoladapter");
+    var rc = f.doSelect(true);
+    
+    vars.$tstlstnumber = 0;
+    var index = 0;
+    var f = new SCFile("idoladapter");
+    var rc = f.doSelect(true);
+    while(rc == RC_SUCCESS)
+    {
+        index ++;
+        
+        if (index &gt;= vars['$adapter.page.start']){
+            vars.$tlstnumber += 1;
+            if (vars.$tlstnumber &gt; 10) {
+                vars['$L.show.more'] = true;
+                break;
+            }
+            var itemname;
+            var itemvalue;
+            var ar = [];
+            ar = lib.acicategory.getAutoCategorizationRunningStatus(f.adapter_id);
+            
+            itemname = f.category_group_name;
+            itemvalue = ar[1];
+            vars["$tlstitem" + vars.$tlstnumber] = itemname + "";
+            vars["$tlstvalue" + vars.$tlstnumber] = itemvalue + "";
+        }
+        vars['$L.show.more'] = false;
+        rc = f.getNext();
+        
+    }
+}
+ 
+ 
+/* function getResponsedata(result)
+ {
+   var ret = null;
+   var child = result.getFirstChildElement();
+   
+    while(child != null)
+    {
+      
+      if(child.getNodeName() == "responsedata")
+      {
+        return child;
+       }
+        
+      child = child.getNextSiblingElement();
+    }
+    
+    return ret;
+ }
+
+function findFirstNamedItem(item,name)
+ {
+   var ret = null;
+   var child = item.getFirstChildElement();
+   while(child != null)
+   {
+     
+     if(child.getNodeName() == name)
+     {
+       return child;
+       
+     }
+     child = child.getNextSiblingElement();
+   }
+   return ret;
+ }
+ 
+  function getFirstNamedItemValue(item,name)
+ {
+
+   var child = item.getFirstChildElement();
+   while(child != null)
+   {
+     if(child.getNodeName() == name)
+     {
+       return child.getNodeValue();
+       
+     }
+     child = child.getNextSiblingElement();
+   }
+   return "";
+ }
+*/
+
+function getIdolServerStatus(ServerUrl, isOem)
+{
+    var result = lib.jsaci.checkServerStatus(ServerUrl, isOem);
+    return result;
+} 
+
+
+ /**
+* This counts the number of records the filter is returning
+* &lt;br&gt;
+* History:&lt;br&gt;
+* 20130505 - Jan Steube Function created
+* 20131128 - Shuangshan Chang updated&lt;br&gt;
+*
+* @date     20131128
+* @param   {record} \
+*
+*/
+
+function testFilter(record)
+{
+    var query       = record.query;         
+    var fFile       = new SCFile(record.table_name);
+    
+    var dStart      = new Date().getTime();
+    
+
+    if (query == null || query == "")
+    {
+        query = "true";
+    }
+    
+    var rcSelect    = fFile.doSelect(query);
+    var nCount      = 0;
+    
+    if (rcSelect == RC_SUCCESS) {
+        do {
+            nCount++;
+            var rcNext = fFile.getNext();
+        } while (rcNext == RC_SUCCESS);
+    } 
+    
+    var dEnd = new Date().getTime();
+    
+    var nDuration = Math.round((dEnd-dStart)/1000);
+    
+    if (rcSelect == RC_SUCCESS) {
+        var message = system.functions.scmsg("23","survey",[nCount, nDuration]);
+    }
+    else {
+        var message = system.functions.scmsg("24","survey",[nDuration]);
+    }
+    
+    lib.KMUtils.domessageBox(message);
+    
+}
+
+/*
+ //get all security group info
+ function getSecurityGroup(adapter_id,currentpage,minnum,maxnum,action)
+ {
+   vars.$tstlstnumber = 0;
+  var f = new SCFile("idolsecgroup");
+  var query="adapter.id="+adapter_id;
+  if (action="next"){
+    if (maxnum &gt; 0){
+        query += " and id&gt;"+maxnum;
+    }
+  }
+  if (action="previous"){
+    if (minnum &gt; 0){
+        query += " and id&lt;"+maxnum;
+    }
+  }
+  if (action="delete"){
+    if (minnum &gt; 0){
+        query += " and id&lt;"+maxnum;
+    }
+  }
+  
+  var rc = f.doSelect(query);
+  var lstNum=0;
+  while(rc == RC_SUCCESS &amp;&amp; lstNum&lt;=10)
+  {
+    lstNum ++;
+    var updateIDStr = "vars.$secid_" + lstNum + "=\"" + f.security_id +"\"";
+    var updateTrainingStr = "vars.$trainingstatus_" + lstNum + "=\"" + f.training_status_desc +"\"";
+    var updateTestingStr = "vars.$testingstatus_" + lstNum + "=\"" + f.testing_status_desc + "\"";
+    print("updateIDStr == " + updateIDStr);
+    print("updateTrainingStr == " + updateTrainingStr);
+    print("updateTestingStr == " + updateTestingStr);       
+    
+    eval(updateIDStr);
+    eval(updateTrainingStr);
+    eval(updateTestingStr);
+
+    rc = f.getNext();
+  }
+ }
+*/
+
+
+/**
+*   Call IDOL Image Service to process the attachment in a ticket and set it to target field
+*
+*   @param {record} - scfile of a ticket record
+**/
+function processOCR(record, targetField, language){
+    var attachments = record.getAttachments();
+    var isInDAH = checkOCRInDAH();
+    var description = '';
+    if (attachments &amp;&amp; vars.$lo_idol_img_enabled) {
+        var index = 0;
+        var i;
+        for (i in attachments) {
+            if (isImage(attachments[i])){
+                var fileSize = attachments[i].len;
+                var text;
+                if (isInDAH &amp;&amp; fileSize &gt; maxImageSizeDAH()) {
+                    text = system.functions.scmsg('67', 'idol', [attachments[i].name]);
+                } else {
+                    text = lib.IDOLImageOCRService.synchronousParse(attachments[i].value, language);
+                }
+                if (text) {
+                   if (index &gt; 0) {
+                        description += '\n' + ocrSeperator() + '\n';
+                    }
+                    description += text;
+                    index ++;
+                }
+            }
+        }
+    }
+    
+    if (description !== '') {
+        var msgrecord = '1';
+        var msgclass = 'idol';
+        var args = [];
+        args.push( 'The following text was recognized within the attached image: ');
+        var text = system.functions.scmsg(msgrecord,msgclass,args);
+        text += '\n' + ocrFlag() + '\n';
+        text += description;
+        text += '\n' + ocrFlag();
+        record[targetField] = [removeOCRDescription(record[targetField])];
+        record[targetField].push(text);
+        return true;
+    }
+    return false;
+}
+
+
+/**
+*   Call IDOL Image Service to process the attachment in interaction from GUI
+*
+*   @param {interactionId} - scfile of interaction
+**/
+function processOCRFG(interaction, targetField){
+    var attachments = interaction.getAttachments();
+    if (attachments.length === 0) {
+        system.functions.msg(system.functions.scmsg('4', 'idol', []), 1);
+    }
+    try {
+        // XXX: from operator or from contacts?
+        var language = detectLanguage(interaction);
+
+        if (targetField!=null &amp;&amp; targetField!="" &amp;&amp; targetField != undefined) {
+        } else {
+            targetField = "description";
+        }
+
+        processOCR(interaction, targetField, language);
+    } catch(ex) {
+        system.functions.msg("Call OCR interface error:" + ex, 3);
+    }
+}
+
+
+/**
+*   Call IDOL Image Service to process the attachment in interaction in background
+*
+*   @param {interactionId} - value of incident.id
+**/
+function processOCRBG(interactionId, language, company, targetField, targetFileKeyField, targetFileName){
+    if (!interactionId) {
+    	return null;
+    }
+
+    if (targetFileName!=null &amp;&amp; targetFileName!="" &amp;&amp; targetFileName != undefined) {
+    } else {
+        targetFileName = "incidents";
+    }
+    if (targetFileKeyField!=null &amp;&amp; targetFileKeyField!="" &amp;&amp; targetFileKeyField != undefined) {
+    } else {
+        targetFileKeyField = "incident.id";
+    }
+
+    var interaction = new SCFile(targetFileName);
+
+    var result = interaction.doSelect(targetFileKeyField + ' = "' + interactionId + '"');
+    if (result !== RC_SUCCESS){
+        return null;
+    }
+
+    if (targetField!=null &amp;&amp; targetField!="" &amp;&amp; targetField != undefined) {
+    } else {
+        targetField = "description";
+    }
+
+    processOCR(interaction, targetField, language);
+
+    if (vars.$lo_idol_enabled) {
+        lib.IDOL_SMIS.addOCRTask(interaction, 'AutoFill', company);
+    }
+    interaction.doUpdate();
+    return true;
+}
+
+
+/**
+*   Remove the ocr description from ticket description
+*
+*   @param {description} - The ticket description
+*   @return - description without OCR
+*   @type - string
+**/
+function removeOCRDescription(description){
+    var descriptionToPlainText = function(description){
+        var result = '';
+        var i;
+        for (i = 0; i &lt; system.functions.lng(description); i++) {
+            if (description[i]) {
+                result += description[i];
+                if (i &lt; system.functions.lng(description) - 1) {
+                    result += '\n';
+                }
+            }
+        }
+        return result;
+    };
+    
+    var tmpDesc = descriptionToPlainText(description);
+    
+    var OCR_FLAG = ocrFlag();
+    
+    var strReg = '\n(.*)\n\\' + OCR_FLAG + '\n([\\s\\S]*)\n\\' + OCR_FLAG;
+    var reg = new RegExp(strReg, 'gm');
+    
+    tmpDesc = tmpDesc.replace(reg, '');
+    
+    return tmpDesc;
+}
+
+function ocrFlag(){
+    return '---------------------------------------------------------------------';
+}
+
+function ocrSeperator(){
+    return '------------------------------------------------------------';
+}
+
+
+/**
+*   Check level1.field, level2.field &amp; level3.field in idoladapter have duplcated value.
+*
+*   @param {adapter} - the adapter instance
+*   @return - true duplicated/false
+*   @type - boolean
+**/
+function checkAdapterDuplicatedFields(adapter) {
+    var arrField = [];
+    var field1 = adapter['level1.field'];
+    if (field1) {
+        arrField.push(field1);
+    }
+    
+    var field2 = adapter['level2.field'];
+    if (field2) {
+        arrField.push(field2);
+    }
+    
+    var field3 = adapter['level3.field'];
+    if (field3) {
+        arrField.push(field3);
+    }
+    
+    if (hasDuplicateElement(arrField)) {
+        return true;
+    }
+    
+    return false;
+}
+
+
+/**
+*   Check content.fields in idoladapter have duplcated value.
+*
+*   @param {adapter} - the adapter instance
+*   @return - true duplicated/false
+*   @type - boolean
+**/
+function checkDuplicatedContent(arrField) {
+    var categoryArr = arrField.toArray();
+    if (hasDuplicateElement(categoryArr)) {
+        return true;
+    }
+    
+    return false;
+}
+
+
+/**
+*   Check an array has duplcated element.
+*
+*   @param {adapter} - the adapter instance
+*   @return - true duplicated/false
+*   @type - boolean
+**/
+function hasDuplicateElement(array) {
+	var i,j;
+    for (i = 0; i &lt; array.length; i++) {
+        for (j = 0; j &lt; array.length; j++) {
+            if (array[i] === array[j] &amp;&amp; i !== j){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+/**
+*   Check the adapter already existed with same categorized fields and module in idoladapter table.
+*
+*   @param {adapter} - the adapter instance
+*   @return - true existed or false not existed
+*   @type - boolean
+**/
+function checkAdatperByTableCategories(adapter) {
+    var adapterObj = {};
+    adapterObj['table.name'] = adapter['table.name'];
+    adapterObj['level1.field'] = adapter['level1.field'];
+    adapterObj['level2.field'] = adapter['level2.field'];
+    adapterObj['level3.field'] = adapter['level3.field'];
+    var result = lib.IDOLAdapterDAO.findIDOLAdapter(adapterObj, ['adapter.id']);
+    if (!result) {
+        return false;
+    }
+    
+    var rc = RC_SUCCESS;
+    while (rc === RC_SUCCESS){
+        if (result['adapter.id'] !== adapter['adapter.id']) {
+            return true;
+        } else {
+            rc = result.getNext();
+        }
+    }
+
+    return (rc === RC_SUCCESS);
+}
+
+/**
+*   Check fields list by table name and field type
+*
+*   @param {tablename} - dbdict table name
+*   @param {type} - int value of field type. e.g. number: 1 character: 2
+*   @return - field list of dbdict name and caption name
+*   @type - array of array [[dbdictList], [captionList]]
+**/
+function getAllFieldsByType(tablename, type){
+    var tmp = getAllFields(tablename);
+
+    var resultNames = [];
+    var resultCaptions = [];
+    
+    if (tmp != null)
+    {
+        fieldNames = tmp[0].toArray();
+        fieldCaptions = tmp[1].toArray();
+    
+    	var i;
+        var scfile = new SCFile(tablename);
+        if (typeof scfile.getFieldType === 'function') {
+            for (i in fieldNames) {
+                if (scfile.getFieldType(fieldNames[i]) === type){
+                    resultNames.push(fieldNames[i]);
+                    resultCaptions.push(fieldCaptions[i]);
+                }
+            }
+        } else {
+            var dbdict = new SCFile('dbdict');
+            dbdict.doSelect('name="' + tablename + '"');
+            for (i in fieldNames) {
+                if (lib.dbdictHelper.getFieldType(dbdict, fieldNames[i]) === type) {
+                    resultNames.push(fieldNames[i]);
+                    resultCaptions.push(fieldCaptions[i]);
+                }
+            }
+        }
+    }
+    return [resultNames, resultCaptions];
+}
+
+
+/**
+*   Retrieve all adapters in IDOL configuration
+**/
+function getAllAdapterFromGUI() {
+    vars['$adapter.names'] = [];
+    vars['$adapter.modules'] = [];
+    vars['$adapter.level1'] = [];
+    vars['$adapter.level2'] = [];
+    vars['$adapter.level3'] = [];
+    vars['$adapter.active'] = [];
+    vars['$adapter.test.status'] = [];
+    vars['$adapter.training.status'] = [];
+    
+    vars['$adapter.number'] = 0;
+    
+    var adapter = lib.IDOLAdapterDAO.getAllAdapters();
+
+    if (!adapter) {
+        return;
+    }
+    
+    do{
+        vars['$adapter.names'].push(adapter['category.group.name']);
+        vars['$adapter.modules'].push(system.functions.scmsg(adapter['table.name'],"tablename"));
+        vars['$adapter.active'].push(adapter['is.active']);
+        
+        var testStatus = lib.acicategory.getCategoryGroupTestRunningStatus(adapter['adapter.id']);
+        vars['$adapter.test.status'].push(testStatus[1]);
+        
+        var traingStatus = lib.acicategory.getAutoCategorizationRunningStatus(adapter['adapter.id']);
+        vars['$adapter.training.status'].push(traingStatus[1]);
+        
+        vars['$adapter.number']++;
+    } while (adapter.getNext() === RC_SUCCESS);
+}
+
+
+/**
+*   Get attachment size from an scfile
+*
+*   @param {scfile} - an record of scfile
+*   @return - size of the attachment
+*   @type - number
+**/
+function getAttachmentLength(scfile) {
+    return scfile.getAttachments().length;
+}
+
+
+/**
+*   pre javascription in do idoladapter.list_training &amp; idoladapter.list_test
+**/
+function trainTestAdapterInList() {
+    var index = system.functions.cursor_line(1);
+
+    if (index &gt; vars['$adapter.number'] || index &lt; 1) {
+        vars['$error.msg'] = system.functions.scmsg('6', 'idol');
+    } else {
+        var adapterName = vars['$adapter.names'][index - 1];
+        vars['$L.file'] = lib.IDOLAdapterDAO.getAdapterByName(adapterName);
+    
+        /*if (vars['$G.multi']) {
+            vars['$lo.securityGroups'] = '';
+            vars['$securityGroup'] = [];
+            var secGroup = lib.IDOLAdapterDAO.getSecGroupByAdapterId(vars['$L.file']['adapter.id']);
+            if (secGroup != null) {
+                do {
+                    if (vars['$lo.securityGroups'] !== '') {
+                        vars['$lo.securityGroups'] += ','
+                    }
+                    vars['$lo.securityGroups'] += secGroup['security.id'];
+                    vars['$securityGroup'].push(secGroup['security.id']);
+    
+                } while (secGroup.getNext() === RC_SUCCESS)
+            } else {
+                vars['$error.msg'] = system.functions.scmsg('7', 'idol', [adapterName]);
+            }
+        }*/
+    }
+}
+
+/**
+*   Get all companies configured in adapter
+*
+*   return - company list
+*   type - Array
+*/
+function getCompaniesForTraining() {
+    
+    var companies = [];
+    var secGroup = lib.IDOLAdapterDAO.getSecGroupByAdapterId(vars['$L.file']['adapter.id']);
+
+    if (secGroup != null) {
+        do {
+            companies.push(secGroup['security.id']);
+            
+        } while (secGroup.getNext() === RC_SUCCESS);
+    } 
+    return companies;
+}
+
+/**
+*   post javascription in do idoladapter.list_training &amp; idoladapter.list_test
+*   clean up some vars
+**/
+function cleanUpTrainTestInList() {
+    vars['$error.msg'] = null;
+    vars['$lo.securityGroups'] = null;
+    vars['$securityGroup'] = null;
+}
+
+
+/**
+*   Get record info idolserverinfo table
+*
+**/
+function getIDOLServerConfig() {
+    return lib.IDOLConfigure.require().getConfig();
+  }
+
+
+/**
+*   Check if the idol url is valided or not
+*
+*   @param {str} - idol url
+*   @return - is valided or not
+*   @type - boolean
+**/
+function isValidIdolURL(str) {
+	if (!str || str === '') {
+		return true;
+	}
+    var reg = /^http(s)?:\/\/(.*)\/$/;
+    return reg.test(str);
+}
+
+
+function isValidHost(str) {
+	if (!str || str === '') {
+		return true;
+	}
+	var reg = /^http(s)?:\/\/localhost|127.0.0.1(.*)\/$/;
+	return !reg.test(str);
+}
+
+
+
+/**
+*   This function is add current interaction to idoltuning table
+*   If the interaction does already in idoltunning table, return false
+*
+*   @param {interaction} - scfile of interaction
+*   @return - is added successfully or not
+*   @type - boolean
+**/
+function addIDOLTuning(interaction) {
+    var idolTuning = new SCFile('idoltuning');
+    
+    rc = idolTuning.doSelect('file.name="incidents" and file.key="' + interaction['incident.id'] + '"');
+    if (rc === RC_SUCCESS) {
+        return false;
+    }
+    
+    var newId = new Datum();
+    var rcode = new Datum();
+    rcode = system.functions.rtecall("getnumber", rcode , newId, "idoltuning");
+    var id = newId.getText();
+    
+    idolTuning['id'] = id;
+    idolTuning['file.name'] = 'incidents';
+    idolTuning['file.key'] = interaction['incident.id'];
+    idolTuning['title'] = interaction['title'];
+    idolTuning['service'] = interaction['affected.item'];
+    idolTuning['category'] = interaction['category'];
+    idolTuning['subcategory'] = interaction['subcategory'];
+    idolTuning['area'] = interaction['product.type'];
+    
+    idolTuning.doInsert();
+    return true;
+}
+
+
+/**
+*   Check if the user has previledge to process idol
+*
+*   @param {str} - idol url
+*   @return - is valided or not
+*   @type - boolean
+**/
+function hasIDOLRight() {
+    var hasRight = system.functions.lioption("Smart Analytics") &amp;&amp; (system.functions.index("SysAdmin", vars['$lo.ucapex'])&gt;0 || system.functions.index("idol.assistant", vars['$lo.ucapex'])&gt;0);
+    
+    return hasRight;
+}
+
+
+function hasAdminRight() {
+	var hasRight = system.functions.lioption("Smart Analytics") &amp;&amp; system.functions.index("SysAdmin", vars['$lo.ucapex'])&gt;0;
+    
+    return hasRight;
+}
+
+
+var IDOLFileMagic = lib.IDOLFileMagic.require();
+/**
+ * Check if the attachment is an image or not
+ **/
+function isImage(attachment) {
+    var filename = attachment.name;
+    var ext = filename.substr(filename.lastIndexOf("."));
+    var imgNameList = ['.jpg','.jpeg','.gif','.png','.bmp','.tiff','.tif'];
+    var i;
+    for (i = 0; i &lt; imgNameList.length; i++) {
+        if (ext.toLowerCase() === imgNameList[i]) {
+            var binary = attachment.value;
+            var mineType = IDOLFileMagic.detectMineType(binary);
+            return mineType.indexOf('image') &gt;= 0;
+        }
+    }
+    return false;
+}
+
+/**
+*   Get OCR thread number
+*   @return - thread number
+*   @type - number
+**/
+function getIDOLThreadNumber(from, type) {
+    var url;
+    var idolServerInfo = vars['$file'];
+
+    if (from !== 'UI') {
+        idolServerInfo = getIDOLServerConfig();
+    }
+    
+    if (type === 'IDOL' || type === 'AutoFill') {
+        url = idolServerInfo['server.url'];
+    } else {
+        url = idolServerInfo['image.url'];
+    }
+    
+    var response = lib.IDOLRequest.require().doIDOLGet(url, { action : 'getstatus' });
+    
+    var xQuery = lib.XQuery.require();
+    var threadNodes = Number(xQuery.queryText('responsedata/acithreads', response));
+    
+    return threadNodes;
+}
+
+
+/**
+*   Get OCR thread number
+*   @return - thread number
+*   @type - number
+**/
+function getOCRThreadNumber(from) {
+    var imgURL;
+    if (from === 'UI') {
+        imgURL = vars['$file']['image.url'];
+    } else {
+        imgURL = getIDOLServerConfig()['image.url'];
+    }
+    
+    var response = lib.IDOLRequest.require().doIDOLGet(imgURL, { action : 'threadstatus' });
+    
+    var xQuery = lib.XQuery.require();
+    var threadNodes = xQuery.query('responsedata/autn:threads/autn:thread', response);
+    
+    return threadNodes.length;
+}
+
+
+/**
+*   Check if the OCR is in DAH mode or not
+*   @param {imgURL} - The image server (OCR) address
+*   @return - The image server is in DAH or not
+*   @type - boolean
+**/
+
+function checkOCRInDAH(imgURL) {
+    if (vars['$G.idol.ocr.dah'] != null) {
+        return vars['$G.idol.ocr.dah'];
+    }
+    if (!imgURL) {
+        imgURL = getIDOLServerConfig()['image.url'];
+    }
+    try {
+    	var response = lib.jsaci.runIDOLAction(imgURL + 'action=getchildren');
+    } catch (e) {
+        throw funcs.scmsg('102', 'idol', [imgURL + 'action=getchildren', e]);
+    }
+
+    var xml = new XML();
+    xml.setContent(response);
+    
+    var secondLevelNode = xml.getFirstChildElement();
+    var responsedataNode = secondLevelNode.getNextSiblingElement().getNextSiblingElement();
+    var subdataNode = responsedataNode.getFirstChildElement();
+    
+    var childcount = '0';
+
+    while (subdataNode != null) {
+        if (subdataNode.getName() === 'children') {
+            var subchildrenNode = subdataNode.getFirstChildElement();
+            while (subchildrenNode != null) {
+                if (subchildrenNode.getName() === 'num_children') {
+                    childcount = subchildrenNode.getValue();
+                }
+                subchildrenNode = subchildrenNode.getNextSiblingElement();
+                break;
+            }
+            break;
+        }
+        subdataNode = subdataNode.getNextSiblingElement();
+    }
+    var isDAH = (childcount !== '0');
+    vars['$G.idol.ocr.dah'] = isDAH;
+    return isDAH;
+}
+
+
+function detectLanguage(interaction) {
+	var result = [];
+	
+    var callbackContact = interaction['callback.contact'];
+    var contact = new Query('contacts', new QueryCond('contact.name', EQ, callbackContact))[0];
+    var language = contact ? contact["language"] : "";
+    result = addOCRLanguage(result, language);
+    
+    var openedBy = interaction['opened.by'];
+    var contact = new Query('contacts', new QueryCond('operator.id', EQ, openedBy))[0];
+    var language = contact ? contact["language"] : "";
+    result = addOCRLanguage(result, language);
+    
+    var loginLanguage = vars['$G.my.language'];
+    result = addOCRLanguage(result, loginLanguage);
+    
+    var syslang = vars['$G.system.info']['syslanguage'];
+    result = addOCRLanguage(result, syslang);
+    
+    var defaultLang = 'en';
+    result = addOCRLanguage(result, defaultLang);
+    
+    return result;
+}
+
+
+function addOCRLanguage(langs, newLang) {
+	var IDOL_Image_Lang_Rule = lib.IDOL_Image_Lang_Rule.require();
+	var idolLanguage = IDOL_Image_Lang_Rule.mappingIDOLLang(newLang);
+	langs = IDOL_Image_Lang_Rule.addLanguage(langs, idolLanguage);
+	return langs;
+}
+
+/**
+*   Get All fields name and caption by table and sort by caption
+*   @param {tablename} - table name
+*   @return - array of caption array and name array
+*   @type - array
+**/
+function getAllFields(tablename) {
+    var tmp = lib.GetFieldNames.getAllFields(tablename);
+    system.functions.rtecall("sort", vars['$L.rc'], tmp, 1,0);
+    return tmp;
+}
+
+function suggestNumberBeforeFilter() {
+    return 10;
+}
+
+
+function maxImageSizeDAH() {
+    return 1024*1024;
+}
+
+
+function getIDOLHost(url) {
+	var idolHostExp = new RegExp('http[s]?://([^]*?):', 'mgi');
+  	var host = idolHostExp.exec(url)[1];
+  	return host;
+  }
+
+
+// the 3 functions below are used in schedule JavaScript   
+function scheduleKMAttachment() {
+	lib.IDOLConfigure.require().clearIDOLServerConfigCache();
+	lib.jsaci.clearIDOLServer();
+	lib.KMAttachment_Index.doIndex();
+}
+
+function scheduleKMAttachmentStatus() {
+	lib.IDOLConfigure.require().clearIDOLServerConfigCache();
+	lib.jsaci.clearIDOLServer();
+	lib.KMAttachment_GetStatus.processToken();	
+}
+
+function scheduleKMUpdate() {	
+	var idolConfig = lib.IDOLConfigure.require();
+	idolConfig.clearIDOLServerConfigCache();
+	lib.jsaci.clearIDOLServer();
+
+	var idolEnabled = idolConfig.getConfig()['enable'];
+	if (idolEnabled) {
+		vars.$G_kmsearchengine = 'IDOL';
+	}
+
+	if('IDOL' == vars.$G_kmsearchengine) {
+		lib.KMCollection_Update_IDOL.require().refreshIndexes();
+	}
+	else {
+   		lib.KMCollection_Update.refreshIndexes();
+	}
+
+	lib.KMUtils.getIndexedSCFileArray();
+}
+</script>
+    <package type="string">IDOL</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:40</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

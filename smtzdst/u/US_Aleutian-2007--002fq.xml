@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="smtzdst">
+  <record id="tzname=&quot;US/Aleutian&quot; and dstyear=2007" recordid="">
+    <tzname type="string">US/Aleutian</tzname>
+    <dstyear type="decimal">2007</dstyear>
+    <dstbegin type="dateTime">03/10/07 19:00:00</dstbegin>
+    <dstend type="dateTime">11/03/07 20:00:00</dstend>
+    <isdst type="decimal">1</isdst>
+  </record>
+</recordset>

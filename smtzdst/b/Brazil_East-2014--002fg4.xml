@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="smtzdst">
+  <record id="tzname=&quot;Brazil/East&quot; and dstyear=2014" recordid="">
+    <tzname type="string">Brazil/East</tzname>
+    <dstyear type="decimal">2014</dstyear>
+    <dstbegin type="dateTime">02/15/14 17:00:00</dstbegin>
+    <dstend type="dateTime">10/18/14 18:00:00</dstend>
+    <isdst type="decimal">0</isdst>
+  </record>
+</recordset>

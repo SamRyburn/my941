@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;hppsunloadlist&quot;" recordid="hppsunloadlist">
+    <name type="string">hppsunloadlist</name>
+    <script type="string">// Add a record to the hppsunloadlist table for each dbdict
+// The hppsunloadlist is used with the Sysunload Alternative wizard
+//
+function build() {
+	var rc_dbdict;
+	var rc_list;
+	var f_dbdict = new SCFile("dbdict", SCFILE_READONLY);
+	var f_list = new SCFile("hppsunloadlist");
+	
+	rc_dbdict=f_dbdict.doSelect("true");
+	while( rc_dbdict == RC_SUCCESS ) {
+		f_list.table_name = f_dbdict.name;
+		f_list.sql = "true";
+		f_list.notes = "default";
+		f_list.group = "all";
+		rc_list = f_list.doSave();
+		rc_dbdict = f_dbdict.getNext();
+		print( f_dbdict.name );
+	}
+	print( "Complete!");
+}
+// execute
+build();</script>
+    <package type="string">hpps</package>
+    <sysmodtime type="dateTime">07/17/17 07:17:04</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;SystemEnhancements&quot;" recordid="SystemEnhancements">
+    <name type="string">SystemEnhancements</name>
+    <script type="string">
+
+/**
+	This function filters a given list of CI's based on a condition provided. The
+	filter condition must be structured as valid JavaScript, using fFile as the
+	variable refering to the CI. 
+**/
+
+function GetFilteredList(cilist, filtercondition )
+{
+	var BATCH_SIZE = 1000;
+	
+	//use new algritherim in ArrayUtil.removeDuplicateEmptyElement to remove duplicate elements in array so as to improve performance
+	cilist = lib.ArrayUtil.removeDuplicateEmptyElement(cilist);
+	
+	var returnlist = new Array();
+
+	if (filtercondition == null || filtercondition == "")
+		filtercondition = "true";
+	
+	var tempCIList = new Array();
+	
+	for (i = 0 ; i &lt; cilist.length ; i++ )
+	{
+		tempCIList.push(cilist[i]);
+		
+		// handle the cilist query by batch so as to ensure it will not exceed the 64k query limit. 
+        if(tempCIList.length % BATCH_SIZE ==0 ){
+
+             _processLogicalNameByBatch(tempCIList, returnlist,filtercondition);
+
+              tempCIList = new Array();
+
+         }
+	}
+	
+	//Retrive the remaining logical name that is less than the BATCH_SIZE
+     if(tempCIList.length &gt;0){
+
+        _processLogicalNameByBatch(tempCIList, returnlist,filtercondition);
+
+     }
+	
+	returnlist = lib.ArrayUtil.removeDuplicateEmptyElement(returnlist);
+		
+	return returnlist;
+}
+
+/** This purpose of this function is to retrieve the logical name for CI in batch and then put them into returnlist so as to improve performance
+*
+*     @param {Array} cilist - ci list that need to retrive the logical name
+*     @param {Array} returnlist - the logical name list that will be returned
+*     @param {boolean} filtercondition - filter condition need to be evaluated
+*     @returns
+*   @type Void
+*/
+function _processLogicalNameByBatch(ciList,returnlist,filtercondition){
+
+  //start to compose the sql to retrive logical name list
+  var sql = "logical.name isin {"   ;
+  for (var  i =  0 ; i &lt; ciList.length ; i++)
+  { 
+     if (i &gt; 0) sql += ",";
+     sql = sql + "\"" + ciList[i ] + "\""   ;                        
+  }
+  sql += "}";
+
+  var fields = ['logical.name'];
+
+  var fFile = lib.ScAPI_RAD._select("device",sql,fields);
+  
+    if ( fFile != null ){
+
+         do{
+         	
+          
+			if (eval(filtercondition))
+			{
+				returnlist.push(fFile.logical_name);
+				
+			}
+         }while(fFile.getNext()==RC_SUCCESS)
+
+     }
+
+}
+
+
+/**
+	This function retrieves the manager name from an Assignment Group
+	and validates if that user is still an operator in the system. If so, the name is returned
+	otherwise a 'null' is returned. Alternatively, it returns a specific coordinator for the 
+	assignment group name provided, after validating it is an operator.
+**/
+
+function getGroupManager(groupname, table, mgrtype)
+{
+	var managerName = "";
+	var fGroup = new SCFile("assignment");
+	rc = fGroup.doSelect("name=\""+groupname+"\"");
+	if (rc == RC_SUCCESS)
+	{
+		if (mgrtype == "manager" || mgrtype == null)
+			managerName = fGroup.wdManagerName;
+		if (mgrtype == "change")
+			managerName = fGroup.coordinator_change;
+		if (mgrtype == "problem")
+			managerName = fGroup.coordinator_problem;
+		if (mgrtype == "incident")
+			managerName = fGroup.coordinator_incident;
+	}
+	if (managerName != "")
+	{
+		var fOperator = new SCFile("operator");
+		rc = fOperator.doSelect("name=\""+managerName+"\"");
+		if (rc == RC_SUCCESS)
+			return managerName;
+	}
+	return null;
+}
+
+//append array to an existing array
+//a copy of the "BSGFunctions" function, but now using the "length()" function.
+function appendArray(appendTo, appendFrom) 
+{
+	var appendToLng = appendTo.length();
+	for(var i=0;i&lt;appendFrom.length();++i)
+	{
+		appendTo[appendToLng+i] = appendFrom[i];
+	}
+	return appendTo;
+}
+
+/**
+	This functions checks if a certain provided field name is used for a provided table
+	as a field that holds a CI name. This is checked against the Service Level Management
+	application (Configure Application). It returns either true or false.
+**/
+
+function checkIsCIfield(fieldname, tablename)
+{
+	if (fieldname == "affected.item")
+	{
+		return true;
+	}
+	
+	var fFile = new SCFile( "slamodulecontrol" );
+	var sql = "table.name=\"" + tablename + "\"";
+	
+	if (fFile.doSelect( sql ) == RC_SUCCESS )
+	{		
+		if (system.functions.index(fieldname, fFile.ci_fields) &gt; 0)
+			return true;
+	}
+	
+	return false;
+}</script>
+    <package type="string">BPPM</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:44</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

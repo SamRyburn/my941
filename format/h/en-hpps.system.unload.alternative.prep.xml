@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;hpps.system.unload.alternative.prep&quot;" recordid="en - hpps.system.unload.alternative.prep">
+    <name mandatory="true" type="string">hpps.system.unload.alternative.prep</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">2</column>
+        <length type="decimal">65</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">HPPS Unload List Preparation</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=HPPS Unload List Preparation	Name=label1375192773993	BackColor=10	Bold=1	FontIncrease=3	ForeColor=0	Height=4	Name=label1375192773993	Italic=0	Visible=0	Width=130	X=2	Y=0		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">2</column>
+        <length type="decimal">10</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Output path:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Output path:	Name=label1375192247791	Height=2	Name=label1375192247791	Width=20	X=2	Y=6		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">14</column>
+        <length type="decimal">50</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$L.output.path</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=input1375192379781	Height=2	Name=input1375192379781	Width=100	X=26	Y=6		Input=$L.output.path	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">2</column>
+        <length type="decimal">10</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input NullValue="1" type="string"/>
+        <output type="string">Group:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Group:	Height=2	Name=	Width=20	X=2	Y=8		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">14</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$L.select.group</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComFill;BoxLines=4	Name=comfill1375192411441	dataType=string	?ValueList=select("value","codes","type","hppsunloadlistgroup")	Height=2	Name=comfill1375192411441	FillButtonID=9	ThirdButtonID=8	FillButtonVisible=0	ThirdButtonVisible=0	SelectOnly=0	Width=40	X=26	Y=8		Input=$L.select.group	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">sryburn</editor>
+    <last.update type="dateTime">12/20/13 14:41:23</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/17/17 07:17:05</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

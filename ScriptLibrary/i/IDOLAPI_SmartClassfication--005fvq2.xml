@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;IDOLAPI_SmartClassfication&quot;" recordid="IDOLAPI_SmartClassfication">
+    <name type="string">IDOLAPI_SmartClassfication</name>
+    <script type="string">var NORMAL_EXIT = 'normal';
+var BAD_VALIDATION_EXIT = 'badval';
+
+var log = getLog("IDOLAPI_SmartClassfication");
+
+function smartClassify() {
+	var inParamJson = vars['$L.file']['in'];
+	try {
+		var paramObj = eval('('+inParamJson+')');
+	} catch (ex) {
+		log.error('Error when parse parameter:' + inParamJson + '  ' + ex);
+		vars.$L_exit = BAD_VALIDATION_EXIT;
+		return;
+	}
+	
+	var filename = paramObj.filename;
+	try {
+		var adapter = lib.IDOLAdapterDAO.getAdapterByFileName(filename);
+		if (adapter === null) {
+			print('No adapter for table:' + filename);
+			vars.$L_exit = BAD_VALIDATION_EXIT;
+			return;
+		}
+		
+		var suggestedFields = [];
+		do {
+			if (adapter['level1.field']) {
+				suggestedFields.push(adapter['level1.field']);
+			}
+			if (adapter['level2.field']) {
+				suggestedFields.push(adapter['level2.field']);
+			}
+			if (adapter['level3.field']) {
+				suggestedFields.push(adapter['level3.field']);
+			}
+		} while ((rc = adapter.getNext()) === RC_SUCCESS)
+		
+		var infile = new SCFile(filename);
+		for (var obj in paramObj) {
+			infile[obj] = paramObj[obj];
+		}
+		var company = paramObj.company;
+		
+		lib.IDOL_Utilities.fillIncidentsByIdol(infile, 3, company);
+		
+		var result = {};
+		for (var i = 0; i &lt; suggestedFields.length; i++) {
+			result[suggestedFields[i]] = infile[suggestedFields[i]];
+		}
+		
+		vars['$L.file']['out'] = lib.JSON.json().stringify(result);
+		vars.$L_exit = NORMAL_EXIT;
+	} catch (ex) {
+		log.error('Error with exception:' + ex);
+		vars.$L_exit = BAD_VALIDATION_EXIT;
+		return;
+	}
+	
+}</script>
+    <package type="string">IDOL</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:40</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

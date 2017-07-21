@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;upgradePostAction&quot;" recordid="upgradePostAction">
+    <name type="string">upgradePostAction</name>
+    <script type="string">function executePostActionUpdate(upgradestatus) {
+    lib.upgradeCommonHelper.fixSystemData();
+    
+    lib.upgradeMaldatasPurge.compileDisplayScreen();
+    
+    enableRelationManager(upgradestatus.option);
+    
+    // print post upgrade prompt message
+    var msg = lib.upgradeCommonHelper.getPostUpgradePromptMessage();
+    if (msg.length &gt; 0) {
+    	lib.upgradeLog.detail(msg);
+    	print(msg);
+    }
+}
+
+
+function enableRelationManager(option) {
+    lib.upgradeLog.upgrade("Enable Relation.");
+    lib.upgradeLog.detail("Enable Relation.");
+    var err;
+    system.functions.rtecall("trigger", err, 1);
+    system.functions.rtecall("counter", err, 1);
+    if (option == "unconditional") {
+        lib.RelationManagerEnablement.enableRelationManager();
+    } else {
+        lib.c.$("#referenceService").buildRelations();
+    }
+    system.functions.rtecall("counter", err, 0);
+    system.functions.rtecall("trigger", err, 0);
+}</script>
+    <package type="string">Upgrade</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:45</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="htmltemplates">
+  <record id="name=&quot;Report Exported&quot; and language=&quot;en&quot;" recordid="Report Exported - en">
+    <id type="string">846</id>
+    <type NullValue="1" type="string"/>
+    <name type="string">Report Exported</name>
+    <expression type="string">//var operator = getContactName( system.functions.operator() );
+var owner     = getContactName($RECORD.owner);
+var taskname  = $RECORD.name;
+var startTime = system.functions.val( $RECORD.start_date, 2);
+
+var getInboxNames  = lib.inboxFilter.getInboxNamesBR;
+var dashboardnames = getInboxNames( $RECORD.inbox_dashboard );
+var reportnames    = getInboxNames( $RECORD.inbox_report );
+
+// email_export_summary: Report schedule "%S" (Inbox ID: %S ) has been exported
+email_title = system.functions.scmsg("email_export_summary", "Reporting", [taskname, $RECORD.id] );
+email_body_title = email_title;
+
+
+function getContactName( loginName )
+{
+  var q = 'SELECT contact.name FROM operator WHERE name ="' + loginName + '"';
+  var f = new SCFile("operator");
+  var rc = f.doSelect(q);
+
+  var ret = loginName;
+  if ( rc == RC_SUCCESS )
+  {
+    ret = f.contact_name;
+  }
+  delete f;
+
+  return ret;
+}
+</expression>
+    <content sctype="array">
+      <content sctype="string">Summary info of report export</content>
+    </content>
+    <module type="string">general</module>
+    <cap.exec NullValue="1" sctype="array">
+      <cap.exec NullValue="1" type="string"/>
+    </cap.exec>
+    <active type="boolean">true</active>
+    <htmlcode type="string">&lt;table style="WIDTH: 98%"&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;td valign="top" align="left"&gt;
+            &lt;table style="WIDTH: 600px"&gt;
+                &lt;tbody&gt;
+                    &lt;tr&gt;
+                        &lt;td valign="top"&gt;
+                        &lt;table style="FONT-FAMILY: arial" cellspacing="10" cellpadding="10" width="100%"&gt;
+                            &lt;tbody&gt;
+                                &lt;tr&gt;
+                                    &lt;td style="WIDTH: 100%" valign="top" align="left"&gt;
+                                    &lt;h1 style="FONT-SIZE: 24px; COLOR: #036"&gt;HP Service Manager&lt;/h1&gt;
+                                    &lt;table cellspacing="0" cellpadding="0" width="100%" border="0"&gt;
+                                        &lt;tbody&gt;
+                                            &lt;tr&gt;
+                                                &lt;td style="BACKGROUND-COLOR: #cfe0f1" height="10" colspan="2"&gt;&amp;nbsp;&lt;/td&gt;
+                                            &lt;/tr&gt;
+                                            &lt;tr&gt;
+                                                &lt;td style="BACKGROUND-COLOR: #cfe0f1" width="10"&gt;&amp;nbsp;&lt;/td&gt;
+                                                &lt;td style="FONT-FAMILY: arial; BACKGROUND-COLOR: #cfe0f1"&gt;Report schedule {taskname} has been exported.&lt;/td&gt;
+                                            &lt;/tr&gt;
+                                            &lt;tr&gt;
+                                                &lt;td style="BACKGROUND-COLOR: #cfe0f1" height="10" colspan="2"&gt;&amp;nbsp;&lt;/td&gt;
+                                            &lt;/tr&gt;
+                                        &lt;/tbody&gt;
+                                    &lt;/table&gt;
+                                    &lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr&gt;
+                                    &lt;td style="WIDTH: 100%" valign="top" align="left"&gt;
+                                    &lt;div style="POSITION: relative; PADDING-BOTTOM: 0px; PADDING-TOP: 0px; PADDING-LEFT: 0px; MARGIN-TOP: -24px; PADDING-RIGHT: 0px"&gt;
+                                    &lt;h2 style="FONT-SIZE: 18px; COLOR: #036"&gt;Details&lt;/h2&gt;
+                                    &lt;/div&gt;
+                                    &lt;/td&gt;
+                                &lt;/tr&gt;
+                            &lt;/tbody&gt;
+                        &lt;/table&gt;
+                        &lt;table style="FONT-SIZE: 11px; FONT-FAMILY: arial" cellspacing="2" cellpadding="6" width="94%" align="center"&gt;
+                            &lt;tbody&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td width="20%" align="right"&gt;Name&lt;/td&gt;
+                                    &lt;td&gt;&lt;font size="2"&gt;{taskname}&lt;/font&gt;&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Description&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.description}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;Schedule Owner&lt;/td&gt;
+                                    &lt;td&gt;{owner}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Start Time&lt;/td&gt;
+                                    &lt;td&gt;{startTime}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;Dashboards&lt;/td&gt;
+                                    &lt;td&gt;{dashboardnames}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Reports&lt;/td&gt;
+                                    &lt;td&gt;{reportnames}&lt;/td&gt;
+                                &lt;/tr&gt;
+                            &lt;/tbody&gt;
+                        &lt;/table&gt;
+                        &lt;div style="FONT-SIZE: 11px; FONT-FAMILY: arial; POSITION: relative; MARGIN-LEFT: 20px; MARGIN-TOP: 20px"&gt;
+                        &lt;p style="COLOR: #999"&gt;Sent from HP Service Manager. Do not reply to this email.&lt;/p&gt;
+                        &lt;/div&gt;
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                &lt;/tbody&gt;
+            &lt;/table&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;</htmlcode>
+    <language type="string">en</language>
+    <mandant NullValue="1" sctype="array">
+      <mandant NullValue="1" type="string"/>
+    </mandant>
+    <test.record NullValue="1" type="string"/>
+    <mail.title type="string">{email_title}</mail.title>
+  </record>
+</recordset>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="triggers">
+  <record id="trigger.name=&quot;trigger.cm3t.status.before.todo.add&quot;" recordid="trigger.cm3t.status.before.todo.add">
+    <trigger.name type="string">trigger.cm3t.status.before.todo.add</trigger.name>
+    <trigger.type type="decimal">1</trigger.type>
+    <table.name type="string">Todo</table.name>
+    <application.name NullValue="1" type="string"/>
+    <sysmodcount type="decimal">1</sysmodcount>
+    <sysmoduser type="string">hanrui</sysmoduser>
+    <sysmodtime type="dateTime">06/12/14 03:11:46</sysmodtime>
+    <javascript type="string">if(record.itemType == "cm3t"){
+  var index = system.functions.index(record.status,vars.$G_chmTask_status);
+  if(index&gt;0)record.status=vars.$G_chmTask_status_local[index-1];
+}</javascript>
+  </record>
+</recordset>

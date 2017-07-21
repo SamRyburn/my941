@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;KMCache&quot;" recordid="KMCache">
+    <name type="string">KMCache</name>
+    <script type="string">var cache = (function(){
+	var libs = {};
+	var totalOnce=0;
+	var kb = new SCFile('kmknowledgebase');
+	var rc = kb.doSelect('true');
+	while(rc == RC_SUCCESS) {
+		//libs.push({kbname:{"key":kb.kbname,"totalDocs":0,"host":parseSearchServer(kb),"lastUpdateTime":kb.sysmodtime}});
+		add(kb);
+		rc = kb.getNext();
+	}
+	function add(kb){
+		libs[kb.kbname]={"totalDocs":0,"host":parseSearchServer(kb),"lastUpdateTime":kb.sysmodtime};
+	}
+	function get(kbname, field){
+			return field?libs[kbname][field]:libs[kbname];
+	}
+	function parseSearchServer(kb){
+		return kb.searchservername;
+	}
+	return {
+		'get' : get,
+		'set' : function(kbname, field, value){
+			libs[kbname] &amp;&amp; (libs[kbname][field]=value);
+		},
+		'add' : add,
+		'size' : function(){
+			var count = 0;
+			for(var i in libs) count++;
+			return count;
+		},
+		'clean' : function(){
+			libs={};
+		},
+		'libs' : libs,
+		'counting' : function(kbname){
+			totalOnce += parseInt(get(kbname, 'totalDocs'));
+		},
+		'getTotalOnce' : function(){
+			return totalOnce;
+		},
+		'cleanTotalOnce' : function() {
+			totalOnce=0;
+		}
+	};
+})();
+
+function getCache(){
+	return cache;
+}
+</script>
+    <package type="string">KnowledgeManagement</package>
+    <sysmodtime type="dateTime">07/26/14 01:59:31</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">2</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

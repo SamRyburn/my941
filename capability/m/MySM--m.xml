@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="capability">
+  <record id="capability=&quot;MySM&quot;" recordid="MySM">
+    <capability type="string">MySM</capability>
+    <description sctype="array">
+      <description sctype="string">Enables MySM link in web client Navigator</description>
+    </description>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">10/10/06 01:05:42</sysmodtime>
+    <parent type="string">SysAdmin</parent>
+    <parent.tree sctype="array">
+      <parent.tree sctype="string">SysAdmin</parent.tree>
+    </parent.tree>
+  </record>
+</recordset>

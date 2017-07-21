@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="Workflow">
+  <record id="name=&quot;Delete Group&quot; and tableName=&quot;cm3t&quot;" recordid="Delete Group - cm3t">
+    <name type="string">Delete Group</name>
+    <tableName type="string">cm3t</tableName>
+    <type type="string">standard</type>
+    <defaultPhase type="string">Delete Group</defaultPhase>
+    <description type="string">Delete configuration item group - Automatically Upgraded.</description>
+    <defaultForm NullValue="1" type="string"/>
+    <firstPhase type="string">Delete Group</firstPhase>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:01:50</sysmodtime>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysrestricted NullValue="1" type="boolean"/>
+    <action NullValue="1" sctype="array">
+      <action sctype="structure">
+        <actionName NullValue="1" type="string"/>
+        <actionId NullValue="1" type="string"/>
+        <actionCondition NullValue="1" type="boolean"/>
+        <actionCondXML NullValue="1" type="string"/>
+        <actionLoc NullValue="1" type="decimal"/>
+        <actionOption NullValue="1" type="decimal"/>
+        <actionLock NullValue="1" type="boolean"/>
+        <actionRunAction NullValue="1" type="string"/>
+        <actionCondDesc NullValue="1" type="string"/>
+        <actionMsgId NullValue="1" type="decimal"/>
+      </action>
+    </action>
+    <onCreateRules NullValue="1" sctype="array">
+      <onCreateRules NullValue="1" type="string"/>
+    </onCreateRules>
+    <onUpdateRules sctype="array">
+      <onUpdateRules sctype="string">chm.cost.validation</onUpdateRules>
+      <onUpdateRules sctype="string">chm.task.calculate.cost</onUpdateRules>
+    </onUpdateRules>
+    <afterAddRules NullValue="1" sctype="array">
+      <afterAddRules NullValue="1" type="string"/>
+    </afterAddRules>
+    <afterUpdateRules sctype="array">
+      <afterUpdateRules sctype="string">chm.task.populate.parent.cost</afterUpdateRules>
+    </afterUpdateRules>
+    <initRules NullValue="1" sctype="array">
+      <initRules NullValue="1" type="string"/>
+    </initRules>
+    <onDisplayRules NullValue="1" sctype="array">
+      <onDisplayRules NullValue="1" type="string"/>
+    </onDisplayRules>
+    <backendTransition NullValue="1" sctype="array">
+      <backendTransition sctype="structure">
+        <btToPhase NullValue="1" type="string"/>
+        <btCondition NullValue="1" type="boolean"/>
+        <btRule NullValue="1" type="string"/>
+        <btCondXML NullValue="1" type="string"/>
+        <btCondDesc NullValue="1" type="string"/>
+        <btAction NullValue="1" type="string"/>
+      </backendTransition>
+    </backendTransition>
+    <onEnterRules sctype="array">
+      <onEnterRules sctype="string">chm.cost.validation</onEnterRules>
+      <onEnterRules sctype="string">chm.task.calculate.cost</onEnterRules>
+    </onEnterRules>
+    <onExitRules NullValue="1" sctype="array">
+      <onExitRules NullValue="1" type="string"/>
+    </onExitRules>
+    <afterEnterRules sctype="array">
+      <afterEnterRules sctype="string">chm.task.populate.parent.cost</afterEnterRules>
+    </afterEnterRules>
+    <is.legacy.workflow NullValue="1" type="boolean"/>
+    <legacy.fc NullValue="1" type="string"/>
+    <legacy.open.state NullValue="1" type="string"/>
+    <legacy.close.state NullValue="1" type="string"/>
+    <legacy.default.state NullValue="1" type="string"/>
+    <legacy.browse.state NullValue="1" type="string"/>
+    <optimize.autotran.save type="boolean">true</optimize.autotran.save>
+  </record>
+</recordset>

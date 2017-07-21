@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="Workflow">
+  <record id="name=&quot;Request Model&quot; and tableName=&quot;requestModel&quot;" recordid="Request Model - requestModel">
+    <name type="string">Request Model</name>
+    <tableName type="string">requestModel</tableName>
+    <type type="string">complex</type>
+    <defaultPhase type="string">reqeust Model</defaultPhase>
+    <description type="string">Request Model</description>
+    <defaultForm NullValue="1" type="string"/>
+    <firstPhase type="string">reqeust Model</firstPhase>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:01:51</sysmodtime>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysrestricted type="boolean">true</sysrestricted>
+    <action sctype="array">
+      <action sctype="structure">
+        <actionName type="string">Copy Request Model</actionName>
+        <actionId type="string">rmModel.copy.basic</actionId>
+        <actionCondition type="operator">$L.mode~="add"</actionCondition>
+        <actionCondXML type="string">&lt;XmlCondition&gt;&lt;collection logical="" negate=""&gt;&lt;condition logical="" negate="false"&gt;&lt;operand type="expression"&gt;&lt;Expression caption=""&gt;"( $L.mode~=&amp;quot;add&amp;quot; )"&lt;/Expression&gt;&lt;/operand&gt;&lt;/condition&gt;&lt;/collection&gt;&lt;/XmlCondition&gt;</actionCondXML>
+        <actionLoc type="decimal">2</actionLoc>
+        <actionOption type="decimal">310</actionOption>
+        <actionLock type="boolean">false</actionLock>
+        <actionRunAction NullValue="1" type="string"/>
+        <actionCondDesc type="string">( $L.mode~="add" )</actionCondDesc>
+        <actionMsgId type="decimal">2</actionMsgId>
+      </action>
+    </action>
+    <onCreateRules sctype="array">
+      <onCreateRules sctype="string">rmModel.standard.mandatory</onCreateRules>
+    </onCreateRules>
+    <onUpdateRules sctype="array">
+      <onUpdateRules sctype="string">rmModel.standard.mandatory</onUpdateRules>
+      <onUpdateRules sctype="string">rmModel.calculate.globalleadtime</onUpdateRules>
+      <onUpdateRules sctype="string">rmModel.validate.globalleadtime</onUpdateRules>
+    </onUpdateRules>
+    <afterAddRules sctype="array">
+      <afterAddRules sctype="string">common.taskplan.initticketcontext</afterAddRules>
+      <afterAddRules sctype="string">common.taskplan.initooflowconfiguration</afterAddRules>
+      <afterAddRules sctype="string">rmModel.copy.taskplanner</afterAddRules>
+    </afterAddRules>
+    <afterUpdateRules NullValue="1" sctype="array">
+      <afterUpdateRules NullValue="1" type="string"/>
+    </afterUpdateRules>
+    <initRules NullValue="1" sctype="array">
+      <initRules NullValue="1" type="string"/>
+    </initRules>
+    <onDisplayRules NullValue="1" sctype="array">
+      <onDisplayRules NullValue="1" type="string"/>
+    </onDisplayRules>
+    <backendTransition NullValue="1" sctype="array">
+      <backendTransition sctype="structure">
+        <btToPhase NullValue="1" type="string"/>
+        <btCondition NullValue="1" type="boolean"/>
+        <btRule NullValue="1" type="string"/>
+        <btCondXML NullValue="1" type="string"/>
+        <btCondDesc NullValue="1" type="string"/>
+        <btAction NullValue="1" type="string"/>
+      </backendTransition>
+    </backendTransition>
+    <onEnterRules NullValue="1" sctype="array">
+      <onEnterRules NullValue="1" type="string"/>
+    </onEnterRules>
+    <onExitRules NullValue="1" sctype="array">
+      <onExitRules NullValue="1" type="string"/>
+    </onExitRules>
+    <afterEnterRules NullValue="1" sctype="array">
+      <afterEnterRules NullValue="1" type="string"/>
+    </afterEnterRules>
+    <is.legacy.workflow NullValue="1" type="boolean"/>
+    <legacy.fc NullValue="1" type="string"/>
+    <legacy.open.state NullValue="1" type="string"/>
+    <legacy.close.state NullValue="1" type="string"/>
+    <legacy.default.state NullValue="1" type="string"/>
+    <legacy.browse.state NullValue="1" type="string"/>
+    <optimize.autotran.save type="boolean">true</optimize.autotran.save>
+  </record>
+</recordset>

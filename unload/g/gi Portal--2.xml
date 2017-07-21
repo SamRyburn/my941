@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="unload">
+  <record id="name=&quot;gi Portal&quot;" recordid="gi Portal">
+    <name mandatory="true" type="string">gi Portal</name>
+    <unload type="boolean">true</unload>
+    <purge type="boolean">false</purge>
+    <record sctype="array">
+      <record sctype="structure">
+        <filename type="string">dbdict</filename>
+        <query type="string">name="giComponentUsers"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">format</filename>
+        <query type="string">name="gi.componentusers.g"</query>
+        <datamap type="boolean">true</datamap>
+      </record>
+      <record sctype="structure">
+        <filename type="string">unload</filename>
+        <query type="string">name="gi Portal"</query>
+        <datamap type="boolean">false</datamap>
+      </record>
+    </record>
+    <protected.formats NullValue="1" sctype="array">
+      <protected.formats NullValue="1" type="string"/>
+    </protected.formats>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">FALCON</sysmoduser>
+    <sysmodtime type="dateTime">02/06/01 05:28:57</sysmodtime>
+  </record>
+</recordset>

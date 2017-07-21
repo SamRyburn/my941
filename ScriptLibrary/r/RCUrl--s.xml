@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;RCUrl&quot;" recordid="RCUrl">
+    <name type="string">RCUrl</name>
+    <script type="string">//print(getCommonParameters());
+
+//get the common paramters for all the RC URL
+function getCommonParameters(){
+	var para = "hideRCHeader=true";
+	
+	para += getParameterForAccessible();
+		
+	para += getParameterForLocale();
+	
+	para += getParameterForTimezone();
+	
+	if(vars.$G_multi){
+		para += getParameterForTenant();
+	}
+
+
+	return para;
+
+}
+
+function getParameterForAccessible(){
+	var rcAccessible = lib.RCConfiguration.getRCAccessible();
+	return 	rcAccessible ? "&amp;accessible=true" : "";
+}
+
+function getParameterForLocale(){	
+	var rcId = vars.$G_my_language;	
+	if(rcId != null){
+		var language = new SCFile("language");
+		var rc = language.doSelect("unique.id=\"" + rcId +"\"");
+		if(rc == RC_SUCCESS &amp;&amp; language.rc_id != null){
+			var rcId = 	language.rc_id;
+		}
+	}else{
+		rcId = "en_US"
+	}
+	return "&amp;locale=" + rcId;	
+}
+
+function getParameterForTimezone(){		
+	var rcId = vars.$lo_time_zone;
+	if(rcId != null){		
+		var timezone = new SCFile("tzfile");
+		var rc = timezone.doSelect("name=\"" + rcId +"\"");	
+		if(rc == RC_SUCCESS &amp;&amp; timezone.java_id != null){
+			rcId = 	timezone.java_id;
+		}			
+	}else{
+		rcId = "GMT";
+	}
+	return "&amp;timezone=" + rcId;
+}
+
+function getParameterForTenant(){
+	var company = vars.$lo_operator.company;
+	if(company==null){
+		return "";
+	}else{		
+		return "&amp;tenant_field_val=" + company	
+	}				
+}
+
+
+
+</script>
+    <package type="string">Integration</package>
+    <sysmodtime type="dateTime">07/01/13 14:54:25</sysmodtime>
+    <sysmoduser type="string">eling</sysmoduser>
+    <sysmodcount type="decimal">17</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

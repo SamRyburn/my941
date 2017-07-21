@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptPackage">
+  <record id="name=&quot;Streamlined Interaction&quot;" recordid="Streamlined Interaction">
+    <name type="string">Streamlined Interaction</name>
+    <description NullValue="1" type="string"/>
+    <sysmodtime type="dateTime">07/16/17 17:01:46</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+  </record>
+</recordset>

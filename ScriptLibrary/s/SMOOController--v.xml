@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;SMOOController&quot;" recordid="SMOOController">
+    <name type="string">SMOOController</name>
+    <script type="string">/******************************************************
+* Module Name: SMOO Controller
+* Function: provide default workflow control
+* Author: Yang, Wen-Ying
+* Version: 1.00
+* Creation Date: Dec, 2009
+*******************************************************/
+
+var Class = lib.smis_Prototype.getClass();
+
+var ControllerClass = Class.create({
+  initialize: function(configItem) {
+
+	this.configItem = configItem;
+  
+	this.log = this.configItem.getLogger();	
+	
+	this.ooservice_url = this.configItem.getConfigParameterValue("oo.server.url")+"\/PAS\/services\/WSCentralService";
+ 	this.userName = this.configItem.getConfigParameterValue("oo.user.name");
+ 	this.password = this.configItem.getConfigParameterValue("oo.password"); 
+	this.SMOOScheduled = this.getSMOOScheduled();
+  },
+  
+  /**
+  *	Default invoketion flow
+  */
+  startup: function() {
+  	try {
+  		this.scheduleSync();
+  		this.log.debug("SMOOController","afterExcute");
+  		//Update the config paramter
+  		//lib.smis_ConfigurationManager.updateParam(this.configItem);
+  	
+  		//if this round is over set the status to Sleep();
+  		lib.smis_ConfigurationManager.setInstanceStatus(this.configItem.intId, lib.smis_Constants.INSTANCE_STATUS_SLEEPING());
+  	} catch (e) {  	
+  		this.exceptionCatch(e);
+  	}
+  	
+  	
+  },
+  
+  exceptionCatch: function(e) {
+  	
+  },
+  
+  getSMOOScheduled: function(){  	
+	var info = new SCFile("info");
+	var RC = info.doSelect("type=\"company\"");
+	
+	if ( RC == RC_SUCCESS )	{
+		if ( info.SMOO_scheduled == null){
+			return 0;
+		}else {		
+			return info.SMOO_scheduled;
+		}  
+	}else {
+		return 0;
+	}
+  },
+  
+  scheduleSync: function(){ 
+  	this.log.info("SMOOController", "SMOO scheduler starts."); 
+	try{
+		var basePathStr = this.configItem.getConfigParameterValue("basepath");
+		var delimiter = this.configItem.getConfigParameterValue("basepath.delimiter");
+		var basePaths = this.getBasePaths(basePathStr, delimiter);
+		var flowList = new SCDatum();
+		flowList.setType(8);  //type array		
+		for(var i = 0;  i &lt; basePaths.length; i++){
+			flowList = this.queryFolder( basePaths[i], flowList );
+		}
+		this.syncOOFlow(flowList);
+		this.removeOOFlows(basePaths);
+		this.updateScheduled(this.SMOOScheduled);
+  		this.log.info( "SMOOController", "SMOO scheduler ends." ); 
+	}catch(e){
+		this.log.error("SMOOController", e.toString() );
+	}
+  },
+  
+  queryFolder: function(basePath, UUIDList){
+  	if(basePath == null || basePath == ""){
+  		return UUIDList;
+  	}
+  	
+  	this.log.debug("SMOOController", "starting querying folder: "+ basePath); 
+	var req = new lib.WSCentralServiceService.listRequest();
+	req.basePath.setValue(basePath);
+	try{
+		var response = this.invokeService(req);
+		if(response.isFault()){
+			this.log.error("SMOOController",  "SOAP Fault: " + response.faultstring.getValue() );
+			return UUIDList;
+		}
+		var folderFound = response.listReturn.folderFound.getValue();
+		if(folderFound){
+			var subfolders = new Array();
+			subfolders = response.listReturn.folders;
+			flows = response.listReturn.flows;
+			var flowsLength = flows.length();
+			for(var i = 0; i &lt; flowsLength; i ++){
+				UUIDList.push(flows.WSFlow[i].UUID.getValue());
+				this.log.debug("SMOOController", "OO Flow found under "+ basePath +": " +flows.WSFlow[i].name.getValue());
+			}
+			var sublength = subfolders.length();	
+			for(var i = 0; i &lt; sublength; i ++){
+				this.queryFolder(subfolders.WSFolderDetails[i].path.getValue(), UUIDList);
+			}
+		}
+		return UUIDList;
+	}catch(e){
+		this.log.error("SMOOController", e.toString());
+	}
+  },
+  
+ syncOOFlow: function(UUIDList){
+	var	req = new lib.WSCentralServiceService.getFlowDetailsRequest();
+	var allSent = false;
+	var maxSize = this.getMaxRequestSize();
+	var scheduled = this.getSMOOScheduled();
+	for( var i = 0; i &lt; UUIDList.length(); i ++ ){		
+		req.flowUuids.item_newInstance().setValue(UUIDList[i]);
+		if( (i+1)%maxSize == 0 ){
+			var details = new Array();
+			this.queryDetail(req);
+			req = new lib.WSCentralServiceService.getFlowDetailsRequest();
+		}
+	}
+	if(req != null &amp;&amp; req.flowUuids.length()&gt;0){
+		var flows = this.queryDetail(req);
+	}
+ },
+
+ invokeService: function(request){
+	try{
+		var OOService = new lib.WSCentralServiceService.WSCentralServiceService(this.ooservice_url,this.userName,this.password);
+		var response = OOService.invoke( request,null,null );
+		if(response.isFault()){
+			this.log.error("SMOOController",  "SOAP Fault: " + response.faultstring.getValue() );
+		}else{
+			return response;
+		}
+	}catch(e){
+		this.log.error("SMOOController", e.toString());
+	}
+ },
+ 
+ queryDetail: function(request){
+	var response = this.invokeService(request);
+	var details = new Array();
+	details = response.getFlowDetailsReturn.WSFlowDetails;	
+ 	for( var i = 0; i &lt; details.length; i++ ){
+		var uuid = details[i].UUID.getValue();
+		if(this.checkInSM(uuid) == null ){
+			this.insertOOFlow(details[i]);
+		}else{
+			this.updateOOFlow(details[i]);
+		}
+	}
+ },
+ 
+ insertOOFlow: function(soapFlow){
+	var uuid = soapFlow.UUID.getValue();
+	var name = soapFlow.name.getValue();
+	var path = soapFlow.path.getValue();
+	var description = soapFlow.description.getValue();
+	var lastmodifiedtime = soapFlow.lastModifiedTime.getValue();
+	var paraSize = soapFlow.parameters.WSFlowInputDef.length;
+	var newOOFlow = new SCFile("OOFlow");
+	newOOFlow.uuid = uuid;
+	newOOFlow.path = path + "/" + name;	
+	newOOFlow.name = name;
+	newOOFlow.description = description;
+	newOOFlow.lastmodifiedtime = lastmodifiedtime;
+	newOOFlow.scheduled = this.SMOOScheduled;
+	for(var i = 0; i &lt; paraSize; i++){
+		var para = new SCDatum();
+		var name = soapFlow.parameters.WSFlowInputDef[i].name.getValue();
+		var required = soapFlow.parameters.WSFlowInputDef[i].required.getValue();
+		var encrypted = soapFlow.parameters.WSFlowInputDef[i].encrypted.getValue();
+		if(encrypted == null || encrypted == ""){
+			encrypted = false;
+		}
+		newOOFlow.paras[i].para_name = name;
+		newOOFlow.paras[i].para_required = required;
+		newOOFlow.paras[i].para_sensitive = encrypted;
+	}
+	var RC_Int = newOOFlow.doInsert();
+	if (RC_Int != RC_SUCCESS) this.log.info("SMOOController", "Can't insert record to OOFlow file, "+RCtoString(RC_Int)); 
+	else this.log.info("SMOOController", "OO flow inserted: " + newOOFlow.path); 
+ }, 
+ 
+ updateOOFlow:function(soapFlow){	
+	var lastmodifiedtime = soapFlow.lastModifiedTime.getValue();
+	var oldOOFlow = new SCFile("OOFlow");
+	var uuid = soapFlow.UUID.getValue();
+	oldOOFlow.doSelect("uuid = \"" + uuid + "\"");
+	if(lastmodifiedtime&lt;=oldOOFlow.lastmodifiedtime){
+		this.log.info("SMOOController", "OO flow no change: " + oldOOFlow.path);
+		oldOOFlow.scheduled = this.SMOOScheduled;	
+		var RC_Int = oldOOFlow.doUpdate();
+		if (RC_Int != RC_SUCCESS) this.log.info("SMOOController", "Can't update record to OOFlow file, "+RCtoString(RC_Int));
+		return;
+	}
+	var name = soapFlow.name.getValue();
+	var path = soapFlow.path.getValue();
+	var description = soapFlow.description.getValue();
+	
+	var oldPath = oldOOFlow.path;
+	
+	oldOOFlow.uuid = uuid;
+	oldOOFlow.path = path + "/" + name;	
+	oldOOFlow.name = name;
+	oldOOFlow.description = description;
+	oldOOFlow.lastmodifiedtime = lastmodifiedtime;
+	oldOOFlow.scheduled = this.SMOOScheduled;	
+	
+	//update parameters
+	//if the parameter is existed, keep the user settings about default value and ci mapping, update required
+	//if not, add the parameter
+	//if the existed parameter is not in OO, remove it
+	//cannot be awared of parameter name change, if a parameter's name is changed,
+	//take it as removed and add a new parameter. 
+	var newParaSize = soapFlow.parameters.WSFlowInputDef.length;	
+	var oldParaSize = oldOOFlow.paras.getSize();
+	var temp = new Datum();
+	for(var i = 0; i &lt; newParaSize; i++){
+		var existed = false;
+		var para_name = soapFlow.parameters.WSFlowInputDef[i].name.getValue();
+		var required = soapFlow.parameters.WSFlowInputDef[i].required.getValue();	
+		var encrypted = soapFlow.parameters.WSFlowInputDef[i].encrypted.getValue();
+		if( para_name != null &amp;&amp; para_name != ""){
+			for(var k = 0; k &lt; oldParaSize; k ++){
+				if(para_name == oldOOFlow.paras[k].para_name){
+					oldOOFlow.paras[k].para_required = required;
+					oldOOFlow.paras[k].para_sensitive = encrypted;
+					temp.push(oldOOFlow.paras[k]);
+					existed = true;
+					break;
+				}
+			}
+			if(!existed){
+				var tempOOFlow = new SCFile("OOFlow");
+				var tempPara = tempOOFlow.paras;
+				tempPara[0].para_name = para_name;
+				tempPara[0].para_required = required;
+				temp.push(tempPara[0]);
+			}
+		}
+	}
+	
+	oldOOFlow.paras = temp;
+	this.updateKMLinks(oldPath, path + "/" + name, soapFlow.parameters.WSFlowInputDef);
+	
+	var RC_Int = oldOOFlow.doUpdate();
+	if (RC_Int != RC_SUCCESS) this.log.info("SMOOController", "Can't update record to OOFlow file, "+RCtoString(RC_Int));  
+	else this.log.info("SMOOController", "OO flow updated: " + path + "/" + name); 
+	
+ },
+ 
+ getMaxRequestSize: function(){
+	return 10;
+ },
+
+ checkInSM: function(uuid){
+	var ooFlowFile = new SCFile("OOFlow");
+	var sql = "uuid = \""+uuid+"\"";
+	var rc_result = ooFlowFile.doSelect(sql);
+	if(rc_result == RC_SUCCESS){
+		return ooFlowFile;
+	}	
+	else{
+		return null;
+	}
+ },
+
+ /** 
+ getSMRunbooks: function (path){	
+	var runbookFile = new SCFile("runbook");
+	var sql = "path # \""+path+"\"";
+	var rc = runbookFile.doSelect(sql);
+	var uuids = new SCDatum();
+	if ( rc == RC_SUCCESS )
+	{
+		rc = runbookFile.getFirst();
+		while( rc == RC_SUCCESS )
+		{
+			uuids.push(runbookFile.uuid);
+			rc = runbookFile.getNext();
+		}
+	}
+	return uuids;
+ },*/
+ 
+  updateScheduled: function(){
+	var info = new SCFile("info");
+	var RC = info.doSelect("type=\"company\"");
+	info.SMOO_scheduled++;
+	var RC_Int = info.doUpdate();
+	if (RC_Int != RC_SUCCESS) this.log.error("SMOOController", "Can't update record to info file, "+RCtoString(RC_Int)); 
+ },
+
+ removeOOFlows: function(basePaths){
+ 	for(var i = 0; i&lt; basePaths.length; i++){
+ 		if(basePaths[i]!=null &amp;&amp; basePaths[i]!=""){	 	
+			var ooFlowFile = new SCFile("OOFlow");
+			//QCCR1E53372 QL exception in Service Manager log when retrieving OO flow from OO.
+			//YWY
+			//use ~= to replace &lt;&gt;
+			var sql = "scheduled ~=NULL and scheduled &lt;&gt; " + this.SMOOScheduled + " and path #\"" + basePaths[i] + "\"";
+			var rc = ooFlowFile.doSelect(sql);
+			if ( rc == RC_SUCCESS )
+			{
+				rc = ooFlowFile.getFirst();
+				while( rc == RC_SUCCESS )
+				{	
+					var uuid = ooFlowFile.uuid;
+					this.removeKMLinks(uuid);
+					var RC_Int = ooFlowFile.doDelete();
+					if (RC_Int != RC_SUCCESS) this.log.error("SMOOController", "Can't delete record from OOFlow file, " + RCtoString(RC_Int)); 
+					else this.log.info("SMOOController", "OO flow removed: " + ooFlowFile.path);
+					rc = ooFlowFile.getNext();
+				}
+			}
+		}
+	}
+ }, 
+
+ /**
+ removeLink: function(path){
+	var kmdocument = new SCFile( "kmdocument" );
+	var rc = kmdocument.doSelect( "runbooks = \""+ path + "\"" );
+	
+	if ( rc == RC_SUCCESS )
+	{
+		rc = kmdocument.getFirst();
+		while( rc == RC_SUCCESS )
+		{	
+			//print(kmdocument.id);
+			var runbooks = kmdocument.runbooks;
+			var newLinks = new SCDatum();
+			for(var i = 0;  i &lt; runbooks.length(); i++){
+				if(runbooks[i] != path){
+						newLinks.push(runbooks[i]);
+				}
+			}
+			//print(newLinks);
+			kmdocument.runbooks = newLinks;
+			var RC_Int = kmdocument.doUpdate();
+			if (RC_Int != RC_SUCCESS) this.log.error("SMOOController", "Can't update record to kmdocument file, "+RCtoString(RC_Int)); 
+			else this.log.error("SMOOController", "Runbook: " + path + " Link to kmdocument: " + kmdocument.id + " removed");
+			rc = kmdocument.getNext();
+		}
+	}
+ },*/
+ 
+ getBasePaths: function(basePathStr, delimiter){
+	if(basePathStr == null || basePathStr =="" || delimiter == null || delimiter == ""){
+		return basePathStr;
+	}
+ 	else return basePathStr.split(delimiter);
+ },
+ 
+ updateKMLinks: function(oldPath, newPath, newParas){
+ 	var kmlinkFile = new SCFile("OOFlowLinks");
+ 	var sql = "OOFlow.path = \"" + oldPath +"\"";
+ 	var RC_Int = kmlinkFile.doSelect(sql);
+ 	if (RC_Int == RC_SUCCESS){
+ 		RC_Int = kmlinkFile.getFirst();
+		while( RC_Int == RC_SUCCESS ){	
+			kmlinkFile.OOFlow_path = newPath;
+			var oldParaSize = kmlinkFile.paras.getSize();
+			var newParaSize = newParas.length;
+			var paras = new Datum();
+			for(var i = 0; i &lt; newParaSize; i++){
+				var existed = false;
+				var para_name = newParas[i].name.getValue();
+				var required = newParas[i].required.getValue();
+				if( para_name != null &amp;&amp; para_name != ""){
+					for(var k = 0; k &lt; oldParaSize; k ++){
+						if(para_name == kmlinkFile.paras[k].para_name){
+							kmlinkFile.paras[k].para_required = required;
+							paras.push(kmlinkFile.paras[k]);
+							existed = true;
+							break;
+						}
+					}
+				}
+				if(!existed){
+					var tempOOFlowLink = new SCFile("OOFlowLinks");
+					var tempPara = tempOOFlowLink.paras;
+					tempPara[0].para_name = para_name;
+					tempPara[0].para_required = required;
+					paras.push(tempPara[0]);
+				}
+			}
+			kmlinkFile.paras = paras;
+			var rc = kmlinkFile.doUpdate();
+			if (rc != RC_SUCCESS) this.log.error("SMOOController", "Can't update record from OOFlowLinks file, " + RCtoString(rc)); 
+			RC_Int = kmlinkFile.getNext();
+		}
+	}
+ },
+ 
+ removeKMLinks: function(uuid){ 	
+ 	var kmlinkFile = new SCFile("OOFlowLinks");
+ 	var sql = "OOFlow.uuid = \"" + uuid +"\"";
+ 	var RC_Int = kmlinkFile.doSelect(sql);
+ 	if (RC_Int == RC_SUCCESS){
+ 		RC_Int = kmlinkFile.getFirst();
+		while( RC_Int == RC_SUCCESS )
+		{	
+			var rc = kmlinkFile.doDelete();
+			if (rc != RC_SUCCESS) this.log.error("SMOOController", "Can't update record from OOFlowLinks file, " + RCtoString(rc)); 
+			RC_Int = kmlinkFile.getNext();
+		}
+ 	}
+ }
+ 
+});
+
+function getClass() {return ControllerClass;}</script>
+    <package type="string">SMOO</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:44</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

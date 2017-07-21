@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="menu">
+  <record id="name=&quot;PATCH RELEASE&quot;" recordid="PATCH RELEASE">
+    <name type="string">PATCH RELEASE</name>
+    <option sctype="array">
+      <option sctype="decimal">1</option>
+      <option sctype="decimal">3</option>
+      <option sctype="decimal">4</option>
+      <option sctype="decimal">5</option>
+      <option sctype="decimal">6</option>
+    </option>
+    <description sctype="array">
+      <description sctype="string">Apply Patch Release</description>
+      <description sctype="string"/>
+      <description sctype="string">Create Patch Release</description>
+      <description sctype="string">View/Merge Results</description>
+      <description sctype="string">View Content Information</description>
+    </description>
+    <command sctype="array">
+      <command sctype="string">patch</command>
+      <command sctype="string">Back</command>
+    </command>
+    <condition sctype="array">
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0</condition>
+      <condition sctype="boolean">true</condition>
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0</condition>
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0</condition>
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0</condition>
+    </condition>
+    <application sctype="array">
+      <application sctype="string">wizard.run</application>
+      <application sctype="string">menu.manager</application>
+      <application sctype="string">wizard.run</application>
+      <application sctype="string">database</application>
+      <application sctype="string">database</application>
+    </application>
+    <pname sctype="array">
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+    </pname>
+    <pvalue sctype="array">
+      <pvalue sctype="string">Patch Release Prompt Apply</pvalue>
+      <pvalue sctype="string">SYSTEM ADMINISTRATION</pvalue>
+      <pvalue sctype="string">Patch Release Prompt Create</pvalue>
+      <pvalue sctype="string">patchrel.results</pvalue>
+      <pvalue sctype="string">contentversion</pvalue>
+    </pvalue>
+    <system NullValue="1" sctype="array">
+      <system NullValue="1" type="string"/>
+    </system>
+    <format.name NullValue="1" type="string"/>
+    <thread NullValue="1" sctype="array">
+      <thread NullValue="1" type="boolean"/>
+    </thread>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:01:01</sysmodtime>
+    <group NullValue="1" sctype="array">
+      <group NullValue="1" type="string"/>
+    </group>
+    <icon NullValue="1" sctype="array">
+      <icon NullValue="1" type="string"/>
+    </icon>
+  </record>
+</recordset>

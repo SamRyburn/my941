@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;AppendQuery&quot;" recordid="AppendQuery">
+    <name type="string">AppendQuery</name>
+    <script type="string">/**
+* 
+* Append "append.query in $L.env" to $L.sql for current user and specified module
+* 
+* Gary Sun
+*/
+
+// origin sql is $L.sql value in search engine
+function appendQuery(env, originSql)
+{
+
+  // return value
+  var result = originSql;
+  
+  // no append query need add
+  if(isEmpty(env) || isEmpty(env.append_query) || isEmpty(env.append_query.trim())) return result;
+  
+  
+  var appendQuery = env.append_query.trim();
+  appendQueryLc = appendQuery.toLowerCase();
+  
+  // if origin slq is null, return append query directly but remove prefix "and" or "or"
+  if(isEmpty(originSql)) 
+  {
+  	if(appendQueryLc.startWith("and "))
+  		result = appendQuery.substr(4);
+  	else if (appendQueryLc.startWith("or "))
+  		result = appendQuery.substr(4);
+  	else
+  		result = appendQuery;
+  		
+  	return result;
+  }
+  
+  // if origin sql is not null, concate origin sql and append query
+  if(appendQueryLc.startWith("and ") || appendQueryLc.startWith("or ")) 
+  {
+   result = "(" + result + ") " + appendQuery;
+  }
+  else
+  {
+  	result += " and (" + appendQuery + ")";
+  }
+  
+  return result;
+}
+
+// check to see if the specified varible is null
+function isEmpty(varible)
+{
+	return varible == null || varible == undefined || varible == "";
+}
+
+lib.jsExt.main();</script>
+    <package NullValue="1" type="string"/>
+    <sysmodtime type="dateTime">09/18/13 13:20:36</sysmodtime>
+    <sysmoduser type="string">shiji.shu</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

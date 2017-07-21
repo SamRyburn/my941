@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="RuleSet">
+  <record id="id=&quot;sd.svc.clean.update.action&quot;" recordid="sd.svc.clean.update.action">
+    <id type="string">sd.svc.clean.update.action</id>
+    <name type="string">Cleanup Flow Variables</name>
+    <tablename sctype="array">
+      <tablename sctype="string">incidents</tablename>
+    </tablename>
+    <rule sctype="array">
+      <rule sctype="structure">
+        <ruleId type="decimal">1</ruleId>
+        <isGroup type="boolean">false</isGroup>
+        <parentGroup type="decimal">0</parentGroup>
+        <ruleXML NullValue="1" type="string"/>
+        <ruleDesc type="string">Clean Update Action</ruleDesc>
+        <condition type="string">true</condition>
+        <conditionDesc NullValue="1" type="string"/>
+        <conditionXML NullValue="1" type="string"/>
+        <fullDesc type="string">Clean Update Action</fullDesc>
+        <level type="decimal">0</level>
+        <type type="string">JSValidate</type>
+        <ruleJSON type="string">{"type":"JSValidate","script":"if(!vars['$G.bg']) system.functions.cleanup(vars['$update.action']);\u000a\u000aif(vars['$G.ess']==true)\u000a{\u000a\u0009\u000a\u0009record['cust.visible']=true;\u000a}\u000aelse\u000a{\u000a\u0009if(!vars['$G.bg']) record['cust.visible']=false;\u000a}"}</ruleJSON>
+      </rule>
+    </rule>
+    <lastRuleId type="decimal">1</lastRuleId>
+    <isAction NullValue="1" type="boolean"/>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:01:19</sysmodtime>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

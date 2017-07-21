@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;IDOLScheduler&quot;" recordid="IDOLScheduler">
+    <name type="string">IDOLScheduler</name>
+    <script type="string">var _ = lib.Underscore.require(),
+  Serialization = lib.IDOLSerialization.require();
+
+var Scheduler = (function() {
+  function trim(text) {
+    return text &amp;&amp; text.replace(/^\s+|\s+$/g, '');
+  }
+  
+  function Schedule(cfg) {
+    var schedule = new SCFile("schedule");
+    for (var name in cfg)
+      if (cfg.hasOwnProperty(name))
+        schedule[name] = cfg[name];
+    
+    this.set = function(name, value) {
+      schedule[name] = value;
+      return this;
+    };
+    // the first argument is the function which will be called in schedule
+    // the rest arguments are parameters needed by schedule function
+    this.javascript = function(func) {
+      if (typeof func !== 'function') 
+        throw func + ' is not a javascript function';
+      
+      var params = _.map(_.rest(arguments), Serialization.stringify);
+      schedule.strings = params;
+
+      var script = func.toString();
+      if (script.indexOf('[native code]') &gt; -1)
+        script = func.name;
+      
+      var schedule_javascript = [
+        'var Serialization = lib.IDOLSerialization.require();',
+        'var _ = lib.Underscore.require();',
+        // Here the 'record' is not point to schedule object, so use 
+        // '$L.schedule' instead, but this behavior is depend on the 
+        // implementation of RAD 'scheduler'
+        'var schedule = system.vars["$L.schedule"];', 
+        'var strings = schedule.strings.toArray();',
+        'var args = _.map(strings, Serialization.parse);',
+        'var funcs = (' + trim(script) + ');',
+        'funcs.apply(schedule, args);' 
+      ].join('\n');
+      
+      schedule.javascript = schedule_javascript;
+      return this;
+    };
+    this.start = function() {
+      schedule.doInsert();
+      return this;
+    };
+    // for test only
+    this.debug = function() {
+      system.vars['$L.schedule'] = schedule;
+      var script = '(function(){' + schedule.javascript + '})()';
+      eval(script);
+    };
+  }
+  return {
+    schedule : function(cfg) {
+      return new Schedule(cfg);
+    }
+  };
+})();
+
+function require() {
+  return Scheduler;
+}</script>
+    <package type="string">IDOL</package>
+    <sysmodtime type="dateTime">11/12/14 15:39:15</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">2</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

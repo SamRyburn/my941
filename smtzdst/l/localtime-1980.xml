@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="smtzdst">
+  <record id="tzname=&quot;localtime&quot; and dstyear=1980" recordid="">
+    <tzname type="string">localtime</tzname>
+    <dstyear type="decimal">1980</dstyear>
+    <dstbegin type="dateTime">04/26/80 20:00:00</dstbegin>
+    <dstend type="dateTime">10/25/80 20:00:00</dstend>
+    <isdst type="decimal">1</isdst>
+  </record>
+</recordset>

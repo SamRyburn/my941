@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="kmcategory">
+  <record id="id=&quot;KM005T&quot;" recordid="KM005T">
+    <id type="string">KM005T</id>
+    <name type="string">Benefits</name>
+    <top.level.category NullValue="1" type="string"/>
+    <level.in.hierarchy type="decimal">1</level.in.hierarchy>
+    <parent.category type="string">KM004T</parent.category>
+    <description NullValue="1" type="string"/>
+    <permission NullValue="1" sctype="array">
+      <permission sctype="structure">
+        <kmprofile NullValue="1" type="string"/>
+        <kmgroup NullValue="1" type="string"/>
+      </permission>
+    </permission>
+    <sysmodtime type="dateTime">07/26/07 10:31:26</sysmodtime>
+    <sysmodcount type="decimal">5</sysmodcount>
+    <sysmoduser type="string">rolfel</sysmoduser>
+    <owner.to.notify NullValue="1" type="string"/>
+    <assignee.to.notify NullValue="1" type="string"/>
+    <pathid type="string">KM004T</pathid>
+    <pathname type="string">HR</pathname>
+    <kcsIIIgroups NullValue="1" sctype="array">
+      <kcsIIIgroups NullValue="1" type="string"/>
+    </kcsIIIgroups>
+    <kcsIIgroups NullValue="1" sctype="array">
+      <kcsIIgroups NullValue="1" type="string"/>
+    </kcsIIgroups>
+    <kcsIgroups NullValue="1" sctype="array">
+      <kcsIgroups NullValue="1" type="string"/>
+    </kcsIgroups>
+    <viewintgroups NullValue="1" sctype="array">
+      <viewintgroups NullValue="1" type="string"/>
+    </viewintgroups>
+    <viewextgroups NullValue="1" sctype="array">
+      <viewextgroups NullValue="1" type="string"/>
+    </viewextgroups>
+  </record>
+</recordset>

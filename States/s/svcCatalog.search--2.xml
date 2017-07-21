@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="States">
+  <record id="state=&quot;svcCatalog.search&quot;" recordid="svcCatalog.search">
+    <state type="string">svcCatalog.search</state>
+    <display.screen type="string">svcCatalog.search</display.screen>
+    <format.name type="string">svcCatalog.search</format.name>
+    <fc.action type="string">update</fc.action>
+    <valid.process sctype="array">
+      <valid.process sctype="string">svcCat.new.cat</valid.process>
+      <valid.process sctype="string">svcCat.new.item</valid.process>
+      <valid.process sctype="string">svcCat.new.support</valid.process>
+      <valid.process sctype="string">svcCat.new.bundle</valid.process>
+    </valid.process>
+    <process.condition sctype="array">
+      <process.condition sctype="boolean">true</process.condition>
+      <process.condition sctype="boolean">true</process.condition>
+      <process.condition sctype="boolean">true</process.condition>
+      <process.condition sctype="boolean">true</process.condition>
+    </process.condition>
+    <process.label sctype="array">
+      <process.label sctype="string">newcat</process.label>
+      <process.label sctype="string">newitem</process.label>
+      <process.label sctype="string">newsupport</process.label>
+      <process.label sctype="string">newcollection</process.label>
+    </process.label>
+    <input.condition NullValue="1" type="boolean"/>
+    <init.process type="string">svcCatalog.init.category</init.process>
+    <run.save.before NullValue="1" sctype="array">
+      <run.save.before NullValue="1" type="boolean"/>
+    </run.save.before>
+    <sysmodcount type="decimal">3</sysmodcount>
+    <sysmoduser type="string">zouguo</sysmoduser>
+    <sysmodtime type="dateTime">11/03/10 05:43:35</sysmodtime>
+  </record>
+</recordset>

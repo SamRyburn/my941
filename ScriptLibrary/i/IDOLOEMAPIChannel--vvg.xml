@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;IDOLOEMAPIChannel&quot;" recordid="IDOLOEMAPIChannel">
+    <name type="string">IDOLOEMAPIChannel</name>
+    <script type="string">/**
+ * IDOL ACI OEM version
+ * 
+ * sm rte provide an api 'doIDOLRequest' to communicate with IDOL server
+ * it will read 'idoloemkey' which defined in sm.ini, and use this key to
+ * encrypt the communication messages
+ * 
+ * Currently only GET/POST are supported (2014/05/22)
+ */
+var JSON = lib.JSON.json(),
+    _ = lib.Underscore.require(), 
+    Parser = lib.IDOLURLParser.require();
+
+var logger = getLog('IDOLOEMAPIChannel');
+
+var IDOLOEMAPIChannel = (function() {
+    
+  function doIDOLOEMAPIRequest(method, endpoint, params) {
+    var query = Parser.parse(endpoint),
+        protocol = query.protocol,
+        host = query.host, 
+        port = query.port,
+        action = params.action || query.action,
+        qs1 = params,
+        qs2 = query.params,
+        qs3 = _.extend(qs1, qs2);
+    
+    var qs = _.chain(qs3).map(function(v, k) {
+      return { name: k, value: v };
+    }).filter(function(param) {
+      return !!param.name &amp;&amp; param.name !== 'action';
+    }).map(function(param) {
+      return new Header(param.name, param.value);
+    }).value();
+    
+    logger.debug('request oem api: ' + action);
+    
+    if (logger.isTraceEnabled()) {
+      logger.trace('\tmethod: ' + method);
+      logger.trace('\thost: ' + host);
+      logger.trace('\tport: ' + port);
+      logger.trace('\tquery params: ' + qs);
+    }
+    
+    var response = doIDOLRequest(host, port, action, qs, method === 'POST', 10, 60, true, protocol === 'https', "", lib.jsaci.getOEMKey());
+    if (logger.isDebugEnabled()) {
+      logger.debug('response: ' + response);
+    }
+    return response;
+  }
+  
+  function doIDOLOEMAPIGet(endpoint, params) {
+    return doIDOLOEMAPIRequest('GET', endpoint, params);
+  }
+
+  function doIDOLOEMAPIPost(endpoint, params) {
+    return doIDOLOEMAPIRequest('POST', endpoint, params);    
+  }
+
+  return {
+    doGet: doIDOLOEMAPIGet,
+    doPost: doIDOLOEMAPIPost
+  };
+})();
+
+function require() {
+  return IDOLOEMAPIChannel;
+}</script>
+    <package type="string">IDOL</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:40</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ModuleStatus">
+  <record id="module=&quot;cm3t&quot; and status=&quot;closed&quot;" recordid="cm3t - closed">
+    <status type="string">closed</status>
+    <sysmodtime type="dateTime">06/02/08 08:35:06</sysmodtime>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">sanderson</sysmoduser>
+    <module type="string">cm3t</module>
+    <tablename type="string">cm3t</tablename>
+    <sort.order NullValue="1" type="decimal"/>
+  </record>
+</recordset>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="triggers">
+  <record id="trigger.name=&quot;trigger.requestModel.remove.taskplan&quot;" recordid="trigger.requestModel.remove.taskplan">
+    <trigger.name type="string">trigger.requestModel.remove.taskplan</trigger.name>
+    <trigger.type type="decimal">6</trigger.type>
+    <table.name type="string">requestModel</table.name>
+    <application.name NullValue="1" type="string"/>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">hanrui</sysmoduser>
+    <sysmodtime type="dateTime">03/11/14 13:32:52</sysmodtime>
+    <javascript type="string">lib.c.$("#taskPlannerService").removeChangePlanAndContext(record);</javascript>
+  </record>
+</recordset>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;svcSrcConfig.field.wizard.add.2.checkbox&quot;" recordid="en - svcSrcConfig.field.wizard.add.2.checkbox">
+    <name mandatory="true" type="string">svcSrcConfig.field.wizard.add.2.checkbox</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$mandatory</input>
+        <output type="string">Is Mandatory</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Name=input1299574078164	?Visible=	Height=2	Name=input1299574078164	Visible=0	Width=40	X=1	Y=0	Caption=Is Mandatory		Input=$mandatory	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">1</column>
+        <length type="decimal">11</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$hasdefaultvalue</input>
+        <output type="string">Default Value:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Name=input1297919994577	Height=2	Name=input1297919994577	Width=22	X=1	Y=2	Caption=Default Value:		Input=$hasdefaultvalue	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">13</column>
+        <length type="decimal">20</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$useExpression</input>
+        <output type="string">Is Expression</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Name=input1418972998044	?Visible=[$hasdefaultvalue]=true	Height=2	Name=input1418972998044	Width=40	X=25	Y=2	Caption=Is Expression		Input=$useExpression	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">13</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$defaultvalueexp</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=input1418973839328	?Caption=	?Visible=[$hasdefaultvalue]=true &amp; [$useExpression]=true	Height=2	Name=input1418973839328	MaxChars=0	Width=40	X=24	Y=5		Input=$defaultvalueexp	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">13</column>
+        <length type="decimal">6</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$defaultvalue</input>
+        <output type="string">true</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Radio;Name=input1297919950227	Value=true	?Visible=[$hasdefaultvalue]=true &amp; [$useExpression]=false	Height=1	Name=input1297919950227	Visible=0	Width=11	X=25	Y=5	Caption=true		Input=$defaultvalue	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">13</column>
+        <length type="decimal">6</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array"/>
+        <input type="string">$defaultvalue</input>
+        <output type="string">false</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Radio;Name=input1297919952375	Value=false	?Visible=[$hasdefaultvalue]=true &amp; [$useExpression]=false	Height=1	Name=input1297919952375	Visible=0	Width=12	X=25	Y=7	Caption=false		Input=$defaultvalue	</property>
+      </field>
+    </field>
+    <file.name NullValue="1" type="string"/>
+    <editor type="string">falcon</editor>
+    <last.update type="dateTime">12/22/14 18:38:06</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">07/16/17 17:00:39</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

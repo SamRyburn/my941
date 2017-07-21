@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="scmessage">
+  <record id="syslanguage=&quot;en&quot; and class=&quot;upg&quot; and message.id=&quot;294&quot;" recordid="en - upg - 294">
+    <syslanguage type="string">en</syslanguage>
+    <message.id type="string">294</message.id>
+    <severity type="decimal">1</severity>
+    <message type="string">A severe error was encountered in attempting to update the %S dbdict. The application upgrade cannot continue. Please contact HP Customer Support.</message>
+    <class type="string">upg</class>
+    <comments NullValue="1" sctype="array">
+      <comments NullValue="1" type="string"/>
+    </comments>
+    <sysmodtime type="dateTime">07/15/04 07:57:36</sysmodtime>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+  </record>
+</recordset>

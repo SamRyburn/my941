@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;MyGroupsCM3GroupsSync&quot;" recordid="MyGroupsCM3GroupsSync">
+    <name type="string">MyGroupsCM3GroupsSync</name>
+    <script type="string">
+
+function syncMyGroupsCM3Groups(oldrecord,record)
+{
+ 
+ var cgroup = new SCFile("cm3groups");
+ 
+ if(oldrecord.name!=record.name)
+ {
+  for(i=0;i&lt;oldrecord.approver_of.length();i++)
+  {
+   if(oldrecord.approver_of[i]!=null)
+   {
+    cgroup = new SCFile("cm3groups");
+    cgroup.doSelect("name=\""+oldrecord.approver_of[i]+"\"");
+    var aindex=system.functions.index(oldrecord.name,cgroup.approvers)-1;
+    if(aindex&gt;=0)
+    {
+     cgroup.approvers[aindex]=record.name;
+    }
+    vars.$L_sf=system.functions.rtecall("sort", vars.$L_rc,cgroup.approvers, 0, 0);
+    cgroup.approvers=system.functions.denull(cgroup.approvers);
+    cgroup.doUpdate();
+   
+   }
+  }
+  for(i=0;i&lt;oldrecord.member_of.length();i++)
+  {
+   
+   if(oldrecord.member_of[i]!=null)
+   {
+    cgroup = new SCFile("cm3groups");
+    cgroup.doSelect("name=\""+oldrecord.member_of[i]+"\"");
+    var aindex=system.functions.index(oldrecord.name,cgroup.members)-1;
+    if(aindex&gt;=0)
+    {
+     cgroup.members[aindex]=record.name;
+    }
+    vars.$L_sf=system.functions.rtecall("sort", vars.$L_rc,cgroup.members, 0, 0);
+    cgroup.members=system.functions.denull(cgroup.members);
+
+    cgroup.doUpdate();
+
+   }
+  } 
+ }
+ 
+ 
+ if(oldrecord.approver_of.toString()!=record.approver_of.toString())
+ {
+
+  for(i=0;i&lt;oldrecord.approver_of.length();i++)
+  {
+   if(oldrecord.approver_of[i]!=null &amp;&amp; system.functions.index(oldrecord.approver_of[i],record.approver_of)==0)
+   {
+    cgroup = new SCFile("cm3groups");
+    cgroup.doSelect("name=\""+oldrecord.approver_of[i]+"\"");
+    var aindex=system.functions.index(record.name,cgroup.approvers)-1;
+    if(aindex&gt;=0)
+    {
+     cgroup.approvers[aindex]=null;
+    }
+    vars.$L_sf=system.functions.rtecall("sort", vars.$L_rc,cgroup.approvers, 0, 0);
+    cgroup.approvers=system.functions.denull(cgroup.approvers);
+    cgroup.doUpdate();
+   
+   }
+  }
+ 
+  
+  for(i=0;i&lt;record.approver_of.length();i++)
+  {
+   if(record.approver_of[i]!=null)
+   {
+    cgroup = new SCFile("cm3groups");
+   	cgroup.doSelect("name=\""+record.approver_of[i]+"\"");
+    if(system.functions.index(record.name,cgroup.approvers)==0)
+    {
+     cgroup.approvers.push(record.name);
+     vars.$L_sf=system.functions.rtecall("sort", vars.$L_rc,cgroup.approvers, 0, 0);
+     cgroup.doUpdate();
+    }
+   } 
+  } 
+
+ } 
+ 
+ 
+ if(oldrecord.member_of.toString()!=record.member_of.toString())
+ { 
+
+  for(i=0;i&lt;oldrecord.member_of.length();i++)
+  {
+   if(oldrecord.member_of[i]!=null &amp;&amp; system.functions.index(oldrecord.member_of[i],record.member_of)==0)
+   {
+    cgroup = new SCFile("cm3groups");
+    cgroup.doSelect("name=\""+oldrecord.member_of[i]+"\"");
+    var aindex=system.functions.index(record.name,cgroup.members)-1;
+    if(aindex&gt;=0)
+    {
+     cgroup.members[aindex]=null;
+    }
+    vars.$L_sf=system.functions.rtecall("sort", vars.$L_rc,cgroup.members, 0, 0);
+    cgroup.members=system.functions.denull(cgroup.members);
+    cgroup.doUpdate();
+
+   }
+  }
+ 
+  for(i=0;i&lt;record.member_of.length();i++)
+  {
+   if(record.member_of[i]!=null)
+   {
+    cgroup = new SCFile("cm3groups");
+    cgroup.doSelect("name=\""+record.member_of[i]+"\"");   
+    if(system.functions.index(record.name,cgroup.members)==0)
+    {
+     cgroup.members.push(record.name);
+     vars.$L_sf=system.functions.rtecall("sort", vars.$L_rc,cgroup.members, 0, 0);
+     cgroup.doUpdate();
+    }
+   } 
+  }
+ } 
+ 
+}
+
+function syncMyGroupsCM3GroupsDelete(oldrecord)
+{
+ 
+  var cgroup = new SCFile("cm3groups");
+
+  for(i=0;i&lt;oldrecord.approver_of.length();i++)
+  {
+
+   if(oldrecord.approver_of[i]!=null)
+   {
+    
+    cgroup.doSelect("name=\""+oldrecord.approver_of[i]+"\"");
+    var aindex=system.functions.index(record.name,cgroup.approvers)-1;
+    if(aindex&gt;=0)
+    {
+     cgroup.approvers[aindex]=null;
+    }
+    vars.$L_sf=system.functions.rtecall("sort", vars.$L_rc,cgroup.approvers, 0, 0);
+    cgroup.approvers=system.functions.denull(cgroup.approvers);
+    cgroup.doUpdate();
+   }
+    
+    
+    
+  }
+  
+ 
+  for(i=0;i&lt;oldrecord.member_of.length();i++)
+  {
+   if(oldrecord.member_of[i]!=null)
+   {
+    cgroup.doSelect("name=\""+oldrecord.member_of[i]+"\"");
+    var aindex=system.functions.index(record.name,cgroup.members)-1;
+    if(aindex&gt;=0)
+    {
+     cgroup.members[aindex]=null;
+    }
+    vars.$L_sf=system.functions.rtecall("sort", vars.$L_rc,cgroup.members, 0, 0);
+    cgroup.members=system.functions.denull(cgroup.members);
+    cgroup.doUpdate();
+   }
+  }
+ 
+}
+
+function syncCM3GroupsMyGroups(oldrecord,record)
+{
+ 
+ var mygroup = new SCFile("myGroups");
+ if(oldrecord.name!=record.name)
+ {
+  for(i=0;i&lt;oldrecord.approvers.length();i++)
+  {
+   if(oldrecord.approvers[i]!=null)
+   {
+    mygroup = new SCFile("myGroups")
+    mygroup.doSelect("name=\""+oldrecord.approvers[i]+"\"");
+    var aindex=system.functions.index(oldrecord.name,mygroup.approver_of)-1;
+    if(aindex&gt;=0)
+    {
+     mygroup.approver_of[aindex]=record.name;
+    }
+    vars.$L_sf=system.functions.rtecall("sort", vars.$L_rc,mygroup.approver_of, 0, 0);
+    mygroup.approver_of=system.functions.denull(mygroup.approver_of);
+    mygroup.doUpdate();
+   
+   }
+  }
+  for(i=0;i&lt;oldrecord.members.length();i++)
+  {
+   
+   if(oldrecord.members[i]!=null)
+   {
+    mygroup = new SCFile("myGroups");
+    mygroup.doSelect("name=\""+oldrecord.members[i]+"\"");
+    var aindex=system.functions.index(oldrecord.name,mygroup.member_of)-1;
+    if(aindex&gt;=0)
+    {
+     mygroup.member_of[aindex]=record.name;
+    }
+    vars.$L_sf=system.functions.rtecall("sort", vars.$L_rc,mygroup.member_of, 0, 0);
+    mygroup.member_of=system.functions.denull(mygroup.member_of);
+
+    mygroup.doUpdate();
+
+   }
+  } 
+ }
+ 
+ if(oldrecord.approvers.toString()!=record.approvers.toString())
+ {
+  mygroup = new SCFile("myGroups");
+  for(i=0;i&lt;oldrecord.approvers.length();i++)
+  {
+   if(oldrecord.approvers[i]!=null &amp;&amp; system.functions.index(oldrecord.approvers[i],record.approvers)==0)
+   {
+    mygroup.doSelect("name=\""+oldrecord.approvers[i]+"\"");
+    var aindex=system.functions.index(record.name,mygroup.approver_of)-1;
+    if(aindex&gt;=0)
+    {
+     mygroup.approver_of[aindex]=null;
+    }
+    vars.$L_sf=system.functions.rtecall("sort", vars.$L_rc,mygroup.approver_of, 0, 0);
+    mygroup.approver_of=system.functions.denull(mygroup.approver_of);
+    mygroup.doUpdate();
+   
+   }
+  }
+ 
+  
+  for(i=0;i&lt;record.approvers.length();i++)
+  {
+   mygroup = new SCFile("myGroups");
+   if(record.approvers[i]!=null &amp;&amp; mygroup.doSelect("name=\""+record.approvers[i]+"\"")==RC_SUCCESS)
+   {
+    if(system.functions.index(record.name,mygroup.approver_of)==0)
+    {
+     mygroup.approver_of.push(record.name);
+     vars.$L_sf=system.functions.rtecall("sort", vars.$L_rc,mygroup.approver_of, 0, 0);
+     mygroup.doUpdate();
+   
+    }
+   }
+   else
+   {
+    if(record.approvers[i]!=null)
+    {
+     mygroup = new SCFile("myGroups");
+     mygroup.name=record.approvers[i];
+     mygroup.approver_of[0]=record.name;
+     mygroup.doInsert();
+    } 
+   } 
+  }
+ } 
+ 
+ 
+ if(oldrecord.members.toString()!=record.members.toString())
+ { 
+ 
+  for(i=0;i&lt;oldrecord.members.length();i++)
+  {
+   
+   if(oldrecord.members[i]!=null &amp;&amp; system.functions.index(oldrecord.members[i],record.members)==0)
+   {
+    mygroup = new SCFile("myGroups");
+    mygroup.doSelect("name=\""+oldrecord.members[i]+"\"");
+    
+    var aindex=system.functions.index(record.name,mygroup.member_of)-1;
+    if(aindex&gt;=0)
+    {
+     mygroup.member_of[aindex]=null;
+    }
+    vars.$L_sf=system.functions.rtecall("sort", vars.$L_rc,mygroup.member_of, 0, 0);
+    mygroup.member_of=system.functions.denull(mygroup.member_of);
+
+    mygroup.doUpdate();
+
+   }
+  }
+ 
+  for(i=0;i&lt;record.members.length();i++)
+  {
+   mygroup = new SCFile("myGroups");
+   if(record.members[i]!=null &amp;&amp; mygroup.doSelect("name=\""+record.members[i]+"\"")==RC_SUCCESS)
+   {   
+    if(system.functions.index(record.name,mygroup.member_of)==0)
+    {
+     mygroup.member_of.push(record.name);
+     vars.$L_sf=system.functions.rtecall("sort", vars.$L_rc,mygroup.member_of, 0, 0);
+     mygroup.doUpdate();
+ 
+    }
+   }
+   else
+   {
+    if(record.members[i]!=null)
+    {
+     mygroup = new SCFile("myGroups");
+     mygroup.name=record.members[i];
+     mygroup.member_of[0]=record.name;
+     mygroup.doInsert();
+    } 
+   } 
+  }
+ } 
+}
+
+function syncCM3GroupsMyGroupsDelete(oldrecord)
+{
+ 
+  var mygroup = new SCFile("myGroups");
+  for(i=0;i&lt;oldrecord.approvers.length();i++)
+  {
+   if(oldrecord.approvers[i]!=null)
+   {
+    mygroup.doSelect("name=\""+oldrecord.approvers[i]+"\"");
+    var aindex=system.functions.index(record.name,mygroup.approver_of)-1;
+    if(aindex&gt;=0)
+    {
+     mygroup.approver_of[aindex]=null;
+    }
+    vars.$L_sf=system.functions.rtecall("sort", vars.$L_rc,mygroup.approver_of, 0, 0);
+    mygroup.approver_of=system.functions.denull(mygroup.approver_of);
+    mygroup.doUpdate();
+   } 
+  }
+  
+  for(i=0;i&lt;oldrecord.members.length();i++)
+  {
+   if(oldrecord.members[i]!=null)
+   {
+    mygroup.doSelect("name=\""+oldrecord.members[i]+"\"");
+    var aindex=system.functions.index(record.name,mygroup.member_of)-1;
+    if(aindex&gt;=0)
+    {
+     mygroup.member_of[aindex]=null;
+    }
+    vars.$L_sf=system.functions.rtecall("sort", vars.$L_rc,mygroup.member_of, 0, 0);
+    mygroup.member_of=system.functions.denull(mygroup.member_of);
+    mygroup.doUpdate();
+   } 
+  }
+ 
+}
+
+</script>
+    <package NullValue="1" type="string"/>
+    <sysmodtime type="dateTime">09/18/13 13:20:37</sysmodtime>
+    <sysmoduser type="string">shiji.shu</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="triggers">
+  <record id="trigger.name=&quot;km.document.update&quot;" recordid="km.document.update">
+    <trigger.name type="string">km.document.update</trigger.name>
+    <trigger.type type="decimal">3</trigger.type>
+    <table.name type="string">kmdocument</table.name>
+    <application.name NullValue="1" type="string"/>
+    <sysmodcount type="decimal">3</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">06/17/06 10:48:22</sysmodtime>
+    <javascript type="string">//this trigger happens whenever a kmdocument is updated
+
+//first check the rtf field(s) to make sure any links in the links array are still
+//valid (i.e. the user didn't add a link and then delete it by hand)
+var dellst = '';
+for(var i=record.links.length()-1;i&gt;=0;i--)
+{
+	//so for each link we need to find the field the link was in
+	var docfldname = record.links[i].linkfield;
+	//see if docfldname is empty which means we have an empty link in the array
+	//and should just ignore it
+	if ((docfldname != '') &amp;&amp; (docfldname != null))
+	{
+		//now go through the field we returned and check for the link
+		//print("docfldname=" + docfldname);
+		var docfldval = eval("record." + docfldname); 
+		if (docfldval.indexOf(record.links[i].linkid) &gt;= 0)
+		{
+			//this means the link is there so do nothing for now
+		} 
+		else
+		{
+			//this means the link is no longer in the field so remove it from the array
+			//print("before " + record);
+			record.links = system.functions._delete(record.links,i+1);	
+			//print("after " + record);
+		}
+	}
+}
+</javascript>
+  </record>
+</recordset>

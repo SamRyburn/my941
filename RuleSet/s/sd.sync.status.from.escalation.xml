@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="RuleSet">
+  <record id="id=&quot;sd.sync.status.from.escalation&quot;" recordid="sd.sync.status.from.escalation">
+    <id type="string">sd.sync.status.from.escalation</id>
+    <name type="string">Sync Status From other Module</name>
+    <tablename sctype="array">
+      <tablename sctype="string">incidents</tablename>
+    </tablename>
+    <rule sctype="array">
+      <rule sctype="structure">
+        <ruleId type="decimal">1</ruleId>
+        <isGroup type="boolean">false</isGroup>
+        <parentGroup type="decimal">0</parentGroup>
+        <ruleXML type="string">&lt;runScheduledAction&gt;&lt;calcType&gt;2&lt;/calcType&gt;&lt;calcField&gt;&lt;/calcField&gt;&lt;calcInterval&gt;&lt;/calcInterval&gt;&lt;calcScript&gt;actionExecutionTime=new Date();&lt;/calcScript&gt;&lt;actionConditionXml&gt;&amp;lt;XmlCondition&amp;gt;&amp;lt;collection logical="" negate=""&amp;gt;&amp;lt;condition logical="" negate="false"&amp;gt;&amp;lt;operand type="expression"&amp;gt;&amp;lt;Expression caption=""&amp;gt;"jscall(&amp;amp;quot;StatusSyncServiceBeanWrapper.callBeanMethod&amp;amp;quot;,&amp;amp;quot;setSyncStatus&amp;amp;quot;,$L.file)"&amp;lt;/Expression&amp;gt;&amp;lt;/operand&amp;gt;&amp;lt;/condition&amp;gt;&amp;lt;/collection&amp;gt;&amp;lt;/XmlCondition&amp;gt;&lt;/actionConditionXml&gt;&lt;actionCondition&gt;(jscall("StatusSyncServiceBeanWrapper.callBeanMethod","setSyncStatus",$L.file))&lt;/actionCondition&gt;&lt;rulesetName&gt;&lt;/rulesetName&gt;&lt;action&gt;1&lt;/action&gt;&lt;/runScheduledAction&gt;</ruleXML>
+        <ruleDesc type="string">Sync Interaction Status From Escalation</ruleDesc>
+        <condition type="string">true</condition>
+        <conditionDesc type="string">Always</conditionDesc>
+        <conditionXML type="string">&lt;XmlCondition&gt;&lt;collection logical="" negate=""&gt;&lt;/collection&gt;&lt;/XmlCondition&gt;</conditionXML>
+        <fullDesc type="string">Sync Interaction Status From Escalation (when Always)</fullDesc>
+        <level type="decimal">0</level>
+        <type type="string">runScheduledAction</type>
+        <ruleJSON NullValue="1" type="string"/>
+      </rule>
+    </rule>
+    <lastRuleId type="decimal">2</lastRuleId>
+    <isAction NullValue="1" type="boolean"/>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">11/09/14 19:20:11</sysmodtime>
+    <sysmodcount type="decimal">19</sysmodcount>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

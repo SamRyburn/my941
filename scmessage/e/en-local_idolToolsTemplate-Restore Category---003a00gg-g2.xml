@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="scmessage">
+  <record id="syslanguage=&quot;en&quot; and class=&quot;local:idolToolsTemplate&quot; and message.id=&quot;Restore Category&quot;" recordid="en - local:idolToolsTemplate - Restore Category">
+    <syslanguage type="string">en</syslanguage>
+    <message.id type="string">Restore Category</message.id>
+    <severity NullValue="1" type="decimal"/>
+    <message type="string">Restore Category step 1 – Restore</message>
+    <class type="string">local:idolToolsTemplate</class>
+    <comments NullValue="1" sctype="array">
+      <comments NullValue="1" type="string"/>
+    </comments>
+    <sysmodtime type="dateTime">10/09/14 19:44:48</sysmodtime>
+    <sysmodcount type="decimal">7</sysmodcount>
+    <sysmoduser type="string">pengfei</sysmoduser>
+  </record>
+</recordset>

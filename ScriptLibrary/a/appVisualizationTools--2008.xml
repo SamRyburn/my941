@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;appVisualizationTools&quot;" recordid="appVisualizationTools">
+    <name type="string">appVisualizationTools</name>
+    <script type="string">// exit field of application
+var EXITS = [ "normal", "error", "exit", "one.rec", "empty", "key.dupl", "key.null", "all.null" ];
+
+
+/**
+ * Generate rad grapch 
+ *
+ * @strApplication:	Rad name
+ * @strLabel:		Graph label
+ * @bIngoreError:	Ignore "$error" exit
+ */
+function getGraph(strApplication, strLabel, bIngoreError) {
+	// all application panels
+	var panels = [];
+	
+	var graph = new lib.VisualizationTools.Graph(strApplication, strLabel);
+
+	var fApplication1 = new SCFile("application", SCFILE_READONLY);
+	fApplication1.setFields(["label", "format"]);
+	var strSelect = "application=\"" + strApplication + "\"";
+	var rc1 = fApplication1.doSelect(strSelect);
+	if (rc1 != RC_SUCCESS) {
+		print("not found");
+	} else {
+		do {
+			var strPanel = system.functions.str(fApplication1["label"]);
+			graph.addNode(strPanel, strPanel, fApplication1["format"]);
+			panels.push(strPanel);
+		} while (fApplication1.getNext() == RC_SUCCESS)
+	}
+	
+	var fApplication2 = new SCFile("application", SCFILE_READONLY);
+	var rc2 = fApplication2.doSelect(strSelect);
+	if (rc2 != RC_SUCCESS) {
+		print("not found");
+	} else {
+		do {
+			var strPanel = system.functions.str(fApplication2["label"]);
+			for ( var i = 0; i &lt; EXITS.length; i++) {
+				if (system.functions.type(fApplication2[EXITS[i]]) == 2 &amp;&amp; !(bIngoreError &amp;&amp; EXITS[i] == "error")) {
+					var strExitPanel = system.functions.str(fApplication2[EXITS[i]]);
+					
+					// normal exit of parameter panel is start panel
+					if (strPanel== "parameter" &amp;&amp; EXITS[i] == "normal" &amp;&amp; strExitPanel == "$normal")
+						strExitPanel = "start"
+						
+					if (!lib.ArrayUtil.contains(panels, strExitPanel)) {
+						graph.addNode(strExitPanel, strExitPanel);
+						panels.push(strExitPanel);
+					}
+					graph.addEdge(strPanel + "-" + EXITS[i], strPanel, strExitPanel, EXITS[i]);
+				} 
+				
+				else if (system.functions.type(fApplication2[EXITS[i]]) == 8) {
+					for ( var j = 0; j &lt; system.functions.lng(fApplication2[EXITS[i]]); j++) {
+						var strExitPanel = system.functions.str(fApplication2[EXITS[i]][j]);
+						if(strExitPanel == null){
+							continue;
+						}
+						
+						// handle $normal and $error specially
+						if (strExitPanel == "0")
+							strExitPanel = "$normal";
+						else if (strExitPanel == "1")
+							strExitPanel = "$error";
+
+						if (!lib.ArrayUtil.contains(panels, strExitPanel)) {
+							graph.addNode(strExitPanel, strExitPanel);
+							panels.push(strExitPanel);
+						}
+						graph.addEdge(strPanel + "-" + EXITS[i] + "[" + j + "]", strPanel, strExitPanel, EXITS[i] + "[" + j + "]" + ": " + system.functions.str(fApplication2["condition"][j]));
+					}
+				}
+			}
+
+		} while (fApplication2.getNext() == RC_SUCCESS)
+	}
+	
+	return graph.output();
+}
+
+// print(getGraph("apm.save.problem"));
+</script>
+    <package type="string">Tailoring</package>
+    <sysmodtime type="dateTime">09/08/14 20:48:32</sysmodtime>
+    <sysmoduser type="string">zhangqi</sysmoduser>
+    <sysmodcount type="decimal">3</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

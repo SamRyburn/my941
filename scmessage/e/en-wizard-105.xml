@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="scmessage">
+  <record id="syslanguage=&quot;en&quot; and class=&quot;wizard&quot; and message.id=&quot;105&quot;" recordid="en - wizard - 105">
+    <syslanguage type="string">en</syslanguage>
+    <message.id type="string">105</message.id>
+    <severity NullValue="1" type="decimal"/>
+    <message type="string">SRC Tailoring - Add SRC Configuration</message>
+    <class type="string">wizard</class>
+    <comments NullValue="1" sctype="array">
+      <comments NullValue="1" type="string"/>
+    </comments>
+    <sysmodtime type="dateTime">03/10/11 14:33:27</sysmodtime>
+    <sysmodcount type="decimal">9</sysmodcount>
+    <sysmoduser type="string">panbotao</sysmoduser>
+  </record>
+</recordset>

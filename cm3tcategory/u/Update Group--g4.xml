@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="cm3tcategory">
+  <record id="name=&quot;Update Group&quot;" recordid="Update Group">
+    <name mandatory="true" type="string">Update Group</name>
+    <phases sctype="array">
+      <phases sctype="string">Update Group</phases>
+    </phases>
+    <avail.cond mandatory="true" type="boolean">true</avail.cond>
+    <active type="boolean">true</active>
+    <description type="string">Update configuration item group</description>
+    <assign.number type="boolean">true</assign.number>
+    <request.phases sctype="array">
+      <request.phases sctype="string">CIGroupImplement</request.phases>
+    </request.phases>
+    <is.parent NullValue="1" type="boolean"/>
+    <sysmodcount type="decimal">3</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">12/07/14 20:39:48</sysmodtime>
+    <company type="string">HP</company>
+    <default.template NullValue="1" type="string"/>
+    <workflow type="string">Update Group</workflow>
+  </record>
+</recordset>

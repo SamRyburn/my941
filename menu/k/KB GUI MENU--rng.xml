@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="menu">
+  <record id="name=&quot;KB GUI MENU&quot;" recordid="KB GUI MENU">
+    <name type="string">KB GUI MENU</name>
+    <option sctype="array">
+      <option sctype="decimal">1</option>
+      <option sctype="decimal">2</option>
+      <option sctype="decimal">3</option>
+      <option sctype="decimal">4</option>
+      <option sctype="decimal">5</option>
+      <option sctype="decimal">6</option>
+      <option sctype="decimal">23</option>
+      <option sctype="decimal">24</option>
+    </option>
+    <description sctype="array">
+      <description sctype="string">Generate Knowledge Base</description>
+      <description sctype="string">Solution Candidates</description>
+      <description sctype="string"/>
+      <description sctype="string">Edit Knowledge Records</description>
+      <description sctype="string">Edit IR Synonyms</description>
+      <description sctype="string">Search Knowledgebase</description>
+    </description>
+    <command sctype="array">
+      <command sctype="string"/>
+      <command sctype="string"/>
+      <command sctype="string">Back</command>
+    </command>
+    <condition sctype="array">
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0</condition>
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0 or index("knowledge engineer", $lo.ucapex)&gt;0</condition>
+      <condition sctype="boolean">true</condition>
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0 or index("knowledge engineer", $lo.ucapex)&gt;0</condition>
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0 or index("knowledge engineer", $lo.ucapex)&gt;0</condition>
+      <condition sctype="expression"/>
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0</condition>
+      <condition sctype="boolean">true</condition>
+    </condition>
+    <application sctype="array">
+      <application sctype="string">ke.gencore.verify</application>
+      <application sctype="string">se.search.engine</application>
+      <application sctype="string">menu.manager</application>
+      <application sctype="string">database</application>
+      <application sctype="string">se.search.engine</application>
+      <application sctype="string">database</application>
+      <application sctype="string">system.status</application>
+      <application sctype="string">mail.scenter</application>
+    </application>
+    <pname sctype="array">
+      <pname sctype="string"/>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+    </pname>
+    <pvalue sctype="array">
+      <pvalue sctype="string"/>
+      <pvalue sctype="string">protocore</pvalue>
+      <pvalue sctype="string">$lo.home</pvalue>
+      <pvalue sctype="string">core</pvalue>
+      <pvalue sctype="string">techterms</pvalue>
+      <pvalue sctype="string">kmknowledgebase.search.g</pvalue>
+    </pvalue>
+    <system NullValue="1" sctype="array">
+      <system NullValue="1" type="string"/>
+    </system>
+    <format.name type="string">menu.gui.kb</format.name>
+    <thread sctype="array">
+      <thread sctype="string"/>
+      <thread sctype="string"/>
+      <thread sctype="operator">gui()</thread>
+    </thread>
+    <sysmodcount type="decimal">10</sysmodcount>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodtime type="dateTime">11/08/05 06:21:25</sysmodtime>
+    <group NullValue="1" sctype="array">
+      <group NullValue="1" type="string"/>
+    </group>
+    <icon NullValue="1" sctype="array">
+      <icon NullValue="1" type="string"/>
+    </icon>
+  </record>
+</recordset>

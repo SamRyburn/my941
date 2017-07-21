@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;CheckClientType&quot;" recordid="CheckClientType">
+    <name type="string">CheckClientType</name>
+    <script type="string">function getFormByClientType(formatName, fileName,clientType)
+{
+	var fFormat = new SCFile("format");
+	var rc = fFormat.doSelect("name=\"" + formatName + "."+ clientType+ "\"");
+	if (rc == RC_SUCCESS) 
+	{
+		return formatName+ "."+ clientType;
+	}else{
+		return formatName;
+	}
+}
+
+function getButtonIdsByClientType( fileName,clientType)
+{
+	var fDisplaybutton = new SCFile("displaybutton");
+	var rc = fDisplaybutton.doSelect("filename=\"" + fileName + "\" and client.type=\""+ clientType+ "\"");
+	if (rc == RC_SUCCESS) 
+	{
+		return ","+fDisplaybutton.button_ids+",";
+	}else{
+		return null;
+	}
+}
+
+function getInteractionApproveIds()
+{
+	var interactionIds =  new Array();
+	var fApproval = new SCFile("Approval");
+	var rc = fApproval.doSelect('file.name="incidents" and (current.pending.groups isin approval.groups in $G.sm.environment or current.pending.groups isin {$lo.user.name}) or current.pending.groups isin $G.delegated.svc.groups');	
+	while(rc == RC_SUCCESS)
+	{
+    	//print("Approval unique.key:"+fApproval.unique_key);
+    	interactionIds.push( fApproval.unique_key );
+    	rc = fApproval.getNext();
+    }
+    
+	return interactionIds;
+}</script>
+    <package type="string">Mobility</package>
+    <sysmodtime type="dateTime">05/15/13 19:14:00</sysmodtime>
+    <sysmoduser type="string">xuejun</sysmoduser>
+    <sysmodcount type="decimal">29</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

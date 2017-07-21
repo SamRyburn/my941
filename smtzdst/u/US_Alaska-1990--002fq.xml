@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="smtzdst">
+  <record id="tzname=&quot;US/Alaska&quot; and dstyear=1990" recordid="">
+    <tzname type="string">US/Alaska</tzname>
+    <dstyear type="decimal">1990</dstyear>
+    <dstbegin type="dateTime">03/31/90 19:00:00</dstbegin>
+    <dstend type="dateTime">10/27/90 20:00:00</dstend>
+    <isdst type="decimal">1</isdst>
+  </record>
+</recordset>

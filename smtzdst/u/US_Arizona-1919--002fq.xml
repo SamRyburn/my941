@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="smtzdst">
+  <record id="tzname=&quot;US/Arizona&quot; and dstyear=1919" recordid="">
+    <tzname type="string">US/Arizona</tzname>
+    <dstyear type="decimal">1919</dstyear>
+    <dstbegin type="dateTime">03/29/1919 20:00:00</dstbegin>
+    <dstend type="dateTime">10/25/1919 20:00:00</dstend>
+    <isdst type="decimal">1</isdst>
+  </record>
+</recordset>

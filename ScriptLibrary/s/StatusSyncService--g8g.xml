@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;StatusSyncService&quot;" recordid="StatusSyncService">
+    <name type="string">StatusSyncService</name>
+    <script type="string">var $ = lib.c.$;
+var _contains = lib.ArrayUtil.contains;
+var STATUS_SYNC_RELATION_ESCALATION = lib.StatusSyncServiceConfig.getStusSyncRelation(false);
+var STATUS_SYNC_RELATION_ESCALATION_STR = system.functions.str(STATUS_SYNC_RELATION_ESCALATION);
+var STATUS_MAPS_ESCALATION = lib.StatusSyncServiceConfig.getStusSyncMap(false);
+
+var STATUS_SYNC_RELATION_STREAMLINED = lib.StatusSyncServiceConfig.getStusSyncRelation(true);
+var STATUS_SYNC_RELATION_STREAMLINED_STR = system.functions.str(STATUS_SYNC_RELATION_STREAMLINED);
+var STATUS_MAPS_STREAMLINED = lib.StatusSyncServiceConfig.getStusSyncMap(true);
+
+var STATUS_SYNC_RELATION = STATUS_SYNC_RELATION_STREAMLINED.concat(STATUS_SYNC_RELATION_ESCALATION);
+var STATUS_SYNC_RELATION_STR = system.functions.str(STATUS_SYNC_RELATION);
+
+var StatusSyncService = $({
+    /**
+     *  This function is get the target sync status of interaction based on its Escalation.
+     *
+     *  @param {interaction} object- The interaction record
+     *  @return {string}  -  The target sync status.
+     */
+    getSyncStatusEscalation: function(interaction, rel) {
+        if (!rel) {
+            rel = $("screlation").select("type isin " + STATUS_SYNC_RELATION_ESCALATION_STR + " and source=\"" + interaction.incident_id + "\"").uniqueResult();
+        }
+        if (rel) {
+            var theStatusMap = STATUS_MAPS_ESCALATION;
+            var filename = rel.depend_filename == "problem" ? "probsummary" : rel.depend_filename;
+            if (theStatusMap[filename]) {
+                var idField = theStatusMap[filename].idField ? theStatusMap[filename].idField : "number";
+                var escalation = $(filename).select(idField + "=\"" + rel.depend + "\"").uniqueResult();
+                if (escalation) {
+                    var sourceStatus = escalation[theStatusMap[filename].statusField];
+                    var statusMap = theStatusMap[filename].statusMap;
+                    return statusMap[sourceStatus] ? statusMap[sourceStatus] : null;
+                }
+            }
+        }
+        return null;
+    },
+    getSyncStatus: function(interaction, syncFiledsInfo) {
+
+        var mappedStatus = null;
+        var mappedStatusPriority = -1;
+        var theStatusMap = STATUS_MAPS_STREAMLINED;
+
+        var rels = $("screlation").select("type isin " + STATUS_SYNC_RELATION_STR + " and source=\"" + interaction.incident_id + "\"").list();
+        for (var i = 0; i &lt; rels.length; ++i) {
+            var rel = rels[i];
+            if (_contains(STATUS_SYNC_RELATION_ESCALATION, rel.type)) {
+                return this.getSyncStatusEscalation(interaction, rel);
+            }
+            var filename = rel.depend_filename == "problem" ? "probsummary" : rel.depend_filename;
+            if (theStatusMap[filename]) {
+                var idField = theStatusMap[filename].idField;
+                idField = idField ? idField : "number";
+                var escalation = $(filename).select(idField + "=\"" + rel.depend + "\"").uniqueResult();
+                if (escalation) {
+                    var sourceStatus = escalation[theStatusMap[filename].statusField];
+                    if (!_contains(theStatusMap[filename].ignoreStatus, sourceStatus)) {
+                        var statusMapEntry = theStatusMap[filename].statusMap[sourceStatus];
+                        statusMapEntry = statusMapEntry ? statusMapEntry : theStatusMap[filename].defaultStatus;
+                        if (statusMapEntry.priority &lt; mappedStatusPriority || mappedStatusPriority == -1) {
+                            mappedStatus = statusMapEntry.status;
+                            mappedStatusPriority = statusMapEntry.priority;
+                            if (syncFiledsInfo) {
+                                syncFiledsInfo.syncFields = statusMapEntry.syncFields;
+                                syncFiledsInfo.source = escalation;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return mappedStatus;
+    },
+    /**
+     *  This function is check whether interaction need status sync based on its Escalation.
+     *
+     *  @param {interaction} object- The interaction record
+     *  @return {boolean}  -  Whether interaction need status sync.
+     */
+    needSyncStatus: function(interaction) {
+        var status = this.getSyncStatus(interaction);
+        if (status &amp;&amp; status != interaction.open) return true;
+        return false;
+    },
+    /**
+     *  This function is set the sync status based on its Escalation.
+     *
+     *  @param {interaction} object- The interaction record
+     *  @return {boolean}  -  Whether interaction status changed.
+     */
+    setSyncStatus: function(interaction) {
+        if (this.ignoreStatusSync(interaction)) return false;
+        if (interaction.active) {
+            var syncFieldsInfo = {
+                syncFields: null
+            };
+            var status = this.getSyncStatus(interaction, syncFieldsInfo);
+            if (status &amp;&amp; status != interaction.open) {
+                interaction.open = status;
+                if (syncFieldsInfo.syncFields) {
+                    var source = syncFieldsInfo.source;
+                    var syncFields = syncFieldsInfo.syncFields;
+                    for (var i = 0; i &lt; syncFields.length; ++i) {
+                        if (syncFields[i].override) {
+                            interaction[syncFields[i].target] = source[syncFields[i].source];
+                        } else {
+                            interaction[syncFields[i].target] += source[syncFields[i].source];
+                        }
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
+    },
+    /**
+     *  This function is check whether the interaction need ignore status sync.
+     *
+     *  @param {interaction} object- The interaction record
+     *  @return {boolean}  -  Whether interaction need status sync.
+     */
+    ignoreStatusSync: function(interaction) {
+        var workflow = vars['$L.workflow'];
+        if (!workflow) {
+            var object = vars['$L.object'];
+            if (!object) object = $("Object").select("file.name=\"incidents\"").uniqueResult();
+            if (!object || !object.workflowLocation) return true;
+            workflow = lib.Workflow.getWorkflow(object, interaction);
+        }
+        if (!workflow || workflow['is.legacy.workflow']) return true;
+
+        return false;
+    }
+
+});
+
+function getClass() {
+    return StatusSyncService;
+}</script>
+    <package type="string">Interaction</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:44</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted type="boolean">true</sysrestricted>
+  </record>
+</recordset>

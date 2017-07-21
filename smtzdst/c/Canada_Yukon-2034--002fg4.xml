@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="smtzdst">
+  <record id="tzname=&quot;Canada/Yukon&quot; and dstyear=2034" recordid="">
+    <tzname type="string">Canada/Yukon</tzname>
+    <dstyear type="decimal">2034</dstyear>
+    <dstbegin type="dateTime">03/11/34 19:00:00</dstbegin>
+    <dstend type="dateTime">11/04/34 20:00:00</dstend>
+    <isdst type="decimal">1</isdst>
+  </record>
+</recordset>

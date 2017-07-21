@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;operatorUtil&quot;" recordid="operatorUtil">
+    <name type="string">operatorUtil</name>
+    <script type="string">/**
+  * This script contains various functions used in Operator Operations
+  * 
+  * Zhang Qi
+  */
+  
+
+/**
+  * This function returns a query that is used by link omcq file
+  * to query operators by department.
+  */
+function getOperatorQueryByDepartment(department)
+{
+	if (department == null)
+	{
+		return true;
+	}
+	
+	var contact = new SCFile("contacts");
+	var sql = "dept = \"" + department + "\"";
+	
+	var contactArray = [];
+
+	var rc = contact.doSelect(sql);
+	while (rc == RC_SUCCESS)  
+	{ 				
+		contactArray.push(contact.contact_name);
+		rc = contact.getNext();
+	}
+	
+	if (contactArray.length &gt; 0)
+	{
+		var list = "";
+		var i;
+		for (i in contactArray)
+		{
+		    if (contactArray.hasOwnProperty(i)) {
+				list += "\"" + contactArray[i] + "\",";
+			}
+		}
+		return "contact.name isin {" + list + "}";
+	}
+	else
+	{
+		// no records found
+		return false;
+	}
+}
+
+
+
+function checkPassword2(password, password2){
+    if (!checkMatchPassword(password, password2)){
+        return false;
+    }
+    
+    return checkPassword(password);
+}
+
+
+function checkMatchPassword(password, password2){
+	if ( password!= password2){
+    	warn(342, "us");
+        return false;
+    }
+    
+    return true;
+}
+
+/**
+Securify fix:
+If RAD call the checkPassword, the parameters (password) will be printed in rtm:3
+Fix: Use RAD local variable to set the parameters.
+*/
+function checkPasswordSecure(){
+	return checkPassword(vars.$L_file.password);
+}
+
+
+/**
+Input
+    @parem password the password to check
+Output
+    return true if the password is valid
+*/
+function checkPassword(password){
+	
+	var info = vars.$G_system_info;
+    
+    // check required
+    if (info.no_null_password){
+        if (password==null || password.length==0){
+        	warn(11, "trigger");
+            return false;
+        }
+    }else{
+        if (password==null || password.length==0){
+            return true;
+        }
+    }
+    
+    // check length
+    if (info.min_pwd_len&gt;0){
+        if ( password.length &lt;info.min_pwd_len){
+            warn(12, "trigger" , info. min_pwd_len);
+            return false;
+        }
+    }
+    
+    if (info.max_pwd_len&gt;0) {
+        if ( password.length &gt; info.max_pwd_len){
+            warn(13, "trigger" , info. max_pwd_len);
+        	return false;
+        }
+    }
+    
+    
+    // check alpha
+    if ( info.allow_alpha ){
+        // check require Alpha
+        // check min required
+        if (info.require_alpha){
+            var icount=0;
+            var minCount = info.alpha_min;
+            
+            if (minCount==null || minCount==0){
+                minCount = 1;
+            }
+            
+
+            for (var i=0;i&lt;password.length;i++){
+                if (isAlpha(password[i])){
+                    icount ++;
+                }
+                
+                if (icount &gt;= minCount){
+                    break;
+                }
+            }
+            
+
+            if (icount &lt; minCount){
+                warn(10, "trigger" , minCount);
+        	    return false;
+            }
+            
+        }
+        
+        if (info.require_mixed_case) {
+            // check require Mixed Case
+            var hasLower = false;
+            var hasUpper = false;
+            for (var i=0;i&lt;password.length;i++){
+                if ((password[i]&gt;='a' &amp;&amp; password[i]&lt;='z')){
+                    hasLower = true;
+                }
+                
+                if ((password[i]&gt;='A' &amp;&amp; password[i]&lt;='Z')){
+                    hasUpper = true;
+                }
+                
+                if (hasLower&amp;&amp;hasUpper){
+                    break;
+                }
+            }
+            
+            if ((!hasLower) || !(hasUpper)){
+                warn(9, "trigger");
+            	return false;
+            }
+        }
+        
+    } else {
+        for (var i=0;i&lt;password.length;i++){
+            if (isAlpha(password[i])){
+                warn(6, "trigger");
+        	    return false;
+            }
+        }
+    }
+    
+    // check number
+    if (!info.allow_numeric){
+        for (var i=0;i&lt;password.length;i++){
+            if (isNum(password[i])){
+                warn(7, "trigger");
+        	    return false;
+            }
+        }
+    }
+    
+    // Symbolic
+    if (!info.allow_symbolic){
+        for (var i=0;i&lt;password.length;i++){
+            if ((!isAlpha(password[i])) &amp;&amp; (!isNum(password[i]))){
+                warn(5, "trigger");
+        	    return false;
+            }
+        }
+    }
+    
+    // check Non-Alpha
+    if (info.require_non_alpha){
+        var icount=0;
+        var minCount = info.symbolic_min;
+        if(minCount==null || minCount==0){
+            minCount = 1;
+        }
+        for (var i=0;i&lt;password.length;i++){
+            if (!isAlpha(password[i])){
+                icount ++;
+            }
+            
+            if (icount &gt;= minCount){
+                break;
+            }
+        }
+        
+        
+        if (icount &lt; minCount){
+             warn(8, "trigger" , minCount);
+        	return false;
+        }
+    }
+    
+    // Check Prohibit space
+    if (info.prohibit_space){
+        for (var i=0;i&lt;password.length;i++){
+            if(password[i]==' '){
+                warn(4, "trigger");
+        	    return false;
+            }
+        }
+    }
+    
+    return true;
+}
+
+function isAlpha(c){
+    return (c&gt;='a' &amp;&amp; c&lt;='z') || (c&gt;='A' &amp;&amp; c&lt;='Z');
+}
+
+function isNum(c){
+    return c&gt;='0' &amp;&amp; c&lt;='9';
+}
+
+function warn(msgId, msgClass, parameterStr) {
+	var msg = "";
+	if (parameterStr) {
+	    var parArr=lib.ArrayUtil.toSCDatum([parameterStr]);
+		msg = system.functions.scmsg(msgId + 20 , msgClass, parArr)
+	} else {
+		msg = system.functions.scmsg(msgId, msgClass)
+	}
+	vars.$msg_password_check = msg;
+	vars.$L_error_code = msgId;
+}
+
+/**
+* Return the file of operator by the name.
+* If the operator name is virtual (from command or integration), it returns null.
+**/
+function getOperatorByName(name) {
+    if (name==null)
+        return null;
+        
+    var operator=new SCFile("operator");
+    var rc=operator.doSelect("name=\""+name+"\"");
+    
+    if (rc==RC_SUCCESS) {
+        return operator;
+    }
+    
+    return null;
+}
+
+/**
+* Return name of operator by the contact.name.
+* If the operator name is virtual (from command or integration), it returns null.
+**/
+function getOperatorNameByContactName(contactName) {
+    if (contactName==null)
+        return null;
+        
+    var operator=new SCFile("operator", SCFILE_READONLY);
+    operator.setFields(['operator.name']);
+    var rc=operator.doSelect("contact.name=\""+contactName+"\"");
+    
+    if (rc==RC_SUCCESS) {
+        return operator.name;
+    }
+    
+    return null;
+}
+
+/**
+* Return the file of company in System Information Record.
+* If there is no company, return null.
+**/
+function getCompany() {
+    var company=new SCFile("info");
+    var rc=company.doSelect("type=\"company\" and format=\"info.company\"");
+    if (rc==RC_SUCCESS)
+        return company;
+       
+    return null;
+}
+
+
+
+/**
+ Input: vars.$L_password;
+ Output: true if the password is encryped, otherwise, false
+ */
+function isEncrypted(){
+	var password = vars.$L_password;
+	if (null==password) {
+		return false;
+	}
+	
+	return /^FEFE.+EFEF$/.test(password);
+}
+
+/**
+ Input: password
+ Output: decrypted password if the password is encryped, otherwise the password
+ */
+function getPassword(password){
+	if (null==password) {
+		return '';
+	}
+	
+	vars.$L_password=password;
+	if (isEncrypted()){
+		var p = new SCDatum();
+		system.functions.decrypt(p, password);
+		
+		return system.functions.str(p);
+	}
+	
+	return password;
+}
+
+
+/**
+ * Reset password date for all operators, because password policy has 
+ * been enhanced cause all operator password expirated.
+ */
+function resetAllPasswordDate() {
+	// disable trigger first
+	var	rc;
+	system.functions.rtecall("trigger", rc, 0);
+	
+	// update all operator's password.date
+	var operators = lib.c.$("operator").selectAll().iterate(function(operator) {
+		if (!operator.never_expire_pass)
+		{
+			operator.password_date = new Date();
+			operator.doUpdate();
+		}
+	});
+	
+	system.functions.rtecall("trigger", rc, 1);	
+}
+
+// get operator's data format
+var formats = ['mm/dd/yy', 'dd/mm/yy', 'yy/mm/dd', 'mm/dd/yyyy', 'dd/mm/yyyy', 'yyyy/mm/dd'];
+function getDateFormat(dateOrder) {
+	if (dateOrder != null)
+		return formats[dateOrder-1];
+	else
+		return "yyyy-mm-dd";
+}
+
+</script>
+    <package type="string">BaseUtilities</package>
+    <sysmodtime type="dateTime">07/16/17 17:01:42</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

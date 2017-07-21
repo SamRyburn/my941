@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="menu">
+  <record id="name=&quot;CM REPORTS&quot;" recordid="CM REPORTS">
+    <name type="string">CM REPORTS</name>
+    <option sctype="array">
+      <option sctype="decimal">1</option>
+      <option sctype="decimal">2</option>
+      <option sctype="decimal">3</option>
+      <option sctype="decimal">4</option>
+      <option sctype="decimal">5</option>
+      <option sctype="decimal">6</option>
+      <option sctype="decimal">7</option>
+      <option sctype="decimal">8</option>
+      <option sctype="decimal">9</option>
+      <option sctype="decimal">10</option>
+      <option sctype="decimal">22</option>
+      <option sctype="decimal">23</option>
+      <option sctype="decimal">24</option>
+    </option>
+    <description sctype="array">
+      <description sctype="string">Devices by Name</description>
+      <description sctype="string">Devices by Location</description>
+      <description sctype="string"/>
+      <description sctype="string">Device by Service Provider</description>
+      <description sctype="string">Locations</description>
+      <description sctype="string">Service Providers</description>
+      <description sctype="string">Model Information</description>
+      <description sctype="string">Contact Name Directory</description>
+      <description sctype="string">Software Information</description>
+      <description sctype="string">Device Trace</description>
+      <description sctype="string"/>
+      <description sctype="string">System Status</description>
+      <description sctype="string">ServiceManager Mail</description>
+    </description>
+    <command sctype="array">
+      <command sctype="string"/>
+      <command sctype="string"/>
+      <command sctype="string">Back</command>
+    </command>
+    <condition sctype="array">
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0 or index("ICMAdmin", $lo.ucapex)&gt;0 or index("inventory management", $lo.ucapex)&gt;0</condition>
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0 or index("ICMAdmin", $lo.ucapex)&gt;0 or index("inventory management", $lo.ucapex)&gt;0</condition>
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0 or index("ICMAdmin", $lo.ucapex)&gt;0 or index("inventory management", $lo.ucapex)&gt;0</condition>
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0 or index("ICMAdmin", $lo.ucapex)&gt;0 or index("inventory management", $lo.ucapex)&gt;0</condition>
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0 or index("ICMAdmin", $lo.ucapex)&gt;0 or index("inventory management", $lo.ucapex)&gt;0</condition>
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0 or index("ICMAdmin", $lo.ucapex)&gt;0 or index("inventory management", $lo.ucapex)&gt;0</condition>
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0 or index("ICMAdmin", $lo.ucapex)&gt;0 or index("inventory management", $lo.ucapex)&gt;0</condition>
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0 or index("ICMAdmin", $lo.ucapex)&gt;0 or index("inventory management", $lo.ucapex)&gt;0</condition>
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0 or index("ICMAdmin", $lo.ucapex)&gt;0 or index("inventory management", $lo.ucapex)&gt;0</condition>
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0 or index("ICMAdmin", $lo.ucapex)&gt;0 or index("inventory management", $lo.ucapex)&gt;0</condition>
+      <condition sctype="string"/>
+      <condition sctype="boolean">true</condition>
+      <condition sctype="operator">index("SysAdmin", $lo.ucapex)&gt;0</condition>
+    </condition>
+    <application sctype="array">
+      <application sctype="string">report.exerciser</application>
+      <application sctype="string">report.exerciser</application>
+      <application sctype="string">menu.manager</application>
+      <application sctype="string">report.exerciser</application>
+      <application sctype="string">report.exerciser</application>
+      <application sctype="string">report.exerciser</application>
+      <application sctype="string">report.exerciser</application>
+      <application sctype="string">report.exerciser</application>
+      <application sctype="string">report.exerciser</application>
+      <application sctype="string">report.exerciser</application>
+      <application sctype="string">menu.manager</application>
+      <application sctype="string">system.status</application>
+      <application sctype="string">mail.scenter</application>
+    </application>
+    <pname sctype="array">
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+      <pname sctype="string">name</pname>
+    </pname>
+    <pvalue sctype="array">
+      <pvalue sctype="string">device.listing</pvalue>
+      <pvalue sctype="string">devices.by.location</pvalue>
+      <pvalue sctype="string">CM MAIN</pvalue>
+      <pvalue sctype="string">devices.by.vendor</pvalue>
+      <pvalue sctype="string">location.listing</pvalue>
+      <pvalue sctype="string">vendor.listing</pvalue>
+      <pvalue sctype="string">model.listing</pvalue>
+      <pvalue sctype="string">contact.listing</pvalue>
+      <pvalue sctype="string">software.listing</pvalue>
+      <pvalue sctype="string">device.trace</pvalue>
+      <pvalue sctype="string">HOME</pvalue>
+    </pvalue>
+    <system NullValue="1" sctype="array">
+      <system NullValue="1" type="string"/>
+    </system>
+    <format.name type="string">menu.gui.icm.rpts</format.name>
+    <thread sctype="array">
+      <thread sctype="string"/>
+      <thread sctype="string"/>
+      <thread sctype="operator">gui()</thread>
+      <thread sctype="string"/>
+      <thread sctype="string"/>
+      <thread sctype="string"/>
+      <thread sctype="string"/>
+      <thread sctype="string"/>
+      <thread sctype="string"/>
+      <thread sctype="string"/>
+      <thread sctype="operator">gui()</thread>
+    </thread>
+    <sysmodcount type="decimal">4</sysmodcount>
+    <sysmoduser type="string">rolfel</sysmoduser>
+    <sysmodtime type="dateTime">08/13/07 04:43:17</sysmodtime>
+    <group NullValue="1" sctype="array">
+      <group NullValue="1" type="string"/>
+    </group>
+    <icon NullValue="1" sctype="array">
+      <icon NullValue="1" type="string"/>
+    </icon>
+  </record>
+</recordset>

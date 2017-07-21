@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;RCCondition&quot;" recordid="RCCondition">
+    <name type="string">RCCondition</name>
+    <script type="string">
+//return if RC Calendar should show in a particular record
+function isCalendarShow(file){
+	if(!isRCShow()){
+		return false;
+	}
+	var fileName = system.functions.filename(file);
+	if(fileName=="incidents"){
+		return isInteractionCalendarShow(file);
+	}else if(fileName=="probsummary"){
+		return isIncidentCalendarShow(file);
+	}else if(fileName=="rootcause"){
+		return isProblemCalendarShow(file);
+	}else if(fileName=="cm3r"){
+		return isChangeCalendarShow(file);
+	}else{
+		return false;
+	}
+}
+
+//return if RC Assess should show in a particular record
+function isAssessShow(file){
+	if(!isRCShow()){
+		return false;
+	}
+	return isChangeAssessShow(file);
+
+}
+
+//return if the RC integration is need to show up
+function isRCShow(){
+	if(!lib.RCConfiguration.isRCEnabled()){
+		return false;
+	}
+	if(vars.$G_ess==true){
+		return false;
+	}
+	if(system.functions.sysinfo_get("environment")!="scguiwweb"){
+		return false;
+	}	
+	return true;
+}
+
+//return if the RC Caledar tab should show in a interaction
+function isInteractionCalendarShow(interaciton){
+ 	if(interaciton.open=="Closed"){
+ 		return false;
+ 	}	
+ 	return true;
+}
+
+
+//return if the RC Caledar tab should show in a incident
+function isIncidentCalendarShow(incident){
+ 	if(incident.problem_status=="Closed"){
+ 		return false;
+ 	}	
+ 	return true;
+}
+
+
+//return if the RC Caledar tab should show in a problem
+function isProblemCalendarShow(problem){
+ 	if(problem.rcStatus=="Closed"){
+ 		return false;
+ 	}	
+ 	return true;
+}
+
+
+//return if the RC Caledar tab should show in a change
+function isChangeCalendarShow(change){
+ 	if(change.status == "closed"){
+ 		return false;
+ 	}
+ 	if(change.category == "KM Document" 
+ 	|| change.category == "Release Management" 
+ 	|| change.category == "Subscription" 
+ 	){
+ 		return false;
+ 	}	
+ 	return true;
+}
+
+
+//return if the RC Caledar tab should show in a change
+function isChangeAssessShow(change){
+ 	if(change.status == "closed"){
+ 		return false;
+ 	}
+ 	if(change.category == "KM Document" 
+ 	|| change.category == "Release Management" 
+ 	|| change.category == "Subscription" 
+ 	|| change.category == "CI Group"
+ 	|| change.category == "Unplanned Change"){
+ 		return false;
+ 	}	
+ 	return true;
+}
+
+</script>
+    <package type="string">Integration</package>
+    <sysmodtime type="dateTime">12/25/12 19:13:40</sysmodtime>
+    <sysmoduser type="string">zhangqi</sysmoduser>
+    <sysmodcount type="decimal">26</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

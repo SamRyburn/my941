@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;docEngine&quot;" recordid="docEngine">
+    <name type="string">docEngine</name>
+    <script type="string">/** @fileoverview xmlHelpers
+*   @author Pete Budic
+*/
+
+/** This function initializes variables for the Document Engine.  Initialization is
+*   done here to reduce the size of the se.view.engine code record due to Oracle size limitations.
+*/
+function initViewEngine()
+{
+	vars.$L_soap = false;
+	vars.$L_lock_on_display = false;
+	vars.$L_last_msg = system.functions.scmsg( 3, "us" );
+	vars.$L_first_msg = system.functions.scmsg( 2, "us" );
+	vars.$L_newcat = false;
+	vars.$L_no_auth_msg = system.functions.scmsg( 33, "object" );
+	vars.$L_prompt_message = system.functions.scmsg( 10, "object" );
+	vars.$L_deleted_msg = system.functions.scmsg( 2, "object" );
+	vars.$L_locked = false;
+	vars.$L_bg = false;
+}</script>
+    <package NullValue="1" type="string"/>
+    <sysmodtime type="dateTime">12/07/06 03:47:49</sysmodtime>
+    <sysmoduser type="string">falcon</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <prgnsystem type="boolean">true</prgnsystem>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

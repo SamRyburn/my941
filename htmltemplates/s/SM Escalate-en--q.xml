@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="htmltemplates">
+  <record id="name=&quot;SM Escalate&quot; and language=&quot;en&quot;" recordid="SM Escalate - en">
+    <id type="string">941</id>
+    <type NullValue="1" type="string"/>
+    <name type="string">SM Escalate</name>
+    <expression type="string">//Prepare url for web access
+//#################################################################################################################
+//This is the url for index.do. if you want to generate url for ess.do, please use getESSURLFromQuery instead
+var file_name = system.functions.filename($RECORD);
+var record_name = system.functions.scmsg(file_name,"tablename");
+var record_title = record_name+" "+$RECORD.incident_id;
+var record_query = "incident.id=\""+$RECORD.incident_id+"\"";
+//var web_url = lib.urlCreator.getURLFromQuery(file_name,record_query,record_title);
+var web_url = lib.urlCreator.getESSURLFromQuery(file_name,record_query,record_title);
+//#################################################################################################################
+
+
+//#################################################################################################################
+//Generate Impact, Urgency, and Priority readable label
+
+var _priority = $RECORD.priority_code;
+var _severity = $RECORD.severity;
+var _impact = $RECORD.initial_impact;
+
+var priority="";
+var severity="";
+
+var impact="";
+
+switch(true)
+{
+  case _severity==1:
+        severity = "1 - Critical"; break;
+  case _severity==2:
+        severity = "2 - High"; break;
+  case _severity==3:
+        severity = "3 - Average"; break;
+  case _severity==4:
+        severity = "4 - Low"; break; 
+}
+
+
+switch(true)
+{
+  case _priority==1:
+        priority = "1 - Critical"; break;
+  case _priority==2:
+        priority = "2 - High"; break;
+  case _priority==3:
+        priority = "3 - Average"; break;
+  case _priority==4:
+        priority = "4 - Low"; break;                
+}
+
+
+
+switch(true)
+{
+  case _impact==1:
+        impact = "1 - Enterprise"; break;
+  case _impact==2:
+        impact = "2 - Site/Dept"; break;
+  case _impact==3:
+        impact = "3 - Multiple Users"; break;
+  case _impact==4:
+        impact = "4 - User"; break;         
+}
+
+//#################################################################################################################
+//#################################################################################################################
+//Check if system require fulll operator name and if need append timezone to date time.
+var operator = system.vars.$lo_user_name;
+if(system.vars.$G_pm_global_environment.full_name &amp;&amp; system.vars.$lo_user_name)
+   operator = system.vars.$lo_user_name;
+else
+   operator = system.vars.$lo_ufname;
+
+var operator = system.vars.$lo_user_name;
+if(system.vars.$G_pm_global_environment.full_name &amp;&amp; system.vars.$lo_user_name)
+   operator = system.vars.$lo_user_name;
+else
+   operator = system.vars.$lo_ufname;
+   
+var timestring = "";
+var timezone = "";
+if(system.vars.$G_pm_global_environment.exit)
+{
+  timestring = system.vars.$lo_time_zone;
+  timezone = timestring;
+}
+
+
+if(timestring) timestring = timestring +" ";
+
+
+timestring = timestring +system.functions.str(system.functions.tod()) + ":";
+//#################################################################################################################
+//#################################################################################################################
+//Prepare SLA Target Date, appendix timezone according system setup
+//{$RECORD.next_breach} {timezone}
+var next_breach;
+if($RECORD.next_breach) next_breach= timezone + " " + $RECORD.next_breach;
+
+
+
+
+
+ 
+var affected_item_disp_new= system.functions.get_display_value($RECORD, "affected.item",-1,true);</expression>
+    <content NullValue="1" sctype="array">
+      <content NullValue="1" type="string"/>
+    </content>
+    <module type="string">incidents</module>
+    <cap.exec NullValue="1" sctype="array">
+      <cap.exec NullValue="1" type="string"/>
+    </cap.exec>
+    <active type="boolean">true</active>
+    <htmlcode type="string">&lt;table style="WIDTH: 98%"&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;td valign="top" align="left"&gt;
+            &lt;table style="WIDTH: 600px"&gt;
+                &lt;tbody&gt;
+                    &lt;tr&gt;
+                        &lt;td valign="top"&gt;
+                        &lt;table style="FONT-FAMILY: arial" cellspacing="10" cellpadding="10" width="100%"&gt;
+                            &lt;tbody&gt;
+                                &lt;tr&gt;
+                                    &lt;td style="WIDTH: 100%" valign="top" align="left"&gt;
+                                    &lt;h1 style="FONT-SIZE: 24px; COLOR: #036"&gt;HP Service Manager&lt;/h1&gt;
+                                    &lt;table cellspacing="0" cellpadding="0" width="100%" border="0"&gt;
+                                        &lt;tbody&gt;
+                                            &lt;tr&gt;
+                                                &lt;td style="BACKGROUND-COLOR: #cfe0f1" colspan="2" height="10"&gt;&amp;nbsp;&lt;/td&gt;
+                                            &lt;/tr&gt;
+                                            &lt;tr&gt;
+                                                &lt;td style="BACKGROUND-COLOR: #cfe0f1" width="10"&gt;&amp;nbsp;&lt;/td&gt;
+                                                &lt;td style="FONT-FAMILY: arial; BACKGROUND-COLOR: #cfe0f1"&gt;Interaction &lt;a style="COLOR: #00f; FONT-FAMILY: arial" target="_blank" href="{web_url}"&gt;{$RECORD.incident_id}&lt;/a&gt; has been processed by the Service Desk. &lt;/td&gt;
+                                            &lt;/tr&gt;
+                                            &lt;tr&gt;
+                                                &lt;td style="BACKGROUND-COLOR: #cfe0f1" colspan="2" height="10"&gt;&amp;nbsp;&lt;/td&gt;
+                                            &lt;/tr&gt;
+                                        &lt;/tbody&gt;
+                                    &lt;/table&gt;
+                                    &lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr&gt;
+                                    &lt;td style="WIDTH: 100%" valign="top" align="left"&gt;
+                                    &lt;div style="PADDING-RIGHT: 0px; MARGIN-TOP: -24px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; PADDING-TOP: 0px; POSITION: relative"&gt;
+                                    &lt;h2 style="FONT-SIZE: 18px; COLOR: #036"&gt;Details&lt;/h2&gt;
+                                    &lt;/div&gt;
+                                    &lt;/td&gt;
+                                &lt;/tr&gt;
+                            &lt;/tbody&gt;
+                        &lt;/table&gt;
+                        &lt;table style="FONT-SIZE: 11px; FONT-FAMILY: arial" cellspacing="2" cellpadding="6" width="94%" align="center"&gt;
+                            &lt;tbody&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right" width="20%"&gt;Title&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.title} &lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Description&lt;/td&gt;
+                                    &lt;td&gt;{$RECORD.description} &lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;SLA Target Date&lt;/td&gt;
+                                    &lt;td&gt;{next_breach}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Affected Services&lt;/td&gt;
+                                    &lt;td&gt;{affected_item_disp_new}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;Impact&lt;/td&gt;
+                                    &lt;td&gt;{impact}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#eaeff3"&gt;
+                                    &lt;td align="right"&gt;Urgency&lt;/td&gt;
+                                    &lt;td&gt;{severity}&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr bgcolor="#f8f9f9"&gt;
+                                    &lt;td align="right"&gt;Priority&lt;/td&gt;
+                                    &lt;td&gt;{priority}&lt;/td&gt;
+                                &lt;/tr&gt;
+                            &lt;/tbody&gt;
+                        &lt;/table&gt;
+                        &lt;div style="MARGIN-TOP: 20px; FONT-SIZE: 11px; MARGIN-LEFT: 20px; FONT-FAMILY: arial; POSITION: relative"&gt;
+                        &lt;p style="FONT-WEIGHT: bold"&gt;Service Desk Team&lt;/p&gt;
+                        &lt;p style="COLOR: #999"&gt;Sent from HP Service Manager. Do not reply to this email.&lt;/p&gt;
+                        &lt;/div&gt;
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                &lt;/tbody&gt;
+            &lt;/table&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;</htmlcode>
+    <language type="string">en</language>
+    <mandant NullValue="1" sctype="array">
+      <mandant NullValue="1" type="string"/>
+    </mandant>
+    <test.record type="string">SD10001</test.record>
+    <mail.title type="string">Interaction {$RECORD.incident_id} has been processed by the Service Desk.</mail.title>
+  </record>
+</recordset>
