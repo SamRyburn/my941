@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;fsUtility&quot;" recordid="fsUtility">
+    <name type="string">fsUtility</name>
+    <script type="string">// logLevel 1 = DEBUG, 2 = INFO, 3 = WARN, 4 = ERROR, 5 = FATAL;
+var logLevel = 4; 
+var show = new lib.log4js.Log(logLevel,"fsUtility");
+show.fileLogger = function (msg, level){
+	print(level + " - " + msg);
+	system.functions.log(level + " - " + msg);
+}
+
+// uncomment this line to have message sent to the log file
+//show.setLogger(show.fileLogger);
+
+/** This function returns the value of the XML element that has the id attribute of the passed in String
+*
+*	@param 	{XML String} xmlString    - the xml that contains the dynamic form information
+*   @param 	{String} id - The id of the node to be returned.
+*	@return The value of the element corresponding to the passed in ID.
+*   @type 	String
+*
+*   copied from ScriptLibrary dynamicFormGenerator.
+*   changed the return to get the value instead of returning the full node
+*/
+function getElementById( xmlString, id )
+{
+	var element = new XML();
+	var child;
+	show.setPrefix("fsUtility.getElementById");
+	if (!xmlString){
+		show.error("The XML string is empty");
+		return null;
+	}
+	
+	element.setContent( xmlString );
+	
+	var child = lib.xmlHelpers.getElement( element, id, "id" );
+	if (child){
+		show.debug(child.getName(),child.toXMLString());
+		//return test.getValue() || "BLANK";
+		show.debug(xmlString);
+		return child.getValue();
+	} else {
+		show.error("No XML element id matched " + id);
+		return null;
+	}
+}
+
+/** This function returns the value of the XML element that has the name of the passed in String
+*
+*	@param 	{XML String} xmlString    - the xml that contains the dynamic form information
+*   @param 	{String} name - The name of the node to be returned.
+*	@return The value of the element corresponding to the passed in name.
+*   @type 	String
+*
+*   copied from ScriptLibrary dynamicFormGenerator.
+*   changed not to pass "id"
+*   changed the return to get the value instead of returning the full node
+*/
+function getElementByName( xmlString, name )
+{
+	var element = new XML();
+	var child;
+	show.setPrefix("fsUtility.getElementByName");
+	if (!xmlString){
+		show.error("The XML string is empty.");
+		return null;
+	}
+	
+	element.setContent( xmlString );
+	
+	child = lib.xmlHelpers.getElement( element, name );
+	if (child){
+		show.debug(child.getName(),child.toXMLString());
+		//return test.getValue() || "BLANK";
+		show.debug(xmlString);
+		return child.getValue;
+	} else {
+		show.error("No XML element name matched " + name);
+		return null;
+	}
+}
+
+/** This functions gets the list of significant options from fsOptAssignConfig
+*   And pulls the corresponding values from the svcOptions
+*   Concatenating the values into a string.  The resulting string will be used
+*   to query for an assignment group when a requestTask is opened.
+*
+*   @param {XML String} xmlString
+*   @param {String} requestModel
+*   @param {String} taskName
+*   @return Concatenated list of user option values
+*   @type  String
+*/
+function combineOptionValues(xmlString, requestModel, taskName){
+	var fConfig = new SCFile("fsOptAssignConfig");
+	var rc, i;
+	var combination = "", optionVal = "";
+	var qry = 'requestModel="' + requestModel + '" and taskName="' + taskName + '"';
+	show.setPrefix("fsUtility.combineOptionValues");
+	
+	rc = fConfig.doSelect(qry);
+	if (rc != RC_SUCCESS){
+		show.error("There was a problem finding the configuration for " + qry + ". " + RCtoString(rc));
+		return combination;
+	} 
+	for (i = 0; i &lt; fConfig.significantOptions.length(); i++){
+		show.debug(i, fConfig.significantOptions[i]);
+		optionVal = getElementById(xmlString, fConfig.significantOptions[i]);
+		show.debug(optionVal);
+		if (optionVal){
+			combination = combination + " " + optionVal;
+		}
+	}
+	show.debug(combination);
+	if ( combination != ""){
+		return combination.slice(1);
+	} else {
+		return combination;
+	}
+}
+
+/** This function looks up the assignment group based user option values
+*
+*   @param {String} parentNumber
+*   @param {String} requestModel
+*   @param {String} taskName
+*   @return The assignment group name
+*   @type String
+*/
+function lookupAssignmentGroup(parentNumber, requestModel, taskName){
+	var fParentRequest = new SCFile("request");
+	var fOptionMapping = new SCFile("fsOptAssignMap");
+	var fDefault = new SCFile("fsOptAssignConfig");
+	var rcParent, rcMapping, rcDefault;
+	var qryParent, qryMapping, qryDefault;
+	var optionValues;
+	var assignmentGroup;
+	
+	show.setPrefix("fsUtility.lookupAssignmentGroup");
+	show.debug("starting the lookupAssignmentGroup function");
+	qryParent = 'number="' + parentNumber + '"';
+	rcParent = fParentRequest.doSelect(qryParent);
+	if (rcParent != RC_SUCCESS){
+		show.error("There was a problem locating the parent request: " + qryParent + " " + RCtoString(rcParent));
+		return;
+	}
+	requestModel = fParentRequest.modelname;
+	optionValues = combineOptionValues(fParentRequest.svc_options, requestModel, taskName);
+	if (optionValues != ""){
+		qryMapping = 'optionCombo="' + optionValues + '" and requestModel="' + requestModel + '" and taskName="' + taskName + '"';
+		rcMapping = fOptionMapping.doSelect(qryMapping);
+		if (rcMapping == RC_SUCCESS){
+			assignmentGroup = fOptionMapping.assignment;
+		}
+	}
+	if (assignmentGroup == null){
+		qryDefault = 'requestModel="' + requestModel + '" and taskName="' + taskName + '"';
+		rcDefault = fDefault.doSelect(qryDefault);
+		if (rcDefault != RC_SUCCESS){
+			show.error("There was a problem locating the fsOptAssignConfig record: " + qryDefault + " " + RCtoString(rcDefault));
+			return assignmentGroup;
+		}
+		assignmentGroup = fDefault.assignment;
+	}
+	return assignmentGroup;
+}</script>
+    <package type="string">User</package>
+    <sysmodtime type="dateTime">07/27/17 15:33:56</sysmodtime>
+    <sysmoduser type="string">sryburn</sysmoduser>
+    <sysmodcount type="decimal">47</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

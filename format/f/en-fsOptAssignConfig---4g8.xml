@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="format">
+  <record id="syslanguage=&quot;en&quot; and name=&quot;fsOptAssignConfig&quot;" recordid="en - fsOptAssignConfig">
+    <name mandatory="true" type="string">fsOptAssignConfig</name>
+    <field sctype="array">
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">1</line>
+        <column type="decimal">1</column>
+        <length type="decimal">78</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array">
+          <graph sctype="string"/>
+          <graph sctype="string"/>
+        </graph>
+        <input NullValue="1" type="string"/>
+        <output type="string"> Option - Assignment Configuration</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption= Option - Assignment Configuration	Elastic=1	Name=Label0	Opaque=1	BackColor=11	Bold=1	FontIncrease=2	ForeColor=10	Height=2	Name=Label0	Width=156	X=0	Y=0		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">2</line>
+        <column type="decimal">1</column>
+        <length type="decimal">78</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array">
+          <graph sctype="string"/>
+          <graph sctype="string"/>
+        </graph>
+        <input NullValue="1" type="string"/>
+        <output type="string">Configure the options used to determine assignment of tasks.</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Configure the options used to determine assignment of tasks.	Name=label1500996083411	Height=2	Name=label1500996083411	Width=156	X=0	Y=2		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array">
+          <graph sctype="string"/>
+          <graph sctype="string"/>
+        </graph>
+        <input NullValue="1" type="string"/>
+        <output type="string">Catalog Item:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Catalog Item:	Name=Label15	ForeColor=0	Height=2	Name=Label15	Width=34	X=2	Y=4		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array">
+          <graph sctype="string"/>
+          <graph sctype="string"/>
+        </graph>
+        <input type="string">catalogItem</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComFill;Name=ComFill2	ArrayLength=1	autocomplete=1	Height=2	Name=ComFill2	FillButtonID=9	ThirdButtonID=8	Mandatory=1	ComboButtonVisible=0	ThirdButtonBitmap=4	ThirdButtonVisible=1	Width=36	X=36	Y=4		Input=catalogItem	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">39</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array">
+          <graph sctype="string"/>
+          <graph sctype="string"/>
+        </graph>
+        <input NullValue="1" type="string"/>
+        <output type="string">Request Model:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Request Model:	Name=Label16	ForeColor=0	Height=2	Name=Label16	Width=34	X=76	Y=4		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">3</line>
+        <column type="decimal">56</column>
+        <length type="decimal">18</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array">
+          <graph sctype="string"/>
+          <graph sctype="string"/>
+        </graph>
+        <input type="string">requestModel</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComFill;Name=ComFill1	ArrayLength=1	Height=2	Name=ComFill1	FillButtonID=9	ThirdButtonID=8	Mandatory=1	ComboButtonVisible=0	ThirdButtonBitmap=4	ThirdButtonVisible=1	Width=36	X=110	Y=4		Input=requestModel	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array">
+          <graph sctype="string"/>
+          <graph sctype="string"/>
+        </graph>
+        <input NullValue="1" type="string"/>
+        <output type="string">Significant Options:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Significant Options:	Name=Label13	ForeColor=0	Height=2	Name=Label13	Width=34	X=2	Y=6		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">6</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array">
+          <graph sctype="string"/>
+          <graph sctype="string"/>
+        </graph>
+        <input type="string">significantOptions</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComFill;Name=ComFill4	ArrayLength=6	?DisplayList=	?ValueList=	?Visible=	Height=2	Name=ComFill4	FillButtonID=9	ThirdButtonID=8	ComboButtonVisible=1	Data Changed Event=	FillButtonVisible=0	ThirdButtonBitmap=4	ThirdButtonVisible=0	Width=36	X=36	Y=6		Input=significantOptions	DisplayList=$optionDesc	ValueList=$optionNames	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">39</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array">
+          <graph sctype="string"/>
+          <graph sctype="string"/>
+        </graph>
+        <input NullValue="1" type="string"/>
+        <output type="string">Task Name:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Task Name:	Name=Label14	ForeColor=0	Height=2	Name=Label14	Width=34	X=76	Y=6		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">4</line>
+        <column type="decimal">56</column>
+        <length type="decimal">18</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array">
+          <graph sctype="string"/>
+          <graph sctype="string"/>
+        </graph>
+        <input type="string">taskName</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComFill;Name=ComFill3	ArrayLength=1	Height=2	Name=ComFill3	FillButtonID=9	ThirdButtonID=8	Mandatory=1	ComboButtonVisible=1	FillButtonVisible=0	ThirdButtonBitmap=4	ThirdButtonVisible=0	Width=36	X=110	Y=6		Input=taskName	ValueList=$taskList	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">5</line>
+        <column type="decimal">2</column>
+        <length type="decimal">16</length>
+        <window type="decimal">2</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array">
+          <graph sctype="string"/>
+          <graph sctype="string"/>
+        </graph>
+        <input NullValue="1" type="string"/>
+        <output type="string">Only select an option with a pre-defined list of values.</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Wlabel;Caption=Only select an option with a pre-defined list of values.	Name=label1501079667028	ForeColor=1	Height=4	Name=label1501079667028	Width=32	X=2	Y=8		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">39</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array">
+          <graph sctype="string"/>
+          <graph sctype="string"/>
+        </graph>
+        <input NullValue="1" type="string"/>
+        <output type="string">Default Assignment:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Default Assignment:	Name=Label12	ForeColor=0	Height=2	Name=Label12	Width=34	X=76	Y=10		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">6</line>
+        <column type="decimal">56</column>
+        <length type="decimal">20</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array">
+          <graph sctype="string"/>
+          <graph sctype="string"/>
+        </graph>
+        <input type="string">assignment</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">ComFill;Name=comfill1500996279301	dataType=string	Height=2	Name=comfill1500996279301	FillButtonID=9	ThirdButtonID=8	ComboButtonVisible=0	ThirdButtonVisible=1	Width=40	X=110	Y=10		Input=assignment	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">7</line>
+        <column type="decimal">2</column>
+        <length type="decimal">16</length>
+        <window type="decimal">5</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array">
+          <graph sctype="string"/>
+          <graph sctype="string"/>
+        </graph>
+        <input NullValue="1" type="string"/>
+        <output type="string">Select the options that are significant for determining the assignment group. Please select the options in the same order as a user would select.</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Wlabel;Caption=Select the options that are significant for determining the assignment group. Please select the options in the same order as a user would select.	Name=label1501075845115	Height=9	Name=label1501075845115	Width=32	X=2	Y=12		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">13</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array">
+          <graph sctype="string"/>
+          <graph sctype="string"/>
+        </graph>
+        <input NullValue="1" type="string"/>
+        <output type="string">Sysmodtime:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Sysmodtime:	Name=Label11	ForeColor=0	Height=2	Name=Label11	Width=34	X=2	Y=24		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4</flags>
+        <line type="decimal">13</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array">
+          <graph sctype="string"/>
+          <graph sctype="string"/>
+        </graph>
+        <input type="string">sysmodtime</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text6	ForeColor=0	Height=2	Name=Text6	ReadOnly=1	Width=36	X=36	Y=24		Input=sysmodtime	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">14</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array">
+          <graph sctype="string"/>
+          <graph sctype="string"/>
+        </graph>
+        <input NullValue="1" type="string"/>
+        <output type="string">Sysmoduser:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Sysmoduser:	Name=Label10	ForeColor=0	Height=2	Name=Label10	Width=34	X=2	Y=26		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4</flags>
+        <line type="decimal">14</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array">
+          <graph sctype="string"/>
+          <graph sctype="string"/>
+        </graph>
+        <input type="string">sysmoduser</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text7	ForeColor=0	Height=2	Name=Text7	ReadOnly=1	Width=36	X=36	Y=26		Input=sysmoduser	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">15</line>
+        <column type="decimal">2</column>
+        <length type="decimal">17</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array">
+          <graph sctype="string"/>
+          <graph sctype="string"/>
+        </graph>
+        <input NullValue="1" type="string"/>
+        <output type="string">Sysmodcount:</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=Sysmodcount:	Name=Label9	ForeColor=0	Height=2	Name=Label9	Width=34	X=2	Y=28		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4</flags>
+        <line type="decimal">15</line>
+        <column type="decimal">19</column>
+        <length type="decimal">18</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array">
+          <graph sctype="string"/>
+          <graph sctype="string"/>
+        </graph>
+        <input type="string">sysmodcount</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">Text;Name=Text8	ForeColor=0	Height=2	Name=Text8	ReadOnly=1	Width=36	X=36	Y=28		Input=sysmodcount	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">15</line>
+        <column type="decimal">46</column>
+        <length type="decimal">30</length>
+        <window type="decimal">1</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array">
+          <graph sctype="string"/>
+          <graph sctype="string"/>
+        </graph>
+        <input type="string">$L.view</input>
+        <output type="string">View User Selection form from Catalog Item</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">CheckBox;Name=input1501076315124	Height=2	Name=input1501076315124	Width=60	X=90	Y=28	Caption=View User Selection form from Catalog Item		Input=$L.view	</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">0</flags>
+        <line type="decimal">16</line>
+        <column type="decimal">2</column>
+        <length type="decimal">75</length>
+        <window type="decimal">0</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array">
+          <graph sctype="string"/>
+          <graph sctype="string"/>
+        </graph>
+        <input NullValue="1" type="string"/>
+        <output type="string">This section is provided for reference only.  Any values that you might select will NOT be used.</output>
+        <format NullValue="1" type="string"/>
+        <property type="string">Label;Caption=This section is provided for reference only.  Any values that you might select will NOT be used.	Name=label1501075956218	?Visible=[$L.view]=true	ForeColor=1	Height=2	Name=label1501075956218	Width=149	X=2	Y=31		</property>
+      </field>
+      <field sctype="structure">
+        <flags type="decimal">4096</flags>
+        <line type="decimal">17</line>
+        <column type="decimal">2</column>
+        <length type="decimal">55</length>
+        <window type="decimal">11</window>
+        <attribute NullValue="1" type="decimal"/>
+        <graph sctype="array">
+          <graph sctype="string"/>
+          <graph sctype="string"/>
+        </graph>
+        <input type="string">svcOptions</input>
+        <output NullValue="1" type="string"/>
+        <format NullValue="1" type="string"/>
+        <property type="string">dynamicForm;Name=dynamicForm1501005448092	?Visible=[$L.view]=true	Height=21	Name=dynamicForm1501005448092	ReadOnly=0	Width=110	X=3	Y=33		Input=svcOptions	</property>
+      </field>
+    </field>
+    <file.name type="string">fsOptAssignConfig</file.name>
+    <editor type="string">sryburn</editor>
+    <last.update type="dateTime">07/26/17 10:53:38</last.update>
+    <help.topic NullValue="1" type="string"/>
+    <syslanguage type="string">en</syslanguage>
+    <sysmodcount type="decimal">18</sysmodcount>
+    <sysmoduser type="string">sryburn</sysmoduser>
+    <sysmodtime type="dateTime">07/26/17 10:53:38</sysmodtime>
+    <description NullValue="1" type="string"/>
+  </record>
+</recordset>

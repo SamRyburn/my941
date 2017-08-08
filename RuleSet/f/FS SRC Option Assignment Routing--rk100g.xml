@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="RuleSet">
+  <record id="id=&quot;FS SRC Option Assignment Routing&quot;" recordid="FS SRC Option Assignment Routing">
+    <id type="string">FS SRC Option Assignment Routing</id>
+    <name type="string">FS SRC Option Assignment Routing</name>
+    <tablename sctype="array">
+      <tablename sctype="string">requestTask</tablename>
+    </tablename>
+    <rule sctype="array">
+      <rule sctype="structure">
+        <ruleId type="decimal">1</ruleId>
+        <isGroup type="boolean">false</isGroup>
+        <parentGroup type="decimal">0</parentGroup>
+        <ruleXML NullValue="1" type="string"/>
+        <ruleDesc type="string">Request Task Select Assignment Group based on user options</ruleDesc>
+        <condition type="string">true</condition>
+        <conditionDesc type="string">Always</conditionDesc>
+        <conditionXML NullValue="1" type="string"/>
+        <fullDesc type="string">Request Task Select Assignment Group based on user options (when Always)</fullDesc>
+        <level type="decimal">0</level>
+        <type type="string">assignment</type>
+        <ruleJSON type="string">{"type":"assignment","assignmentType":"auto","defaultGroup":"","groupFieldName":"assigned.group","groupAssignType":"js","groupServiceFieldName":"","groupFixedValue":"","groupScript":"groupValue = lib.fsUtility.lookupAssignmentGroup(record.parent_request, record.fsRequestBundle, record.title);","assigneeFieldName":"","assigneeAssignType":"none","assigneeGroupMemberType":"","assignmentTimeFieldName":"","assignmentTimeRecentDays":"","activeTicketQueryXml":"","assigneeCoordinatorType":"","assigneeFixedValue":"","assigneeScript":""}</ruleJSON>
+      </rule>
+    </rule>
+    <lastRuleId type="decimal">3</lastRuleId>
+    <isAction NullValue="1" type="boolean"/>
+    <sysmoduser type="string">sryburn</sysmoduser>
+    <sysmodtime type="dateTime">07/26/17 15:50:10</sysmodtime>
+    <sysmodcount type="decimal">1</sysmodcount>
+    <sysrestricted type="boolean">false</sysrestricted>
+  </record>
+</recordset>

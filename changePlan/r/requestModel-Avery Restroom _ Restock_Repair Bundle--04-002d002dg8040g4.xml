@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="changePlan">
+  <record id="fileName=&quot;requestModel&quot; and number=&quot;Avery Restroom - Restock-Repair Bundle&quot;" recordid="requestModel - Avery Restroom - Restock-Repair Bundle">
+    <number type="string">Avery Restroom - Restock-Repair Bundle</number>
+    <fileId type="string">Avery Restroom - Restock-Repair Bundle</fileId>
+    <tasks sctype="array">
+      <tasks sctype="structure">
+        <taskId type="decimal">2</taskId>
+        <taskCoords type="string">30,40</taskCoords>
+        <dependentIds sctype="string"/>
+        <dependentCoords sctype="string"/>
+        <taskNumber type="string"/>
+        <taskStatus type="string"/>
+        <taskCategory type="string">Fiscal Facility Work</taskCategory>
+        <taskTemplate type="string"/>
+        <taskDescription type="string">Avery Restroom - Restock-Repair Request 1</taskDescription>
+        <openInPhase type="string">Fulfillment</openInPhase>
+        <closeByPhase type="string">Fulfillment</closeByPhase>
+        <taskAssignment type="string"/>
+        <taskActive NullValue="1" type="boolean"/>
+        <activeCond NullValue="1" type="boolean"/>
+        <activeCondValue NullValue="1" type="string"/>
+        <mandatory type="string">false</mandatory>
+        <activeCondXML type="string">&lt;XmlCondition&gt;&lt;collection logical="" negate=""&gt;&lt;condition logical="" negate="false"&gt;&lt;operand dataType="useroption" type="useroption"&gt;&lt;UserOptionName caption="Bathroom Gender"&gt;Bathroom Gender&lt;/UserOptionName&gt;&lt;/operand&gt;&lt;Comparison&gt;equals&lt;/Comparison&gt;&lt;Value dataType="string"&gt;Men's&lt;/Value&gt;&lt;/condition&gt;&lt;condition logical="AND" negate="false"&gt;&lt;operand dataType="useroption" type="useroption"&gt;&lt;UserOptionName caption="Men's item requiring attention:"&gt;Men's item requiring attention:&lt;/UserOptionName&gt;&lt;/operand&gt;&lt;Comparison&gt;equals&lt;/Comparison&gt;&lt;Value dataType="string"&gt;Paper Towels&lt;/Value&gt;&lt;/condition&gt;&lt;condition logical="AND" negate="false"&gt;&lt;operand dataType="useroption" type="useroption"&gt;&lt;UserOptionName caption="Paper Towel Action:"&gt;Paper Towel Action:&lt;/UserOptionName&gt;&lt;/operand&gt;&lt;Comparison&gt;equals&lt;/Comparison&gt;&lt;Value dataType="string"&gt;Restock&lt;/Value&gt;&lt;/condition&gt;&lt;/collection&gt;&lt;/XmlCondition&gt;</activeCondXML>
+        <activeCondDesc type="string">( User Option Bathroom Gender = "Men's" AND User Option Men's item requiring attention: = "Paper Towels" AND User Option Paper Towel Action: = "Restock")</activeCondDesc>
+        <inputs sctype="string"/>
+        <outputs sctype="string"/>
+        <taskFieldsSetting sctype="array">
+          <taskFieldsSetting sctype="structure">
+            <fieldName type="string">assigned.group</fieldName>
+            <fieldValue type="string">Facilities PKB SW Resources</fieldValue>
+          </taskFieldsSetting>
+          <taskFieldsSetting sctype="structure">
+            <fieldName type="string">fsMandanten</fieldName>
+            <fieldValue type="string">Facility Services</fieldValue>
+          </taskFieldsSetting>
+          <taskFieldsSetting sctype="structure">
+            <fieldName type="string">planned.lead.time</fieldName>
+            <fieldValue type="string">14 00:00:00</fieldValue>
+          </taskFieldsSetting>
+        </taskFieldsSetting>
+        <taskOOFlowLink type="string"/>
+      </tasks>
+      <tasks sctype="structure">
+        <taskId type="decimal">3</taskId>
+        <taskCoords type="string">30,115</taskCoords>
+        <dependentIds sctype="string"/>
+        <dependentCoords sctype="string"/>
+        <taskNumber type="string"/>
+        <taskStatus type="string"/>
+        <taskCategory type="string">Fiscal Facility Work</taskCategory>
+        <taskTemplate type="string"/>
+        <taskDescription type="string">Avery Restroom - Restock-Repair Request 2</taskDescription>
+        <openInPhase type="string">Fulfillment</openInPhase>
+        <closeByPhase type="string"/>
+        <taskAssignment type="string"/>
+        <taskActive NullValue="1" type="boolean"/>
+        <activeCond NullValue="1" type="boolean"/>
+        <activeCondValue NullValue="1" type="string"/>
+        <mandatory type="string">false</mandatory>
+        <activeCondXML type="string">&lt;XmlCondition&gt;&lt;collection logical="" negate=""&gt;&lt;condition logical="" negate="false"&gt;&lt;operand dataType="useroption" type="useroption"&gt;&lt;UserOptionName caption="Bathroom Gender:"&gt;Bathroom Gender:&lt;/UserOptionName&gt;&lt;/operand&gt;&lt;Comparison&gt;equals&lt;/Comparison&gt;&lt;Value dataType="string"&gt;Men's&lt;/Value&gt;&lt;/condition&gt;&lt;condition logical="AND" negate="false"&gt;&lt;operand dataType="useroption" type="useroption"&gt;&lt;UserOptionName caption="Men's item requiring attention:"&gt;Men's item requiring attention:&lt;/UserOptionName&gt;&lt;/operand&gt;&lt;Comparison&gt;equals&lt;/Comparison&gt;&lt;Value dataType="string"&gt;Paper Towels&lt;/Value&gt;&lt;/condition&gt;&lt;condition logical="AND" negate="false"&gt;&lt;operand dataType="useroption" type="useroption"&gt;&lt;UserOptionName caption="Paper Towel Action:"&gt;Paper Towel Action:&lt;/UserOptionName&gt;&lt;/operand&gt;&lt;Comparison&gt;equals&lt;/Comparison&gt;&lt;Value dataType="string"&gt;Repair Despenser&lt;/Value&gt;&lt;/condition&gt;&lt;/collection&gt;&lt;/XmlCondition&gt;</activeCondXML>
+        <activeCondDesc type="string">( User Option Bathroom Gender: = "Men's" AND User Option Men's item requiring attention: = "Paper Towels" AND User Option Paper Towel Action: = "Repair Despenser")</activeCondDesc>
+        <inputs sctype="string"/>
+        <outputs sctype="string"/>
+        <taskFieldsSetting sctype="array">
+          <taskFieldsSetting sctype="structure">
+            <fieldName type="string">assigned.group</fieldName>
+            <fieldValue type="string">Facilities PKB Maintenance</fieldValue>
+          </taskFieldsSetting>
+          <taskFieldsSetting sctype="structure">
+            <fieldName type="string">fsMandanten</fieldName>
+            <fieldValue type="string">Facility Services</fieldValue>
+          </taskFieldsSetting>
+          <taskFieldsSetting sctype="structure">
+            <fieldName type="string">planned.lead.time</fieldName>
+            <fieldValue type="string">14 00:00:00</fieldValue>
+          </taskFieldsSetting>
+        </taskFieldsSetting>
+        <taskOOFlowLink type="string"/>
+      </tasks>
+    </tasks>
+    <fileName type="string">requestModel</fileName>
+  </record>
+</recordset>

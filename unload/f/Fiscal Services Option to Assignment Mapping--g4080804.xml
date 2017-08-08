@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="unload">
+  <record id="name=&quot;Fiscal Services Option to Assignment Mapping&quot;" recordid="Fiscal Services Option to Assignment Mapping">
+    <name mandatory="true" type="string">Fiscal Services Option to Assignment Mapping</name>
+    <unload type="boolean">true</unload>
+    <purge type="boolean">false</purge>
+    <record sctype="array">
+      <record sctype="structure">
+        <filename type="string">RuleSet</filename>
+        <query type="string">name="FS SRC Option Assignment Routing"</query>
+        <datamap NullValue="1" type="boolean"/>
+      </record>
+      <record sctype="structure">
+        <filename type="string">ScriptLibrary</filename>
+        <query type="string">name="fsUtility"</query>
+        <datamap NullValue="1" type="boolean"/>
+      </record>
+      <record sctype="structure">
+        <filename type="string">format</filename>
+        <query type="string">name#"fsOptAssign"</query>
+        <datamap NullValue="1" type="boolean"/>
+      </record>
+      <record sctype="structure">
+        <filename type="string">format</filename>
+        <query type="string">name="fsChangePlan.qbe"</query>
+        <datamap NullValue="1" type="boolean"/>
+      </record>
+      <record sctype="structure">
+        <filename type="string">formatctrl</filename>
+        <query type="string">name#"fsOptAssign"</query>
+        <datamap NullValue="1" type="boolean"/>
+      </record>
+      <record sctype="structure">
+        <filename type="string">fsOptAssignConfig</filename>
+        <query type="string">true</query>
+        <datamap NullValue="1" type="boolean"/>
+      </record>
+      <record sctype="structure">
+        <filename type="string">fsOptAssignMap</filename>
+        <query type="string">true</query>
+        <datamap NullValue="1" type="boolean"/>
+      </record>
+      <record sctype="structure">
+        <filename type="string">link</filename>
+        <query type="string">name#"fsOptAssign"</query>
+        <datamap NullValue="1" type="boolean"/>
+      </record>
+      <record sctype="structure">
+        <filename type="string">unload</filename>
+        <query type="string">name="Fiscal Services Option to Assignment Mapping"</query>
+        <datamap NullValue="1" type="boolean"/>
+      </record>
+      <record sctype="structure">
+        <filename NullValue="1" type="string"/>
+        <query NullValue="1" type="string"/>
+        <datamap NullValue="1" type="boolean"/>
+      </record>
+    </record>
+    <protected.formats NullValue="1" sctype="array">
+      <protected.formats NullValue="1" type="string"/>
+    </protected.formats>
+    <sysmodcount type="decimal">4</sysmodcount>
+    <sysmoduser type="string">sryburn</sysmoduser>
+    <sysmodtime type="dateTime">07/27/17 16:01:04</sysmodtime>
+  </record>
+</recordset>

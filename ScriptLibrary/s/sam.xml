@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="ScriptLibrary">
+  <record id="name=&quot;sam&quot;" recordid="sam">
+    <name type="string">sam</name>
+    <script type="string">// testing log4js
+// logLevel 1 = DEBUG, 2 = INFO, 3 = WARN, 4 = ERROR, 5 = FATAL;
+var logLevel = 4;
+var show = new lib.log4js.Log(logLevel,"log_test");
+show.fileLogger = function(msg, level){
+	print(level + " - " + msg);
+	system.functions.log(level + " - " + msg);
+}
+
+//I want to see if this function will pick up the global show var
+function experiment(){
+	show.setLevel(1);	// change the log level
+	show.setLogger(show.fileLogger);  // send output to screen and log
+	show.setPrefix("from sam.experiment");	// change the message prefix
+	show.debug("This is a debug message.");
+	show.info("This is an information message.");
+	show.warn("This is a warning message.");
+	show.error("This is an error message.");
+	show.fatal("This is a fatal error message.");
+}
+</script>
+    <package type="string">User</package>
+    <sysmodtime type="dateTime">07/27/17 14:23:30</sysmodtime>
+    <sysmoduser type="string">sryburn</sysmoduser>
+    <sysmodcount type="decimal">21</sysmodcount>
+    <prgnsystem NullValue="1" type="boolean"/>
+    <sysrestricted NullValue="1" type="boolean"/>
+  </record>
+</recordset>

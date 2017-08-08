@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="fsOptAssignConfig">
+  <record id="taskName=&quot;Avery Workstation Modification Request&quot;" recordid="Avery Workstation Modification Request">
+    <requestModel type="string">Avery Workstation Modification Bundle</requestModel>
+    <catalogItem type="string">Avery - Workstation Modification</catalogItem>
+    <taskName type="string">Avery Workstation Modification Request</taskName>
+    <significantOptions NullValue="1" sctype="array">
+      <significantOptions NullValue="1" type="string"/>
+    </significantOptions>
+    <assignment type="string">Facilities PKB Space Management</assignment>
+    <sysmodtime type="dateTime">07/26/17 10:56:41</sysmodtime>
+    <sysmoduser type="string">sryburn</sysmoduser>
+    <sysmodcount type="decimal">0</sysmodcount>
+    <svcOptions type="string">&lt;form&gt;&lt;select id="flrnum" label="Select a floor:" mandatory="true" style="combo" visible="true"&gt;&lt;option label=""/&gt;&lt;option id="1" label="1st Floor"&gt;1st Floor&lt;/option&gt;&lt;option id="2" label="2nd Floor"&gt;2nd Floor&lt;/option&gt;&lt;option id="3" label="3rd Floor"&gt;3rd Floor&lt;/option&gt;&lt;option id="4" label="4th Floor"&gt;4th Floor&lt;/option&gt;&lt;option id="5" label="5th Floor"&gt;5th Floor&lt;/option&gt;&lt;option id="6" label="N/A"&gt;N/A&lt;/option&gt;&lt;/select&gt;&lt;text id="direction" label="Provide additional directions to workstation (i.e. room 314, north side of building by women's restroom):" mandatory="true" multiline="true" visible="true"/&gt;&lt;text id="descr" label="Please specify the modifications needed:" mandatory="true" multiline="true" visible="true"/&gt;&lt;/form&gt;</svcOptions>
+  </record>
+</recordset>

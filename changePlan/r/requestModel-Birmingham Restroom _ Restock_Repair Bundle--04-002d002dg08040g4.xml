@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recordset table="changePlan">
+  <record id="fileName=&quot;requestModel&quot; and number=&quot;Birmingham Restroom - Restock-Repair Bundle&quot;" recordid="requestModel - Birmingham Restroom - Restock-Repair Bundle">
+    <number type="string">Birmingham Restroom - Restock-Repair Bundle</number>
+    <fileId type="string">Birmingham Restroom - Restock-Repair Bundle</fileId>
+    <tasks sctype="array">
+      <tasks sctype="structure">
+        <taskId type="decimal">2</taskId>
+        <taskCoords type="string">30,40</taskCoords>
+        <dependentIds sctype="string"/>
+        <dependentCoords sctype="string"/>
+        <taskNumber type="string"/>
+        <taskStatus type="string"/>
+        <taskCategory type="string">Fiscal Facility Work</taskCategory>
+        <taskTemplate type="string"/>
+        <taskDescription type="string">Birmingham Restroom - Restock-Repair Request</taskDescription>
+        <openInPhase type="string">Fulfillment</openInPhase>
+        <closeByPhase type="string">Fulfillment</closeByPhase>
+        <taskAssignment type="string">FS SRC Option Assignment Routing</taskAssignment>
+        <taskActive NullValue="1" type="boolean"/>
+        <activeCond NullValue="1" type="boolean"/>
+        <activeCondValue NullValue="1" type="string"/>
+        <mandatory type="string">false</mandatory>
+        <activeCondXML NullValue="1" type="string"/>
+        <activeCondDesc type="string"/>
+        <inputs sctype="string"/>
+        <outputs sctype="string"/>
+        <taskFieldsSetting sctype="array">
+          <taskFieldsSetting sctype="structure">
+            <fieldName type="string">assigned.group</fieldName>
+            <fieldValue type="string"/>
+          </taskFieldsSetting>
+          <taskFieldsSetting sctype="structure">
+            <fieldName type="string">fsMandanten</fieldName>
+            <fieldValue type="string">Facility Services</fieldValue>
+          </taskFieldsSetting>
+          <taskFieldsSetting sctype="structure">
+            <fieldName type="string">planned.lead.time</fieldName>
+            <fieldValue type="string">14 00:00:00</fieldValue>
+          </taskFieldsSetting>
+        </taskFieldsSetting>
+        <taskOOFlowLink type="string"/>
+      </tasks>
+    </tasks>
+    <fileName type="string">requestModel</fileName>
+  </record>
+</recordset>
